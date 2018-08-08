@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.EmailConfirmationPage">
+    <ContentPage.Content>
+        <StackLayout
+            Spacing="20"
+            Padding="20">
+
+            <Label x:Name="LabelTitle" XAlign="Center" HorizontalOptions="Center"/>
+
+            <Entry x:Name="EntryConfirmationCode"
+                       HorizontalOptions="FillAndExpand"/>
+
+            <Button x:Name="ButtonConfirmEmail"
+                    Text="Confirm Email with Code"
+                    Clicked="ButtonConfirmEmail_Clicked"/>
+
+            <Label Text="Wrong Email? Change it Here:" XAlign="Center"/>
+            <Entry x:Name="EntryChangeEmail"
+                       HorizontalOptions="FillAndExpand"/>
+
+            <Button x:Name="ButtonFixEmail"
+                    Text="Change Email"
+                    Clicked="ButtonFixEmail_Clicked"
+                    />
+
+            <Label x:Name="LabelMessage" Text="" Font="Bold" HorizontalOptions="Center"/>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

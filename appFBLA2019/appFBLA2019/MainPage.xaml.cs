@@ -7,11 +7,16 @@ using Xamarin.Forms;
 
 namespace appFBLA2019
 {
-	public partial class MainPage : ContentPage
-	{
-		public MainPage()
-		{
-			InitializeComponent();
-		}
-	}
+    public partial class MainPage : ContentPage
+    {
+        public MainPage()
+        {
+            InitializeComponent();
+        }
+
+        private async void ButtonToLoginPage_Clicked(object sender, EventArgs e)
+        {
+            await this.Navigation.PushAsync(new LoginPage(""));
+        }
+    }
 }

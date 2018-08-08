@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.CreateAccountPage">
+    <ContentPage.Content>
+        <StackLayout
+            Spacing="20"
+            Padding="20">
+
+            <Label x:Name="LabelTitle" Text="Create New Account" Font="Bold" HorizontalOptions="Center"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Text="Username" Grid.Column="0" Grid.Row="0"/>
+                <Label Text="Password" Grid.Column="0" Grid.Row="1"/>
+                <Label Text="Email" Grid.Column="0" Grid.Row="2"/>
+
+                <Entry x:Name="EntryUsername" Grid.Column="1" Grid.Row="0"
+                       HorizontalOptions="FillAndExpand"/>
+                <Entry x:Name="EntryPassword" Grid.Column="1" Grid.Row="1"
+                       HorizontalOptions="FillAndExpand"/>
+                <Entry x:Name="EntryEmail" Grid.Column="1" Grid.Row="2"
+                       HorizontalOptions="FillAndExpand"/>
+
+            </Grid>
+
+
+            <Button x:Name="ButtonCreateAccount"
+                    Text="Create Account"
+                    Clicked="ButtonCreateAccount_Clicked"
+                    />
+            <Label x:Name="LabelMessage" Text=""
+                   HorizontalOptions="Center"/>
+
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

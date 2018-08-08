@@ -6,9 +6,14 @@
 
     <StackLayout>
         <!-- Place new controls here -->
-    	<Label Text="Welcome to Xamarin.Forms!" 
+        <Label Text="FBLA Mobile App Dev" 
            HorizontalOptions="Center"
            VerticalOptions="CenterAndExpand" />
+        <Button x:Name="ButtonToLoginPage" Text="Login"
+                HorizontalOptions="Center"
+                VerticalOptions="CenterAndExpand"
+                Clicked="ButtonToLoginPage_Clicked"
+                />
     </StackLayout>
 
 </ContentPage>
