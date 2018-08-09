@@ -31,6 +31,9 @@ namespace appFBLA2019
                 var confirmationPage = new EmailConfirmationPage(username);
                 confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
 
+                // This throws a NullReferenceException, but if one uses
+                // await this.Navigation.PushModalAsync(new EmailConfirmationPage(username));
+                // instead, it works perfectly fine...
                 await this.Navigation.PushModalAsync(confirmationPage);
             }
             else

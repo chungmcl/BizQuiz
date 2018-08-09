@@ -26,10 +26,10 @@ namespace appFBLA2019
                 {
                     this.LabelMessage.Text = "Account successfully created.";
 
-                    //EmailConfirmationPage confirmationPage = new EmailConfirmationPage(username);
-                    //confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
+                    EmailConfirmationPage confirmationPage = new EmailConfirmationPage(username);
+                    confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
 
-                    await this.Navigation.PushModalAsync(new EmailConfirmationPage(username));
+                    await this.Navigation.PushModalAsync(confirmationPage);
                 }
                 else
                 {
