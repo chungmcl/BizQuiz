@@ -10,7 +10,7 @@ namespace appFBLA2019
     {
         private static TcpClient tcp;
         private static NetworkStream nwStream;
-        private const string serverIP = "50.47.131.154";
+        private const string serverIP = "50.54.142.236";
         private const int serverPort = 7777;
         /// <summary>
         /// Sends request to server database to add/create new account
@@ -19,12 +19,7 @@ namespace appFBLA2019
         /// <param name="password">Password to be added</param>
         public static async Task QueryDB(string dbQuery)
         {
-            if (tcp == null || !tcp.Connected)
-            {
-                tcp?.Close();
-                tcp?.Dispose();
-                tcp = new TcpClient(serverIP, serverPort);
-            }
+            tcp = new TcpClient(serverIP, serverPort);
 
             byte[] sendBuffer = Encoding.ASCII.GetBytes(dbQuery);
 
@@ -39,16 +34,14 @@ namespace appFBLA2019
         /// <returns>The data/message from the server</returns>
         public async static Task<string> ReceiveFromDB()
         {
-            if (tcp == null || !tcp.Connected)
-            {
-                tcp?.Close();
-                tcp?.Dispose();
-                tcp = new TcpClient(serverIP, serverPort);
-            }
 
             byte[] bytesToRead = new byte[tcp.ReceiveBufferSize];
             int bytesRead = nwStream.Read(bytesToRead, 0, tcp.ReceiveBufferSize);
             string databaseMessage = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
+
+            tcp.Client.Disconnect(true);
+            tcp.Client.Close();
+            tcp.Close();
 
             return databaseMessage;
         }

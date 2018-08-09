@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -13,6 +9,7 @@ namespace appFBLA2019
     public partial class EmailConfirmationPage : ContentPage
     {
         private string username;
+        private string email;
         public delegate void EmailConfirmedEventHandler(object source, EventArgs args);
         public event EmailConfirmedEventHandler EmailConfirmed;
         public EmailConfirmationPage(string username)
@@ -28,8 +25,8 @@ namespace appFBLA2019
             try
             {
                 await ServerConnector.QueryDB($"getEmail/{this.username}/-");
-                string email = await ServerConnector.ReceiveFromDB();
-                this.LabelTitle.Text = $"Enter the confirmation code sent to {email.Split('/')[1]}";
+                this.email = await ServerConnector.ReceiveFromDB();
+                this.LabelTitle.Text = $"Enter the confirmation code sent to {this.email.Split('/')[1]}";
             }
             catch
             {
@@ -39,7 +36,7 @@ namespace appFBLA2019
 
         private async void ReturnToLoginPageWithError()
         {
-            await this.Navigation.PushAsync(new LoginPage("Could not connect to server. Please try again."));
+            await this.Navigation.PopModalAsync();
         }
 
         private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
@@ -82,12 +79,14 @@ namespace appFBLA2019
             }
         }
 
+        private async void ButtonClose_Clicked(object sender, EventArgs e)
+        {
+            await this.Navigation.PopModalAsync(true);
+        }
+
         protected virtual void OnEmailConfirmed()
         {
-            if (EmailConfirmed != null)
-            {
-                EmailConfirmed(this, EventArgs.Empty);
-            }
+            EmailConfirmed?.Invoke(this, EventArgs.Empty);
         }
     }
 }

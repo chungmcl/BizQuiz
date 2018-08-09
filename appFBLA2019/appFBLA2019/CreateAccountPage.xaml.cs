@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Sockets;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -22,14 +17,19 @@ namespace appFBLA2019
         {
             try
             {
-                await ServerConnector.QueryDB($"createAccount/{this.EntryUsername.Text}/{this.EntryPassword.Text}" +
+                string username = this.EntryUsername.Text;
+                await ServerConnector.QueryDB($"createAccount/{username}/{this.EntryPassword.Text}" +
                     $"/{this.EntryEmail.Text}/-");
                 string databaseReturnInfo = await ServerConnector.ReceiveFromDB();
 
                 if (databaseReturnInfo == "true/-")
                 {
                     this.LabelMessage.Text = "Account successfully created.";
-                    await this.Navigation.PushAsync(new EmailConfirmationPage(this.EntryUsername.Text));
+
+                    //EmailConfirmationPage confirmationPage = new EmailConfirmationPage(username);
+                    //confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
+
+                    await this.Navigation.PushModalAsync(new EmailConfirmationPage(username));
                 }
                 else
                 {
@@ -37,10 +37,15 @@ namespace appFBLA2019
                     this.LabelMessage.Text = $"Account could not be created: {errorMessage}";
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                this.LabelMessage.Text = "Connection Error Occured: Please Try Again.";
+                this.LabelMessage.Text = "Connection Error Occured: Please Try Again." + ex.Message;
             }
+        }
+
+        public void OnEmailConfirmed(object source, EventArgs args)
+        {
+            this.LabelMessage.Text = "Email Confirmed!";
         }
     }
 }

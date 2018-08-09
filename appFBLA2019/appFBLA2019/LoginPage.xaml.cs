@@ -16,7 +16,8 @@ namespace appFBLA2019
 
         private async void ButtonLogin_Clicked(object sender, EventArgs e)
         {
-            await ServerConnector.QueryDB($"loginAccount/{this.EntryUsername.Text}/{this.EntryPassword.Text}/-");
+            string username = this.EntryUsername.Text;
+            await ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
             string response = await ServerConnector.ReceiveFromDB();
 
             if (response == "true/-")
@@ -26,8 +27,10 @@ namespace appFBLA2019
             else if (response == "true/confirmEmail/-")
             {
                 this.LabelMessage.Text = "Please confirm your email.";
-                EmailConfirmationPage confirmationPage = new EmailConfirmationPage(this.EntryUsername.Text);
+
+                var confirmationPage = new EmailConfirmationPage(username);
                 confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
+
                 await this.Navigation.PushModalAsync(confirmationPage);
             }
             else
@@ -41,7 +44,7 @@ namespace appFBLA2019
             await this.Navigation.PushAsync(new CreateAccountPage());
         }
 
-        private void OnEmailConfirmed(object source, EventArgs args)
+        public void OnEmailConfirmed(object source, EventArgs args)
         {
             this.LabelMessage.Text = "Login Successful!";
         }
