@@ -8,6 +8,8 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CreateAccountPage : ContentPage
     {
+        public delegate void AccountCreatedEventHandler(object source, EventArgs eventArgs);
+        public event AccountCreatedEventHandler AccountCreated;
         public CreateAccountPage()
         {
             InitializeComponent();
@@ -18,17 +20,16 @@ namespace appFBLA2019
             try
             {
                 string username = this.EntryUsername.Text;
-                await ServerConnector.QueryDB($"createAccount/{username}/{this.EntryPassword.Text}" +
+                ServerConnector.QueryDB($"createAccount/{username}/{this.EntryPassword.Text}" +
                     $"/{this.EntryEmail.Text}/-");
-                string databaseReturnInfo = await ServerConnector.ReceiveFromDB();
+                string databaseReturnInfo = ServerConnector.ReceiveFromDB();
 
                 if (databaseReturnInfo == "true/-")
                 {
                     this.LabelMessage.Text = "Account successfully created.";
 
-                    EmailConfirmationPage confirmationPage = new EmailConfirmationPage(username);
+                    var confirmationPage = new EmailConfirmationPage(username);
                     confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
-
                     await this.Navigation.PushModalAsync(confirmationPage);
                 }
                 else
@@ -43,9 +44,16 @@ namespace appFBLA2019
             }
         }
 
-        public void OnEmailConfirmed(object source, EventArgs args)
+        private void OnEmailConfirmed(object source, EventArgs args)
         {
             this.LabelMessage.Text = "Email Confirmed!";
+            OnAccountCreated();
+            this.Navigation.PopAsync();
+        }
+
+        protected void OnAccountCreated()
+        {
+            this.AccountCreated?.Invoke(this, EventArgs.Empty);
         }
     }
 }

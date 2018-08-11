@@ -17,8 +17,8 @@ namespace appFBLA2019
         private async void ButtonLogin_Clicked(object sender, EventArgs e)
         {
             string username = this.EntryUsername.Text;
-            await ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
-            string response = await ServerConnector.ReceiveFromDB();
+            ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
+            string response = ServerConnector.ReceiveFromDB();
 
             if (response == "true/-")
             {
@@ -30,10 +30,6 @@ namespace appFBLA2019
 
                 var confirmationPage = new EmailConfirmationPage(username);
                 confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
-
-                // This throws a NullReferenceException, but if one uses
-                // await this.Navigation.PushModalAsync(new EmailConfirmationPage(username));
-                // instead, it works perfectly fine...
                 await this.Navigation.PushModalAsync(confirmationPage);
             }
             else
@@ -44,12 +40,19 @@ namespace appFBLA2019
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)
         {
-            await this.Navigation.PushAsync(new CreateAccountPage());
+            var createAccountPage = new CreateAccountPage();
+            createAccountPage.AccountCreated += this.OnAccountCreated;
+            await this.Navigation.PushAsync(createAccountPage);
         }
 
         public void OnEmailConfirmed(object source, EventArgs args)
         {
             this.LabelMessage.Text = "Login Successful!";
+        }
+
+        private void OnAccountCreated(object source, EventArgs eventArgs)
+        {
+
         }
     }
 }

@@ -7,7 +7,8 @@
             Spacing="20"
             Padding="20">
 
-            <Label x:Name="LabelTitle" XAlign="Center" HorizontalOptions="Center"/>
+            <Label x:Name="LabelTitle" Text="Confirm Email" Font="Bold"
+                   XAlign="Center" HorizontalOptions="Center"/>
 
             <Entry x:Name="EntryConfirmationCode"
                        HorizontalOptions="FillAndExpand"/>

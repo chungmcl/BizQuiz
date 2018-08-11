@@ -17,7 +17,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="username">Username to be added</param>
         /// <param name="password">Password to be added</param>
-        public static async Task QueryDB(string dbQuery)
+        public static /*async Task*/ void QueryDB(string dbQuery)
         {
             tcp = new TcpClient(serverIP, serverPort);
 
@@ -32,7 +32,7 @@ namespace appFBLA2019
         /// Receive data/message from database proceeding sending request
         /// </summary>
         /// <returns>The data/message from the server</returns>
-        public async static Task<string> ReceiveFromDB()
+        public /*async*/ static /*Task<string>*/ string ReceiveFromDB()
         {
 
             byte[] bytesToRead = new byte[tcp.ReceiveBufferSize];

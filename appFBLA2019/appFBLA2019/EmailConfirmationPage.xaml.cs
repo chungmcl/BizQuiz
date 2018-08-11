@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -10,8 +9,10 @@ namespace appFBLA2019
     {
         private string username;
         private string email;
+
         public delegate void EmailConfirmedEventHandler(object source, EventArgs args);
         public event EmailConfirmedEventHandler EmailConfirmed;
+
         public EmailConfirmationPage(string username)
         {
             InitializeComponent();
@@ -20,23 +21,18 @@ namespace appFBLA2019
             GetEmail();
         }
 
-        private async void GetEmail()
+        private void GetEmail()
         {
             try
             {
-                await ServerConnector.QueryDB($"getEmail/{this.username}/-");
-                this.email = await ServerConnector.ReceiveFromDB();
+                ServerConnector.QueryDB($"getEmail/{this.username}/-");
+                this.email = ServerConnector.ReceiveFromDB();
                 this.LabelTitle.Text = $"Enter the confirmation code sent to {this.email.Split('/')[1]}";
             }
             catch
             {
-                ReturnToLoginPageWithError();
+                this.LabelMessage.Text = "Connection Error: Please Try Again.";
             }
-        }
-
-        private async void ReturnToLoginPageWithError()
-        {
-            await this.Navigation.PopModalAsync();
         }
 
         private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
@@ -44,13 +40,13 @@ namespace appFBLA2019
             try
             {
                 string userInputToken = this.EntryConfirmationCode.Text.Trim();
-                await ServerConnector.QueryDB($"confirmEmail/{this.username}/{userInputToken}/-");
-                string returnData = await ServerConnector.ReceiveFromDB();
+                ServerConnector.QueryDB($"confirmEmail/{this.username}/{userInputToken}/-");
+                string returnData = ServerConnector.ReceiveFromDB();
 
                 if (returnData == "true/-")
                 {
                     OnEmailConfirmed();
-                    await this.Navigation.PopModalAsync();
+                    await this.Navigation.PopModalAsync(true);
                 }
                 else
                 {
@@ -63,11 +59,11 @@ namespace appFBLA2019
             }
         }
 
-        private async void ButtonFixEmail_Clicked(object sender, EventArgs e)
+        private void ButtonFixEmail_Clicked(object sender, EventArgs e)
         {
             string newEmail = this.EntryChangeEmail.Text;
-            await ServerConnector.QueryDB($"changeEmail/{this.username}/{newEmail}/-");
-            string result = await ServerConnector.ReceiveFromDB();
+            ServerConnector.QueryDB($"changeEmail/{this.username}/{newEmail}/-");
+            string result = ServerConnector.ReceiveFromDB();
 
             if (result == "true/-")
             {
@@ -86,7 +82,7 @@ namespace appFBLA2019
 
         protected virtual void OnEmailConfirmed()
         {
-            EmailConfirmed?.Invoke(this, EventArgs.Empty);
+            this.EmailConfirmed?.Invoke(this, EventArgs.Empty);
         }
     }
 }
