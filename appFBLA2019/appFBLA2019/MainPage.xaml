@@ -5,11 +5,7 @@
             x:Class="appFBLA2019.MainPage"
             BarBackgroundColor="#2196F3"
             BarTextColor="White">
-            <!--xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
-            android:TabbedPage.ToolbarPlacement="Bottom"
-            BarBackgroundColor="#2196F3"
-            BarTextColor="White"-->
-
+    
     <ContentPage Title="Profile">
         <StackLayout>
             <Label Text="FBLA Mobile App Dev" 
