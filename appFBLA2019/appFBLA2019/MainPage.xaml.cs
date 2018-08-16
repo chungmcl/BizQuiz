@@ -16,7 +16,9 @@ namespace appFBLA2019
 		public MainPage ()
 		{
 			InitializeComponent ();
+#if __ANDROID__
             On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
+#endif
         }
 
         private async void ButtonToLoginPage_Clicked(object sender, EventArgs e)
