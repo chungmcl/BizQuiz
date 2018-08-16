@@ -10,7 +10,9 @@ namespace appFBLA2019
     {
         private static TcpClient tcp;
         private static NetworkStream nwStream;
-        private const string serverIP = "50.47.131.154";
+        private const string serverIP = "50.54.142.236";
+        //Micheal's:50.54.142.236
+        //Eric's:50.47.131.154
         private const int serverPort = 7777;
         /// <summary>
         /// Sends request to server database to add/create new account

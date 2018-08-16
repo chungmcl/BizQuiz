@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.TopicPage"
+             xmlns:local="clr-namespace:appFBLA2019">
+    <!--Titles should be implemented by the containing XAMl (LevelsPage.xaml), as should all of the below controls (soon as I figure that out);
+    Let's only use one class for all the topics and pass parameters to the page to control them-->
+    <StackLayout>
+        <Label  Text="History"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+        <Label  Text="Organization"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+        <Label  Text="Officers"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+        <Label  Text="Events"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+    </StackLayout>
+</ContentPage>

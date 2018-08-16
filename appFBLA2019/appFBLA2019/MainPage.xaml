@@ -1,19 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:appFBLA2019"
-             x:Class="appFBLA2019.MainPage">
-
-    <StackLayout>
-        <!-- Place new controls here -->
-        <Label Text="FBLA Mobile App Dev" 
-           HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
-        <Button x:Name="ButtonToLoginPage" Text="Login"
-                HorizontalOptions="Center"
-                VerticalOptions="CenterAndExpand"
-                Clicked="ButtonToLoginPage_Clicked"
-                />
-    </StackLayout>
-
-</ContentPage>
+<TabbedPage 
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:appFBLA2019"
+    x:Class="appFBLA2019.MainPage"
+    xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+    android:TabbedPage.IsSwipePagingEnabled="False"
+    Title="FBLA App 2019">
+    <local:LevelsPage Title="Standard Levels"/>
+    <ContentPage Title="Level Editor"/>
+    <ContentPage Title="Leaderboards"/>
+    <local:ProfilePage Title="Profile" />
+</TabbedPage>
