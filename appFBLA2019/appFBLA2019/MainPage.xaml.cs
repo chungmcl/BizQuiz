@@ -21,7 +21,7 @@ namespace appFBLA2019
 #endif
         }
 
-        private async void ButtonToLoginPage_Clicked(object sender, EventArgs e)
+        private async void ToolbarItem_Clicked(object sender, EventArgs e)
         {
             await this.Navigation.PushAsync(new LoginPage(""));
         }

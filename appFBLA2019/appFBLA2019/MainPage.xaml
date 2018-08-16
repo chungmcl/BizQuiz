@@ -5,21 +5,27 @@
             x:Class="appFBLA2019.MainPage"
             BarBackgroundColor="#2196F3"
             BarTextColor="White">
-    
-    <ContentPage Title="Profile">
-        <StackLayout>
-            <Label Text="FBLA Mobile App Dev" 
-           HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
-            <Button x:Name="ButtonToLoginPage" Text="Login"
-                HorizontalOptions="Center"
-                VerticalOptions="CenterAndExpand"
-                Clicked="ButtonToLoginPage_Clicked"
-                />
-        </StackLayout>
+
+    <TabbedPage.ToolbarItems>
+        <ToolbarItem Text="Profile" Clicked="ToolbarItem_Clicked"/>
+    </TabbedPage.ToolbarItems>
+
+    <ContentPage Title="Business Skills">
     </ContentPage>
 
-    <ContentPage Title="Stuff">
+    <ContentPage Title="Events">
+
+    </ContentPage>
+
+    <ContentPage Title="FBLA">
+        
+    </ContentPage>
+
+    <ContentPage Title="Sponsors">
+
+    </ContentPage>
+
+    <ContentPage Title="Parliamentary Procedure">
 
     </ContentPage>
 
