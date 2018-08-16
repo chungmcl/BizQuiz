@@ -2,6 +2,7 @@
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using static appFBLA2019.CreateAccountPage;
 
 namespace appFBLA2019
 {
@@ -16,8 +17,8 @@ namespace appFBLA2019
         private async void ButtonLogin_Clicked(object sender, EventArgs e)
         {
             string username = this.EntryUsername.Text;
-            ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
-            string response = ServerConnector.ReceiveFromDB();
+            await ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
+            string response = await ServerConnector.ReceiveFromDB();
 
             if (response == "true/-")
             {
@@ -49,9 +50,18 @@ namespace appFBLA2019
             this.LabelMessage.Text = "Login Successful!";
         }
 
-        private void OnAccountCreated(object source, EventArgs eventArgs)
+        private void OnAccountCreated(object source, AccountCreatedEventArgs accountArgs)
         {
-
+            this.EntryUsername.Text = accountArgs.Username;
+            if (accountArgs.EmailConfirmed)
+            {
+                this.LabelMessage.Text = "Account created successfully!";
+            }
+            else
+            {
+                this.LabelMessage.Text = "Account created successfully! " +
+                    "Please confirm your email as soon as possible.";
+            }
         }
     }
 }

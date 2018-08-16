@@ -4,5 +4,8 @@
              x:Class="appFBLA2019.ProfilePage"
              xmlns:local="clr-namespace:appFBLA2019">
     <!--This should change between the Profile, Login, Create Account, etc. pages as needed-->
-    
+    <StackLayout>
+        <Button x:Name="ButtonToLoginPage" Text="Login"
+            Clicked="ButtonToLoginPage_Clicked"/>
+    </StackLayout>
 </ContentPage>

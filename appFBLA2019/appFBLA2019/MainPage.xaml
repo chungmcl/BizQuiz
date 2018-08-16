@@ -4,9 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:appFBLA2019"
     x:Class="appFBLA2019.MainPage"
-    xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
-    android:TabbedPage.IsSwipePagingEnabled="False"
+    BarBackgroundColor="#2196F3"
+    BarTextColor="White"
     Title="FBLA App 2019">
+    
     <local:LevelsPage Title="Standard Levels"/>
     <ContentPage Title="Level Editor"/>
     <ContentPage Title="Leaderboards"/>
