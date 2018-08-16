@@ -2,21 +2,22 @@
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using static appFBLA2019.CreateAccountPage;
 
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentPage
     {
-        public LoginPage(string message)
+        public LoginPage()
         {
             InitializeComponent();
-            this.LabelMessage.Text = message;
         }
 
         private async void ButtonLogin_Clicked(object sender, EventArgs e)
         {
-            await ServerConnector.QueryDB($"loginAccount/{this.EntryUsername.Text}/{this.EntryPassword.Text}/-");
+            string username = this.EntryUsername.Text;
+            await ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
             string response = await ServerConnector.ReceiveFromDB();
 
             if (response == "true/-")
@@ -26,7 +27,8 @@ namespace appFBLA2019
             else if (response == "true/confirmEmail/-")
             {
                 this.LabelMessage.Text = "Please confirm your email.";
-                EmailConfirmationPage confirmationPage = new EmailConfirmationPage(this.EntryUsername.Text);
+
+                var confirmationPage = new EmailConfirmationPage(username);
                 confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                 await this.Navigation.PushModalAsync(confirmationPage);
             }
@@ -38,12 +40,28 @@ namespace appFBLA2019
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)
         {
-            await this.Navigation.PushAsync(new CreateAccountPage());
+            var createAccountPage = new CreateAccountPage();
+            createAccountPage.AccountCreated += this.OnAccountCreated;
+            await this.Navigation.PushAsync(createAccountPage);
         }
 
-        private void OnEmailConfirmed(object source, EventArgs args)
+        public void OnEmailConfirmed(object source, EventArgs args)
         {
             this.LabelMessage.Text = "Login Successful!";
+        }
+
+        private void OnAccountCreated(object source, AccountCreatedEventArgs accountArgs)
+        {
+            this.EntryUsername.Text = accountArgs.Username;
+            if (accountArgs.EmailConfirmed)
+            {
+                this.LabelMessage.Text = "Account created successfully!";
+            }
+            else
+            {
+                this.LabelMessage.Text = "Account created successfully! " +
+                    "Please confirm your email as soon as possible.";
+            }
         }
     }
 }

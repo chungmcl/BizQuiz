@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -13,8 +9,13 @@ namespace appFBLA2019
     public partial class EmailConfirmationPage : ContentPage
     {
         private string username;
-        public delegate void EmailConfirmedEventHandler(object source, EventArgs args);
+        private string email;
+
+        public delegate void EmailConfirmedEventHandler(object source, EventArgs eventArgs);
         public event EmailConfirmedEventHandler EmailConfirmed;
+
+        public delegate void ConfirmLaterSelectedEventHandler(object source, EventArgs eventArgs);
+        public event ConfirmLaterSelectedEventHandler ConfirmLaterSelected;
         public EmailConfirmationPage(string username)
         {
             InitializeComponent();
@@ -23,23 +24,18 @@ namespace appFBLA2019
             GetEmail();
         }
 
-        private async void GetEmail()
+        private async Task GetEmail()
         {
             try
             {
                 await ServerConnector.QueryDB($"getEmail/{this.username}/-");
-                string email = await ServerConnector.ReceiveFromDB();
-                this.LabelTitle.Text = $"Enter the confirmation code sent to {email.Split('/')[1]}";
+                this.email = await ServerConnector.ReceiveFromDB();
+                this.LabelTitle.Text = $"Enter the confirmation code sent to {this.email.Split('/')[1]}";
             }
             catch
             {
-                ReturnToLoginPageWithError();
+                this.LabelMessage.Text = "Connection Error: Please Try Again.";
             }
-        }
-
-        private async void ReturnToLoginPageWithError()
-        {
-            await this.Navigation.PushAsync(new LoginPage("Could not connect to server. Please try again."));
         }
 
         private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
@@ -53,7 +49,7 @@ namespace appFBLA2019
                 if (returnData == "true/-")
                 {
                     OnEmailConfirmed();
-                    await this.Navigation.PopModalAsync();
+                    await this.Navigation.PopModalAsync(true);
                 }
                 else
                 {
@@ -82,12 +78,20 @@ namespace appFBLA2019
             }
         }
 
+        private async void ButtonClose_Clicked(object sender, EventArgs e)
+        {
+            OnConfirmLaterSelected();
+            await this.Navigation.PopModalAsync(true);
+        }
+
         protected virtual void OnEmailConfirmed()
         {
-            if (EmailConfirmed != null)
-            {
-                EmailConfirmed(this, EventArgs.Empty);
-            }
+            this.EmailConfirmed?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnConfirmLaterSelected()
+        {
+            this.ConfirmLaterSelected?.Invoke(this, EventArgs.Empty);
         }
     }
 }

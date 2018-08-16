@@ -19,9 +19,7 @@ namespace appFBLA2019
 
         private async void ButtonToLoginPage_Clicked(object sender, EventArgs e)
         {
-            await this.Navigation.PushAsync(new LoginPage(""));
+            await this.Navigation.PushAsync(new LoginPage());
         }
-
-
     }
 }
