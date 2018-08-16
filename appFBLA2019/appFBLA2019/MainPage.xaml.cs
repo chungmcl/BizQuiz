@@ -16,6 +16,7 @@ namespace appFBLA2019
 		public MainPage ()
 		{
 			InitializeComponent ();
+            // Default tabs on Android are on top - Set to bottom on Android (to serve as Navigation)
 #if __ANDROID__
             On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
 #endif
