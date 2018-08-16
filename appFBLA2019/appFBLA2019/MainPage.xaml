@@ -10,8 +10,7 @@
         <ToolbarItem Text="Profile" Clicked="ToolbarItem_Clicked"/>
     </TabbedPage.ToolbarItems>
 
-    <ContentPage Title="Business Skills">
-    </ContentPage>
+    <local:LoginPage Title="Profile"/>
 
     <ContentPage Title="Events">
 

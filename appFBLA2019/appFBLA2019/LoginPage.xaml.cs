@@ -8,10 +8,9 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentPage
     {
-        public LoginPage(string message)
+        public LoginPage()
         {
             InitializeComponent();
-            this.LabelMessage.Text = message;
         }
 
         private async void ButtonLogin_Clicked(object sender, EventArgs e)
