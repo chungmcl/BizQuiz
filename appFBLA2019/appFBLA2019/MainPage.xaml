@@ -3,27 +3,28 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
             xmlns:local="clr-namespace:appFBLA2019"
             x:Class="appFBLA2019.MainPage"
-            xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
-            android:TabbedPage.ToolbarPlacement="Bottom"
             BarBackgroundColor="#2196F3"
             BarTextColor="White">
+            <!--xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+            android:TabbedPage.ToolbarPlacement="Bottom"
+            BarBackgroundColor="#2196F3"
+            BarTextColor="White"-->
 
-  <ContentPage Title="Profile">
-    <StackLayout>
-        <!-- Place new controls here -->
-        <Label Text="FBLA Mobile App Dev" 
+    <ContentPage Title="Profile">
+        <StackLayout>
+            <Label Text="FBLA Mobile App Dev" 
            HorizontalOptions="Center"
            VerticalOptions="CenterAndExpand" />
-        <Button x:Name="ButtonToLoginPage" Text="Login"
+            <Button x:Name="ButtonToLoginPage" Text="Login"
                 HorizontalOptions="Center"
                 VerticalOptions="CenterAndExpand"
                 Clicked="ButtonToLoginPage_Clicked"
                 />
-    </StackLayout>
-  </ContentPage>
+        </StackLayout>
+    </ContentPage>
 
-  <ContentPage Title="Stuff">
-    
-  </ContentPage>
+    <ContentPage Title="Stuff">
+
+    </ContentPage>
 
 </TabbedPage>
