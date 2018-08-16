@@ -13,13 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="CreateAccountPage.xaml">
+    <EmbeddedResource Update="Login and Profile\CreateAccountPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="EmailConfirmationPage.xaml">
+    <EmbeddedResource Update="Login and Profile\EmailConfirmationPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="LoginPage.xaml">
+    <EmbeddedResource Update="Login and Profile\LoginPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="MainPage.xaml">
