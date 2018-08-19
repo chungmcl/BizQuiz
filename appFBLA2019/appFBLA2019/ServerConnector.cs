@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace appFBLA2019
 {
@@ -12,20 +13,37 @@ namespace appFBLA2019
         private static NetworkStream nwStream;
         private const string serverIP = "50.54.142.236";
         private const int serverPort = 7777;
+        private const int timeoutTimeMilliseconds = 2500;
+        private const double timeoutTimeSeconds = 2.5;
+
         /// <summary>
         /// Sends request to server database to add/create new account
         /// </summary>
         /// <param name="username">Username to be added</param>
         /// <param name="password">Password to be added</param>
-        public static async Task QueryDB(string dbQuery)
+        /// <returns>True if connected and sent, false if could not connect</returns>
+        public static async Task<bool> QueryDB(string dbQuery)
         {
-            tcp = new TcpClient(serverIP, serverPort);
+            tcp = new TcpClient();
+            IAsyncResult result = tcp.BeginConnect(serverIP, serverPort, null, null);
 
-            byte[] sendBuffer = Encoding.ASCII.GetBytes(dbQuery);
+            bool connectionSuccess = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(timeoutTimeSeconds));
 
-            nwStream = tcp.GetStream();
+            if (!connectionSuccess)
+            {
+                return false;
+            }
+            else
+            {
+                byte[] sendBuffer = Encoding.ASCII.GetBytes(dbQuery);
 
-            nwStream.Write(sendBuffer, 0, sendBuffer.Length);
+                nwStream = tcp.GetStream();
+
+                nwStream.WriteTimeout = timeoutTimeMilliseconds;
+                nwStream.Write(sendBuffer, 0, sendBuffer.Length);
+
+                return true;
+            }
         }
 
         /// <summary>
@@ -36,6 +54,7 @@ namespace appFBLA2019
         {
 
             byte[] bytesToRead = new byte[tcp.ReceiveBufferSize];
+            nwStream.ReadTimeout = timeoutTimeMilliseconds;
             int bytesRead = nwStream.Read(bytesToRead, 0, tcp.ReceiveBufferSize);
             string databaseMessage = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
 

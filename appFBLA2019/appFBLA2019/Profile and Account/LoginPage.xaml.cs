@@ -17,25 +17,34 @@ namespace appFBLA2019
         private async void ButtonLogin_Clicked(object sender, EventArgs e)
         {
             string username = this.EntryUsername.Text;
-            await ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
-            string response = await ServerConnector.ReceiveFromDB();
-
-            if (response == "true/-")
+            bool completedRequest = await ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
+            if (completedRequest)
             {
-                this.LabelMessage.Text = "Login Successful!";
-            }
-            else if (response == "true/confirmEmail/-")
-            {
-                this.LabelMessage.Text = "Please confirm your email.";
 
-                var confirmationPage = new EmailConfirmationPage(username);
-                confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
-                await this.Navigation.PushModalAsync(confirmationPage);
+                string response = await ServerConnector.ReceiveFromDB();
+
+                if (response == "true/-")
+                {
+                    this.LabelMessage.Text = "Login Successful!";
+                }
+                else if (response == "true/confirmEmail/-")
+                {
+                    this.LabelMessage.Text = "Please confirm your email.";
+
+                    var confirmationPage = new EmailConfirmationPage(username);
+                    confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
+                    await this.Navigation.PushModalAsync(confirmationPage);
+                }
+                else
+                {
+                    this.LabelMessage.Text = "Login Failed: " + response.Split('/')[1];
+                }
             }
             else
             {
-                this.LabelMessage.Text = "Login Failed: " + response.Split('/')[1];
+                this.LabelMessage.Text = "Connection failed: Please try again.";
             }
+            
         }
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)

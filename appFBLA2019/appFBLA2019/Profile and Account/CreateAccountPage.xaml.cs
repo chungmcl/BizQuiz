@@ -20,23 +20,32 @@ namespace appFBLA2019
             try
             {
                 string username = this.EntryUsername.Text.Trim();
-                await ServerConnector.QueryDB($"createAccount/{username}/{this.EntryPassword.Text.Trim()}" +
+                bool connectionSuccess = await ServerConnector.QueryDB(
+                    $"createAccount/{username}/{this.EntryPassword.Text.Trim()}" +
                     $"/{this.EntryEmail.Text.Trim()}/-");
-                string databaseReturnInfo = await ServerConnector.ReceiveFromDB();
 
-                if (databaseReturnInfo == "true/-")
+                if (connectionSuccess)
                 {
-                    this.LabelMessage.Text = "Account successfully created.";
+                    string databaseReturnInfo = await ServerConnector.ReceiveFromDB();
 
-                    var confirmationPage = new EmailConfirmationPage(username);
-                    confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
-                    confirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;
-                    await this.Navigation.PushModalAsync(confirmationPage);
+                    if (databaseReturnInfo == "true/-")
+                    {
+                        this.LabelMessage.Text = "Account successfully created.";
+
+                        var confirmationPage = new EmailConfirmationPage(username);
+                        confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
+                        confirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;
+                        await this.Navigation.PushModalAsync(confirmationPage);
+                    }
+                    else
+                    {
+                        string errorMessage = (databaseReturnInfo.Split('/'))[1];
+                        this.LabelMessage.Text = $"Account could not be created: {errorMessage}";
+                    }
                 }
                 else
                 {
-                    string errorMessage = (databaseReturnInfo.Split('/'))[1];
-                    this.LabelMessage.Text = $"Account could not be created: {errorMessage}";
+                    this.LabelMessage.Text = "Connection failed: Please try again.";
                 }
             }
             catch (Exception ex)

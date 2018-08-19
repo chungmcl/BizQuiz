@@ -43,17 +43,26 @@ namespace appFBLA2019
             try
             {
                 string userInputToken = this.EntryConfirmationCode.Text.Trim();
-                await ServerConnector.QueryDB($"confirmEmail/{this.username}/{userInputToken}/-");
-                string returnData = await ServerConnector.ReceiveFromDB();
-
-                if (returnData == "true/-")
+                bool connectionSuccess = await ServerConnector.QueryDB(
+                    $"confirmEmail/{this.username}/{userInputToken}/-");
+                
+                if (connectionSuccess)
                 {
-                    OnEmailConfirmed();
-                    await this.Navigation.PopModalAsync(true);
+                    string returnData = await ServerConnector.ReceiveFromDB();
+
+                    if (returnData == "true/-")
+                    {
+                        OnEmailConfirmed();
+                        await this.Navigation.PopModalAsync(true);
+                    }
+                    else
+                    {
+                        this.LabelMessage.Text = "Email could not be confirmed. Please try your code again.";
+                    }
                 }
                 else
                 {
-                    this.LabelMessage.Text = "Email could not be confirmed. Please try your code again.";
+                    this.LabelMessage.Text = "Connection failed: Please try again.";
                 }
             }
             catch
