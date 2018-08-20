@@ -2,6 +2,7 @@
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using System.Threading.Tasks;
 
 namespace appFBLA2019
 {
@@ -20,11 +21,19 @@ namespace appFBLA2019
             try
             {
                 string username = this.EntryUsername.Text.Trim();
-                bool connectionSuccess = await ServerConnector.QueryDB(
+                Task<bool> connectionSuccess = ServerConnector.QueryDB(
                     $"createAccount/{username}/{this.EntryPassword.Text.Trim()}" +
                     $"/{this.EntryEmail.Text.Trim()}/-");
 
-                if (connectionSuccess)
+                DateTime startTime = DateTime.Now;
+                int i = 0;
+                while(!connectionSuccess.IsCompleted)
+                {
+                    //run a loading screen or something
+                    this.LabelMessage.Text = "Connecting to server, please wait" + i;
+                    i++;
+                }
+                if (await connectionSuccess)
                 {
                     string databaseReturnInfo = await ServerConnector.ReceiveFromDB();
 
@@ -47,6 +56,10 @@ namespace appFBLA2019
                 {
                     this.LabelMessage.Text = "Connection failed: Please try again.";
                 }
+            }
+            catch(TimeoutException ex)
+            {
+                //do something to try again
             }
             catch (Exception ex)
             {

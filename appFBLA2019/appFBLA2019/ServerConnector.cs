@@ -11,10 +11,10 @@ namespace appFBLA2019
     {
         private static TcpClient tcp;
         private static NetworkStream nwStream;
-        private const string serverIP = "50.54.142.236";
+        private const string serverIP = "50.54.142.237";
         private const int serverPort = 7777;
-        private const int timeoutTimeMilliseconds = 2500;
-        private const double timeoutTimeSeconds = 2.5;
+        private const int timeoutTimeMilliseconds = 5000;
+        private const double timeoutTimeSeconds = 5;
 
         /// <summary>
         /// Sends request to server database to add/create new account
