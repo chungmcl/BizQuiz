@@ -22,21 +22,20 @@ namespace appFBLA2019
                 this.LabelMessage.Text = "Waiting...";
                 Task<bool> completedRequest = ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
                 //this was just to test if the UI would update while this happens (it doesn't) - but in theory it should
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    int i = 0;
-                    while (!completedRequest.IsCompleted)
-                    {
-                        //run a loading screen or something
+                //Device.BeginInvokeOnMainThread(() =>
+                //{
+                //    int i = 0;
+                //    while (!completedRequest.IsCompleted)
+                //    {
+                //        //run a loading screen or something
 
-                        this.LabelMessage.Text = "Working... " + i;
-                        i++;
-                    }
-                });
+                //        this.LabelMessage.Text = "Working... " + i;
+                //        i++;
+                //    }
+                //});
                
                 if (await completedRequest)
                 {
-
                     string response = await ServerConnector.ReceiveFromDB();
 
                     if (response == "true/-")
@@ -56,14 +55,11 @@ namespace appFBLA2019
                     {
                         this.LabelMessage.Text = "Login Failed: " + response.Split('/')[1];
                     }
-                    this.LabelMessage.Text = "Done!";
                 }
-            else
-            {
-                this.LabelMessage.Text = "Connection failed: Please try again.";
-
-            }
-
+                else
+                {
+                    this.LabelMessage.Text = "Connection failed: Please try again.";
+                }
             });
         }
 
