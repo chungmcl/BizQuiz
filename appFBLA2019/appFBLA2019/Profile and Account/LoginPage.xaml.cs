@@ -14,53 +14,45 @@ namespace appFBLA2019
             InitializeComponent();
         }
 
-        private async void ButtonLogin_Clicked(object sender, EventArgs e)
+        private void ButtonLogin_Clicked(object sender, EventArgs e)
         {
-            Task login = Task.Run(async () =>
+            Task login = Task.Run(() => Login(this.EntryUsername.Text,
+                this.EntryPassword.Text));
+        }
+
+        private async void Login(string username, string password)
+        {
+            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Waiting...");
+            Task<bool> completedRequest = ServerConnector.QueryDB($"loginAccount/{username}/{password}/-");
+            
+            if (await completedRequest)
             {
-                string username = this.EntryUsername.Text;
-                this.LabelMessage.Text = "Waiting...";
-                Task<bool> completedRequest = ServerConnector.QueryDB($"loginAccount/{username}/{this.EntryPassword.Text}/-");
-                //this was just to test if the UI would update while this happens (it doesn't) - but in theory it should
-                //Device.BeginInvokeOnMainThread(() =>
-                //{
-                //    int i = 0;
-                //    while (!completedRequest.IsCompleted)
-                //    {
-                //        //run a loading screen or something
+                string response = await ServerConnector.ReceiveFromDB();
 
-                //        this.LabelMessage.Text = "Working... " + i;
-                //        i++;
-                //    }
-                //});
-               
-                if (await completedRequest)
+                if (response == "true/-")
                 {
-                    string response = await ServerConnector.ReceiveFromDB();
-
-                    if (response == "true/-")
-                    {
-                        this.LabelMessage.Text = "Login Successful!";
-                    }
-                    else if (response == "true/confirmEmail/-")
+                    Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
+                }
+                else if (response == "true/confirmEmail/-")
+                {
+                    Device.BeginInvokeOnMainThread(async() =>
                     {
                         this.LabelMessage.Text = "Please confirm your email.";
-
                         var confirmationPage = new EmailConfirmationPage(username);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
-                        this.LabelMessage.Text = "Done!";
                         await this.Navigation.PushModalAsync(confirmationPage);
-                    }
-                    else
-                    {
-                        this.LabelMessage.Text = "Login Failed: " + response.Split('/')[1];
-                    }
+                    });
                 }
                 else
                 {
-                    this.LabelMessage.Text = "Connection failed: Please try again.";
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = "Login Failed: " + response.Split('/')[1]);
                 }
-            });
+            }
+            else
+            {
+                Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Connection failed: Please try again.");
+            }
         }
 
 

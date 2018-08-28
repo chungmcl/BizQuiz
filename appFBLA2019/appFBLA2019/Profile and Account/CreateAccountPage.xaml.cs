@@ -16,54 +16,46 @@ namespace appFBLA2019
             InitializeComponent();
         }
 
-        private async void ButtonCreateAccount_Clicked(object sender, EventArgs e)
+        private void ButtonCreateAccount_Clicked(object sender, EventArgs e)
         {
-            try
+            Task createAccount = Task.Run(() => CreateAccount(
+                this.EntryUsername.Text.Trim(),
+                this.EntryPassword.Text.Trim(),
+                this.EntryEmail.Text.Trim()));
+        }
+
+        private async Task CreateAccount(string username, string password, string email)
+        {
+            Task<bool> completedRequest = ServerConnector.QueryDB(
+                $"createAccount/{username}/{password}" +
+                $"/{email}/-");
+
+            if (await completedRequest)
             {
-                string username = this.EntryUsername.Text.Trim();
-                Task<bool> connectionSuccess = ServerConnector.QueryDB(
-                    $"createAccount/{username}/{this.EntryPassword.Text.Trim()}" +
-                    $"/{this.EntryEmail.Text.Trim()}/-");
+                string databaseReturnInfo = await ServerConnector.ReceiveFromDB();
 
-                DateTime startTime = DateTime.Now;
-                int i = 0;
-                while(!connectionSuccess.IsCompleted)
+                if (databaseReturnInfo == "true/-")
                 {
-                    //run a loading screen or something
-                    this.LabelMessage.Text = "Connecting to server, please wait" + i;
-                    i++;
-                }
-                if (await connectionSuccess)
-                {
-                    string databaseReturnInfo = await ServerConnector.ReceiveFromDB();
-
-                    if (databaseReturnInfo == "true/-")
+                    Device.BeginInvokeOnMainThread(async () =>
                     {
                         this.LabelMessage.Text = "Account successfully created.";
-
                         var confirmationPage = new EmailConfirmationPage(username);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         confirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;
                         await this.Navigation.PushModalAsync(confirmationPage);
-                    }
-                    else
-                    {
-                        string errorMessage = (databaseReturnInfo.Split('/'))[1];
-                        this.LabelMessage.Text = $"Account could not be created: {errorMessage}";
-                    }
+                    });
                 }
                 else
                 {
-                    this.LabelMessage.Text = "Connection failed: Please try again.";
+                    string errorMessage = (databaseReturnInfo.Split('/'))[1];
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = $"Account could not be created: {errorMessage}");
                 }
             }
-            catch(TimeoutException ex)
+            else
             {
-                //do something to try again
-            }
-            catch (Exception ex)
-            {
-                this.LabelMessage.Text = "Connection Error Occured: Please Try Again." + ex.Message;
+                Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = "Connection failed: Please try again.");
             }
         }
 
