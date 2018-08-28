@@ -36,7 +36,7 @@ namespace appFBLA2019
 
                 if (databaseReturnInfo == "true/-")
                 {
-                    Device.BeginInvokeOnMainThread(async() =>
+                    Device.BeginInvokeOnMainThread(async () =>
                     {
                         this.LabelMessage.Text = "Account successfully created.";
                         var confirmationPage = new EmailConfirmationPage(username);
