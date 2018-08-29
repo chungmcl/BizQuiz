@@ -40,7 +40,9 @@
                     />
             <Label x:Name="LabelMessage" Text=""
                    HorizontalOptions="Center"/>
-
+            
+            <ActivityIndicator x:Name="ActivityIndicator"
+                               HorizontalOptions="CenterAndExpand"/>
 
         </StackLayout>
     </ContentPage.Content>

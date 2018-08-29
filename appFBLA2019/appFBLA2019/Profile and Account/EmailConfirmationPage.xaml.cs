@@ -21,7 +21,7 @@ namespace appFBLA2019
             InitializeComponent();
             this.username = username;
             this.LabelTitle.Text = "Loading...";
-            GetEmail();
+            Task getEmail = Task.Run(() => GetEmail());
         }
 
         private async Task GetEmail()
@@ -30,60 +30,85 @@ namespace appFBLA2019
             {
                 await ServerConnector.QueryDB($"getEmail/{this.username}/-");
                 this.email = await ServerConnector.ReceiveFromDB();
-                this.LabelTitle.Text = $"Enter the confirmation code sent to {this.email.Split('/')[1]}";
+
+                Device.BeginInvokeOnMainThread(() =>
+                this.LabelTitle.Text =
+                $"Enter the confirmation code sent to {this.email.Split('/')[1]}");
             }
             catch
             {
-                this.LabelMessage.Text = "Connection Error: Please Try Again.";
+                Device.BeginInvokeOnMainThread(() =>
+                this.LabelMessage.Text = "Connection Error: Please Try Again.");
             }
         }
 
-        private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
+        private void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
         {
-            try
-            {
-                string userInputToken = this.EntryConfirmationCode.Text.Trim();
-                bool connectionSuccess = await ServerConnector.QueryDB(
-                    $"confirmEmail/{this.username}/{userInputToken}/-");
-                
-                if (connectionSuccess)
-                {
-                    string returnData = await ServerConnector.ReceiveFromDB();
+            Task confirmEmail = Task.Run(() => ConfirmEmail(
+                this.EntryConfirmationCode.Text,
+                this.username));
+        }
 
-                    if (returnData == "true/-")
+        private async Task ConfirmEmail(string confirmationCode, string username)
+        {
+            Task<bool> completedRequest = ServerConnector.QueryDB(
+                    $"confirmEmail/{username}/{confirmationCode}/-");
+
+            string message = "";
+            if (await completedRequest)
+            {
+                string returnData = await ServerConnector.ReceiveFromDB();
+
+                if (returnData == "true/-")
+                {
+                    Device.BeginInvokeOnMainThread(async () =>
                     {
                         OnEmailConfirmed();
                         await this.Navigation.PopModalAsync(true);
-                    }
-                    else
-                    {
-                        this.LabelMessage.Text = "Email could not be confirmed. Please try your code again.";
-                    }
+                    });
                 }
                 else
                 {
-                    this.LabelMessage.Text = "Connection failed: Please try again.";
+                    message = "Email could not be confirmed. Please try your code again.";
                 }
-            }
-            catch
-            {
-                this.LabelMessage.Text = "Connection Error: Please try again.";
-            }
-        }
-
-        private async void ButtonFixEmail_Clicked(object sender, EventArgs e)
-        {
-            string newEmail = this.EntryChangeEmail.Text;
-            await ServerConnector.QueryDB($"changeEmail/{this.username}/{newEmail}/-");
-            string result = await ServerConnector.ReceiveFromDB();
-
-            if (result == "true/-")
-            {
-                this.LabelMessage.Text = $"Enter the confirmation code sent to {newEmail}";
             }
             else
             {
-                this.LabelMessage.Text = $"Email could not be changed: {result.Split('/')[1]}";
+                message = "Connection failed: Please try again.";
+            }
+
+            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = message);
+        }
+
+        private void ButtonFixEmail_Clicked(object sender, EventArgs e)
+        {
+            Task changeEmail = Task.Run(() => ChangeEmail(
+                this.EntryChangeEmail.Text,
+                this.username));
+        }
+
+        private async Task ChangeEmail(string newEmail, string username)
+        {
+            Task<bool> completedRequest = ServerConnector.QueryDB($"changeEmail/{username}/{newEmail}/-");
+
+            if (await completedRequest)
+            {
+                string result = await ServerConnector.ReceiveFromDB();
+                if (result == "true/-")
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = $"Enter the confirmation code sent to {newEmail}");
+                }
+                else
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = $"Email could not be changed: {result.Split('/')[1]}");
+                }
+            }
+            else
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = $"Connection failed: Please try again.");
             }
         }
 

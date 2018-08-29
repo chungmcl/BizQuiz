@@ -18,10 +18,23 @@ namespace appFBLA2019
 
         private void ButtonCreateAccount_Clicked(object sender, EventArgs e)
         {
-            Task createAccount = Task.Run(() => CreateAccount(
-                this.EntryUsername.Text.Trim(),
-                this.EntryPassword.Text.Trim(),
-                this.EntryEmail.Text.Trim()));
+            try
+            {
+                string username = this.EntryUsername.Text.Trim();
+                string password = this.EntryPassword.Text.Trim();
+                string email = this.EntryEmail.Text.Trim();
+                
+                this.ActivityIndicator.IsRunning = true;
+
+                Task createAccount = Task.Run(() => CreateAccount(
+                    this.EntryUsername.Text.Trim(),
+                    this.EntryPassword.Text.Trim(),
+                    this.EntryEmail.Text.Trim()));
+            }
+            catch (NullReferenceException)
+            {
+                this.LabelMessage.Text = "Please fill out all required fields.";
+            }
         }
 
         private async Task CreateAccount(string username, string password, string email)
@@ -56,7 +69,12 @@ namespace appFBLA2019
                 message = "Connection failed: Please try again.";
             }
 
-            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = message);
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ActivityIndicator.IsRunning = false;
+                this.LabelMessage.Text = message;
+            });
+
         }
 
         private async void OnEmailConfirmed(object source, EventArgs eventArgs)
@@ -86,6 +104,5 @@ namespace appFBLA2019
             public bool EmailConfirmed { get; set; }
             public string Username { get; set; }
         }
-
     }
 }

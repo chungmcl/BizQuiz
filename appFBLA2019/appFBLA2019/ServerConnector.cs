@@ -52,7 +52,6 @@ namespace appFBLA2019
         /// <returns>The data/message from the server</returns>
         public async static Task<string> ReceiveFromDB()
         {
-
             byte[] bytesToRead = new byte[tcp.ReceiveBufferSize];
             nwStream.ReadTimeout = timeoutTimeMilliseconds;
             int bytesRead = nwStream.Read(bytesToRead, 0, tcp.ReceiveBufferSize);
