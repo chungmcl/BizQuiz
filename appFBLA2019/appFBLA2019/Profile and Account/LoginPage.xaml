@@ -44,6 +44,9 @@
 
                 <Label x:Name="LabelMessage" Text="" Font="Bold"
                        HorizontalOptions="Center"/>
+                
+                <ActivityIndicator x:Name="ActivityIndicator"
+                               HorizontalOptions="CenterAndExpand"/>
             </StackLayout>
 
         </StackLayout>

@@ -18,26 +18,27 @@ namespace appFBLA2019
         {
             Task login = Task.Run(() => Login(this.EntryUsername.Text,
                 this.EntryPassword.Text));
+
+            this.ActivityIndicator.IsRunning = true;
         }
 
         private async void Login(string username, string password)
         {
-            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Waiting...");
             Task<bool> completedRequest = ServerConnector.QueryDB($"loginAccount/{username}/{password}/-");
-            
+
+            string message = "";
             if (await completedRequest)
             {
                 string response = await ServerConnector.ReceiveFromDB();
 
                 if (response == "true/-")
                 {
-                    Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
+                    message = "Login Successful!";
                 }
                 else if (response == "true/confirmEmail/-")
                 {
                     Device.BeginInvokeOnMainThread(async() =>
                     {
-                        this.LabelMessage.Text = "Please confirm your email.";
                         var confirmationPage = new EmailConfirmationPage(username);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         await this.Navigation.PushModalAsync(confirmationPage);
@@ -45,19 +46,25 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Login Failed: " + response.Split('/')[1]);
+                    message = "Login Failed: " + response.Split('/')[1];
                 }
             }
             else
             {
-                Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Connection failed: Please try again.");
+                message = "Connection failed: Please try again.";
             }
-        }
 
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ActivityIndicator.IsRunning = false;
+                this.LabelMessage.Text = message;
+            });
+        }
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)
         {
+            this.LabelMessage.Text = "";
+
             var createAccountPage = new CreateAccountPage();
             createAccountPage.AccountCreated += this.OnAccountCreated;
             await this.Navigation.PushAsync(createAccountPage);

@@ -30,6 +30,7 @@ namespace appFBLA2019
                 $"createAccount/{username}/{password}" +
                 $"/{email}/-");
 
+            string message = "";
             if (await completedRequest)
             {
                 string databaseReturnInfo = await ServerConnector.ReceiveFromDB();
@@ -38,7 +39,6 @@ namespace appFBLA2019
                 {
                     Device.BeginInvokeOnMainThread(async () =>
                     {
-                        this.LabelMessage.Text = "Account successfully created.";
                         var confirmationPage = new EmailConfirmationPage(username);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         confirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;
@@ -48,15 +48,15 @@ namespace appFBLA2019
                 else
                 {
                     string errorMessage = (databaseReturnInfo.Split('/'))[1];
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Account could not be created: {errorMessage}");
+                    message = $"Account could not be created: {errorMessage}";
                 }
             }
             else
             {
-                Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Connection failed: Please try again.");
+                message = "Connection failed: Please try again.";
             }
+
+            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = message);
         }
 
         private async void OnEmailConfirmed(object source, EventArgs eventArgs)
