@@ -91,25 +91,25 @@ namespace appFBLA2019
         {
             Task<bool> completedRequest = ServerConnector.QueryDB($"changeEmail/{username}/{newEmail}/-");
 
+            string message = "";
             if (await completedRequest)
             {
                 string result = await ServerConnector.ReceiveFromDB();
                 if (result == "true/-")
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Enter the confirmation code sent to {newEmail}");
+                    message = $"Enter the confirmation code sent to {newEmail}";
                 }
                 else
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Email could not be changed: {result.Split('/')[1]}");
+                    message = $"Email could not be changed: {result.Split('/')[1]}";
                 }
             }
             else
             {
-                Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Connection failed: Please try again.");
+                message = $"Connection failed: Please try again.";
             }
+
+            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = message);
         }
 
         private async void ButtonClose_Clicked(object sender, EventArgs e)
