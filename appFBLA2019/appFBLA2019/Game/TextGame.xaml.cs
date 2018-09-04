@@ -10,16 +10,11 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class TopicPage : ContentPage
+	public partial class TextGame : ContentPage
 	{
-		public TopicPage ()
+		public TextGame ()
 		{
 			InitializeComponent ();
 		}
-
-        private void History_Clicked(object sender, EventArgs e)
-        {
-            this.Navigation.PushAsync(new TextGame());
-        }
-    }
+	}
 }

@@ -6,6 +6,7 @@
     x:Class="appFBLA2019.MainPage"
     BarBackgroundColor="#2196F3"
     BarTextColor="White"
+    
     Title="FBLA App 2019">
     
     <local:LevelsPage Title="Standard Levels"/>

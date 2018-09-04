@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.TextGame"
+             xmlns:local="clr-namespace:appFBLA2019">
+    <StackLayout>
+        <ProgressBar VerticalOptions="Start"/>
+        <Label x:Name="Question" VerticalOptions="FillAndExpand"/>
+        <Grid HeightRequest="320" VerticalOptions="End">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="OptionA" Grid.Column="0" Grid.Row="0"/>
+            <Button x:Name="OptionB" Grid.Column="1" Grid.Row="0"/>
+            <Button x:Name="OptionC" Grid.Column="0" Grid.Row="1"/>
+            <Button x:Name="OptionD" Grid.Column="1" Grid.Row="1"/>
+        </Grid>
+    </StackLayout>
+</ContentPage>

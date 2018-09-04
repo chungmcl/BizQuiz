@@ -6,4 +6,5 @@
     <local:TopicPage Title="FBLA"/>
     <local:TopicPage Title="Technology"/>
     <local:TopicPage Title="Accounting"/>
+    <local:TextGame Title="Game"/>
 </TabbedPage>
