@@ -7,7 +7,7 @@ namespace appFBLA2019
     /// <summary>
     /// The question object holds both the question text and answers for a particular question to ask the user.
     /// </summary>
-    class Question
+    public class Question
     {
         public readonly string QuestionText;
         public readonly string[] answers;

@@ -12,9 +12,28 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class TextGame : ContentPage
 	{
-		public TextGame ()
+        private Topic topic;
+		public TextGame (Topic topic)
 		{
 			InitializeComponent ();
 		}
+
+        private void RunGame()
+        {
+            while (topic.availableQuestions.Count > 0) //questions remain
+            {
+
+            }
+        }
+
+        private void FinishGame()
+        {
+            //save progress
+        }
+
+        private void AskQuestion()
+        {
+
+        }
 	}
 }
