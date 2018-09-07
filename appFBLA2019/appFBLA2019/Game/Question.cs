@@ -36,5 +36,10 @@ namespace appFBLA2019
                 this.answers[answersProcessed] = answer.Split('/')[1];
             }
         }
+
+        public Question() : this ("This question is empty!")
+        {
+
+        }
     }
 }

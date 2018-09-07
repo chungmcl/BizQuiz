@@ -14,12 +14,19 @@ namespace appFBLA2019_Tests
 
             Assert.IsTrue(topic.title == "TestTopic - Technology");
 
-            topic.Set();
-            Assert.IsTrue(topic.GetQuestion().GetType() == typeof(Question));
-            topic.Set();
-            Assert.IsTrue(topic.GetQuestion().QuestionText == "What is a phone?");
-            topic.Set();
-            Assert.IsTrue(topic.GetQuestion().correctAnswer == "A tool");
+            appFBLA2019.Question question = topic.GetQuestion();
+            Assert.IsTrue(question.GetType() == typeof(Question));
+            Assert.IsTrue(question.QuestionText == "What is a phone?");
+            Assert.IsTrue(question.correctAnswer == "A tool");
+        }
+
+        [TestMethod]
+        public void EmptyQuestion()
+        {
+            appFBLA2019.Question question = new appFBLA2019.Question();
+
+            Assert.IsTrue(question.QuestionText == "This question is empty!");
+            Assert.IsTrue(question.correctAnswer == null);
         }
     }
 }
