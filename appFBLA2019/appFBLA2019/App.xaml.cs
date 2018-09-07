@@ -27,5 +27,5 @@ namespace appFBLA2019
 		{
 			// Handle when your app resumes
 		}
-	}
+    }
 }
