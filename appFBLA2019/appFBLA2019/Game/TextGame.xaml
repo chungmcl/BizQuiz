@@ -6,7 +6,7 @@
     <StackLayout>
         <ProgressBar VerticalOptions="Start"/>
         <Label x:Name="Question" VerticalOptions="FillAndExpand"/>
-        <Grid HeightRequest="320" VerticalOptions="End">
+        <Grid HeightRequest="320" VerticalOptions="End" x:Name="ButtonGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
