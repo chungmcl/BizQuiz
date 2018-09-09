@@ -16,13 +16,17 @@ namespace appFBLA2019
 		public TextGame (Topic topic)
 		{
 			InitializeComponent ();
+            this.topic = topic;
+            Task.Run(() => RunGame());
 		}
 
         private void RunGame()
         {
-            while (topic.freshQuestions.Count > 0) //questions remain
+            while (topic.freshQuestions.Count > 0 || topic.failedQuestions.Count > 0) //questions remain
             {
+                Question question = topic.GetQuestion();
 
+                Task getAnswer = Task.Run(() => GetAnswer(question));
             }
         }
 
@@ -34,6 +38,22 @@ namespace appFBLA2019
         private void AskQuestion()
         {
 
+        }
+
+        //display the question and async wait for a reply
+        private async Task<bool> GetAnswer(Question question)
+        {
+            this.Question.Text = question.QuestionText;
+            foreach (Button button in ButtonGrid.Children)
+            {
+                button.IsEnabled = false;
+            }
+            for (int i = 0; i < question.answers.Count(); i++)
+            {
+                ButtonGrid.Children[i].IsEnabled = true;
+                ((Button)ButtonGrid.Children[i]).Text = question.answers[i];
+            }
+            return true;
         }
 	}
 }

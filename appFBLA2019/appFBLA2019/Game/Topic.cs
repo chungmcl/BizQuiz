@@ -15,9 +15,10 @@ namespace appFBLA2019
         internal string title { get; private set; }
         public Topic(string path)
         {
+            //this is gonna turn into SQL at some point
             try
-            {   
-                using (StreamReader reader = new StreamReader(path))
+            {
+                using (StreamReader reader = new StreamReader(Path.GetFullPath(path)))
                 {
                     title = reader.ReadLine();
                     List<Question> currentSet = new List<Question>();
@@ -55,7 +56,7 @@ namespace appFBLA2019
                         { //do nothing, just finish the question with what we have here}
 
                         }
-                        currentSet.Add(new Question(question, answers.ToArray()));
+                        currentSet.Insert(new Random().Next(currentSet.Count - 1), new Question(question, answers.ToArray()));
                     }
                 }
             }
@@ -73,10 +74,34 @@ namespace appFBLA2019
         public Question GetQuestion()
         {
             System.Random rand = new Random();
-            int questionIndex = rand.Next(freshQuestions.Count);
-            Question returnQuestion = freshQuestions[questionIndex];
-            freshQuestions.RemoveAt(questionIndex);
-            return returnQuestion;
+
+            int questionIndex;
+            Question returnQuestion = new Question();
+            switch (rand.Next(1))
+            {
+                case 0:
+                    questionIndex = rand.Next(this.freshQuestions.Count);
+                    returnQuestion = this.freshQuestions[questionIndex];
+                    this.freshQuestions.RemoveAt(questionIndex);
+                    return returnQuestion;
+                case 1:
+                    questionIndex = rand.Next(this.failedQuestions.Count);
+                    returnQuestion = this.failedQuestions[questionIndex];
+                    this.failedQuestions.RemoveAt(questionIndex);
+                    return returnQuestion;
+                default:
+                    return new Question();
+            }
+
+            
+        }
+
+        public void UpdateQuestionInfo(Question question, bool answeredCorrectly)
+        {
+            if (answeredCorrectly)
+                correctQuestions.Add(question);
+            else
+                failedQuestions.Add(question);
         }
     }
 }
