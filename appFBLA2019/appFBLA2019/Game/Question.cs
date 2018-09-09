@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,20 +10,19 @@ namespace appFBLA2019
     /// </summary>
     public class Question : IComparable
     {
-        //declare enum (to use this type other places, say Question.QuestionStatus
-        public enum QuestionStatus { Unanswered, Failed, Correct}
+        //declare enum (to use this type other places, say Question.QuestionStatus)
+        //public enum QuestionStatus { Unanswered, Failed, Correct }
+        public int Status { get; set; }
 
-        public QuestionStatus Status { get { return (QuestionStatus)this.status; } set { this.status = (int)value; } }
-        private int status;
         public readonly string QuestionText;
-        public string CorrectAnswer { get { return correctAnswer; } private set { this.correctAnswer = value; } }
-        private string correctAnswer;
+        public string CorrectAnswer { get; private set; }
 
+        [Ignore]
         public string[] Answers
         {
             //turns the 4 answers into an easy to use array
             get
-            { return new string[] { answerOne, answerTwo, answerThree, answerFour }; }
+            { return new string[] { AnswerOne, AnswerTwo, AnswerThree, AnswerFour }; }
             //takes an array, makes sure it can be used in our answers, and assigns it to the answers
             private set
             {
@@ -33,23 +33,24 @@ namespace appFBLA2019
                 value.CopyTo(temp, 0);
 
                 //makes sure there's actually a value to assign, otherwise makes it empty
-                this.answerOne = temp[0]?.Split('/')[1] ?? "";
-                this.answerTwo = temp[1]?.Split('/')[1] ?? "";
-                this.answerThree = temp[2]?.Split('/')[1] ?? "";
-                this.answerFour = temp[3]?.Split('/')[1] ?? "";
+                this.AnswerOne = temp[0]?.Split('/')[1] ?? "";
+                this.AnswerTwo = temp[1]?.Split('/')[1] ?? "";
+                this.AnswerThree = temp[2]?.Split('/')[1] ?? "";
+                this.AnswerFour = temp[3]?.Split('/')[1] ?? "";
 
                 //once the answers are assigned, find the correct one and assign it to CorrectAnswer
                 foreach (string answer in temp)
                 {
                     if (answer != null && answer[0] == 'c')
-                        this.correctAnswer = answer.Split('/')[1];
+                        this.CorrectAnswer = answer.Split('/')[1];
                 }
             }
         }
-        private string answerOne;
-        private string answerTwo;
-        private string answerThree;
-        private string answerFour;
+
+        public string AnswerOne { get; private set; }
+        public string AnswerTwo { get; private set; }
+        public string AnswerThree { get; private set; }
+        public string AnswerFour { get; private set; }
 
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace appFBLA2019
             this.QuestionText = text;
             //tries to assign the params to the local Answers property which in turn assigns the fields
             //if answers is null, throws an exception
-            this.status = 0;
+            this.Status = 0;
             this.Answers = answers ?? throw new ArgumentException("Must have at least one answer!");
         }
 
@@ -77,7 +78,7 @@ namespace appFBLA2019
         //used to sort questions by status
         public int CompareTo(object obj)
         {
-            return Math.Sign(((int)obj).CompareTo(this.status));
+            return Math.Sign(((int)obj).CompareTo(this.Status));
         }
     }
 }

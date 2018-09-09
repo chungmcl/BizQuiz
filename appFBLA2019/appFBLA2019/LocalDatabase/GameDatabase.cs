@@ -9,8 +9,8 @@ namespace appFBLA2019
     public class GameDatabase
     {
         private readonly SQLiteAsyncConnection database;
-        private readonly string fileName;
-
+        public readonly string fileName;
+        
         public GameDatabase(string dbPath, string fileName)
         {
             this.database = new SQLiteAsyncConnection(dbPath);
@@ -19,25 +19,15 @@ namespace appFBLA2019
             this.database.CreateTableAsync<Question>().Wait();
         }
 
-        //this whole setup may be unecessary now that each question knows if its been answered or not
-        public Task<List<Question>> GetUnansweredQuestions()
+        public Task<List<Question>> GetQuestions()
         {
-            
+            return this.database.QueryAsync<Question>("SELECT * FROM Question");
         }
 
-        public Task<List<Question>> GetAnsweredQuestions()
+        public void UpdateQuestions(List<Question> questions)
         {
-
-        }
-
-        public void SetUnansweredQuestions(List<Question> unansweredQuestions)
-        {
-
-        }
-
-        public void SetAnsweredQuestions(List<Question> answeredQuestions)
-        {
-
+            this.database.ExecuteAsync("DELETE * FROM Question");
+            this.database.InsertAllAsync(questions);
         }
     }
 }

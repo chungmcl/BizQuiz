@@ -10,7 +10,7 @@ namespace appFBLA2019
     {
         List<Question> questions;
         //if the first question has already been got, then we have 100% completion
-        public bool QuestionsAvailable { get { this.questions.Sort(); return this.questions[0].Status != Question.QuestionStatus.Correct; } }
+        public bool QuestionsAvailable { get { this.questions.Sort(); return this.questions[0].Status != 2; } }
         internal string title { get; private set; }
     //leave this here, it can be the filebased constructor
         public Topic(string path)
