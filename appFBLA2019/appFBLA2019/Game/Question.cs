@@ -10,7 +10,10 @@ namespace appFBLA2019
     public class Question
     {
         public readonly string QuestionText;
-        public readonly string[] answers;
+        public readonly string answerOne;
+        public readonly string answerTwo;
+        public readonly string answerThree;
+        public readonly string answerFour;
         public readonly string correctAnswer;
 
         /// <summary>
@@ -21,23 +24,16 @@ namespace appFBLA2019
         /// The potential answers to the question. The correct answer will be prefixed with "correct/".
         /// The rest will be prefixed with "wrong/".
         /// </param>
-        public Question(string text, params string[] answersIn)
+        public Question(string text, string[] answers, int correctAnswer)
         {
-            this.QuestionText = text;
-            this.answers = new string[answersIn.Length];
-
-            for (int answersProcessed = 0; answersProcessed < answersIn.Length; answersProcessed++)
-            {
-                string answer = answersIn[answersProcessed];
-                if (answer.Split('/')[0] == "c")
-                {
-                    this.correctAnswer = answer.Split('/')[1];
-                }
-                this.answers[answersProcessed] = answer.Split('/')[1];
-            }
+            this.answerOne = answers[0];
+            this.answerTwo = answers[1];
+            this.answerThree = answers[2];
+            this.answerFour = answers[3];
+            this.correctAnswer = answers[correctAnswer];
         }
 
-        public Question() : this ("This question is empty!")
+        public Question() /*: this ("This question is empty!")*/
         {
 
         }
