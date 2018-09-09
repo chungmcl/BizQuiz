@@ -12,71 +12,79 @@ namespace appFBLA2019
         //if the first question has already been got, then we have 100% completion
         public bool QuestionsAvailable { get { this.questions.Sort(); return this.questions[0].Status != 2; } }
         internal string title { get; private set; }
-    //leave this here, it can be the filebased constructor
-        public Topic(string path)
-        {
-            List<Question> freshQuestions = new List<Question>();
-            List<Question> correctQuestions = new List<Question>();
-            List<Question> failedQuestions = new List<Question>();
-            try
-            {
-                using (StreamReader reader = new StreamReader(Path.GetFullPath(path)))
-                {
-                    title = reader.ReadLine();
-                    List<Question> currentSet = new List<Question>();
-                    currentSet = freshQuestions;
-                    while (!reader.EndOfStream)
-                    {
-                        switch (reader.Peek())
-                        {
-                            case '#':
-                                currentSet = freshQuestions;
-                                reader.ReadLine();
-                                break;
-                            case '!':
-                                currentSet = failedQuestions;
-                                reader.ReadLine();
-                                break;
-                            case '$':
-                                currentSet = correctQuestions;
-                                reader.ReadLine();
-                                break;
-                            default:
-                                break;
-                        }
-                        List<string> answers = new List<string>();
-                        string question = "Something went wrong!";
-                        try
-                        {
-                            question = reader.ReadLine();
-                            while (reader.Peek() == '*')
-                            {
-                                answers.Add(reader.ReadLine().Substring(1));
-                            }
-                        }
-                        catch (NullReferenceException)
-                        { //do nothing, just finish the question with what we have here}
+        //leave this here, it can be the filebased constructor
+        #region Text File Constructor
+        //public Topic(string path)
+        //{
+        //    List<Question> freshQuestions = new List<Question>();
+        //    List<Question> correctQuestions = new List<Question>();
+        //    List<Question> failedQuestions = new List<Question>();
+        //    try
+        //    {
+        //        using (StreamReader reader = new StreamReader(Path.GetFullPath(path)))
+        //        {
+        //            title = reader.ReadLine();
+        //            List<Question> currentSet = new List<Question>();
+        //            currentSet = freshQuestions;
+        //            while (!reader.EndOfStream)
+        //            {
+        //                switch (reader.Peek())
+        //                {
+        //                    case '#':
+        //                        currentSet = freshQuestions;
+        //                        reader.ReadLine();
+        //                        break;
+        //                    case '!':
+        //                        currentSet = failedQuestions;
+        //                        reader.ReadLine();
+        //                        break;
+        //                    case '$':
+        //                        currentSet = correctQuestions;
+        //                        reader.ReadLine();
+        //                        break;
+        //                    default:
+        //                        break;
+        //                }
+        //                List<string> answers = new List<string>();
+        //                string question = "Something went wrong!";
+        //                try
+        //                {
+        //                    question = reader.ReadLine();
+        //                    while (reader.Peek() == '*')
+        //                    {
+        //                        answers.Add(reader.ReadLine().Substring(1));
+        //                    }
+        //                }
+        //                catch (NullReferenceException)
+        //                { //do nothing, just finish the question with what we have here}
 
-                        }
-                        currentSet.Insert(new Random().Next(currentSet.Count), new Question(question, answers.ToArray()));
-                    }
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                //fix it
-            }
+        //                }
+        //                currentSet.Insert(new Random().Next(currentSet.Count), new Question(question, answers.ToArray()));
+        //            }
+        //        }
+        //    }
+        //    catch (FileNotFoundException)
+        //    {
+        //        //fix it
+        //    }
 
-            this.questions.AddRange(freshQuestions);
-            this.questions.AddRange(failedQuestions);
-            this.questions.AddRange(correctQuestions);
-            this.questions.Sort();
-        }
+        //    this.questions.AddRange(freshQuestions);
+        //    this.questions.AddRange(failedQuestions);
+        //    this.questions.AddRange(correctQuestions);
+        //    this.questions.Sort();
+        //}
+        #endregion
 
         //this one will be used in the app for database stuff
-        public Topic(/* idk whatever SQL data we need*/)
+        public Topic(string fileName)
         {
+            DBHandler.SelectDatabase(fileName);
+            LoadQuestions();
+        }
 
+        private async void LoadQuestions()
+        {
+            this.questions = await DBHandler.Database.GetQuestions();
         }
 
         public void SaveState()
