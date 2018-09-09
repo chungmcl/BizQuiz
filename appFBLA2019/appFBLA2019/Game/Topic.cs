@@ -8,14 +8,16 @@ namespace appFBLA2019
 {
     public class Topic
     {
-        internal List<Question> freshQuestions = new List<Question>();
-        internal List<Question> correctQuestions = new List<Question>();
-        internal List<Question> failedQuestions = new List<Question>();
-
+        List<Question> questions;
+        //if the first question has already been got, then we have 100% completion
+        public bool QuestionsAvailable { get { this.questions.Sort(); return this.questions[0].Status != Question.QuestionStatus.Correct; } }
         internal string title { get; private set; }
     //leave this here, it can be the filebased constructor
         public Topic(string path)
         {
+            List<Question> freshQuestions = new List<Question>();
+            List<Question> correctQuestions = new List<Question>();
+            List<Question> failedQuestions = new List<Question>();
             try
             {
                 using (StreamReader reader = new StreamReader(Path.GetFullPath(path)))
@@ -64,6 +66,11 @@ namespace appFBLA2019
             {
                 //fix it
             }
+
+            this.questions.AddRange(freshQuestions);
+            this.questions.AddRange(failedQuestions);
+            this.questions.AddRange(correctQuestions);
+            this.questions.Sort();
         }
 
         //this one will be used in the app for database stuff
@@ -78,35 +85,7 @@ namespace appFBLA2019
         }
         public Question GetQuestion()
         {
-            System.Random rand = new Random();
-
-            int questionIndex;
-            Question returnQuestion = new Question();
-            switch (rand.Next(1))
-            {
-                case 0:
-                    questionIndex = rand.Next(this.freshQuestions.Count);
-                    returnQuestion = this.freshQuestions[questionIndex];
-                    this.freshQuestions.RemoveAt(questionIndex);
-                    return returnQuestion;
-                case 1:
-                    questionIndex = rand.Next(this.failedQuestions.Count);
-                    returnQuestion = this.failedQuestions[questionIndex];
-                    this.failedQuestions.RemoveAt(questionIndex);
-                    return returnQuestion;
-                default:
-                    return new Question();
-            }
-
-            
-        }
-
-        public void UpdateQuestionInfo(Question question, bool answeredCorrectly)
-        {
-            if (answeredCorrectly)
-                correctQuestions.Add(question);
-            else
-                failedQuestions.Add(question);
+            return this.questions[0];
         }
     }
 }

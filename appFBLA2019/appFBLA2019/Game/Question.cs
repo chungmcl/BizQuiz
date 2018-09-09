@@ -7,8 +7,13 @@ namespace appFBLA2019
     /// <summary>
     /// The question object holds both the question text and answers for a particular question to ask the user.
     /// </summary>
-    public class Question
+    public class Question : IComparable
     {
+        //declare enum (to use this type other places, say Question.QuestionStatus
+        public enum QuestionStatus { Unanswered, Failed, Correct}
+
+        public QuestionStatus Status { get { return (QuestionStatus)this.status; } set { this.status = (int)value; } }
+        private int status;
         public readonly string QuestionText;
         public string CorrectAnswer { get { return correctAnswer; } private set { this.correctAnswer = value; } }
         private string correctAnswer;
@@ -60,12 +65,19 @@ namespace appFBLA2019
             this.QuestionText = text;
             //tries to assign the params to the local Answers property which in turn assigns the fields
             //if answers is null, throws an exception
+            this.status = 0;
             this.Answers = answers ?? throw new ArgumentException("Must have at least one answer!");
         }
 
         public Question() : this ("This question is empty!", new string[0])
         {
 
+        }
+
+        //used to sort questions by status
+        public int CompareTo(object obj)
+        {
+            return Math.Sign(((int)obj).CompareTo(this.status));
         }
     }
 }

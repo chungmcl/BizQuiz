@@ -19,9 +19,10 @@ namespace appFBLA2019
             this.database.CreateTableAsync<Question>().Wait();
         }
 
+        //this whole setup may be unecessary now that each question knows if its been answered or not
         public Task<List<Question>> GetUnansweredQuestions()
         {
-
+            
         }
 
         public Task<List<Question>> GetAnsweredQuestions()

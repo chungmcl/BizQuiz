@@ -22,7 +22,7 @@ namespace appFBLA2019
 
         private void RunGame()
         {
-            while (topic.freshQuestions.Count > 0 || topic.failedQuestions.Count > 0) //questions remain
+            while (topic.QuestionsAvailable) //questions remain
             {
                 Question question = topic.GetQuestion();
 
