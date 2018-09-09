@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace appFBLA2019
 {
     public class GameDatabase
     {
-        public readonly SQLiteAsyncConnection database;
-        public readonly string fileName;
+        private readonly SQLiteAsyncConnection database;
+        private readonly string fileName;
 
         public GameDatabase(string dbPath, string fileName)
         {
@@ -16,6 +17,26 @@ namespace appFBLA2019
             this.fileName = fileName;
 
             this.database.CreateTableAsync<Question>().Wait();
+        }
+
+        public Task<List<Question>> GetUnansweredQuestions()
+        {
+
+        }
+
+        public Task<List<Question>> GetAnsweredQuestions()
+        {
+
+        }
+
+        public void SetUnansweredQuestions(List<Question> unansweredQuestions)
+        {
+
+        }
+
+        public void SetAnsweredQuestions(List<Question> answeredQuestions)
+        {
+
         }
     }
 }

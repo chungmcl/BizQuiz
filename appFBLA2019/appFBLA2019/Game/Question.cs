@@ -10,13 +10,9 @@ namespace appFBLA2019
     public class Question
     {
         public readonly string QuestionText;
-        
-        //this is the one everybody sees
         public string CorrectAnswer { get { return correctAnswer; } private set { this.correctAnswer = value; } }
-        //this one gets written to file
         private string correctAnswer;
 
-        //This is the one everybody sees
         public string[] Answers
         {
             //turns the 4 answers into an easy to use array
@@ -39,13 +35,12 @@ namespace appFBLA2019
 
                 //once the answers are assigned, find the correct one and assign it to CorrectAnswer
                 foreach (string answer in temp)
-            {
-                if (answer != null && answer[0] == 'c')
-                    this.correctAnswer = answer.Split('/')[1];
-            }
+                {
+                    if (answer != null && answer[0] == 'c')
+                        this.correctAnswer = answer.Split('/')[1];
+                }
             }
         }
-        //these get written to file
         private string answerOne;
         private string answerTwo;
         private string answerThree;

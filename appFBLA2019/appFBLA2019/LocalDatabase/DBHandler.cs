@@ -7,8 +7,8 @@ namespace appFBLA2019
 {
     static class DBHandler
     {
-        private static GameDatabase database;
-
+        public static GameDatabase Database { get; private set; }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -18,9 +18,9 @@ namespace appFBLA2019
         {
             try
             {
-                if (database == null || database.fileName != fileName)
+                if (Database == null || Database.fileName != fileName)
                 {
-                    database = new GameDatabase(
+                    Database = new GameDatabase(
                       Path.Combine(
                           Environment.GetFolderPath(
                               Environment.SpecialFolder.LocalApplicationData), fileName)
