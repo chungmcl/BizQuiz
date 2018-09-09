@@ -13,9 +13,9 @@ namespace appFBLA2019
         internal List<Question> failedQuestions = new List<Question>();
 
         internal string title { get; private set; }
+    //leave this here, it can be the filebased constructor
         public Topic(string path)
         {
-            //this is gonna turn into SQL at some point
             try
             {
                 using (StreamReader reader = new StreamReader(Path.GetFullPath(path)))
@@ -56,7 +56,7 @@ namespace appFBLA2019
                         { //do nothing, just finish the question with what we have here}
 
                         }
-                        currentSet.Insert(new Random().Next(currentSet.Count - 1), new Question(question, answers.ToArray()));
+                        currentSet.Insert(new Random().Next(currentSet.Count), new Question(question, answers.ToArray()));
                     }
                 }
             }
@@ -66,6 +66,11 @@ namespace appFBLA2019
             }
         }
 
+        //this one will be used in the app for database stuff
+        public Topic(/* idk whatever SQL data we need*/)
+        {
+
+        }
 
         public void SaveState()
         {

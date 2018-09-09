@@ -17,7 +17,7 @@ namespace appFBLA2019_Tests
             appFBLA2019.Question question = topic.GetQuestion();
             Assert.IsTrue(question.GetType() == typeof(Question));
             Assert.IsTrue(question.QuestionText == "What is a phone?");
-            Assert.IsTrue(question.correctAnswer == "A tool");
+            Assert.IsTrue(question.CorrectAnswer == "A tool");
         }
 
         [TestMethod]
@@ -26,7 +26,7 @@ namespace appFBLA2019_Tests
             appFBLA2019.Question question = new appFBLA2019.Question();
 
             Assert.IsTrue(question.QuestionText == "This question is empty!");
-            Assert.IsTrue(question.correctAnswer == null);
+            Assert.IsTrue(question.CorrectAnswer == null);
         }
     }
 }

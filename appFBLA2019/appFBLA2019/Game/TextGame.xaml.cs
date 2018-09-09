@@ -48,10 +48,10 @@ namespace appFBLA2019
             {
                 button.IsEnabled = false;
             }
-            for (int i = 0; i < question.answers.Count(); i++)
+            for (int i = 0; i < question.Answers.Count(); i++)
             {
                 ButtonGrid.Children[i].IsEnabled = true;
-                ((Button)ButtonGrid.Children[i]).Text = question.answers[i];
+                ((Button)ButtonGrid.Children[i]).Text = question.Answers[i];
             }
             return true;
         }

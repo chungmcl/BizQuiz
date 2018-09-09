@@ -10,30 +10,65 @@ namespace appFBLA2019
     public class Question
     {
         public readonly string QuestionText;
-        public readonly string answerOne;
-        public readonly string answerTwo;
-        public readonly string answerThree;
-        public readonly string answerFour;
-        public readonly string correctAnswer;
+        
+        //this is the one everybody sees
+        public string CorrectAnswer { get { return correctAnswer; } private set { this.correctAnswer = value; } }
+        //this one gets written to file
+        private string correctAnswer;
+
+        //This is the one everybody sees
+        public string[] Answers
+        {
+            //turns the 4 answers into an easy to use array
+            get
+            { return new string[] { answerOne, answerTwo, answerThree, answerFour }; }
+            //takes an array, makes sure it can be used in our answers, and assigns it to the answers
+            private set
+            {
+                //temp has empty spaces so we dont assign from a null spot in value
+                string[] temp = new string[4];
+                if (value.Length > 4)
+                    throw new ArgumentException("You can only have 4 answers!");
+                value.CopyTo(temp, 0);
+
+                //makes sure there's actually a value to assign, otherwise makes it empty
+                this.answerOne = temp[0]?.Split('/')[1] ?? "";
+                this.answerTwo = temp[1]?.Split('/')[1] ?? "";
+                this.answerThree = temp[2]?.Split('/')[1] ?? "";
+                this.answerFour = temp[3]?.Split('/')[1] ?? "";
+
+                //once the answers are assigned, find the correct one and assign it to CorrectAnswer
+                foreach (string answer in temp)
+            {
+                if (answer != null && answer[0] == 'c')
+                    this.correctAnswer = answer.Split('/')[1];
+            }
+            }
+        }
+        //these get written to file
+        private string answerOne;
+        private string answerTwo;
+        private string answerThree;
+        private string answerFour;
+
 
         /// <summary>
         /// Creates a question object given the question and answers
         /// </summary>
         /// <param name="text">What to ask the user</param>
         /// <param name="answersIn">
-        /// The potential answers to the question. The correct answer will be prefixed with "correct/".
-        /// The rest will be prefixed with "wrong/".
+        /// The potential answers to the question. The correct answer will be prefixed with "c/".
+        /// The rest will be prefixed with "x/".
         /// </param>
-        public Question(string text, string[] answers, int correctAnswer)
+        public Question(string text, params string[] answers)
         {
-            this.answerOne = answers[0];
-            this.answerTwo = answers[1];
-            this.answerThree = answers[2];
-            this.answerFour = answers[3];
-            this.correctAnswer = answers[correctAnswer];
+            this.QuestionText = text;
+            //tries to assign the params to the local Answers property which in turn assigns the fields
+            //if answers is null, throws an exception
+            this.Answers = answers ?? throw new ArgumentException("Must have at least one answer!");
         }
 
-        public Question() /*: this ("This question is empty!")*/
+        public Question() : this ("This question is empty!", new string[0])
         {
 
         }
