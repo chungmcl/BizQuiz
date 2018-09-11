@@ -19,6 +19,9 @@ namespace appFBLA2019
         {
             try
             {
+                // If the current database is null, or the name of the current database
+                // does not match the name of the database being requested to be selected,
+                // connect to the database specified in the parameter fileName
                 if (Database == null || Database.fileName != fileName)
                 {
                     Database = new GameDatabase(
@@ -28,12 +31,12 @@ namespace appFBLA2019
                               , fileName);
                     return true;
                 }
-                else
+                else // Otherwise, the database being requested is already open
                 {
                     return true;
                 }
             }
-            catch
+            catch // If the database failed to connect
             {
                 return false;
             }
