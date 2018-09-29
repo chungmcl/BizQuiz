@@ -12,7 +12,7 @@ namespace appFBLA2019_Tests
         {
             appFBLA2019.Topic topic = new Topic("TestTopic.txt");
 
-            Assert.IsTrue(topic.title == "TestTopic - Technology");
+            Assert.IsTrue(topic.Title == "TestTopic - Technology");
 
             appFBLA2019.Question question = topic.GetQuestion();
             Assert.IsTrue(question.GetType() == typeof(Question));

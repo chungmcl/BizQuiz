@@ -15,18 +15,18 @@ namespace appFBLA2019
         private Topic topic;
 		public TextGame (Topic topic)
 		{
-			InitializeComponent ();
+            this.InitializeComponent ();
             this.topic = topic;
-            Task.Run(() => RunGame());
+            Task.Run(() => this.RunGame());
 		}
 
         private void RunGame()
         {
-            while (topic.QuestionsAvailable) //questions remain
+            while (this.topic.QuestionsAvailable) //questions remain
             {
-                Question question = topic.GetQuestion();
+                Question question = this.topic.GetQuestion();
 
-                Task getAnswer = Task.Run(() => GetAnswer(question));
+                Task getAnswer = Task.Run(() => this.GetAnswer(question));
             }
         }
 
@@ -44,14 +44,14 @@ namespace appFBLA2019
         private async Task<bool> GetAnswer(Question question)
         {
             this.Question.Text = question.QuestionText;
-            foreach (Button button in ButtonGrid.Children)
+            foreach (Button button in this.ButtonGrid.Children)
             {
                 button.IsEnabled = false;
             }
             for (int i = 0; i < question.Answers.Count(); i++)
             {
-                ButtonGrid.Children[i].IsEnabled = true;
-                ((Button)ButtonGrid.Children[i]).Text = question.Answers[i];
+                this.ButtonGrid.Children[i].IsEnabled = true;
+                ((Button)this.ButtonGrid.Children[i]).Text = question.Answers[i];
             }
             return true;
         }

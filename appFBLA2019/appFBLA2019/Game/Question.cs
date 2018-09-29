@@ -22,7 +22,7 @@ namespace appFBLA2019
         {
             //turns the 4 answers into an easy to use array
             get
-            { return new string[] { AnswerOne, AnswerTwo, AnswerThree, AnswerFour }; }
+            { return new string[] { this.AnswerOne, this.AnswerTwo, this.AnswerThree, this.AnswerFour }; }
             //takes an array, makes sure it can be used in our answers, and assigns it to the answers
             private set
             {

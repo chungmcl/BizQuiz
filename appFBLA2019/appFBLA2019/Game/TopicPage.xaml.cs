@@ -14,7 +14,7 @@ namespace appFBLA2019
 	{
 		public TopicPage ()
 		{
-			InitializeComponent ();
+            this.InitializeComponent ();
 		}
 
         private void History_Clicked(object sender, EventArgs e)

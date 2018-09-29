@@ -11,7 +11,7 @@ namespace appFBLA2019
         List<Question> questions;
         //if the first question has already been got, then we have 100% completion
         public bool QuestionsAvailable { get { this.questions.Sort(); return this.questions[0].Status != 2; } }
-        internal string title { get; private set; }
+        internal string Title { get; private set; }
         //leave this here, it can be the filebased constructor
         #region Text File Constructor
         //public Topic(string path)
@@ -85,7 +85,7 @@ namespace appFBLA2019
         public Topic(string fileName)
         {
             DBHandler.SelectDatabase(fileName);
-            LoadQuestions();
+            this.LoadQuestions();
         }
 
         private async void LoadQuestions()
