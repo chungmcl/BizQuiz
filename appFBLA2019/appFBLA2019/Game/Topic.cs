@@ -81,7 +81,7 @@ namespace appFBLA2019
         /// Load the questions from file
         /// </summary>
         /// <param name="fileName">The name of the database file - if one does not yet exist,
-        /// it will create one based on the name you pass it</param>
+        /// it will create one based on the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME.</param>
         public Topic(string fileName)
         {
             DBHandler.SelectDatabase(fileName);

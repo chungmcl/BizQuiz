@@ -5,6 +5,10 @@ using System.Text;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// Manages connection between the rest of the app and the
+    /// selected database file.
+    /// </summary>
     static class DBHandler
     {
         public static GameDatabase Database { get; private set; }

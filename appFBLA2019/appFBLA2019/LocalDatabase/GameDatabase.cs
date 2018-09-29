@@ -1,11 +1,15 @@
-﻿using SQLite;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SQLite;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// Object representing the database file selected through DBHandler.
+    /// Contains methods to modify the database file.
+    /// </summary>
     public class GameDatabase
     {
         private readonly SQLiteAsyncConnection database;
@@ -24,10 +28,14 @@ namespace appFBLA2019
             return this.database.QueryAsync<Question>("SELECT * FROM Question");
         }
 
-        public void UpdateQuestions(List<Question> questions)
+        public async void UpdateQuestions(List<Question> questions)
         {
-            this.database.ExecuteAsync("DELETE * FROM Question");
-            this.database.InsertAllAsync(questions);
+            await this.database.InsertAllAsync(questions);
+        }
+
+        public async void ClearDatabase()
+        {
+            await this.database.DeleteAllAsync<Question>();
         }
     }
 }
