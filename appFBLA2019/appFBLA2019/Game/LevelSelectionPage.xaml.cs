@@ -19,7 +19,7 @@ namespace appFBLA2019
 
         private void History_Clicked(object sender, EventArgs e)
         {
-            this.Navigation.PushAsync(new TextGame(new Topic(@"\\Game\\Topics\\TestTopic.txt")));
+            this.Navigation.PushAsync(new TextGame(new Level(@"\\Game\\Topics\\TestTopic.txt")));
         }
     }
 }

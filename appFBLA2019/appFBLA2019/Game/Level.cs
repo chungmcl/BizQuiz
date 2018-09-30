@@ -6,7 +6,7 @@ using System.Text;
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("appFBLA2019_Tests")]
 namespace appFBLA2019
 {
-    public class Topic
+    public class Level
     {
         List<Question> questions;
         //if the first question has already been got, then we have 100% completion
@@ -82,7 +82,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="fileName">The name of the database file - if one does not yet exist,
         /// it will create one based on the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME.</param>
-        public Topic(string fileName)
+        public Level(string fileName)
         {
             DBHandler.SelectDatabase(fileName);
             this.LoadQuestions();

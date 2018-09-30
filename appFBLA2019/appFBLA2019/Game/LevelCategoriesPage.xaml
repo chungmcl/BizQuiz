@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TabbedPage  xmlns="http://xamarin.com/schemas/2014/forms"
                         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                        x:Class="appFBLA2019.LevelsPage"
+                        x:Class="appFBLA2019.LevelCatagoriesPage"
                         xmlns:local="clr-namespace:appFBLA2019">
-    <local:TopicPage Title="FBLA"/>
-    <local:TopicPage Title="Technology"/>
-    <local:TopicPage Title="Accounting"/>
+    <local:LevelSelectionPage Title="FBLA"/>
+    <local:LevelSelectionPage Title="Technology"/>
+    <local:LevelSelectionPage Title="Accounting"/>
 </TabbedPage>

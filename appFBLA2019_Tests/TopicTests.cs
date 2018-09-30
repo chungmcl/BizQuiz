@@ -10,7 +10,7 @@ namespace appFBLA2019_Tests
         [TestMethod]
         public void LoadTopic()
         {
-            appFBLA2019.Topic topic = new Topic("TestTopic.txt");
+            appFBLA2019.Level topic = new Level("TestTopic.txt");
 
             Assert.IsTrue(topic.Title == "TestTopic - Technology");
 

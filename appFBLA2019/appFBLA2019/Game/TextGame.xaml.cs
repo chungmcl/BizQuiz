@@ -12,8 +12,8 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class TextGame : ContentPage
 	{
-        private Topic topic;
-		public TextGame (Topic topic)
+        private Level topic;
+		public TextGame (Level topic)
 		{
             this.InitializeComponent ();
             this.topic = topic;
