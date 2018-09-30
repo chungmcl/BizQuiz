@@ -10,11 +10,11 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class LevelsCatagoriesPage : TabbedPage
+	public partial class LevelEditorPage : ContentPage
 	{
-		public LevelsCatagoriesPage()
+		public LevelEditorPage ()
 		{
-            this.InitializeComponent();
+			InitializeComponent ();
 		}
 	}
 }

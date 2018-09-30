@@ -10,9 +10,9 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class TopicPage : ContentPage
+	public partial class LevelSelectionPage : ContentPage
 	{
-		public TopicPage ()
+		public LevelSelectionPage ()
 		{
             this.InitializeComponent ();
 		}
