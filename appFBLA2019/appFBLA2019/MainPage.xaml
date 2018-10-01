@@ -9,8 +9,8 @@
     
     Title="FBLA App 2019">
     
-    <local:LevelsPage Title="Standard Levels"/>
-    <ContentPage Title="Level Editor"/>
+    <local:LevelSelectionPage Title="Standard Levels"/>
+    <local:LevelEditorPage Title="Level Editor"/>
     <ContentPage Title="Leaderboards"/>
     <local:ProfilePage Title="Profile" />
 </TabbedPage>

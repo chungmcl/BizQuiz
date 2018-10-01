@@ -14,7 +14,7 @@ namespace appFBLA2019
 	{
 		public LevelsCatagoriesPage()
 		{
-            this.InitializeComponent();
+            //this.InitializeComponent();
 		}
 	}
 }

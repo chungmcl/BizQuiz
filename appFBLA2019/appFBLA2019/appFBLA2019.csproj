@@ -23,6 +23,9 @@
     <Compile Update="LevelEditor\LevelEditorPage.xaml.cs">
       <DependentUpon>LevelEditorPage.xaml</DependentUpon>
     </Compile>
+    <Compile Update="LevelEditor\TextGameEditorPage.xaml.cs">
+      <DependentUpon>TextGameEditorPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +33,12 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="LevelEditor\LevelEditorPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="LevelEditor\QuestionEditorPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="LevelEditor\TextGameEditorPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Profile and Account\CreateAccountPage.xaml">

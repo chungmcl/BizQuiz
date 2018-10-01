@@ -14,6 +14,9 @@ namespace appFBLA2019
         //public enum QuestionStatus { Unanswered, Failed, Correct }
         public int Status { get; set; }
 
+        // 0 = four answers, 1 = two answers, 2 = one text answer
+        public int QuestionType { get; set; }
+
         public readonly string QuestionText;
         public string CorrectAnswer { get; private set; }
 
