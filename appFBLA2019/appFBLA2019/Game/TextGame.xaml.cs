@@ -12,21 +12,23 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class TextGame : ContentPage
 	{
-        private Level topic;
-		public TextGame (Level topic)
+        private Level level;
+		public TextGame (Level level)
 		{
             this.InitializeComponent ();
-            this.topic = topic;
-            Task.Run(() => this.RunGame());
-		}
+            this.level = level;
+            //Task.Run(() => this.RunGame());
+            this.GetAnswer(level.GetQuestion());
+        }
 
         private void RunGame()
         {
-            while (this.topic.QuestionsAvailable) //questions remain
+            while (this.level.QuestionsAvailable) //questions remain
             {
-                Question question = this.topic.GetQuestion();
+                Question question = this.level.GetQuestion();
 
-                Task getAnswer = Task.Run(() => this.GetAnswer(question));
+                //Task getAnswer = Task.Run(() => this.GetAnswer(question));
+                this.GetAnswer(question);
             }
         }
 
@@ -41,7 +43,7 @@ namespace appFBLA2019
         }
 
         //display the question and async wait for a reply
-        private async Task<bool> GetAnswer(Question question)
+        private /*async Task<bool>*/ bool GetAnswer(Question question)
         {
             this.Question.Text = question.QuestionText;
             foreach (Button button in this.ButtonGrid.Children)

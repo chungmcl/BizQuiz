@@ -31,6 +31,7 @@ namespace appFBLA2019
                     // This path should be used when app is finished
                     // This will hide the application database and prevent it from
                     // unwanted user manipulation
+
                     //Database = new GameDatabase(
                     //  Path.Combine(
                     //      Environment.GetFolderPath(

@@ -10,7 +10,18 @@ namespace appFBLA2019
     {
         List<Question> questions;
         //if the first question has already been got, then we have 100% completion
-        public bool QuestionsAvailable { get { this.questions.Sort(); return this.questions[0].Status != 2; } }
+        public bool QuestionsAvailable
+        {
+            get
+            {
+                if (this.questions != null)
+                {
+                    this.questions.Sort();
+                    return this.questions[0].Status != 2;
+                }
+                return false;
+            }
+        }
         internal string Title { get; private set; }
         //leave this here, it can be the filebased constructor
         #region Text File Constructor
@@ -91,6 +102,9 @@ namespace appFBLA2019
         private async void LoadQuestions()
         {
             this.questions = await DBHandler.Database.GetQuestions();
+
+            //Question question = new Question("What's 2 + 2?", "x/2", "c/4", "x/6", "x/8");
+            //this.questions = new List<Question>() { question };
         }
 
         public void SaveState()
