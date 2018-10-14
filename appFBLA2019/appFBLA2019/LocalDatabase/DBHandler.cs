@@ -12,7 +12,7 @@ namespace appFBLA2019
     static class DBHandler
     {
         public static GameDatabase Database { get; private set; }
-        private const string sqLiteExtension = ".db3";
+        private const string sqLiteExtension = ".db";
         
         /// <summary>
         /// 
@@ -28,11 +28,18 @@ namespace appFBLA2019
                 // connect to the database specified in the parameter fileName
                 if (Database == null || Database.fileName != fileName)
                 {
-                    Database = new GameDatabase(
-                      Path.Combine(
-                          Environment.GetFolderPath(
-                              Environment.SpecialFolder.LocalApplicationData), fileName + sqLiteExtension)
-                              , fileName);
+                    // This path should be used when app is finished
+                    // This will hide the application database and prevent it from
+                    // unwanted user manipulation
+                    //Database = new GameDatabase(
+                    //  Path.Combine(
+                    //      Environment.GetFolderPath(
+                    //          Environment.SpecialFolder.LocalApplicationData), fileName + sqLiteExtension)
+                    //          , fileName);
+
+                    string publicPath = $"/storage/emulated/0/{fileName}.db3";
+                    Database = new GameDatabase(publicPath, fileName);
+
                     return true;
                 }
                 else // Otherwise, the database being requested is already open
