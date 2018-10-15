@@ -2,22 +2,23 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("appFBLA2019_Tests")]
 namespace appFBLA2019
 {
     public class Level
     {
-        List<Question> questions;
+        public List<Question> Questions { get; set; }
         //if the first question has already been got, then we have 100% completion
         public bool QuestionsAvailable
         {
             get
             {
-                if (this.questions != null)
+                if (this.Questions != null)
                 {
-                    this.questions.Sort();
-                    return this.questions[0].Status != 2;
+                    this.Questions.Sort();
+                    return this.Questions[0].Status != 2;
                 }
                 return false;
             }
@@ -96,25 +97,25 @@ namespace appFBLA2019
         public Level(string fileName)
         {
             DBHandler.SelectDatabase(fileName);
-            this.LoadQuestions();
         }
 
-        private async void LoadQuestions()
+        public async Task LoadQuestionsAsync()
         {
-            this.questions = await DBHandler.Database.GetQuestions();
-
-            //Question question = new Question("What's 2 + 2?", "x/2", "c/4", "x/6", "x/8");
-            //this.questions = new List<Question>() { question };
+            this.Questions = await DBHandler.Database.GetQuestions();
         }
 
         public void SaveState()
         {
-            DBHandler.Database.UpdateQuestions(this.questions);
+            DBHandler.Database.UpdateQuestions(this.Questions);
         }
 
         public Question GetQuestion()
         {
-            return this.questions[0];
+            if (this.Questions != null)
+            {
+                return this.Questions[0];
+            }
+            return null;
         }
     }
 }

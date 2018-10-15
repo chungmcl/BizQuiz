@@ -23,9 +23,11 @@ namespace appFBLA2019
             this.database.CreateTableAsync<Question>().Wait();
         }
 
-        public Task<List<Question>> GetQuestions()
+        public async Task<List<Question>> GetQuestions()
         {
-            return this.database.QueryAsync<Question>("SELECT * FROM Question");
+            List<Question> questions = await this.database.QueryAsync<Question>("SELECT * FROM Question");
+            questions.Add(new Question("Question?", "x/7", "c/9", "x/5", "x/0"));
+            return questions;
         }
 
         public async void UpdateQuestions(List<Question> questions)

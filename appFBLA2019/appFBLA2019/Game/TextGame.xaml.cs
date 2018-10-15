@@ -12,50 +12,89 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class TextGame : ContentPage
 	{
+        private enum answerButton
+        {
+            optionA,
+            optionB,
+            optionC,
+            optionD
+        }
         private Level level;
+        private answerButton correctAnswer;
 		public TextGame (Level level)
 		{
-            this.InitializeComponent ();
+            this.InitializeComponent();
             this.level = level;
-            //Task.Run(() => this.RunGame());
             this.GetAnswer(level.GetQuestion());
-        }
-
-        private void RunGame()
-        {
-            while (this.level.QuestionsAvailable) //questions remain
-            {
-                Question question = this.level.GetQuestion();
-
-                //Task getAnswer = Task.Run(() => this.GetAnswer(question));
-                this.GetAnswer(question);
-            }
         }
 
         private void FinishGame()
         {
             //save progress
+            level.SaveState();
+        }
+        
+        private void GetAnswer(Question question)
+        {
+            this.LabelQuestion.Text = question.QuestionText;
+            for (int i = 0; i < question.Answers.Count(); i++)
+            {
+                string answer = question.Answers[i];
+                if (answer == question.CorrectAnswer)
+                {
+                    correctAnswer = (answerButton)(i);
+                }
+                this.GridButtons.Children[i].IsEnabled = true;
+                ((Button)this.GridButtons.Children[i]).Text = answer;
+            }
         }
 
-        private void AskQuestion()
+        private void ButtonOptionA_Clicked(object sender, EventArgs e)
         {
-
+            CheckAnswer(answerButton.optionA);
         }
 
-        //display the question and async wait for a reply
-        private /*async Task<bool>*/ bool GetAnswer(Question question)
+        private void ButtonOptionB_Clicked(object sender, EventArgs e)
         {
-            this.Question.Text = question.QuestionText;
-            foreach (Button button in this.ButtonGrid.Children)
+            CheckAnswer(answerButton.optionB);
+        }
+
+        private void ButtonOptionC_Clicked(object sender, EventArgs e)
+        {
+            CheckAnswer(answerButton.optionC);
+        }
+
+        private void ButtonOptionD_Clicked(object sender, EventArgs e)
+        {
+            CheckAnswer(answerButton.optionD);
+        }
+
+        private void CheckAnswer(answerButton answer)
+        {
+            if (answer == correctAnswer)
+            {
+                this.LabelDebug.Text = "Correct!";
+                // 2 represents 'correct'
+                level.Questions[0].Status = 2;
+                ResetButtons();
+                this.GetAnswer(level.GetQuestion());
+            }
+            else
+            {
+                this.LabelDebug.Text = "Incorrect!";
+                // 1 represents 'failed'
+                level.Questions[0].Status = 1;
+                ResetButtons();
+                this.GetAnswer(level.GetQuestion());
+            }
+        }
+
+        private void ResetButtons()
+        {
+            foreach (Button button in this.GridButtons.Children)
             {
                 button.IsEnabled = false;
             }
-            for (int i = 0; i < question.Answers.Count(); i++)
-            {
-                this.ButtonGrid.Children[i].IsEnabled = true;
-                ((Button)this.ButtonGrid.Children[i]).Text = question.Answers[i];
-            }
-            return true;
         }
-	}
+    }
 }

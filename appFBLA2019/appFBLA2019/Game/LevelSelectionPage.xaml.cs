@@ -17,10 +17,11 @@ namespace appFBLA2019
             this.InitializeComponent ();
 		}
 
-        private void History_Clicked(object sender, EventArgs e)
+        private async void History_Clicked(object sender, EventArgs e)
         {
             Level level = new Level("test");
-            this.Navigation.PushAsync(new TextGame(level));
+            await level.LoadQuestionsAsync();
+            await this.Navigation.PushAsync(new TextGame(level));
         }
     }
 }
