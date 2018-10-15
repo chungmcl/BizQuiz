@@ -25,7 +25,7 @@ namespace appFBLA2019
 		{
             this.InitializeComponent();
             this.level = level;
-            this.GetAnswer(level.GetQuestion());
+            this.GetNextAnswer(level.GetQuestion());
         }
 
         private void FinishGame()
@@ -34,7 +34,7 @@ namespace appFBLA2019
             level.SaveState();
         }
         
-        private void GetAnswer(Question question)
+        private void GetNextAnswer(Question question)
         {
             this.LabelQuestion.Text = question.QuestionText;
             for (int i = 0; i < question.Answers.Count(); i++)
@@ -77,7 +77,7 @@ namespace appFBLA2019
                 // 2 represents 'correct'
                 level.Questions[0].Status = 2;
                 ResetButtons();
-                this.GetAnswer(level.GetQuestion());
+                this.GetNextAnswer(level.GetQuestion());
             }
             else
             {
@@ -85,7 +85,7 @@ namespace appFBLA2019
                 // 1 represents 'failed'
                 level.Questions[0].Status = 1;
                 ResetButtons();
-                this.GetAnswer(level.GetQuestion());
+                this.GetNextAnswer(level.GetQuestion());
             }
         }
 

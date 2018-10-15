@@ -113,7 +113,17 @@ namespace appFBLA2019
         {
             if (this.Questions != null)
             {
-                return this.Questions[0];
+                this.Questions.Sort();
+
+                //randomly selects from questions that haven't been correct yet (includes unanswered)
+                //to make sure you don't get the same question every time
+                int availableQuestions = 0;
+                for(int i = 0; this.Questions[i].Status == 2; i++)
+                {
+                    availableQuestions++;
+                }
+
+                return this.Questions[new Random().Next(0, availableQuestions)];
             }
             return null;
         }
