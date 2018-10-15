@@ -17,7 +17,7 @@ namespace appFBLA2019
             {
                 if (this.Questions != null)
                 {
-                    this.Questions.Sort();
+                    this.Questions.Sort((x, y) => y.CompareTo(x));
                     return this.Questions[0].Status != 2;
                 }
                 return false;
@@ -113,12 +113,12 @@ namespace appFBLA2019
         {
             if (this.Questions != null)
             {
-                this.Questions.Sort();
+                this.Questions.Sort((x, y)=> y.CompareTo(x));
 
                 //randomly selects from questions that haven't been correct yet (includes unanswered)
                 //to make sure you don't get the same question every time
                 int availableQuestions = 0;
-                for(int i = 0; this.Questions[i].Status == 2; i++)
+                for (int i = 0; this.Questions[i].Status == 2; i++)
                 {
                     availableQuestions++;
                 }

@@ -76,6 +76,8 @@ namespace appFBLA2019
                 this.LabelDebug.Text = "Correct!";
                 // 2 represents 'correct'
                 level.Questions[0].Status = 2;
+
+                // Get the next question
                 ResetButtons();
                 this.GetNextAnswer(level.GetQuestion());
             }
@@ -84,6 +86,8 @@ namespace appFBLA2019
                 this.LabelDebug.Text = "Incorrect!";
                 // 1 represents 'failed'
                 level.Questions[0].Status = 1;
+
+                // Get the next question
                 ResetButtons();
                 this.GetNextAnswer(level.GetQuestion());
             }
