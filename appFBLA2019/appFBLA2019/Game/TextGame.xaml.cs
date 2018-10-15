@@ -12,7 +12,7 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class TextGame : ContentPage
 	{
-        private enum answerButton
+        private enum AnswerButton
         {
             optionA,
             optionB,
@@ -20,7 +20,7 @@ namespace appFBLA2019
             optionD
         }
         private Level level;
-        private answerButton correctAnswer;
+        private AnswerButton correctAnswer;
 		public TextGame (Level level)
 		{
             this.InitializeComponent();
@@ -31,12 +31,12 @@ namespace appFBLA2019
         private void FinishGame()
         {
             //save progress
-            level.SaveState();
+            this.level.SaveState();
         }
         
         private void GetNextAnswer(Question question)
         {
-            if (level.QuestionsAvailable)
+            if (this.level.QuestionsAvailable)
             {
                 this.LabelQuestion.Text = question.QuestionText;
                 for (int i = 0; i < question.Answers.Count(); i++)
@@ -44,7 +44,7 @@ namespace appFBLA2019
                     string answer = question.Answers[i];
                     if (answer == question.CorrectAnswer)
                     {
-                        correctAnswer = (answerButton)(i);
+                        this.correctAnswer = (AnswerButton)(i);
                     }
                     this.GridButtons.Children[i].IsEnabled = true;
                     ((Button)this.GridButtons.Children[i]).Text = answer;
@@ -58,45 +58,45 @@ namespace appFBLA2019
 
         private void ButtonOptionA_Clicked(object sender, EventArgs e)
         {
-            CheckAnswer(answerButton.optionA);
+            this.CheckAnswer(AnswerButton.optionA);
         }
 
         private void ButtonOptionB_Clicked(object sender, EventArgs e)
         {
-            CheckAnswer(answerButton.optionB);
+            this.CheckAnswer(AnswerButton.optionB);
         }
 
         private void ButtonOptionC_Clicked(object sender, EventArgs e)
         {
-            CheckAnswer(answerButton.optionC);
+            this.CheckAnswer(AnswerButton.optionC);
         }
 
         private void ButtonOptionD_Clicked(object sender, EventArgs e)
         {
-            CheckAnswer(answerButton.optionD);
+            this.CheckAnswer(AnswerButton.optionD);
         }
 
-        private void CheckAnswer(answerButton answer)
+        private void CheckAnswer(AnswerButton answer)
         {
-            if (answer == correctAnswer)
+            if (answer == this.correctAnswer)
             {
                 this.LabelDebug.Text = "Correct!";
                 // 2 represents 'correct'
-                level.Questions[0].Status = 2;
+                this.level.Questions[0].Status = 2;
 
                 // Get the next question
-                ResetButtons();
-                this.GetNextAnswer(level.GetQuestion());
+                this.ResetButtons();
+                this.GetNextAnswer(this.level.GetQuestion());
             }
             else
             {
                 this.LabelDebug.Text = "Incorrect!";
                 // 1 represents 'failed'
-                level.Questions[0].Status = 1;
+                this.level.Questions[0].Status = 1;
 
                 // Get the next question
-                ResetButtons();
-                this.GetNextAnswer(level.GetQuestion());
+                this.ResetButtons();
+                this.GetNextAnswer(this.level.GetQuestion());
             }
         }
 

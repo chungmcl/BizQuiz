@@ -14,7 +14,7 @@ namespace appFBLA2019
 	{
 		public LevelEditorPage ()
 		{
-			InitializeComponent ();
+			this.InitializeComponent ();
 		}
 	}
 }
