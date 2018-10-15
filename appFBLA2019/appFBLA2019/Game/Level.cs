@@ -17,7 +17,6 @@ namespace appFBLA2019
             {
                 if (this.Questions != null)
                 {
-                    this.Questions.Sort((x, y) => y.CompareTo(x));
                     return this.Questions[0].Status != 2;
                 }
                 return false;
@@ -118,10 +117,18 @@ namespace appFBLA2019
                 //randomly selects from questions that haven't been correct yet (includes unanswered)
                 //to make sure you don't get the same question every time
                 int availableQuestions = 0;
-                for (int i = 0; this.Questions[i].Status == 2; i++)
+                for (int i = 0; i < this.Questions.Count; i++)
                 {
-                    availableQuestions++;
+                    if (this.Questions[i].Status != 2)
+                    {
+                        availableQuestions++;
+                    }
                 }
+                // More elegant but doesn't work - out of range exception if no elements have a status of 2
+                //while (!(this.Questions[availableQuestions].Status == 2))
+                //{
+                //    availableQuestions++;
+                //}
 
                 return this.Questions[new Random().Next(0, availableQuestions)];
             }

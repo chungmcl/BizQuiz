@@ -36,16 +36,23 @@ namespace appFBLA2019
         
         private void GetNextAnswer(Question question)
         {
-            this.LabelQuestion.Text = question.QuestionText;
-            for (int i = 0; i < question.Answers.Count(); i++)
+            if (level.QuestionsAvailable)
             {
-                string answer = question.Answers[i];
-                if (answer == question.CorrectAnswer)
+                this.LabelQuestion.Text = question.QuestionText;
+                for (int i = 0; i < question.Answers.Count(); i++)
                 {
-                    correctAnswer = (answerButton)(i);
+                    string answer = question.Answers[i];
+                    if (answer == question.CorrectAnswer)
+                    {
+                        correctAnswer = (answerButton)(i);
+                    }
+                    this.GridButtons.Children[i].IsEnabled = true;
+                    ((Button)this.GridButtons.Children[i]).Text = answer;
                 }
-                this.GridButtons.Children[i].IsEnabled = true;
-                ((Button)this.GridButtons.Children[i]).Text = answer;
+            }
+            else
+            {
+                //level.SaveState();
             }
         }
 
