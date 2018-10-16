@@ -21,20 +21,18 @@ namespace appFBLA2019
         }
         private Level level;
         private AnswerButton correctAnswer;
+        private Question currentQuestion;
 		public TextGame (Level level)
 		{
             this.InitializeComponent();
             this.level = level;
-            this.GetNextAnswer(level.GetQuestion());
-        }
 
-        private void FinishGame()
-        {
-            //save progress
-            this.level.SaveState();
+            // Save as reference
+            this.currentQuestion = level.GetQuestion();
+            this.GetNextQuestion(currentQuestion);
         }
         
-        private void GetNextAnswer(Question question)
+        private void GetNextQuestion(Question question)
         {
             if (this.level.QuestionsAvailable)
             {
@@ -82,11 +80,14 @@ namespace appFBLA2019
             {
                 this.LabelDebug.Text = "Correct!";
                 // 2 represents 'correct'
-                this.level.Questions[0].Status = 2;
+                this.currentQuestion.Status = 2;
 
                 // Get the next question
                 this.ResetButtons();
-                this.GetNextAnswer(this.level.GetQuestion());
+
+                // Save as reference
+                this.currentQuestion = level.GetQuestion();
+                this.GetNextQuestion(currentQuestion);
             }
             else
             {
@@ -96,7 +97,10 @@ namespace appFBLA2019
 
                 // Get the next question
                 this.ResetButtons();
-                this.GetNextAnswer(this.level.GetQuestion());
+
+                // Save as reference
+                this.currentQuestion = level.GetQuestion();
+                this.GetNextQuestion(this.level.GetQuestion());
             }
         }
 
