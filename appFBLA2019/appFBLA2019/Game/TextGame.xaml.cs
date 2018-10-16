@@ -29,7 +29,9 @@ namespace appFBLA2019
 
             // Save as reference
             this.currentQuestion = level.GetQuestion();
-            this.GetNextQuestion(currentQuestion);
+
+            if (currentQuestion != null)
+                this.GetNextQuestion(currentQuestion);
         }
         
         private void GetNextQuestion(Question question)
@@ -50,7 +52,8 @@ namespace appFBLA2019
             }
             else
             {
-                //level.SaveState();
+                level.SaveState();
+                // Display a completion page?
             }
         }
 

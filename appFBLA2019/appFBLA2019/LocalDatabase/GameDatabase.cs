@@ -20,6 +20,7 @@ namespace appFBLA2019
             this.database = new SQLiteAsyncConnection(dbPath);
             this.fileName = fileName;
 
+
             this.database.CreateTableAsync<Question>().Wait();
         }
 
@@ -30,7 +31,7 @@ namespace appFBLA2019
 
         public async void UpdateQuestions(List<Question> questions)
         {
-            await this.database.InsertAllAsync(questions);
+            await this.database.UpdateAllAsync(questions);
         }
 
         public async void ClearDatabase()

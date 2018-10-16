@@ -100,7 +100,7 @@ namespace appFBLA2019
 
         public async Task LoadQuestionsAsync()
         {
-            this.Questions = await DBHandler.Database.GetQuestions();
+            this.Questions = new List<Question>(await DBHandler.Database.GetQuestions());
         }
 
         public void SaveState()
@@ -110,7 +110,7 @@ namespace appFBLA2019
 
         public Question GetQuestion()
         {
-            if (this.Questions != null)
+            if (this.Questions != null && this.Questions.Count > 0)
             {
                 this.Questions.Sort((x, y)=> y.CompareTo(x));
 

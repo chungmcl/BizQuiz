@@ -10,6 +10,9 @@ namespace appFBLA2019
     /// </summary>
     public class Question : IComparable
     {
+        // Primary key ID for database
+        [PrimaryKey, AutoIncrement]
+        public Int32 DBId { get; set; }
         // SQLITE WILL IGNORE ALL PROPERTIES THAT ARE NOT DEFINED BY public { get; set; }
 
         //declare enum (to use this type other places, say Question.QuestionStatus)
