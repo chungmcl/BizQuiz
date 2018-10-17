@@ -116,7 +116,7 @@ namespace appFBLA2019
             // has answered all unanswered questions.
             if (this.Questions != null && this.Questions.Count > 0)
             {
-                this.Questions.Sort((x, y)=> y.CompareTo(x));
+                this.Questions.Sort();
 
                 //randomly selects from questions that haven't been correct yet (includes unanswered)
                 //to make sure you don't get the same question every time

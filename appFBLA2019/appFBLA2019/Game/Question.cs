@@ -82,8 +82,7 @@ namespace appFBLA2019
         //used to sort questions by status
         public int CompareTo(object obj)
         {
-            int compare = ((Question)obj).Status.CompareTo(this.Status);
-            return ((Question)obj).Status.CompareTo(this.Status);
+            return this.Status.CompareTo(((Question)obj).Status);
         }
     }
 }
