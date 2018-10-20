@@ -11,6 +11,10 @@
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand"
                 Clicked="History_Clicked"/>
+        <Button x:Name="ButtonShare" Text="Share"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand"
+                Clicked="ButtonShare_Clicked"/>
         <Label  Text="Organization"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />

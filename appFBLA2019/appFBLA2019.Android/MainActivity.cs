@@ -25,8 +25,6 @@ namespace appFBLA2019.Droid
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App());
-
-            CrossFacebookClient.Current.RequestUserDataAsync(new string[] { "email", "first_name", "gender", "last_name", "birthday" }, new string[] { "email" });
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent intent)
