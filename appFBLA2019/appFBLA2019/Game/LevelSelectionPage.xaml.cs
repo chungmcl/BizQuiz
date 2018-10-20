@@ -32,5 +32,10 @@ namespace appFBLA2019
             FacebookShareLinkContent linkContent = new FacebookShareLinkContent("Check out my github", new Uri("https://github.com/chungmcl"));
             var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
         }
+
+        private void ButtonLogout_Clicked(object sender, EventArgs e)
+        {
+            CrossFacebookClient.Current.Logout();
+        }
     }
 }

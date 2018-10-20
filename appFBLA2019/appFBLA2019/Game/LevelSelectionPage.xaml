@@ -15,6 +15,10 @@
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand"
                 Clicked="ButtonShare_Clicked"/>
+        <Button x:Name="ButtonLogout" Text="Logout"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="CenterAndExpand"
+                Clicked="ButtonLogout_Clicked" />
         <Label  Text="Organization"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
