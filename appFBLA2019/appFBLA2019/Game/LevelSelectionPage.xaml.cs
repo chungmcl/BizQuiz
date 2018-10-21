@@ -38,7 +38,7 @@ namespace appFBLA2019
                 //}
         }
 
-        private async void Setup(string[] levels)
+        private void Setup(string[] levels)
         {
             for (int i = 0; i < levels.Count(); i++)
             {
@@ -70,9 +70,9 @@ namespace appFBLA2019
                 });
 
                 //This needs to be fixed, idk how to use Async with the Database (or in general)
-                //Task<double> avgScore = Task.Run(() => Level.GetLevelAvgScore(levels[i]));
-                //Task.WaitAll(avgScore);
-                //(frameStack.Children[1] as Label).Text = avgScore.Result.ToString("00.0") ?? "0%";
+                Task<double> avgScore = Task.Run(() => Level.GetLevelAvgScore(levels[i]));
+                Task.WaitAll(avgScore);
+                (frameStack.Children[1] as Label).Text = avgScore.Result.ToString("00.0") ?? "0%";
 
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>

@@ -19,9 +19,10 @@ namespace appFBLA2019
         {
             this.database = new SQLiteAsyncConnection(dbPath);
             this.fileName = fileName;
-
-
+            
+            // Create new table for Questions and ScoreRecords if they do not already exist
             this.database.CreateTableAsync<Question>().Wait();
+            this.database.CreateTableAsync<ScoreRecord>().Wait();
         }
 
         public async Task<List<Question>> GetQuestions()
@@ -32,6 +33,11 @@ namespace appFBLA2019
         public async void UpdateQuestions(List<Question> questions)
         {
             await this.database.UpdateAllAsync(questions);
+        }
+
+        public async void AddScore(ScoreRecord score)
+        {
+            await this.database.InsertAsync(score);
         }
 
         public async Task<double> GetAvgScore()

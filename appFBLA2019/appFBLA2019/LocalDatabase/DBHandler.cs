@@ -13,7 +13,7 @@ namespace appFBLA2019
     static class DBHandler
     {
         public static GameDatabase Database { get; private set; }
-        private const string sqLiteExtension = ".db";
+        private const string sqLiteExtension = ".db3";
         
         /// <summary>
         /// 
@@ -41,7 +41,7 @@ namespace appFBLA2019
 
                     // On Android: Set appFBLA2019.Android's storage permissions to "on"
                     //string publicPath = $"/storage/emulated/0/{fileName}.db3";
-                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage() + $"/{fileName}.db3";
+                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage() + $"/{fileName}{sqLiteExtension}";
                     Database = new GameDatabase(publicPath, fileName);
 
                     return true;

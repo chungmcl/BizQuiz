@@ -12,6 +12,7 @@ namespace appFBLA2019
         //returns the avg score that the player gets on this level
         public static async Task<double> GetLevelAvgScore(string level)
         {
+            DBHandler.SelectDatabase(level);
             return await DBHandler.Database.GetAvgScore();
         }
 
@@ -109,9 +110,10 @@ namespace appFBLA2019
             this.Questions = new List<Question>(await DBHandler.Database.GetQuestions());
         }
 
-        public void SaveState()
+        public void SaveState(double score)
         {
             DBHandler.Database.UpdateQuestions(this.Questions);
+            DBHandler.Database.AddScore(new ScoreRecord(score));
         }
 
         public Question GetQuestion()

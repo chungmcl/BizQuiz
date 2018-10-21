@@ -74,13 +74,11 @@ namespace appFBLA2019
                             break;
                     }
                     this.GridButtons.Children.Add(button, currentColumn, currentRow);
-
-
                 }
             }
             else
             {
-                this.level.SaveState();
+                this.level.SaveState(this.score);
                 // Display a completion page?
             }
         }
