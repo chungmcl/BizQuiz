@@ -5,20 +5,7 @@
              xmlns:local="clr-namespace:appFBLA2019">
     <!--Titles should be implemented by the containing XAMl (LevelsPage.xaml), as should all of the below controls (soon as I figure that out);
     Let's only use one class for all the topics and pass parameters to the page to control them-->
-    <StackLayout>
-        <!--Make these more like cards that show the progress and some information about the topic that they correspond to-->
-        <Button x:Name="History" Text="History"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand"
-                Clicked="History_Clicked"/>
-        <Label  Text="Organization"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        <Label  Text="Officers"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        <Label  Text="Events"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+    <StackLayout x:Name="ButtonStack">
+        <!--buttons / progress cards go in here-->
     </StackLayout>
 </ContentPage>

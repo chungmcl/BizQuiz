@@ -2,8 +2,35 @@
 <TabbedPage  xmlns="http://xamarin.com/schemas/2014/forms"
                         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                         x:Class="appFBLA2019.LevelCategoriesPage"
-                        xmlns:local="clr-namespace:appFBLA2019">
-    <local:LevelSelectionPage Title="FBLA"/>
-    <local:LevelSelectionPage Title="Technology"/>
-    <local:LevelSelectionPage Title="Accounting"/>
+                        xmlns:local="clr-namespace:appFBLA2019"
+                        xmlns:sys="clr-namespace:System;assembly=netstandard">
+    <local:LevelSelectionPage Title="FBLA">
+        <x:Arguments>
+            <x:Array Type="{x:Type sys:String}">
+                <x:String>test</x:String>
+                <x:String>History</x:String>
+                <x:String>Structure</x:String>
+                <x:String>Officers</x:String>
+                <x:String>Events</x:String>
+            </x:Array>
+        </x:Arguments>
+    </local:LevelSelectionPage>
+    <local:LevelSelectionPage Title="Technology Events">
+        <x:Arguments>
+            <x:Array Type="{x:Type sys:String}">
+                <x:String>Coding and Programming</x:String>
+                <x:String>Computer Applications</x:String>
+                <x:String>Mobile App Development</x:String>
+                <x:String>Network Design</x:String>
+            </x:Array>
+        </x:Arguments>
+    </local:LevelSelectionPage>
+    <local:LevelSelectionPage Title="Business Events">
+        <x:Arguments>
+            <x:Array Type="{x:Type sys:String}">
+                <x:String>test</x:String>
+            </x:Array>
+        </x:Arguments>
+    </local:LevelSelectionPage>
+
 </TabbedPage>
