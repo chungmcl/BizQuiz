@@ -16,10 +16,6 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Button x:Name="ButtonOptionA" Grid.Column="0" Grid.Row="0" IsEnabled="false" Clicked="ButtonOptionA_Clicked"/>
-            <Button x:Name="ButtonOptionB" Grid.Column="1" Grid.Row="0" IsEnabled="false" Clicked="ButtonOptionB_Clicked"/>
-            <Button x:Name="ButtonOptionC" Grid.Column="0" Grid.Row="1" IsEnabled="false" Clicked="ButtonOptionC_Clicked"/>
-            <Button x:Name="ButtonOptionD" Grid.Column="1" Grid.Row="1" IsEnabled="false" Clicked="ButtonOptionD_Clicked"/>
         </Grid>
     </StackLayout>
 </ContentPage>

@@ -110,10 +110,7 @@ namespace appFBLA2019
 
         public Question GetQuestion()
         {
-            // TO DO: Push all incorrectly answered questions to the back of the stack before
-            // correctly answered questions.
-            // In other words, make the game repeat incorrectly answered questions when the player
-            // has answered all unanswered questions.
+            
             if (this.Questions != null && this.Questions.Count > 0)
             {
                 this.Questions.Sort();

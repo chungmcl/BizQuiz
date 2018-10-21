@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Xamarin.Forms;
 
 namespace appFBLA2019
 {
@@ -39,7 +40,8 @@ namespace appFBLA2019
                     //          , fileName);
 
                     // On Android: Set appFBLA2019.Android's storage permissions to "on"
-                    string publicPath = $"/storage/emulated/0/{fileName}.db3";
+                    //string publicPath = $"/storage/emulated/0/{fileName}.db3";
+                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage() + $"/{fileName}.db3";
                     Database = new GameDatabase(publicPath, fileName);
 
                     return true;
