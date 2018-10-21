@@ -23,7 +23,7 @@ namespace appFBLA2019.Droid
             base.OnCreate(bundle);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
-            LoadApplication(new App());
+            this.LoadApplication(new App());
         }
 
         public string GetStorage()

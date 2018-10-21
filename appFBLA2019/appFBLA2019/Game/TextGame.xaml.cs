@@ -25,8 +25,8 @@ namespace appFBLA2019
             // Save as reference
             this.currentQuestion = level.GetQuestion();
 
-            if (currentQuestion != null)
-                this.GetNextQuestion(currentQuestion);
+            if (this.currentQuestion != null)
+                this.GetNextQuestion(this.currentQuestion);
         }
         
         private void GetNextQuestion(Question question)
@@ -80,7 +80,7 @@ namespace appFBLA2019
             }
             else
             {
-                level.SaveState();
+                this.level.SaveState();
                 // Display a completion page?
             }
         }
@@ -92,9 +92,9 @@ namespace appFBLA2019
                 this.LabelDebug.Text = "Correct!";
                 //add 2 points for getting it right first time, 1 point for getting it right a second time or later
                 if (this.currentQuestion.Status == 0)
-                    score += 2;
+                    this.score += 2;
                 else
-                    score++;
+                    this.score++;
 
                 // 2 represents 'correct'
                 this.currentQuestion.Status = 2;
@@ -103,8 +103,8 @@ namespace appFBLA2019
                 this.ResetButtons();
 
                 // Save as reference
-                this.currentQuestion = level.GetQuestion();
-                this.GetNextQuestion(currentQuestion);
+                this.currentQuestion = this.level.GetQuestion();
+                this.GetNextQuestion(this.currentQuestion);
             }
             else
             {
@@ -116,7 +116,7 @@ namespace appFBLA2019
                 this.ResetButtons();
 
                 // Save as reference
-                this.currentQuestion = level.GetQuestion();
+                this.currentQuestion = this.level.GetQuestion();
                 this.GetNextQuestion(this.level.GetQuestion());
             }
         }

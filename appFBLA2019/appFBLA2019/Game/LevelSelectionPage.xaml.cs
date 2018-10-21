@@ -17,7 +17,7 @@ namespace appFBLA2019
 		{
             this.InitializeComponent ();
 
-            Setup(levels);
+            this.Setup(levels);
             //for (int i = 0; i < levels.Count(); i++)
             //{
             //    Button button = new Button
@@ -86,7 +86,7 @@ namespace appFBLA2019
 
                 frame.GestureRecognizers.Add(recognizer);
                 frame.Content = frameStack;
-                ButtonStack.Children.Add(frame);
+                this.ButtonStack.Children.Add(frame);
             }
         }
 
