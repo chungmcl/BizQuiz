@@ -15,8 +15,10 @@ namespace appFBLA2019
         private Level level;
         private Question currentQuestion;
         private string correct;
+        private int score;
 		public TextGame (Level level)
 		{
+            this.score = 0;
             this.InitializeComponent();
             this.level = level;
 
@@ -83,31 +85,17 @@ namespace appFBLA2019
             }
         }
 
-        //private void ButtonOptionA_Clicked(object sender, EventArgs e)
-        //{
-        //    this.CheckAnswer(AnswerButton.optionA);
-        //}
-
-        //private void ButtonOptionB_Clicked(object sender, EventArgs e)
-        //{
-        //    this.CheckAnswer(AnswerButton.optionB);
-        //}
-
-        //private void ButtonOptionC_Clicked(object sender, EventArgs e)
-        //{
-        //    this.CheckAnswer(AnswerButton.optionC);
-        //}
-
-        //private void ButtonOptionD_Clicked(object sender, EventArgs e)
-        //{
-        //    this.CheckAnswer(AnswerButton.optionD);
-        //}
-
         private void CheckAnswer(string answer)
         {
             if (answer == this.currentQuestion.CorrectAnswer)
             {
                 this.LabelDebug.Text = "Correct!";
+                //add 2 points for getting it right first time, 1 point for getting it right a second time or later
+                if (this.currentQuestion.Status == 0)
+                    score += 2;
+                else
+                    score++;
+
                 // 2 represents 'correct'
                 this.currentQuestion.Status = 2;
 

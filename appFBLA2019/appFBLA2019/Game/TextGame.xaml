@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:appFBLA2019">
     <StackLayout>
         <ProgressBar VerticalOptions="Start"/>
-        <Label x:Name="LabelQuestion" VerticalOptions="FillAndExpand"/>
+        <Label x:Name="LabelQuestion" VerticalOptions="FillAndExpand" FontSize="Large"/>
         <Label x:Name="LabelDebug" VerticalOptions="FillAndExpand"/>
         <Grid HeightRequest="320" VerticalOptions="End" x:Name="GridButtons">
             <Grid.ColumnDefinitions>

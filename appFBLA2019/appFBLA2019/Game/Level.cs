@@ -9,6 +9,12 @@ namespace appFBLA2019
 {
     public class Level
     {
+        //returns the avg score that the player gets on this level
+        public static async Task<double> GetLevelAvgScore(string level)
+        {
+            return await DBHandler.Database.GetAvgScore();
+        }
+
         public List<Question> Questions { get; set; }
         //if the first question has already been got, then we have 100% completion
         public bool QuestionsAvailable
