@@ -14,7 +14,7 @@ namespace appFBLA2019.Game
     {
         public LevelEndPage()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

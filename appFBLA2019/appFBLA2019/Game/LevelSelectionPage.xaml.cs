@@ -16,26 +16,7 @@ namespace appFBLA2019
         public LevelSelectionPage(String[] levels)
 		{
             this.InitializeComponent ();
-
             this.Setup(levels);
-            //for (int i = 0; i < levels.Count(); i++)
-            //{
-            //    Button button = new Button
-            //    {
-            //        Text = levels[i],
-            //        VerticalOptions = LayoutOptions.CenterAndExpand,
-            //        HorizontalOptions = LayoutOptions.CenterAndExpand
-            //    };
-            //    //adds an event handler to the button to deal with clicks
-            //    button.Clicked += async (object sender, EventArgs e) =>
-            //        {
-            //            Level level = new Level((sender as Button).Text);
-            //            await level.LoadQuestionsAsync();
-            //            await this.Navigation.PushAsync(new TextGame(level));
-            //        };
-
-                //    this.ButtonStack.Children.Add(button);
-                //}
         }
 
         private async void Setup(string[] levels)
@@ -68,15 +49,14 @@ namespace appFBLA2019
                 {
                     HorizontalOptions = LayoutOptions.End
                 });
-
-                //This needs to be fixed, idk how to use Async with the Database (or in general)
-                double avgScore = await Task.Run(() => Level.GetLevelAvgScore(levels[i]));
+                
+                double avgScore = await Level.GetLevelAvgScore(levels[i]);
+                
                 (frameStack.Children[1] as Label).Text = avgScore.ToString("00.0") ?? "0%";
 
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
-                    //messy but the best i have
                     Level level = new Level
                     ((((sender as Frame).Content as StackLayout).Children[0] as Label).Text);
                     await level.LoadQuestionsAsync();

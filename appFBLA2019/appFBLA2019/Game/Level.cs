@@ -10,7 +10,7 @@ namespace appFBLA2019
     public class Level
     {
         //returns the avg score that the player gets on this level
-        public static async Task<double> GetLevelAvgScore(string level)
+        public async static Task<double> GetLevelAvgScore(string level)
         {
             DBHandler.SelectDatabase(level);
             return await DBHandler.Database.GetAvgScore();
