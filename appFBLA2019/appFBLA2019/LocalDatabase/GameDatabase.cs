@@ -43,12 +43,19 @@ namespace appFBLA2019
         public async Task<double> GetAvgScore()
         {
             List<double> scores = await this.database.QueryAsync<double>("SELECT Score FROM ScoreRecord");
-            double runningTotal = 0;
-            foreach(double score in scores)
+            if (scores.Count <= 0)
             {
-                runningTotal += score;
+                return 0;
             }
-            return runningTotal / scores.Count;
+            else
+            {
+                double runningTotal = 0;
+                foreach (double score in scores)
+                {
+                    runningTotal += score;
+                }
+                return runningTotal / scores.Count;
+            }
         }
 
         public async void ClearDatabase()
