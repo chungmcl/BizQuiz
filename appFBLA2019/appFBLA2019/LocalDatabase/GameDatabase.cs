@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SQLite;
+using Realms;
+using System.Linq;
 
 namespace appFBLA2019
 {
@@ -12,37 +13,76 @@ namespace appFBLA2019
     /// </summary>
     public class GameDatabase
     {
-        private readonly SQLiteAsyncConnection database;
+        public Realm realmDB;
         public readonly string fileName;
         
         public GameDatabase(string dbPath, string fileName)
         {
-            this.database = new SQLiteAsyncConnection(dbPath);
-            this.fileName = fileName;
-            
-            // Create new table for Questions and ScoreRecords if they do not already exist
-            this.database.CreateTableAsync<Question>().Wait();
-            this.database.CreateTableAsync<ScoreRecord>().Wait();
+            try
+            {
+                RealmConfiguration rC = new RealmConfiguration(dbPath);
+                this.realmDB = Realm.GetInstance(rC);
+                this.fileName = fileName;
+            }
+            catch (Exception ex)
+            {
+                string test = ex.Message.ToString();
+            }
         }
 
-        public async Task<List<Question>> GetQuestions()
+        public List<Question> GetQuestions()
         {
-            return await this.database.QueryAsync<Question>("SELECT * FROM Question");
+            IQueryable<Question> queryable = this.realmDB.All<Question>();
+            return new List<Question>(queryable);
         }
 
-        public async void UpdateQuestions(List<Question> questions)
+        // Make changes to existing questions in the database and add new questions
+        public void UpdateQuestions(List<Question> questions)
         {
-            await this.database.UpdateAllAsync(questions);
+            int highestDBId = Increment() + 1;
+            foreach (Question question in questions)
+            {
+                question.DBId = highestDBId;
+                this.realmDB.Write(() =>
+                {
+                    this.realmDB.Add(question);
+                });
+                highestDBId++;
+            }
         }
 
-        public async void AddScore(ScoreRecord score)
+        public void AddQuestions(List<Question> questions)
         {
-            await this.database.InsertAsync(score);
+            foreach (Question question in questions)
+            {
+                this.realmDB.Write(() =>
+                {
+                    this.realmDB.Add(question);
+                });
+            }
         }
 
-        public async Task<double> GetAvgScore()
+        public void AddScore(ScoreRecord score)
         {
-            List<double> scores = await this.database.QueryAsync<double>("SELECT Score FROM ScoreRecord");
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(score);
+            });
+        }
+
+        // the increment of the next primary key
+        private int Increment()
+        {
+            IQueryable<Question> queryable = this.realmDB.All<Question>();
+            if (queryable.Count() == 0)
+                return 0;
+            return (queryable.OrderByDescending(question => question.DBId).First()).DBId;
+        }
+
+        public double GetAvgScore()
+        {
+            IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
+            List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
             if (scores.Count <= 0)
             {
                 return 0;
@@ -50,17 +90,12 @@ namespace appFBLA2019
             else
             {
                 double runningTotal = 0;
-                foreach (double score in scores)
+                foreach (ScoreRecord score in scores)
                 {
-                    runningTotal += score;
+                    runningTotal += score.Score;
                 }
                 return runningTotal / scores.Count;
             }
-        }
-
-        public async void ClearDatabase()
-        {
-            await this.database.DeleteAllAsync<Question>();
         }
     }
 }

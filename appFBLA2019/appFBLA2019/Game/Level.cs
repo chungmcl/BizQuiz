@@ -10,10 +10,10 @@ namespace appFBLA2019
     public class Level
     {
         //returns the avg score that the player gets on this level
-        public async static Task<double> GetLevelAvgScore(string level)
+        public static double GetLevelAvgScore(string level)
         {
             DBHandler.SelectDatabase(level);
-            return await DBHandler.Database.GetAvgScore();
+            return DBHandler.Database.GetAvgScore();
         }
 
         public List<Question> Questions { get; set; }
@@ -105,9 +105,9 @@ namespace appFBLA2019
             DBHandler.SelectDatabase(fileName);
         }
 
-        public async Task LoadQuestionsAsync()
+        public void LoadQuestions()
         {
-            this.Questions = new List<Question>(await DBHandler.Database.GetQuestions());
+            this.Questions = DBHandler.Database.GetQuestions();
         }
 
         public void SaveState(double score)
@@ -118,7 +118,6 @@ namespace appFBLA2019
 
         public Question GetQuestion()
         {
-            
             if (this.Questions != null && this.Questions.Count > 0)
             {
                 this.Questions.Sort();

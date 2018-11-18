@@ -17,6 +17,13 @@ namespace appFBLA2019
 		{
             this.InitializeComponent ();
             this.Setup(levels);
+
+            DBHandler.SelectDatabase("test");
+            Question testQuestion = new Question("test", "c/testA", "x/testB", "x/testC", "x/testD");
+            ScoreRecord scoreRecord = new ScoreRecord(7.0);
+            DBHandler.Database.AddScore(scoreRecord);
+            List<Question> questions = new List<Question>() { testQuestion };
+            DBHandler.Database.UpdateQuestions(questions);
         }
 
         private async void Setup(string[] levels)
@@ -49,17 +56,18 @@ namespace appFBLA2019
                 {
                     HorizontalOptions = LayoutOptions.End
                 });
-                
-                double avgScore = await Level.GetLevelAvgScore(levels[i]);
-                
+
+                double avgScore = Level.GetLevelAvgScore(levels[i]);
+
                 (frameStack.Children[1] as Label).Text = avgScore.ToString("00.0") ?? "0%";
 
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
+                    //messy but the best i have
                     Level level = new Level
                     ((((sender as Frame).Content as StackLayout).Children[0] as Label).Text);
-                    await level.LoadQuestionsAsync();
+                    level.LoadQuestions();
                     await this.Navigation.PushAsync(new TextGame(level));
                 };
 

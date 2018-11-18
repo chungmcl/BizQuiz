@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Realms;
 
 namespace appFBLA2019
 {
-    public struct ScoreRecord : IComparable
+    public class ScoreRecord : RealmObject, IComparable
     {
         public string DateTime { get; set; }
         public double Score { get; set; }
@@ -14,6 +15,9 @@ namespace appFBLA2019
             this.DateTime = System.DateTime.Now.ToString();
             this.Score = score;
         }
+
+        public ScoreRecord()
+        { }
 
         public int CompareTo(object obj)
         {

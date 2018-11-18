@@ -25,6 +25,7 @@ namespace appFBLA2019
             // Save as reference
             this.currentQuestion = level.GetQuestion();
 
+
             if (this.currentQuestion != null)
                 this.GetNextQuestion(this.currentQuestion);
         }
@@ -95,7 +96,9 @@ namespace appFBLA2019
                     this.score++;
 
                 // 2 represents 'correct'
-                this.currentQuestion.Status = 2;
+                DBHandler.Database.realmDB.Write(() =>
+                    this.currentQuestion.Status = 2
+                );
 
                 // Get the next question
                 this.ResetButtons();
@@ -108,7 +111,10 @@ namespace appFBLA2019
             {
                 this.LabelDebug.Text = "Incorrect!";
                 // 1 represents 'failed'
-                this.level.Questions[0].Status = 1;
+
+                DBHandler.Database.realmDB.Write(() =>
+                    this.level.Questions[0].Status = 1
+                );
 
                 // Get the next question
                 this.ResetButtons();
