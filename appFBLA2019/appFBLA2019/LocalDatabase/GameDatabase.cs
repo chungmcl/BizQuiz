@@ -36,8 +36,7 @@ namespace appFBLA2019
             return new List<Question>(queryable);
         }
 
-        // Make changes to existing questions in the database and add new questions
-        public void UpdateQuestions(List<Question> questions)
+        public void AddQuestions(List<Question> questions)
         {
             int highestDBId = Increment() + 1;
             foreach (Question question in questions)
@@ -48,17 +47,6 @@ namespace appFBLA2019
                     this.realmDB.Add(question);
                 });
                 highestDBId++;
-            }
-        }
-
-        public void AddQuestions(List<Question> questions)
-        {
-            foreach (Question question in questions)
-            {
-                this.realmDB.Write(() =>
-                {
-                    this.realmDB.Add(question);
-                });
             }
         }
 

@@ -110,12 +110,6 @@ namespace appFBLA2019
             this.Questions = DBHandler.Database.GetQuestions();
         }
 
-        public void SaveState(double score)
-        {
-            DBHandler.Database.UpdateQuestions(this.Questions);
-            DBHandler.Database.AddScore(new ScoreRecord(score));
-        }
-
         public Question GetQuestion()
         {
             if (this.Questions != null && this.Questions.Count > 0)

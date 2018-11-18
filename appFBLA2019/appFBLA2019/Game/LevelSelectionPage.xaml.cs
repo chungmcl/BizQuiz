@@ -17,16 +17,9 @@ namespace appFBLA2019
 		{
             this.InitializeComponent ();
             this.Setup(levels);
-
-            DBHandler.SelectDatabase("test");
-            Question testQuestion = new Question("test", "c/testA", "x/testB", "x/testC", "x/testD");
-            ScoreRecord scoreRecord = new ScoreRecord(7.0);
-            DBHandler.Database.AddScore(scoreRecord);
-            List<Question> questions = new List<Question>() { testQuestion };
-            DBHandler.Database.UpdateQuestions(questions);
         }
 
-        private async void Setup(string[] levels)
+        private void Setup(string[] levels)
         {
             for (int i = 0; i < levels.Count(); i++)
             {
