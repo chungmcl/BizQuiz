@@ -2,15 +2,33 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("appFBLA2019_Tests")]
 namespace appFBLA2019
 {
     public class Level
     {
-        List<Question> questions;
+        //returns the avg score that the player gets on this level
+        public static double GetLevelAvgScore(string level)
+        {
+            DBHandler.SelectDatabase(level);
+            return DBHandler.Database.GetAvgScore();
+        }
+
+        public List<Question> Questions { get; set; }
         //if the first question has already been got, then we have 100% completion
-        public bool QuestionsAvailable { get { this.questions.Sort(); return this.questions[0].Status != 2; } }
+        public bool QuestionsAvailable
+        {
+            get
+            {
+                if (this.Questions != null)
+                {
+                    return this.Questions[0].Status != 2;
+                }
+                return false;
+            }
+        }
         internal string Title { get; private set; }
         //leave this here, it can be the filebased constructor
         #region Text File Constructor
@@ -85,22 +103,38 @@ namespace appFBLA2019
         public Level(string fileName)
         {
             DBHandler.SelectDatabase(fileName);
-            this.LoadQuestions();
         }
 
-        private async void LoadQuestions()
+        public void LoadQuestions()
         {
-            this.questions = await DBHandler.Database.GetQuestions();
-        }
-
-        public void SaveState()
-        {
-            DBHandler.Database.UpdateQuestions(this.questions);
+            this.Questions = DBHandler.Database.GetQuestions();
         }
 
         public Question GetQuestion()
         {
-            return this.questions[0];
+            if (this.Questions != null && this.Questions.Count > 0)
+            {
+                this.Questions.Sort();
+
+                //randomly selects from questions that haven't been correct yet (includes unanswered)
+                //to make sure you don't get the same question every time
+                int availableQuestions = 0;
+                for (int i = 0; i < this.Questions.Count; i++)
+                {
+                    if (this.Questions[i].Status != 2)
+                    {
+                        availableQuestions++;
+                    }
+                }
+                // More elegant but doesn't work - out of range exception if no elements have a status of 2
+                //while (!(this.Questions[availableQuestions].Status == 2))
+                //{
+                //    availableQuestions++;
+                //}
+
+                return this.Questions[new Random().Next(0, availableQuestions)];
+            }
+            return null;
         }
     }
 }

@@ -21,9 +21,5 @@ namespace appFBLA2019
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
 #endif
         }
-
-        private async void ToolbarItem_Clicked(object sender, EventArgs e)
-        {
-        }
     }
 }

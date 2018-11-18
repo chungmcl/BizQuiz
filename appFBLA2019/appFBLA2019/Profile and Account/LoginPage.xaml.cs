@@ -11,12 +11,12 @@ namespace appFBLA2019
     {
         public LoginPage()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void ButtonLogin_Clicked(object sender, EventArgs e)
         {
-            Task login = Task.Run(() => Login(this.EntryUsername.Text,
+            Task login = Task.Run(() => this.Login(this.EntryUsername.Text,
                 this.EntryPassword.Text));
         }
 

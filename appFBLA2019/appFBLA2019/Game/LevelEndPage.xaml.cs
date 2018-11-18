@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace appFBLA2019
+namespace appFBLA2019.Game
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class LevelCategoriesPage : TabbedPage
-	{
-		public LevelCategoriesPage()
-		{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class LevelEndPage : ContentPage
+    {
+        public LevelEndPage()
+        {
             this.InitializeComponent();
-		}
-	}
+        }
+    }
 }

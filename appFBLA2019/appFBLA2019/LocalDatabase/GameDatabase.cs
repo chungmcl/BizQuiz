@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SQLite;
+using Realms;
+using System.Linq;
 
 namespace appFBLA2019
 {
@@ -12,30 +13,77 @@ namespace appFBLA2019
     /// </summary>
     public class GameDatabase
     {
-        private readonly SQLiteAsyncConnection database;
+        public Realm realmDB;
         public readonly string fileName;
         
         public GameDatabase(string dbPath, string fileName)
         {
-            this.database = new SQLiteAsyncConnection(dbPath);
-            this.fileName = fileName;
-
-            this.database.CreateTableAsync<Question>().Wait();
+            try
+            {
+                RealmConfiguration rC = new RealmConfiguration(dbPath);
+                this.realmDB = Realm.GetInstance(rC);
+                this.fileName = fileName;
+            }
+            catch (Exception ex)
+            {
+                string test = ex.Message.ToString();
+            }
         }
 
-        public Task<List<Question>> GetQuestions()
+        public List<Question> GetQuestions()
         {
-            return this.database.QueryAsync<Question>("SELECT * FROM Question");
+            IQueryable<Question> queryable = this.realmDB.All<Question>();
+            return new List<Question>(queryable);
         }
 
-        public async void UpdateQuestions(List<Question> questions)
+        public void AddQuestions(List<Question> questions)
         {
-            await this.database.InsertAllAsync(questions);
+            int highestDBId = Increment() + 1;
+            foreach (Question question in questions)
+            {
+                question.DBId = highestDBId;
+                this.realmDB.Write(() =>
+                {
+                    this.realmDB.Add(question);
+                });
+                highestDBId++;
+            }
         }
 
-        public async void ClearDatabase()
+        public void AddScore(ScoreRecord score)
         {
-            await this.database.DeleteAllAsync<Question>();
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(score);
+            });
+        }
+
+        // the increment of the next primary key
+        private int Increment()
+        {
+            IQueryable<Question> queryable = this.realmDB.All<Question>();
+            if (queryable.Count() == 0)
+                return 0;
+            return (queryable.OrderByDescending(question => question.DBId).First()).DBId;
+        }
+
+        public double GetAvgScore()
+        {
+            IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
+            List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
+            if (scores.Count <= 0)
+            {
+                return 0;
+            }
+            else
+            {
+                double runningTotal = 0;
+                foreach (ScoreRecord score in scores)
+                {
+                    runningTotal += score.Score;
+                }
+                return runningTotal / scores.Count;
+            }
         }
     }
 }

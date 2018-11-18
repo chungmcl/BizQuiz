@@ -14,12 +14,7 @@ namespace appFBLA2019
 	{
 		public LevelEditorPage ()
 		{
-			InitializeComponent ();
+			this.InitializeComponent ();
 		}
-
-        private void ButtonNewTextGameEditor_Clicked(object sender, EventArgs e)
-        {
-            this.Navigation.PushAsync(new TextGameEditor());
-        }
-    }
+	}
 }

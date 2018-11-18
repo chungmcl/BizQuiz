@@ -15,7 +15,6 @@ namespace appFBLA2019_Tests
             Assert.IsTrue(topic.Title == "TestTopic - Technology");
 
             appFBLA2019.Question question = topic.GetQuestion();
-            Assert.IsTrue(question.GetType() == typeof(Question));
             Assert.IsTrue(question.QuestionText == "What is a phone?");
             Assert.IsTrue(question.CorrectAnswer == "A tool");
         }

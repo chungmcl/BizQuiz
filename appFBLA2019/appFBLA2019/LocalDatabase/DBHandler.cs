@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Xamarin.Forms;
 
 namespace appFBLA2019
 {
@@ -12,7 +13,7 @@ namespace appFBLA2019
     static class DBHandler
     {
         public static GameDatabase Database { get; private set; }
-        private const string sqLiteExtension = ".db3";
+        private const string realmExtension = ".realm";
         
         /// <summary>
         /// 
@@ -28,11 +29,21 @@ namespace appFBLA2019
                 // connect to the database specified in the parameter fileName
                 if (Database == null || Database.fileName != fileName)
                 {
-                    Database = new GameDatabase(
-                      Path.Combine(
-                          Environment.GetFolderPath(
-                              Environment.SpecialFolder.LocalApplicationData), fileName + sqLiteExtension)
-                              , fileName);
+                    // This path should be used when app is finished
+                    // This will hide the application database and prevent it from
+                    // unwanted user manipulation
+
+                    //Database = new GameDatabase(
+                    //  Path.Combine(
+                    //      Environment.GetFolderPath(
+                    //          Environment.SpecialFolder.LocalApplicationData), fileName + sqLiteExtension)
+                    //          , fileName);
+
+                    // On Android: Set appFBLA2019.Android's storage permissions to "on"
+                    //string publicPath = $"/storage/emulated/0/{fileName}.db3";
+                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage() + $"/{fileName}{realmExtension}";
+                    Database = new GameDatabase(publicPath, fileName);
+
                     return true;
                 }
                 else // Otherwise, the database being requested is already open
@@ -40,8 +51,9 @@ namespace appFBLA2019
                     return true;
                 }
             }
-            catch // If the database failed to connect
+            catch (Exception ex)// If the database failed to connect
             {
+                string test = ex.Message.ToString();
                 return false;
             }
         }

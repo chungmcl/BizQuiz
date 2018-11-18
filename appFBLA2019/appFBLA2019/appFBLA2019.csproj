@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="sqlite-net-pcl" Version="1.5.231" />
-    <PackageReference Include="Xamarin.Forms" Version="3.1.0.637273" />
+    <PackageReference Include="Realm" Version="3.3.0" />
+    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,22 +23,16 @@
     <Compile Update="LevelEditor\LevelEditorPage.xaml.cs">
       <DependentUpon>LevelEditorPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="LevelEditor\TextGameEditorPage.xaml.cs">
-      <DependentUpon>TextGameEditorPage.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Game\LevelEndPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Game\TextGame.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="LevelEditor\LevelEditorPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LevelEditor\QuestionEditorPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LevelEditor\TextGameEditorPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Profile and Account\CreateAccountPage.xaml">
