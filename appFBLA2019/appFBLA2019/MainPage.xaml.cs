@@ -15,16 +15,11 @@ namespace appFBLA2019
 	{
 		public MainPage ()
 		{
-			InitializeComponent ();
+			this.InitializeComponent ();
             // Default tabs on Android are on top - Set to bottom on Android (to serve as Navigation)
 #if __ANDROID__
-            On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
+            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
 #endif
-        }
-
-        private async void ToolbarItem_Clicked(object sender, EventArgs e)
-        {
-            await this.Navigation.PushAsync(new LoginPage());
         }
     }
 }

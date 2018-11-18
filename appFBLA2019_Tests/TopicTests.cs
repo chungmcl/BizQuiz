@@ -10,16 +10,22 @@ namespace appFBLA2019_Tests
         [TestMethod]
         public void LoadTopic()
         {
-            appFBLA2019.Topic topic = new Topic("TestTopic.txt");
+            appFBLA2019.Level topic = new Level("TestTopic.txt");
 
-            Assert.IsTrue(topic.title == "TestTopic - Technology");
+            Assert.IsTrue(topic.Title == "TestTopic - Technology");
 
-            topic.Set();
-            Assert.IsTrue(topic.GetQuestion().GetType() == typeof(Question));
-            topic.Set();
-            Assert.IsTrue(topic.GetQuestion().QuestionText == "What is a phone?");
-            topic.Set();
-            Assert.IsTrue(topic.GetQuestion().correctAnswer == "A tool");
+            appFBLA2019.Question question = topic.GetQuestion();
+            Assert.IsTrue(question.QuestionText == "What is a phone?");
+            Assert.IsTrue(question.CorrectAnswer == "A tool");
+        }
+
+        [TestMethod]
+        public void EmptyQuestion()
+        {
+            appFBLA2019.Question question = new appFBLA2019.Question();
+
+            Assert.IsTrue(question.QuestionText == "This question is empty!");
+            Assert.IsTrue(question.CorrectAnswer == null);
         }
     }
 }

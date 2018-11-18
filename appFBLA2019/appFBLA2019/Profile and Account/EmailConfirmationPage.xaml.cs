@@ -18,10 +18,10 @@ namespace appFBLA2019
         public event ConfirmLaterSelectedEventHandler ConfirmLaterSelected;
         public EmailConfirmationPage(string username)
         {
-            InitializeComponent();
+            this.InitializeComponent();
             this.username = username;
             this.LabelTitle.Text = "Loading...";
-            Task getEmail = Task.Run(() => GetEmail());
+            Task getEmail = Task.Run(() => this.GetEmail());
         }
 
         private async Task GetEmail()
@@ -44,7 +44,7 @@ namespace appFBLA2019
 
         private void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
         {
-            Task confirmEmail = Task.Run(() => ConfirmEmail(
+            Task confirmEmail = Task.Run(() => this.ConfirmEmail(
                 this.EntryConfirmationCode.Text,
                 this.username));
         }
@@ -62,7 +62,7 @@ namespace appFBLA2019
                 {
                     Device.BeginInvokeOnMainThread(async () =>
                     {
-                        OnEmailConfirmed();
+                        this.OnEmailConfirmed();
                         await this.Navigation.PopModalAsync(true);
                     });
                 }
@@ -81,7 +81,7 @@ namespace appFBLA2019
 
         private void ButtonFixEmail_Clicked(object sender, EventArgs e)
         {
-            Task changeEmail = Task.Run(() => ChangeEmail(
+            Task changeEmail = Task.Run(() => this.ChangeEmail(
                 this.EntryChangeEmail.Text,
                 this.username));
         }
@@ -113,7 +113,7 @@ namespace appFBLA2019
 
         private async void ButtonClose_Clicked(object sender, EventArgs e)
         {
-            OnConfirmLaterSelected();
+            this.OnConfirmLaterSelected();
             await this.Navigation.PopModalAsync(true);
         }
 
