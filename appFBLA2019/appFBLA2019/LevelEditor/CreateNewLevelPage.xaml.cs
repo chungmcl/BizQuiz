@@ -74,11 +74,44 @@ namespace appFBLA2019
 
         private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
-            foreach(Frame frame in this.StackLayoutQuestionStack.Children)
+            List<Question> toAdd = new List<Question>();
+            foreach (Frame frame in this.StackLayoutQuestionStack.Children)
             {
-                
+                string question = "";
+                string answerCorrect = "";
+                string answerOne = "";
+                string answerTwo = "";
+                string answerThree = "";
+                int counter = 0;
+                foreach (Entry entry in ((StackLayout)(frame.Content)).Children)
+                {
+                    switch (counter)
+                    {
+                        case 0:
+                            question = entry.Text;
+                            break;
+                        case 1:
+                            answerCorrect = entry.Text;
+                            break;
+                        case 2:
+                            answerOne = entry.Text;
+                            break;
+                        case 3:
+                            answerTwo = entry.Text;
+                            break;
+                        case 4:
+                            answerThree = entry.Text;
+                            break;
+                    }
+                    counter++;
+                }
+                toAdd.Add(new Question(question, "c/" + answerCorrect,
+                    "x/" + answerOne,
+                    "x/" + answerTwo,
+                    "x/" + answerThree));
             }
             DBHandler.SelectDatabase(this.EntryLevelName.Text);
+            DBHandler.Database.AddQuestions(toAdd);
         }
     }
 }
