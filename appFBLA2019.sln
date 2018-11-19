@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "appFBLA2019.Android", "appFBLA2019\appFBLA2019.Android\appFBLA2019.Android.csproj", "{A86F618D-46E9-401C-9070-63FB6A86B520}"
+	ProjectSection(ProjectDependencies) = postProject
+		{34710BBA-B871-4098-AB55-F4713D59E43A} = {34710BBA-B871-4098-AB55-F4713D59E43A}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "appFBLA2019.iOS", "appFBLA2019\appFBLA2019.iOS\appFBLA2019.iOS.csproj", "{34710BBA-B871-4098-AB55-F4713D59E43A}"
 EndProject
