@@ -12,19 +12,16 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class CreateNewLevelPage : ContentPage
 	{
-        private int FrameIDCounter;
 		public CreateNewLevelPage ()
 		{           
-			InitializeComponent ();
-            this.FrameIDCounter = 0;
-            AddNewQuestion();
+			this.InitializeComponent ();
+            this.AddNewQuestion();
         }
 
         private void AddNewQuestion()
         {
             Frame frame = new Frame()
             {
-                ClassId = (this.FrameIDCounter++).ToString(),
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 CornerRadius = 10,
@@ -66,14 +63,20 @@ namespace appFBLA2019
             };
             frameStack.Children.Add(AnswerWrongThree);
 
-            SwipeGestureRecognizer swipe = new SwipeGestureRecognizer();
-            swipe.Direction = SwipeDirection.Left;
+            SwipeGestureRecognizer swipe = new SwipeGestureRecognizer
+            {
+                Direction = SwipeDirection.Left
+            };
             swipe.Swiped += (object sender, SwipedEventArgs e) =>
             {
                 // "sender" is a reference to the object that was swiped
                 // "sender" was tested and it returned the correct Frame
-                // It is throwing an exception when removed, I don't know why
-                this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
+                // It is throwing an exception when this code is called, I don't know why
+                //this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
+
+                // This techinically works but doesn't genuinely remove the object from memory
+                //((Frame)sender).Content = null;
+                //((Frame)sender).IsVisible = false;
             };
 
             frame.GestureRecognizers.Add(swipe);
@@ -83,7 +86,7 @@ namespace appFBLA2019
 
         private void ButtonAddQuestion_Clicked(object sender, EventArgs e)
         {
-            AddNewQuestion();
+            this.AddNewQuestion();
         }
 
         private void ButtonCreateLevel_Clicked(object sender, EventArgs e)

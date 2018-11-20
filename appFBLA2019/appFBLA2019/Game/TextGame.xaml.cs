@@ -79,7 +79,7 @@ namespace appFBLA2019
             }
             else
             {
-                DBHandler.Database.AddScore(new ScoreRecord(score));
+                DBHandler.Database.AddScore(new ScoreRecord(this.score));
                 // Display a completion page?
             }
         }
