@@ -12,9 +12,11 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class CreateNewLevelPage : ContentPage
 	{
+        private int FrameIDCounter;
 		public CreateNewLevelPage ()
 		{           
 			InitializeComponent ();
+            this.FrameIDCounter = 0;
             AddNewQuestion();
         }
 
@@ -22,9 +24,10 @@ namespace appFBLA2019
         {
             Frame frame = new Frame()
             {
+                ClassId = (this.FrameIDCounter++).ToString(),
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
-                CornerRadius = 10
+                CornerRadius = 10,
             };
 
             StackLayout frameStack = new StackLayout
@@ -63,16 +66,17 @@ namespace appFBLA2019
             };
             frameStack.Children.Add(AnswerWrongThree);
 
-            //Swiping doesn't work yet
-            //SwipeGestureRecognizer swipe = new SwipeGestureRecognizer(); 
+            SwipeGestureRecognizer swipe = new SwipeGestureRecognizer();
+            swipe.Direction = SwipeDirection.Left;
+            swipe.Swiped += (object sender, SwipedEventArgs e) =>
+            {
+                // "sender" is a reference to the object that was swiped
+                // "sender" was tested and it returned the correct Frame
+                // It is throwing an exception when removed, I don't know why
+                this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
+            };
 
-            //swipe.Swiped += (object sender, SwipedEventArgs e) =>
-            //{
-            //    this.StackLayoutQuestionStack.Children.Remove(frame);
-                
-            //};
-
-            //frame.GestureRecognizers.Add(swipe);
+            frame.GestureRecognizers.Add(swipe);
             frame.Content = frameStack;
             this.StackLayoutQuestionStack.Children.Add(frame);
         }
