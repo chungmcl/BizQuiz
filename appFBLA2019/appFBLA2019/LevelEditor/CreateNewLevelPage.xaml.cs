@@ -63,6 +63,16 @@ namespace appFBLA2019
             };
             frameStack.Children.Add(AnswerWrongThree);
 
+            //Swiping doesn't work yet
+            //SwipeGestureRecognizer swipe = new SwipeGestureRecognizer(); 
+
+            //swipe.Swiped += (object sender, SwipedEventArgs e) =>
+            //{
+            //    this.StackLayoutQuestionStack.Children.Remove(frame);
+                
+            //};
+
+            //frame.GestureRecognizers.Add(swipe);
             frame.Content = frameStack;
             this.StackLayoutQuestionStack.Children.Add(frame);
         }
