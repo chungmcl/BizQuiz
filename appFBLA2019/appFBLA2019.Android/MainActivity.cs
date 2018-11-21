@@ -6,14 +6,14 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
-using Plugin.FacebookClient;
-using Android.Content;
-using Plugin.FacebookClient.Abstractions;
+using Xamarin.Forms;
+using appFBLA2019.Droid;
 
+[assembly: Dependency(typeof(MainActivity))]
 namespace appFBLA2019.Droid
 {
     [Activity(Label = "appFBLA2019", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage
     {
         protected override void OnCreate(Bundle bundle)
         {
@@ -21,16 +21,14 @@ namespace appFBLA2019.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
-            FacebookClientManager.Initialize(this);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
-            LoadApplication(new App());
+            this.LoadApplication(new App());
         }
 
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent intent)
+        public string GetStorage()
         {
-            base.OnActivityResult(requestCode, resultCode, intent);
-            FacebookClientManager.OnActivityResult(requestCode, resultCode, intent);
+            return Android.OS.Environment.ExternalStorageDirectory.ToString();
         }
     }
 }

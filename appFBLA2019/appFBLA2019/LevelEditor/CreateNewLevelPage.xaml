@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.CreateNewLevelPage">
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout>
+                <Label Text="Create a new level"
+                    VerticalOptions="Start"
+                    HorizontalOptions="CenterAndExpand" />
+                <Entry x:Name="EntryLevelName"  Placeholder="Level Name" />
+                <StackLayout x:Name="StackLayoutQuestionStack" Padding="10">
+                    <!--Things added in code-->
+                </StackLayout>
+                <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked"/>
+                <Button x:Name="ButtonCreateLevel" Text="Create" Clicked="ButtonCreateLevel_Clicked"/>
+            </StackLayout> 
+        </ScrollView>
+
+    </ContentPage.Content>
+</ContentPage>

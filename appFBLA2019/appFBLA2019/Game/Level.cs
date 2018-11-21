@@ -9,6 +9,13 @@ namespace appFBLA2019
 {
     public class Level
     {
+        //returns the avg score that the player gets on this level
+        public static double GetLevelAvgScore(string level)
+        {
+            DBHandler.SelectDatabase(level);
+            return DBHandler.Database.GetAvgScore();
+        }
+
         public List<Question> Questions { get; set; }
         //if the first question has already been got, then we have 100% completion
         public bool QuestionsAvailable
@@ -98,22 +105,13 @@ namespace appFBLA2019
             DBHandler.SelectDatabase(fileName);
         }
 
-        public async Task LoadQuestionsAsync()
+        public void LoadQuestions()
         {
-            this.Questions = new List<Question>(await DBHandler.Database.GetQuestions());
-        }
-
-        public void SaveState()
-        {
-            DBHandler.Database.UpdateQuestions(this.Questions);
+            this.Questions = DBHandler.Database.GetQuestions();
         }
 
         public Question GetQuestion()
         {
-            // TO DO: Push all incorrectly answered questions to the back of the stack before
-            // correctly answered questions.
-            // In other words, make the game repeat incorrectly answered questions when the player
-            // has answered all unanswered questions.
             if (this.Questions != null && this.Questions.Count > 0)
             {
                 this.Questions.Sort();
