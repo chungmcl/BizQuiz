@@ -1,18 +1,18 @@
-﻿using SQLite;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Realms;
 
 namespace appFBLA2019
 {
     /// <summary>
     /// The question object holds both the question text and answers for a particular question to ask the user.
     /// </summary>
-    public class Question : IComparable
+    public class Question : RealmObject, IComparable
     {
         // Primary key ID for database
-        [PrimaryKey, AutoIncrement]
-        public Int32 DBId { get; set; }
+        [PrimaryKey]
+        public int DBId { get; set; }
         // SQLITE WILL IGNORE ALL PROPERTIES THAT ARE NOT DEFINED BY public { get; set; }
 
         //declare enum (to use this type other places, say Question.QuestionStatus)

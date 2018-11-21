@@ -12,26 +12,22 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class TextGame : ContentPage
 	{
-        private enum AnswerButton
-        {
-            optionA,
-            optionB,
-            optionC,
-            optionD
-        }
         private Level level;
-        private AnswerButton correctAnswer;
         private Question currentQuestion;
+        private string correct;
+        private int score;
 		public TextGame (Level level)
 		{
+            this.score = 0;
             this.InitializeComponent();
             this.level = level;
 
             // Save as reference
             this.currentQuestion = level.GetQuestion();
 
-            if (currentQuestion != null)
-                this.GetNextQuestion(currentQuestion);
+
+            if (this.currentQuestion != null)
+                this.GetNextQuestion(this.currentQuestion);
         }
         
         private void GetNextQuestion(Question question)
@@ -39,70 +35,92 @@ namespace appFBLA2019
             if (this.level.QuestionsAvailable)
             {
                 this.LabelQuestion.Text = question.QuestionText;
+                this.correct = question.CorrectAnswer;
+                this.GridButtons.Children.Clear();
+
+                int topDimension = (int)Math.Ceiling(Math.Sqrt(question.Answers.Count()));
+                int sideDimension = (int)Math.Ceiling(question.Answers.Count() / (double)topDimension);
+
+                int currentRow = 0;
+                int currentColumn = 0;
                 for (int i = 0; i < question.Answers.Count(); i++)
                 {
                     string answer = question.Answers[i];
-                    if (answer == question.CorrectAnswer)
+                    Button button = new Button
                     {
-                        this.correctAnswer = (AnswerButton)(i);
+                        Text = answer
+                    };
+                    button.Clicked += (object sender, EventArgs e) =>
+                    {
+                        this.CheckAnswer((sender as Button).Text);
+                    };
+                    //this is gross and messy, need to find a better way to place buttons correctly with math and stuff
+                    switch (i)
+                    {
+                        case 0:
+                            currentColumn = 0;
+                            currentRow = 0;
+                            break;
+                        case 1:
+                            currentColumn = 1;
+                            currentRow = 0;
+                            break;
+                        case 2:
+                            currentColumn = 0;
+                            currentRow = 1;
+                            break;
+                        case 3:
+                            currentColumn = 1;
+                            currentRow = 1;
+                            break;
                     }
-                    this.GridButtons.Children[i].IsEnabled = true;
-                    ((Button)this.GridButtons.Children[i]).Text = answer;
+                    this.GridButtons.Children.Add(button, currentColumn, currentRow);
                 }
             }
             else
             {
-                level.SaveState();
+                DBHandler.Database.AddScore(new ScoreRecord(score));
                 // Display a completion page?
             }
         }
 
-        private void ButtonOptionA_Clicked(object sender, EventArgs e)
+        private void CheckAnswer(string answer)
         {
-            this.CheckAnswer(AnswerButton.optionA);
-        }
-
-        private void ButtonOptionB_Clicked(object sender, EventArgs e)
-        {
-            this.CheckAnswer(AnswerButton.optionB);
-        }
-
-        private void ButtonOptionC_Clicked(object sender, EventArgs e)
-        {
-            this.CheckAnswer(AnswerButton.optionC);
-        }
-
-        private void ButtonOptionD_Clicked(object sender, EventArgs e)
-        {
-            this.CheckAnswer(AnswerButton.optionD);
-        }
-
-        private void CheckAnswer(AnswerButton answer)
-        {
-            if (answer == this.correctAnswer)
+            if (answer == this.currentQuestion.CorrectAnswer)
             {
                 this.LabelDebug.Text = "Correct!";
+                //add 2 points for getting it right first time, 1 point for getting it right a second time or later
+                if (this.currentQuestion.Status == 0)
+                    this.score += 2;
+                else
+                    this.score++;
+
                 // 2 represents 'correct'
-                this.currentQuestion.Status = 2;
+                DBHandler.Database.realmDB.Write(() =>
+                    this.currentQuestion.Status = 2
+                );
 
                 // Get the next question
                 this.ResetButtons();
 
                 // Save as reference
-                this.currentQuestion = level.GetQuestion();
-                this.GetNextQuestion(currentQuestion);
+                this.currentQuestion = this.level.GetQuestion();
+                this.GetNextQuestion(this.currentQuestion);
             }
             else
             {
                 this.LabelDebug.Text = "Incorrect!";
                 // 1 represents 'failed'
-                this.level.Questions[0].Status = 1;
+
+                DBHandler.Database.realmDB.Write(() =>
+                    this.level.Questions[0].Status = 1
+                );
 
                 // Get the next question
                 this.ResetButtons();
 
                 // Save as reference
-                this.currentQuestion = level.GetQuestion();
+                this.currentQuestion = this.level.GetQuestion();
                 this.GetNextQuestion(this.level.GetQuestion());
             }
         }

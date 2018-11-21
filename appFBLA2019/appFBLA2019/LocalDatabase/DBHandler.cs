@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Xamarin.Forms;
 
 namespace appFBLA2019
 {
@@ -12,7 +13,7 @@ namespace appFBLA2019
     static class DBHandler
     {
         public static GameDatabase Database { get; private set; }
-        private const string sqLiteExtension = ".db";
+        private const string realmExtension = ".realm";
         
         /// <summary>
         /// 
@@ -39,7 +40,8 @@ namespace appFBLA2019
                     //          , fileName);
 
                     // On Android: Set appFBLA2019.Android's storage permissions to "on"
-                    string publicPath = $"/storage/emulated/0/{fileName}.db3";
+                    //string publicPath = $"/storage/emulated/0/{fileName}.db3";
+                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage() + $"/{fileName}{realmExtension}";
                     Database = new GameDatabase(publicPath, fileName);
 
                     return true;
@@ -49,8 +51,9 @@ namespace appFBLA2019
                     return true;
                 }
             }
-            catch // If the database failed to connect
+            catch (Exception ex)// If the database failed to connect
             {
+                string test = ex.Message.ToString();
                 return false;
             }
         }

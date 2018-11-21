@@ -16,5 +16,15 @@ namespace appFBLA2019
 		{
 			this.InitializeComponent ();
 		}
-	}
+
+        private void ButtonEdit_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushAsync(new EditLevelPage());
+        }
+
+        private void ButtonCreate_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushAsync(new CreateNewLevelPage());
+        }
+    }
 }

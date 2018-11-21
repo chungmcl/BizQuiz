@@ -13,6 +13,7 @@ namespace appFBLA2019
 		{
 			this.InitializeComponent();
             this.MainPage = new NavigationPage(new MainPage());
+            Xamarin.Forms.DependencyService.Register<IGetStorage>();
         }
 
         protected override void OnStart ()
@@ -22,8 +23,8 @@ namespace appFBLA2019
 
 		protected override void OnSleep ()
 		{
-			// Handle when your app sleeps
-		}
+            // Handle when your app sleeps
+        }
 
 		protected override void OnResume ()
 		{
