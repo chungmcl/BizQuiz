@@ -22,7 +22,7 @@ namespace appFBLA2019
         private async void History_Clicked(object sender, EventArgs e)
         {
             Level level = new Level("test");
-            await level.LoadQuestionsAsync();
+            //await level.LoadQuestionsAsync();
 
             await this.Navigation.PushAsync(new TextGame(level));
         }
