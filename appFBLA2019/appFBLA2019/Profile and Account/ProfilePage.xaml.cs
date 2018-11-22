@@ -16,18 +16,12 @@ namespace appFBLA2019
 	{
 		public ProfilePage ()
 		{
-			InitializeComponent ();
+			this.InitializeComponent ();
 		}
 
         private async void ButtonToLoginPage_Clicked(object sender, EventArgs e)
         {
             await this.Navigation.PushAsync(new LoginPage());
-        }
-
-        private async void ButtonShare_Clicked(object sender, EventArgs e)
-        {
-            FacebookShareLinkContent linkContent = new FacebookShareLinkContent("Check out my github", new Uri("https://github.com/chungmcl"));
-            var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
         }
     }
 }

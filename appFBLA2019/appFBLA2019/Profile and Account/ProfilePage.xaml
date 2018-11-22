@@ -7,6 +7,5 @@
     <StackLayout>
         <Button x:Name="ButtonToLoginPage" Text="Login"
             Clicked="ButtonToLoginPage_Clicked" VerticalOptions="CenterAndExpand"/>
-        <Button x:Name="ButtonShare" Text="Share" Clicked="ButtonShare_Clicked"/>
     </StackLayout>
 </ContentPage>
