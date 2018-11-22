@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Plugin.FacebookClient;
+using Plugin.FacebookClient.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +16,7 @@ namespace appFBLA2019
 	{
 		public ProfilePage ()
 		{
-			InitializeComponent ();
+			this.InitializeComponent ();
 		}
 
         private async void ButtonToLoginPage_Clicked(object sender, EventArgs e)
