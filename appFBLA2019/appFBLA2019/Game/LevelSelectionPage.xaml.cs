@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,10 +14,19 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LevelSelectionPage : ContentPage
 	{
-        public LevelSelectionPage(String[] levels)
+        public LevelSelectionPage()
 		{
             this.InitializeComponent ();
-            this.Setup(levels);
+            // Replace "DependencyService... .GetStorage()" with the location where the databases are being stored
+            DirectoryInfo dInfo = new DirectoryInfo(DependencyService.Get<IGetStorage>().GetStorage());
+
+            FileInfo[] files = dInfo.GetFiles("*.realm");
+            List<string> levels = new List<string>();
+            foreach (FileInfo file in files)
+            {
+                levels.Add((file.Name.Split('.'))[0]);
+            }
+            this.Setup(levels.ToArray());
         }
 
         private void Setup(string[] levels)
@@ -71,7 +81,7 @@ namespace appFBLA2019
             }
         }
 
-        public LevelSelectionPage()
-        { }
+        //public LevelSelectionPage()
+        //{ }
     }
 }

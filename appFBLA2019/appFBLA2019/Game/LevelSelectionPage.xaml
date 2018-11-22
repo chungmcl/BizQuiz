@@ -4,7 +4,11 @@
              x:Class="appFBLA2019.LevelSelectionPage"
              xmlns:local="clr-namespace:appFBLA2019">
     <!--Titles should be implemented by the containing XAMl (LevelCategoriesPage.xaml) -->
-    <StackLayout x:Name="ButtonStack" Padding="10">
-        <!--buttons / progress cards get placed in here-->
-    </StackLayout>
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout x:Name="ButtonStack" Padding="10">
+                <!--buttons / progress cards get placed in here-->
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
 </ContentPage>
