@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.TextGame"
              xmlns:local="clr-namespace:appFBLA2019">
-    <StackLayout>
+    <StackLayout x:Name="StackLayoutMain">
         <ProgressBar VerticalOptions="Start"/>
         <Label x:Name="LabelQuestion" VerticalOptions="FillAndExpand" FontSize="Large"/>
         <Label x:Name="LabelDebug" VerticalOptions="FillAndExpand"/>
