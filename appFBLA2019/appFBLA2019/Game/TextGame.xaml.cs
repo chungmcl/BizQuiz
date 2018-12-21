@@ -105,40 +105,11 @@ namespace appFBLA2019
         {
             if (answer == this.currentQuestion.CorrectAnswer)
             {
-                this.LabelDebug.Text = "Correct!";
-                //add 2 points for getting it right first time, 1 point for getting it right a second time or later
-                if (this.currentQuestion.Status == 0)
-                    this.score += 2;
-                else
-                    this.score++;
-
-                // 2 represents 'correct'
-                DBHandler.Database.realmDB.Write(() =>
-                    this.currentQuestion.Status = 2
-                );
-
-                // Get the next question
-                this.ResetButtons();
-
-                // Save as reference
-                this.currentQuestion = this.level.GetQuestion();
-                await this.GetNextQuestion(this.currentQuestion);
+                await this.CorrectAnswer();
             }
             else
             {
-                this.LabelDebug.Text = "Incorrect!";
-                // 1 represents 'failed'
-
-                DBHandler.Database.realmDB.Write(() =>
-                    this.level.Questions[0].Status = 1
-                );
-
-                // Get the next question
-                this.ResetButtons();
-
-                // Save as reference
-                this.currentQuestion = this.level.GetQuestion();
-                await this.GetNextQuestion(this.level.GetQuestion());
+                await this.IncorrectAnswer(true);
             }
         }
 
@@ -152,10 +123,60 @@ namespace appFBLA2019
                 correctAnswer = correctAnswer.ToLower();
             }
 
-            if (answer == this.currentQuestion.CorrectAnswer)
+            if (answer == correctAnswer)
             {
-
+                await this.CorrectAnswer();
             }
+            else
+            {
+                await this.IncorrectAnswer(false);
+            }
+        }
+
+        private async Task CorrectAnswer()
+        {
+            this.LabelDebug.Text = "Correct!";
+            //add 2 points for getting it right first time, 1 point for getting it right a second time or later
+            if (this.currentQuestion.Status == 0)
+                this.score += 2;
+            else
+                this.score++;
+
+            // 2 represents 'correct'
+            DBHandler.Database.realmDB.Write(() =>
+                this.currentQuestion.Status = 2
+            );
+
+            // Get the next question
+            this.ResetButtons();
+
+            // Save as reference
+            this.currentQuestion = this.level.GetQuestion();
+            await this.GetNextQuestion(this.currentQuestion);
+        }
+
+        private async Task IncorrectAnswer(bool IsMultipleChoice)
+        {
+            this.LabelDebug.Text = "Incorrect!";
+            // 1 represents 'failed'
+
+            DBHandler.Database.realmDB.Write(() =>
+                this.level.Questions[0].Status = 1
+            );
+
+            if (IsMultipleChoice)
+            {
+                // Get the next question
+                this.ResetButtons();
+            }
+            else
+            {
+                // Reset text...?
+            }
+
+            // Save as reference
+            this.currentQuestion = this.level.GetQuestion();
+            await this.GetNextQuestion(this.level.GetQuestion());
         }
 
         private void ResetButtons()
@@ -164,6 +185,11 @@ namespace appFBLA2019
             {
                 button.IsEnabled = false;
             }
+        }
+
+        private void ResetTextEntry()
+        {
+            
         }
     }
 }
