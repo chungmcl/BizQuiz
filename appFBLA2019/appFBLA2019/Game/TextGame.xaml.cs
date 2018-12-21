@@ -35,7 +35,7 @@ namespace appFBLA2019
             {
                 this.LabelQuestion.Text = question.QuestionText;
                 this.correct = question.CorrectAnswer;
-                this.GridButtons.Children.Clear();
+                this.GridEntryObjects.Children.Clear();
 
                 if (question.QuestionType == 0) // If multiple-choice button question
                 {
@@ -75,22 +75,26 @@ namespace appFBLA2019
                                 currentRow = 1;
                                 break;
                         }
-                        this.GridButtons.Children.Add(button, currentColumn, currentRow);
+                        this.GridEntryObjects.Children.Add(button, currentColumn, currentRow);
                     }
                 }
                 else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
                 {
                     Entry entry = new Entry();
-                    this.StackLayoutMain.Children.Add(entry);
                     Button buttonCheckAnswer = new Button
                     {
                         Text = "Check Answer"
                     };
-                    this.StackLayoutMain.Children.Add(buttonCheckAnswer);
                     buttonCheckAnswer.Clicked += async (object sender, EventArgs e) =>
                     {
-                        await this.CheckTextAnswer(entry.Text, (question.QuestionType == 2));
+                        // Can we do this with null-conditional operators?
+                        if (entry.Text == null)
+                            await this.CheckTextAnswer("", (question.QuestionType == 2));
+                        else
+                            await this.CheckTextAnswer(entry.Text, (question.QuestionType == 2));
                     };
+                    this.GridEntryObjects.Children.Add(entry, 0, 0);
+                    this.GridEntryObjects.Children.Add(buttonCheckAnswer, 0, 1);
                 }
             }
             else // Finished level
@@ -105,7 +109,7 @@ namespace appFBLA2019
         {
             if (answer == this.currentQuestion.CorrectAnswer)
             {
-                await this.CorrectAnswer();
+                await this.CorrectAnswer(true);
             }
             else
             {
@@ -125,7 +129,7 @@ namespace appFBLA2019
 
             if (answer == correctAnswer)
             {
-                await this.CorrectAnswer();
+                await this.CorrectAnswer(false);
             }
             else
             {
@@ -133,7 +137,7 @@ namespace appFBLA2019
             }
         }
 
-        private async Task CorrectAnswer()
+        private async Task CorrectAnswer(bool isMultipleChoice)
         {
             this.LabelDebug.Text = "Correct!";
             //add 2 points for getting it right first time, 1 point for getting it right a second time or later
@@ -147,15 +151,22 @@ namespace appFBLA2019
                 this.currentQuestion.Status = 2
             );
 
-            // Get the next question
-            this.ResetButtons();
+            if (isMultipleChoice)
+            {
+                // Get the next question
+                this.ResetButtons();
+            }
+            else
+            {
+                this.ResetTextEntry();
+            }
 
             // Save as reference
             this.currentQuestion = this.level.GetQuestion();
             await this.GetNextQuestion(this.currentQuestion);
         }
 
-        private async Task IncorrectAnswer(bool IsMultipleChoice)
+        private async Task IncorrectAnswer(bool isMultipleChoice)
         {
             this.LabelDebug.Text = "Incorrect!";
             // 1 represents 'failed'
@@ -164,14 +175,14 @@ namespace appFBLA2019
                 this.level.Questions[0].Status = 1
             );
 
-            if (IsMultipleChoice)
+            if (isMultipleChoice)
             {
                 // Get the next question
                 this.ResetButtons();
             }
             else
             {
-                // Reset text...?
+                this.ResetTextEntry();
             }
 
             // Save as reference
@@ -181,15 +192,35 @@ namespace appFBLA2019
 
         private void ResetButtons()
         {
-            foreach (Button button in this.GridButtons.Children)
+            // Lists are immutable in a foreach loop in C#.NET
+            // Grab reference of object, then remove
+
+            List<Button> toRemove = new List<Button>();
+            foreach (Button button in this.GridEntryObjects.Children.ToList())
             {
-                button.IsEnabled = false;
+                this.GridEntryObjects.Children.Remove(button);
+            }
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                this.GridEntryObjects.Children.Remove(toRemove[i]);
             }
         }
 
         private void ResetTextEntry()
         {
-            
+            // Lists are immutable in a foreach loop in C#.NET
+            // Grab reference of object, then remove
+
+            // Define List of type View due to multiple types inheriting from view in GridEntryObjects
+            List<View> toRemove = new List<View>();
+            foreach (View entryObject in this.GridEntryObjects.Children)
+            {
+                toRemove.Add(entryObject);
+            }
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                this.GridEntryObjects.Children.Remove(toRemove[i]);
+            }
         }
     }
 }
