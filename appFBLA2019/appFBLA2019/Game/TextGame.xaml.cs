@@ -95,6 +95,9 @@ namespace appFBLA2019
                     };
                     this.GridEntryObjects.Children.Add(entry, 0, 0);
                     this.GridEntryObjects.Children.Add(buttonCheckAnswer, 0, 1);
+
+                    Grid.SetColumnSpan(entry, 2);
+                    Grid.SetColumnSpan(buttonCheckAnswer, 2);
                 }
             }
             else // Finished level
