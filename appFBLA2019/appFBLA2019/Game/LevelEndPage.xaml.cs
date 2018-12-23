@@ -14,6 +14,8 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LevelEndPage : ContentPage
     {
+        public delegate void FinishedEventHandler(object source, EventArgs eventArgs);
+        public event FinishedEventHandler Finished;
         public LevelEndPage(int score, int totalQuestions)
         {
             this.InitializeComponent();
@@ -26,9 +28,20 @@ namespace appFBLA2019
             var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
         }
 
-        private void ButtonDone_Clicked(object sender, EventArgs e)
+        private async void ButtonDone_Clicked(object sender, EventArgs e)
         {
-            this.Navigation.PopModalAsync();
+            this.OnFinished();
+            await this.Navigation.PopModalAsync(true);
+        }
+
+        private void ButtonShareToOtherMedia_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        protected virtual void OnFinished()
+        {
+            this.Finished?.Invoke(this, EventArgs.Empty);
         }
     }
 }

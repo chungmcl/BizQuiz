@@ -103,8 +103,9 @@ namespace appFBLA2019
             else // Finished level
             {
                 DBHandler.Database.AddScore(new ScoreRecord(this.score));
-                await this.Navigation.PushModalAsync(new LevelEndPage(this.score, this.level.Questions.Count));
-                await this.Navigation.PopAsync();
+                LevelEndPage levelEndPage = (new LevelEndPage(this.score, this.level.Questions.Count));
+                levelEndPage.Finished += this.OnFinished;
+                await this.Navigation.PushModalAsync(levelEndPage);
             }
         }
 
@@ -224,6 +225,11 @@ namespace appFBLA2019
             {
                 this.GridEntryObjects.Children.Remove(toRemove[i]);
             }
+        }
+
+        public async void OnFinished(object source, EventArgs args)
+        {
+            await this.Navigation.PopAsync();
         }
     }
 }
