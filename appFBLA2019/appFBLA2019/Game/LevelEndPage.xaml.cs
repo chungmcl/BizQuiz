@@ -1,5 +1,7 @@
 ﻿using Plugin.FacebookClient;
 using Plugin.FacebookClient.Abstractions;
+using Plugin.Share;
+using Plugin.Share.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,8 +36,15 @@ namespace appFBLA2019
             await this.Navigation.PopModalAsync(true);
         }
 
-        private void ButtonShareToOtherMedia_Clicked(object sender, EventArgs e)
+        private async void ButtonShareToOtherMedia_Clicked(object sender, EventArgs e)
         {
+            IShare shareinfo = CrossShare.Current;
+            await CrossShare.Current.Share(new ShareMessage
+            {
+                Text = "Check out my github",
+                Title = "Title",
+                Url = "https://github.com/chungmcl",
+            });
 
         }
 
