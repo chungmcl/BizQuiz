@@ -13,7 +13,10 @@ namespace appFBLA2019
 		{
 			this.InitializeComponent();
             this.MainPage = new NavigationPage(new MainPage());
-            Xamarin.Forms.DependencyService.Register<IGetStorage>();        }
+            Xamarin.Forms.DependencyService.Register<IGetStorage>();
+
+            DBHandler.SelectDatabase("test");
+        }
 
         protected override void OnStart ()
 		{

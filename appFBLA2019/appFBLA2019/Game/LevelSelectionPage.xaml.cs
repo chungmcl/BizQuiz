@@ -28,7 +28,6 @@ namespace appFBLA2019
                 levels.Add((file.Name.Split('.'))[0]);
             }
             this.Setup(levels.ToArray());
-            DBHandler.SelectDatabase("test");
         }
 
         private void Setup(string[] levels)

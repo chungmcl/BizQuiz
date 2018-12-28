@@ -7,6 +7,7 @@
         <ProgressBar VerticalOptions="Start"/>
         <Label x:Name="LabelQuestion" VerticalOptions="FillAndExpand" FontSize="Large"/>
         <Label x:Name="LabelDebug" VerticalOptions="FillAndExpand"/>
+        <Image x:Name="Image" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
         <Grid HeightRequest="320" VerticalOptions="End" x:Name="GridEntryObjects">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

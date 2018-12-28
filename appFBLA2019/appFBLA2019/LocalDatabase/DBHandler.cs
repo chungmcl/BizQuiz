@@ -41,8 +41,11 @@ namespace appFBLA2019
 
                     // On Android: Set appFBLA2019.Android's storage permissions to "on"
                     //string publicPath = $"/storage/emulated/0/{fileName}.db3";
-                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage() + $"/{fileName}{realmExtension}";
-                    Database = new GameDatabase(publicPath, fileName);
+                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage();
+                    string folderPath = publicPath + $"/{fileName}";
+                    Directory.CreateDirectory(folderPath);
+                    string inFolderFileName = $"/{fileName}{realmExtension}";
+                    Database = new GameDatabase(folderPath + inFolderFileName, fileName);
 
                     return true;
                 }
