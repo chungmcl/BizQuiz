@@ -78,7 +78,9 @@ namespace appFBLA2019
             {
                 
             }
-            DBHandler.SelectDatabase(this.EntryLevelName.Text);
+
+            // Pass in username of the LevelCreator
+            //DBHandler.SelectDatabase(this.EntryLevelName.Text);
         }
     }
 }

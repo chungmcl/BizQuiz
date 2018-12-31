@@ -17,23 +17,19 @@ namespace appFBLA2019
         public LevelSelectionPage()
 		{
             this.InitializeComponent ();
-            // Replace "DependencyService... .GetStorage()" with the location where the databases are being stored
-            // when the app is is released (See DBHandler)
-            //DirectoryInfo dInfo = new DirectoryInfo(DependencyService.Get<IGetStorage>().GetStorage());
+            // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored
+            // WHEN the app is is RELEASED (See DBHandler)
             string[] subFolderNames = Directory.GetDirectories(DependencyService.Get<IGetStorage>().GetStorage());
-            List<string> levels = new List<string>();
-            // TO DO: Access each file in subfolder of location in dInfo
-            // This currently does not go into the folders
-            
-            FileInfo[] files = dInfo.GetFiles("*.realm");
-            foreach (FileInfo file in files)
+            List<string[]> levels = new List<string[]>();
+            foreach (string levelName in subFolderNames)
             {
-                levels.Add((file.Name.Split('.'))[0]);
+                levels.Add( new string[] { (levelName.Split('`'))[0], (levelName.Split('`'))[1] });
             }
-            this.Setup(levels.ToArray());
+            this.Setup(levels);
         }
 
-        private void Setup(string[] levels)
+        // TO DO: Display author name of level
+        private void Setup(List<string[]> levels)
         {
             for (int i = 0; i < levels.Count(); i++)
             {
@@ -51,7 +47,7 @@ namespace appFBLA2019
 
                 Label title = new Label
                 {
-                    Text = levels[i],
+                    Text = levels[i][0],
                     FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                     FontAttributes = FontAttributes.Bold,
                     VerticalOptions = LayoutOptions.StartAndExpand,
@@ -64,7 +60,7 @@ namespace appFBLA2019
                     HorizontalOptions = LayoutOptions.End
                 });
                 
-                double avgScore = Level.GetLevelAvgScore(levels[i]);
+                double avgScore = Level.GetLevelAvgScore(levels[i][0], levels[i][1]);
 
                 (frameStack.Children[1] as Label).Text = avgScore.ToString("00.0") ?? "0%";
 
@@ -73,7 +69,7 @@ namespace appFBLA2019
                 {
                     //messy but the best i have
                     Level level = new Level
-                    ((((sender as Frame).Content as StackLayout).Children[0] as Label).Text);
+                    ((((sender as Frame).Content as StackLayout).Children[0] as Label).Text, levels[i][1]);
                     level.LoadQuestions();
                     await this.Navigation.PushAsync(new TextGame(level));
                 };
