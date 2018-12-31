@@ -19,10 +19,13 @@ namespace appFBLA2019
             this.InitializeComponent ();
             // Replace "DependencyService... .GetStorage()" with the location where the databases are being stored
             // when the app is is released (See DBHandler)
-            DirectoryInfo dInfo = new DirectoryInfo(DependencyService.Get<IGetStorage>().GetStorage());
-
-            FileInfo[] files = dInfo.GetFiles("*.realm");
+            //DirectoryInfo dInfo = new DirectoryInfo(DependencyService.Get<IGetStorage>().GetStorage());
+            string[] subFolderNames = Directory.GetDirectories(DependencyService.Get<IGetStorage>().GetStorage());
             List<string> levels = new List<string>();
+            // TO DO: Access each file in subfolder of location in dInfo
+            // This currently does not go into the folders
+            
+            FileInfo[] files = dInfo.GetFiles("*.realm");
             foreach (FileInfo file in files)
             {
                 levels.Add((file.Name.Split('.'))[0]);
