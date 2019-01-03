@@ -44,8 +44,9 @@ namespace appFBLA2019
                     //          , fileName);
 
                     // On Android: Set appFBLA2019.Android's storage permissions to "on"
-                    //string publicPath = $"/storage/emulated/0/{fileName}.db3";
-                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage();
+
+                    /*REMOVE DURING RELEASE*/ Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
+                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
                     string folderPath = publicPath + $"/{levelTitle}`{author}";
                     Directory.CreateDirectory(folderPath);
                     string inFolderFileName = $"/{levelTitle}{realmExtension}";
