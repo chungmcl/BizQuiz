@@ -31,7 +31,7 @@ namespace appFBLA2019
         // TO DO: Display author name of level
         private void Setup(List<string[]> levels)
         {
-            for (int i = 0; i < levels.Count(); i++)
+            foreach (string[] level in levels)
             {
                 Frame frame = new Frame()
                 {
@@ -47,7 +47,7 @@ namespace appFBLA2019
 
                 Label title = new Label
                 {
-                    Text = levels[i][0],
+                    Text = level[0],
                     FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                     FontAttributes = FontAttributes.Bold,
                     VerticalOptions = LayoutOptions.StartAndExpand,
@@ -60,7 +60,7 @@ namespace appFBLA2019
                     HorizontalOptions = LayoutOptions.End
                 });
                 
-                double avgScore = Level.GetLevelAvgScore(levels[i][0], levels[i][1]);
+                double avgScore = Level.GetLevelAvgScore(level[0], level[1]);
 
                 (frameStack.Children[1] as Label).Text = avgScore.ToString("00.0") ?? "0%";
 
@@ -68,10 +68,10 @@ namespace appFBLA2019
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
                     //messy but the best i have
-                    Level level = new Level
-                    ((((sender as Frame).Content as StackLayout).Children[0] as Label).Text, levels[i][1]);
-                    level.LoadQuestions();
-                    await this.Navigation.PushAsync(new TextGame(level));
+                    Level newLevel = new 
+                    Level( (((sender as Frame).Content as StackLayout).Children[0] as Label).Text, level[1] );
+                    newLevel.LoadQuestions();
+                    await this.Navigation.PushAsync(new TextGame(newLevel));
                 };
 
                 frame.GestureRecognizers.Add(recognizer);
@@ -79,8 +79,5 @@ namespace appFBLA2019
                 this.ButtonStack.Children.Add(frame);
             }
         }
-
-        //public LevelSelectionPage()
-        //{ }
     }
 }
