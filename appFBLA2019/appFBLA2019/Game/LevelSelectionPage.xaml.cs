@@ -19,8 +19,7 @@ namespace appFBLA2019
             this.InitializeComponent ();
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored
             // WHEN the app is is RELEASED (See DBHandler)
-            /*REMOVE DURING RELEASE*/ Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
-            string[] subFolderNames = Directory.GetDirectories(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
+            string[] subFolderNames = Directory.GetDirectories(App.Path);
             List<string[]> levels = new List<string[]>();
             foreach (string levelName in subFolderNames)
             {

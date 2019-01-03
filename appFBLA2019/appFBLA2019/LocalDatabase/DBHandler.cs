@@ -45,9 +45,7 @@ namespace appFBLA2019
 
                     // On Android: Set appFBLA2019.Android's storage permissions to "on"
 
-                    /*REMOVE DURING RELEASE*/ Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
-                    string publicPath = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
-                    string folderPath = publicPath + $"/{levelTitle}`{author}";
+                    string folderPath = App.Path + $"/{levelTitle}`{author}";
                     Directory.CreateDirectory(folderPath);
                     string inFolderFileName = $"/{levelTitle}{realmExtension}";
                     Database = new GameDatabase(folderPath + inFolderFileName, levelTitle);

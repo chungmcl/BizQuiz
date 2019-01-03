@@ -8,16 +8,23 @@ namespace appFBLA2019
 {
 	public partial class App : Application
 	{
+        public static string Path;
 
         public App ()
 		{
 			this.InitializeComponent();
-            this.MainPage = new NavigationPage(new MainPage());
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
+            /*REMOVE DURING RELEASE*/
+            Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
+            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
+            
+            this.MainPage = new NavigationPage(new MainPage());
+            
         }
 
         protected override void OnStart ()
 		{
+            
             // Handle when your app starts
         }
 

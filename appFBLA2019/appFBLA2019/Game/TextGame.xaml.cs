@@ -37,6 +37,8 @@ namespace appFBLA2019
                 this.LabelQuestion.Text = question.QuestionText;
                 this.correct = question.CorrectAnswer;
                 this.GridEntryObjects.Children.Clear();
+                this.QuestionImage.IsEnabled = question.NeedsPicture;
+                this.QuestionImage.Source = App.Path + question.PictureName;
 
                 if (question.QuestionType == 0) // If multiple-choice button question
                 {
@@ -45,6 +47,7 @@ namespace appFBLA2019
 
                     int currentRow = 0;
                     int currentColumn = 0;
+                    int span = 1;
                     for (int i = 0; i < question.Answers.Count(); i++)
                     {
                         string answer = question.Answers[i];
@@ -56,27 +59,16 @@ namespace appFBLA2019
                         {
                             await this.CheckButtonAnswer((sender as Button).Text);
                         };
-                        //this is gross and messy, need to find a better way to place buttons correctly with math and stuff
-                        switch (i)
-                        {
-                            case 0:
-                                currentColumn = 0;
-                                currentRow = 0;
-                                break;
-                            case 1:
-                                currentColumn = 1;
-                                currentRow = 0;
-                                break;
-                            case 2:
-                                currentColumn = 0;
-                                currentRow = 1;
-                                break;
-                            case 3:
-                                currentColumn = 1;
-                                currentRow = 1;
-                                break;
-                        }
+                        //if there are only 2 answers the buttons are tall
+                        if (question.Answers.Count() < 3)
+                            span = 2;
+                        //column is determined by even / odd status
+                        currentColumn = Math.Abs((i % 2) - 1);
+                        //row is determined (basically) by being greater than 2
+                        currentRow = Math.Max(Math.Sign(i - 2), 0);
+
                         this.GridEntryObjects.Children.Add(button, currentColumn, currentRow);
+                        Grid.SetColumnSpan(button, span);
                     }
                 }
                 else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
