@@ -30,7 +30,7 @@ namespace appFBLA2019
                 this.GetNextQuestion(this.currentQuestion);
         }
         
-        private void GetNextQuestion(Question question)
+        private async Task GetNextQuestion(Question question)
         {
             if (this.level.QuestionsAvailable)
             {
@@ -50,9 +50,9 @@ namespace appFBLA2019
                     {
                         Text = answer
                     };
-                    button.Clicked += (object sender, EventArgs e) =>
+                    button.Clicked += async(object sender, EventArgs e) =>
                     {
-                        this.CheckAnswer((sender as Button).Text);
+                        await this.CheckAnswer((sender as Button).Text);
                     };
                     //this is gross and messy, need to find a better way to place buttons correctly with math and stuff
                     switch (i)
@@ -80,11 +80,12 @@ namespace appFBLA2019
             else
             {
                 DBHandler.Database.AddScore(new ScoreRecord(this.score));
-                // Display a completion page?
+                await this.Navigation.PushModalAsync(new LevelEndPage(this.score, this.level.Questions.Count));
+                await this.Navigation.PopAsync();
             }
         }
 
-        private void CheckAnswer(string answer)
+        private async Task CheckAnswer(string answer)
         {
             if (answer == this.currentQuestion.CorrectAnswer)
             {
@@ -105,7 +106,7 @@ namespace appFBLA2019
 
                 // Save as reference
                 this.currentQuestion = this.level.GetQuestion();
-                this.GetNextQuestion(this.currentQuestion);
+                await this.GetNextQuestion(this.currentQuestion);
             }
             else
             {
@@ -121,7 +122,7 @@ namespace appFBLA2019
 
                 // Save as reference
                 this.currentQuestion = this.level.GetQuestion();
-                this.GetNextQuestion(this.level.GetQuestion());
+                await this.GetNextQuestion(this.level.GetQuestion());
             }
         }
 

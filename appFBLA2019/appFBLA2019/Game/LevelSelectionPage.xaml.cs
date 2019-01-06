@@ -50,6 +50,7 @@ namespace appFBLA2019
                     HorizontalOptions = LayoutOptions.End
                 });
 
+                // fix issue
                 double avgScore = Level.GetLevelAvgScore(levels[i]);
 
                 (frameStack.Children[1] as Label).Text = avgScore.ToString("00.0") ?? "0%";

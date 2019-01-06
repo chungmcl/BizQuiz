@@ -8,6 +8,8 @@ using Android.Widget;
 using Android.OS;
 using Xamarin.Forms;
 using appFBLA2019.Droid;
+using Plugin.FacebookClient;
+using Android.Content;
 
 [assembly: Dependency(typeof(MainActivity))]
 namespace appFBLA2019.Droid
@@ -21,9 +23,16 @@ namespace appFBLA2019.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
-
+            FacebookClientManager.Initialize(this);
+            
             global::Xamarin.Forms.Forms.Init(this, bundle);
             this.LoadApplication(new App());
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent intent)
+        {
+            base.OnActivityResult(requestCode, resultCode, intent);
+            FacebookClientManager.OnActivityResult(requestCode, resultCode, intent);
         }
 
         public string GetStorage()
