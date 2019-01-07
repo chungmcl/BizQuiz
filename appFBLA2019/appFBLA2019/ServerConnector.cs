@@ -11,7 +11,7 @@ namespace appFBLA2019
     {
         private static TcpClient tcp;
         private static NetworkStream nwStream;
-        private const string serverIP = "50.54.142.236";
+        private const string serverIP = "50.106.17.86";
         private const int serverPort = 7777;
         private const int timeoutTimeMilliseconds = 5000;
         private const double timeoutTimeSeconds = 5;

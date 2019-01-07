@@ -7,6 +7,7 @@
             <Label x:Name="LabelScore" Font="Bold"
                    HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"/>
             <Button x:Name="ButtonShareToFacebook" Text="Share to Facebook" Clicked="ButtonShareToFacebook_Clicked"/>
+            <Button x:Name="ButtonShareToOtherMedia" Text="Share to Other Social Media" Clicked="ButtonShareToOtherMedia_Clicked"/>
             <Button x:Name="ButtonDone" Text="Done" Clicked="ButtonDone_Clicked"/>
         </StackLayout>
     </ContentPage.Content>

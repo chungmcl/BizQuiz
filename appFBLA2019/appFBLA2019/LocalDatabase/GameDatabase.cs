@@ -38,7 +38,7 @@ namespace appFBLA2019
 
         public void AddQuestions(List<Question> questions)
         {
-            int highestDBId = Increment() + 1;
+            int highestDBId = this.Increment() + 1;
             foreach (Question question in questions)
             {
                 question.DBId = highestDBId;

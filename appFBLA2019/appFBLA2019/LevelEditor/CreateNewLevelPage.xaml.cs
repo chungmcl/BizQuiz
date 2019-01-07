@@ -24,7 +24,7 @@ namespace appFBLA2019
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
-                CornerRadius = 10,
+                CornerRadius = 10
             };
 
             StackLayout frameStack = new StackLayout
@@ -63,23 +63,6 @@ namespace appFBLA2019
             };
             frameStack.Children.Add(AnswerWrongThree);
 
-            SwipeGestureRecognizer swipe = new SwipeGestureRecognizer
-            {
-                Direction = SwipeDirection.Left
-            };
-            swipe.Swiped += (object sender, SwipedEventArgs e) =>
-            {
-                // "sender" is a reference to the object that was swiped
-                // "sender" was tested and it returned the correct Frame
-                // It is throwing an exception when this code is called, I don't know why
-                //this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
-
-                // This techinically works but doesn't genuinely remove the object from memory
-                //((Frame)sender).Content = null;
-                //((Frame)sender).IsVisible = false;
-            };
-
-            frame.GestureRecognizers.Add(swipe);
             frame.Content = frameStack;
             this.StackLayoutQuestionStack.Children.Add(frame);
         }
@@ -91,44 +74,13 @@ namespace appFBLA2019
 
         private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
-            List<Question> toAdd = new List<Question>();
-            foreach (Frame frame in this.StackLayoutQuestionStack.Children)
+            foreach(Frame frame in this.StackLayoutQuestionStack.Children)
             {
-                string question = "";
-                string answerCorrect = "";
-                string answerOne = "";
-                string answerTwo = "";
-                string answerThree = "";
-                int counter = 0;
-                foreach (Entry entry in ((StackLayout)(frame.Content)).Children)
-                {
-                    switch (counter)
-                    {
-                        case 0:
-                            question = entry.Text;
-                            break;
-                        case 1:
-                            answerCorrect = entry.Text;
-                            break;
-                        case 2:
-                            answerOne = entry.Text;
-                            break;
-                        case 3:
-                            answerTwo = entry.Text;
-                            break;
-                        case 4:
-                            answerThree = entry.Text;
-                            break;
-                    }
-                    counter++;
-                }
-                toAdd.Add(new Question(question, "c/" + answerCorrect,
-                    "x/" + answerOne,
-                    "x/" + answerTwo,
-                    "x/" + answerThree));
+                
             }
-            DBHandler.SelectDatabase(this.EntryLevelName.Text);
-            DBHandler.Database.AddQuestions(toAdd);
+
+            // Pass in username of the LevelCreator
+            //DBHandler.SelectDatabase(this.EntryLevelName.Text);
         }
     }
 }

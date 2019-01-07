@@ -19,6 +19,11 @@ namespace appFBLA2019
         //public enum QuestionStatus { Unanswered, Failed, Correct }
         public int Status { get; set; }
 
+        // 0 = Multiple choice, 1 = Text answer w/o upper/lower case, 2 = Text answer with upper/lower case
+        public int QuestionType { get; set; }
+        public bool NeedsPicture { get; set; }
+        public string PictureName { get; set; }
+
         public string QuestionText { get; set; }
         public string CorrectAnswer { get; set; }
 

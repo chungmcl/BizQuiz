@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using System.IO;
 
 namespace appFBLA2019
 {
