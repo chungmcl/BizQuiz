@@ -21,13 +21,15 @@ namespace appFBLA2019
             
             this.MainPage = new NavigationPage(new MainPage());
 
-            DBHandler.SelectDatabase("testLevel", "testAuthor");
-            List<Question> questions = new List<Question>();
-            for (int i = 0; i < 10; i++)
-            {
-                questions.Add(new Question());
-            }
-            DBHandler.Database.AddQuestions(questions);
+            /*REMOVE DURING RELEASE*/
+            // If you want to generate a testLevel 
+            //DBHandler.SelectDatabase("testLevel", "testAuthor");
+            //List<Question> questions = new List<Question>();
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    questions.Add(new Question());
+            //}
+            //DBHandler.Database.AddQuestions(questions);
         }
 
         protected override void OnStart ()
