@@ -11,8 +11,9 @@ namespace appFBLA2019
     public class Question : RealmObject, IComparable
     {
         // Primary key ID for database
+        // Once set, IT CAN NEVER BE CHANGED.
         [PrimaryKey]
-        public int DBId { get; set; }
+        public string DBId { get; set; }
         // SQLITE WILL IGNORE ALL PROPERTIES THAT ARE NOT DEFINED BY public { get; set; }
 
         //declare enum (to use this type other places, say Question.QuestionStatus)

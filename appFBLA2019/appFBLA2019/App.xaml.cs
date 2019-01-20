@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -19,7 +20,14 @@ namespace appFBLA2019
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
             
             this.MainPage = new NavigationPage(new MainPage());
-            
+
+            DBHandler.SelectDatabase("testLevel", "testAuthor");
+            List<Question> questions = new List<Question>();
+            for (int i = 0; i < 10; i++)
+            {
+                questions.Add(new Question());
+            }
+            DBHandler.Database.AddQuestions(questions);
         }
 
         protected override void OnStart ()
