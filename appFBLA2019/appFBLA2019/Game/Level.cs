@@ -144,7 +144,7 @@ namespace appFBLA2019
         {
             // Replace "DependencyService... .GetStorage()" with the location where the databases are being stored
             // when the app is is released (See DBHandler)
-            DirectoryInfo dInfo = new DirectoryInfo(DependencyService.Get<IGetStorage>().GetStorage());
+            DirectoryInfo dInfo = new DirectoryInfo(App.Path);
 
             List<FileInfo> files = dInfo.GetFiles("*.jpg").ToList();
             files.AddRange(dInfo.GetFiles("*.jpeg").ToList());

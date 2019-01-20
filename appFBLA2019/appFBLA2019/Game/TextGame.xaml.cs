@@ -38,7 +38,9 @@ namespace appFBLA2019
                 this.correct = question.CorrectAnswer;
                 this.GridEntryObjects.Children.Clear();
                 this.QuestionImage.IsEnabled = question.NeedsPicture;
-                this.QuestionImage.Source = App.Path + question.PictureName;
+
+                // The image will ALWAYS be named after the DBId
+                this.QuestionImage.Source = App.Path + question.DBId + ".jpg"; // Add cases for all JPG file extensions (for example, ".jpeg")
 
                 if (question.QuestionType == 0) // If multiple-choice button question
                 {

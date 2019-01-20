@@ -38,15 +38,14 @@ namespace appFBLA2019
 
         public void AddQuestions(List<Question> questions)
         {
-            int highestDBId = this.Increment() + 1;
             foreach (Question question in questions)
             {
-                question.DBId = highestDBId;
+                string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
+                question.DBId = dbPrimaryKey;
                 this.realmDB.Write(() =>
                 {
                     this.realmDB.Add(question);
                 });
-                highestDBId++;
             }
         }
 
@@ -58,31 +57,29 @@ namespace appFBLA2019
             });
         }
 
-        // the increment of the next primary key
-        private int Increment()
-        {
-            IQueryable<Question> queryable = this.realmDB.All<Question>();
-            if (queryable.Count() == 0)
-                return 0;
-            return (queryable.OrderByDescending(question => question.DBId).First()).DBId;
-        }
-
         public double GetAvgScore()
         {
-            IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
-            List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
-            if (scores.Count <= 0)
+            if (this.realmDB != null)
             {
-                return 0;
+                IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
+                List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
+                if (scores.Count <= 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    double runningTotal = 0;
+                    foreach (ScoreRecord score in scores)
+                    {
+                        runningTotal += score.Score;
+                    }
+                    return runningTotal / scores.Count;
+                }
             }
             else
             {
-                double runningTotal = 0;
-                foreach (ScoreRecord score in scores)
-                {
-                    runningTotal += score.Score;
-                }
-                return runningTotal / scores.Count;
+                return 0.0;
             }
         }
     }

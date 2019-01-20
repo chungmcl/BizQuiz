@@ -23,7 +23,8 @@ namespace appFBLA2019
             List<string[]> levels = new List<string[]>();
             foreach (string levelName in subFolderNames)
             {
-                levels.Add( new string[] { (levelName.Split('`'))[0], (levelName.Split('`'))[1] });
+                if (levelName.Contains('`'))
+                    levels.Add(new string[] { (levelName.Remove(0, App.Path.Length + 1).Split('`'))[0], (levelName.Remove(0, App.Path.Length).Split('`'))[1] });
             }
             this.Setup(levels);
         }
@@ -59,7 +60,8 @@ namespace appFBLA2019
                 {
                     HorizontalOptions = LayoutOptions.End
                 });
-                
+
+                DBHandler.SelectDatabase(level[0], level[1]);
                 double avgScore = Level.GetLevelAvgScore(level[0], level[1]);
 
                 (frameStack.Children[1] as Label).Text = avgScore.ToString("00.0") ?? "0%";
@@ -67,9 +69,7 @@ namespace appFBLA2019
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
-                    //messy but the best i have
-                    Level newLevel = new 
-                    Level( (((sender as Frame).Content as StackLayout).Children[0] as Label).Text, level[1] );
+                    Level newLevel = new Level(level[0], level[1]);
                     newLevel.LoadQuestions();
                     await this.Navigation.PushAsync(new TextGame(newLevel));
                 };
