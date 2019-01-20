@@ -26,7 +26,7 @@ namespace appFBLA2019
 
         private async void ButtonShareToFacebook_Clicked(object sender, EventArgs e)
         {
-            FacebookShareLinkContent linkContent = new FacebookShareLinkContent("Check out my github", new Uri("https://github.com/chungmcl"));
+            FacebookShareLinkContent linkContent = new FacebookShareLinkContent("Check out my score!", new Uri("https://github.com/chungmcl"));
             var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
         }
 
