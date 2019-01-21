@@ -5,8 +5,20 @@
     <!--Addtional pages may be added programatically into a CarouselPage-->
     <ContentPage.Content>
         <StackLayout>
-            <Button x:Name="ButtonCreate" Text="Create new level" Clicked="ButtonCreate_Clicked"></Button>
-            <Button x:Name="ButtonEdit" Text="Edit existing level" Clicked="ButtonEdit_Clicked"></Button>
+            <Button x:Name="ButtonCreate" 
+                    Text="Create new level" 
+                    Clicked="ButtonCreate_Clicked" 
+                    WidthRequest="40" 
+                    HeightRequest="40" 
+                    BorderRadius="20"
+                    VerticalOptions="CenterAndExpand"></Button>
+            <Button x:Name="ButtonEdit" 
+                    Text="Edit existing level" 
+                    Clicked="ButtonEdit_Clicked" 
+                    WidthRequest="40" 
+                    HeightRequest="40" 
+                    BorderRadius="20"
+                    VerticalOptions="CenterAndExpand"></Button>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
