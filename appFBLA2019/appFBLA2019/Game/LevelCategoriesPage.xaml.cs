@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Internals;
 
 namespace appFBLA2019
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LevelCategoriesPage : TabbedPage
 	{
-		public LevelCategoriesPage()
-		{
+        public LevelCategoriesPage()
+        {
             this.InitializeComponent();
 		}
 	}

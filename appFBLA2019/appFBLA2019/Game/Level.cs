@@ -19,7 +19,7 @@ namespace appFBLA2019
         }
 
         public List<Question> Questions { get; set; }
-        //if the first question has already been got, then we have 100% completion
+        //if the first question has already been answered correctly, then we have 100% completion
         public bool QuestionsAvailable
         {
             get
@@ -144,7 +144,7 @@ namespace appFBLA2019
         {
             // Replace "DependencyService... .GetStorage()" with the location where the databases are being stored
             // when the app is is released (See DBHandler)
-            DirectoryInfo dInfo = new DirectoryInfo(DependencyService.Get<IGetStorage>().GetStorage());
+            DirectoryInfo dInfo = new DirectoryInfo(App.Path);
 
             List<FileInfo> files = dInfo.GetFiles("*.jpg").ToList();
             files.AddRange(dInfo.GetFiles("*.jpeg").ToList());

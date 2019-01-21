@@ -38,7 +38,9 @@ namespace appFBLA2019
                 this.correct = question.CorrectAnswer;
                 this.GridEntryObjects.Children.Clear();
                 this.QuestionImage.IsEnabled = question.NeedsPicture;
-                this.QuestionImage.Source = App.Path + question.PictureName;
+
+                // The image will ALWAYS be named after the DBId
+                this.QuestionImage.Source = App.Path + question.DBId + ".jpg"; // Add cases for all JPG file extensions (for example, ".jpeg")
 
                 if (question.QuestionType == 0) // If multiple-choice button question
                 {
@@ -62,7 +64,7 @@ namespace appFBLA2019
                         //if there are only 2 answers the buttons are tall
                         if (question.Answers.Count() < 3)
                             span = 2;
-                        //column is determined by even / odd status
+                        //2 is a magic number here for the number of columns
                         currentColumn = Math.Abs((i % 2) - 1);
                         //row is determined (basically) by being greater than 2
                         currentRow = Math.Max(Math.Sign(i - 2), 0);
