@@ -14,7 +14,7 @@ namespace appFBLA2019
 	{
 		public CreateNewLevelPage ()
 		{           
-			this.InitializeComponent ();
+			this.InitializeComponent();
             this.AddNewQuestion();
         }
 
@@ -32,6 +32,13 @@ namespace appFBLA2019
                 FlowDirection = FlowDirection.LeftToRight,
                 Orientation = StackOrientation.Vertical
             };
+
+            Button Remove = new Button();
+            {
+                Remove.Text = "Remove Question";
+                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
+            }
+            frameStack.Children.Add(Remove);
 
             Entry Question = new Entry
             {
@@ -72,15 +79,36 @@ namespace appFBLA2019
             this.AddNewQuestion();
         }
 
+        private void ButtonRemove_Clicked(object sender, EventArgs e)
+        {
+            this.StackLayoutQuestionStack.Children.RemoveAt(0);
+        }
+
         private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
-            foreach(Frame frame in this.StackLayoutQuestionStack.Children)
+            // Later, need to impliment username to pass through
+            DBHandler.SelectDatabase(this.EntryLevelName.Text, "testAuthor");
+            List<Question> questionsToAdd = new List<Question>(); 
+            foreach (Frame frame in this.StackLayoutQuestionStack.Children)
             {
-                
-            }
+                for (int i = 0; i < ((StackLayout)frame.Content).Children.Count; i++)
+                {
+                    IList<View> children = ((StackLayout)frame.Content).Children;
+                    Question addThis = new Question
+                    {
+                        QuestionText = ((Entry)children[1]).Text,
+                        AnswerOne = ((Entry)children[2]).Text,
+                        AnswerTwo = ((Entry)children[3]).Text,
+                        AnswerThree = ((Entry)children[4]).Text,
+                        AnswerFour = ((Entry)children[5]).Text,
+                    };
+                    questionsToAdd.Add(addThis);
 
-            // Pass in username of the LevelCreator
-            //DBHandler.SelectDatabase(this.EntryLevelName.Text);
+                }
+            }
+            DBHandler.Database.AddQuestions(questionsToAdd);
+
+            this.Navigation.PushAsync(new LevelEditorPage());
         }
     }
 }

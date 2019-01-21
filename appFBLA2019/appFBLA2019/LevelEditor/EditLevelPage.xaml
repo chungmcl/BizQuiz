@@ -7,6 +7,7 @@
             <Label Text="Editing existing"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
+            <!-- get a list of levels created by this user. Username access has to be available for this to work-->
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

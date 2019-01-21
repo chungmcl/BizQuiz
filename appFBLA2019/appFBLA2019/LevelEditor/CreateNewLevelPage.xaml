@@ -9,6 +9,7 @@
                     VerticalOptions="Start"
                     HorizontalOptions="CenterAndExpand" />
                 <Entry x:Name="EntryLevelName"  Placeholder="Level Name" />
+                
                 <StackLayout x:Name="StackLayoutQuestionStack" Padding="10">
                     <!--Things added in code-->
                 </StackLayout>
