@@ -19,7 +19,7 @@ namespace appFBLA2019
         }
 
         public List<Question> Questions { get; set; }
-        //if the first question has already been got, then we have 100% completion
+        //if the first question has already been answered correctly, then we have 100% completion
         public bool QuestionsAvailable
         {
             get

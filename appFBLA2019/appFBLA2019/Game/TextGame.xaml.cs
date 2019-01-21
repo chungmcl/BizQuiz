@@ -64,7 +64,7 @@ namespace appFBLA2019
                         //if there are only 2 answers the buttons are tall
                         if (question.Answers.Count() < 3)
                             span = 2;
-                        //column is determined by even / odd status
+                        //2 is a magic number here for the number of columns
                         currentColumn = Math.Abs((i % 2) - 1);
                         //row is determined (basically) by being greater than 2
                         currentRow = Math.Max(Math.Sign(i - 2), 0);
