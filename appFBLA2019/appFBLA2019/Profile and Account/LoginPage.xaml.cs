@@ -55,7 +55,6 @@ namespace appFBLA2019
             }
         }
 
-
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)
         {
             var createAccountPage = new CreateAccountPage();

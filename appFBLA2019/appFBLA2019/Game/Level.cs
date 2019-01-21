@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("appFBLA2019_Tests")]
 namespace appFBLA2019
@@ -10,14 +12,14 @@ namespace appFBLA2019
     public class Level
     {
         //returns the avg score that the player gets on this level
-        public static double GetLevelAvgScore(string level)
+        public static double GetLevelAvgScore(string level, string author)
         {
-            DBHandler.SelectDatabase(level);
+            DBHandler.SelectDatabase(level, author);
             return DBHandler.Database.GetAvgScore();
         }
 
         public List<Question> Questions { get; set; }
-        //if the first question has already been got, then we have 100% completion
+        //if the first question has already been answered correctly, then we have 100% completion
         public bool QuestionsAvailable
         {
             get
@@ -98,11 +100,12 @@ namespace appFBLA2019
         /// Select/create database file for the current game/topic,
         /// Load the questions from file
         /// </summary>
-        /// <param name="fileName">The name of the database file - if one does not yet exist,
+        /// <param name="levelTitle">The name of the database file - if one does not yet exist,
         /// it will create one based on the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME.</param>
-        public Level(string fileName)
+        /// <param name="author">The username of the author of the level</param>
+        public Level(string levelTitle, string author)
         {
-            DBHandler.SelectDatabase(fileName);
+            DBHandler.SelectDatabase(levelTitle, author);
         }
 
         public void LoadQuestions()
@@ -135,6 +138,24 @@ namespace appFBLA2019
                 return this.Questions[new Random().Next(0, availableQuestions)];
             }
             return null;
+        }
+
+        private void GetImageNames()
+        {
+            // Replace "DependencyService... .GetStorage()" with the location where the databases are being stored
+            // when the app is is released (See DBHandler)
+            DirectoryInfo dInfo = new DirectoryInfo(App.Path);
+
+            List<FileInfo> files = dInfo.GetFiles("*.jpg").ToList();
+            files.AddRange(dInfo.GetFiles("*.jpeg").ToList());
+            List<string> imageNames = new List<string>();
+            foreach (FileInfo file in files)
+            {
+                imageNames.Add(file.Name);
+            }
+            
+            // TO DO:
+            // Generate list of file locations and store as property so TextGame can access
         }
     }
 }

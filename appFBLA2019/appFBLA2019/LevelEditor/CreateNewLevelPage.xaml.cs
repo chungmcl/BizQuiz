@@ -14,8 +14,8 @@ namespace appFBLA2019
 	{
 		public CreateNewLevelPage ()
 		{           
-			InitializeComponent ();
-            AddNewQuestion();
+			this.InitializeComponent ();
+            this.AddNewQuestion();
         }
 
         private void AddNewQuestion()
@@ -69,7 +69,7 @@ namespace appFBLA2019
 
         private void ButtonAddQuestion_Clicked(object sender, EventArgs e)
         {
-            AddNewQuestion();
+            this.AddNewQuestion();
         }
 
         private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
@@ -78,7 +78,9 @@ namespace appFBLA2019
             {
                 
             }
-            DBHandler.SelectDatabase(this.EntryLevelName.Text);
+
+            // Pass in username of the LevelCreator
+            //DBHandler.SelectDatabase(this.EntryLevelName.Text);
         }
     }
 }

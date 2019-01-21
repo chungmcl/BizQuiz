@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using System.IO;
 
 namespace appFBLA2019
 {
@@ -18,7 +19,7 @@ namespace appFBLA2019
 			this.InitializeComponent ();
             // Default tabs on Android are on top - Set to bottom on Android (to serve as Navigation)
 #if __ANDROID__
-            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
+           this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
 #endif
         }
     }
