@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Realms;
 using System.Linq;
+using System.IO;
 
 namespace appFBLA2019
 {
@@ -15,11 +16,13 @@ namespace appFBLA2019
     {
         public Realm realmDB;
         public readonly string fileName;
+        private string dbPath;
         
         public GameDatabase(string dbPath, string fileName)
         {
             try
             {
+                this.dbPath = dbPath;
                 RealmConfiguration rC = new RealmConfiguration(dbPath);
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = fileName;
@@ -42,6 +45,7 @@ namespace appFBLA2019
             {
                 string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
                 question.DBId = dbPrimaryKey;
+                MemoryStream ms = new MemoryStream(question.ImageByteArray);
                 this.realmDB.Write(() =>
                 {
                     this.realmDB.Add(question);

@@ -26,6 +26,9 @@ namespace appFBLA2019
         public string CorrectAnswer { get; set; }
         public bool NeedsPicture { get; set; }
 
+        [Ignored]
+        public byte[] ImageByteArray { get; set; }
+
         public string[] Answers
         {
             //turns the 4 answers into an easy to use array
@@ -69,16 +72,17 @@ namespace appFBLA2019
         /// The potential answers to the question. The correct answer will be prefixed with "c/".
         /// The rest will be prefixed with "x/".
         /// </param>
-        public Question(string question, params string[] answers)
+        public Question(string question, byte[] image, params string[] answers)
         {
             this.QuestionText = question;
             //tries to assign the params to the local Answers property which in turn assigns the fields
             //if answers is null, throws an exception
             this.Status = 0;
             this.Answers = answers ?? throw new ArgumentException("Must have at least one answer!");
+            image.CopyTo(this.ImageByteArray, 0);
         }
 
-        public Question() : this ("This question is empty!", new string[0])
+        public Question() : this ("This question is empty!", new byte[0], new string[0])
         {
 
         }
