@@ -81,6 +81,7 @@ namespace appFBLA2019
 
         private void ButtonRemove_Clicked(object sender, EventArgs e)
         {
+            // This just removed the first question, Not the question the button is on.
             this.StackLayoutQuestionStack.Children.RemoveAt(0);
         }
 
@@ -97,10 +98,10 @@ namespace appFBLA2019
                     Question addThis = new Question
                     {
                         QuestionText = ((Entry)children[1]).Text,
-                        AnswerOne = ((Entry)children[2]).Text,
-                        AnswerTwo = ((Entry)children[3]).Text,
-                        AnswerThree = ((Entry)children[4]).Text,
-                        AnswerFour = ((Entry)children[5]).Text,
+                        AnswerOne = "c/" + ((Entry)children[2]).Text,
+                        AnswerTwo = "x/" + ((Entry)children[3]).Text,
+                        AnswerThree = "x/" + ((Entry)children[4]).Text,
+                        AnswerFour = "x/" + ((Entry)children[5]).Text,
                     };
                     questionsToAdd.Add(addThis);
 
@@ -108,6 +109,7 @@ namespace appFBLA2019
             }
             DBHandler.Database.AddQuestions(questionsToAdd);
 
+            // Returns user to front page of LevelEditor
             this.Navigation.PushAsync(new LevelEditorPage());
         }
     }
