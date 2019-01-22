@@ -13,10 +13,6 @@ namespace appFBLA2019
 
         public App ()
 		{
-            // Initialize Live Reload.
-#if DEBUG
-            //LiveReload.Init();
-#endif
 
             this.InitializeComponent();
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
