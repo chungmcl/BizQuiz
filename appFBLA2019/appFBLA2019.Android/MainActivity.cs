@@ -39,6 +39,12 @@ namespace appFBLA2019.Droid
         {
             return Android.OS.Environment.ExternalStorageDirectory.ToString();
         }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
+        {
+            Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
     }
 }
 
