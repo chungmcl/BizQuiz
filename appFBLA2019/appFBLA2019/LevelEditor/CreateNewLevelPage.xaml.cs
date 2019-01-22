@@ -119,6 +119,7 @@ namespace appFBLA2019
                     IList<View> children = ((StackLayout)frame.Content).Children;
                     Question addThis = new Question(
                         ((Entry)children[1]).Text,
+                        new byte[2],
                         "c/" + ((Entry)children[2]).Text,
                         "x/" + ((Entry)children[3]).Text,
                         "x/" + ((Entry)children[4]).Text,
