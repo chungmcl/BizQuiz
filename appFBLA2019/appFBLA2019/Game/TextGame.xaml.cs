@@ -40,7 +40,7 @@ namespace appFBLA2019
                 this.QuestionImage.IsEnabled = question.NeedsPicture;
 
                 // The image will ALWAYS be named after the DBId
-                this.QuestionImage.Source = App.Path + question.DBId + ".jpg"; // Add cases for all JPG file extensions (for example, ".jpeg")
+                this.QuestionImage.Source = question.DBId + ".jpg"; // Add cases for all JPG file extensions (for example, ".jpeg")
 
                 if (question.QuestionType == 0) // If multiple-choice button question
                 {
@@ -64,10 +64,32 @@ namespace appFBLA2019
                         //if there are only 2 answers the buttons are tall
                         if (question.Answers.Count() < 3)
                             span = 2;
-                        //2 is a magic number here for the number of columns
-                        currentColumn = Math.Abs((i % 2) - 1);
-                        //row is determined (basically) by being greater than 2
-                        currentRow = Math.Max(Math.Sign(i - 2), 0);
+                        //BROKEN
+                        ////2 is a magic number here for the number of columns
+                        //currentColumn = Math.Abs((i % 2) - 1);
+                        ////row is determined (basically) by being greater than 2
+                        //currentRow = Math.Max(Math.Sign(i - 2), 0);
+
+                        //this is gross and messy, need to find a better way to place buttons correctly with math and stuff
+                        switch (i)
+                        {
+                            case 0:
+                                currentColumn = 0;
+                                currentRow = 0;
+                                break;
+                            case 1:
+                                currentColumn = 1;
+                                currentRow = 0;
+                                break;
+                            case 2:
+                                currentColumn = 0;
+                                currentRow = 1;
+                                break;
+                            case 3:
+                                currentColumn = 1;
+                                currentRow = 1;
+                                break;
+                        }
 
                         this.GridEntryObjects.Children.Add(button, currentColumn, currentRow);
                         Grid.SetColumnSpan(button, span);

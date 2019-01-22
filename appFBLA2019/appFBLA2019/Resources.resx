@@ -118,6 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="b1332110_0571_4e99_bd41_112fe39f0a24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\testLevel`testAuthor\b1332110-0571-4e99-bd41-112fe39f0a24.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="d393148d_d0c6_49d2_8df2_f020117cd57e" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\testLevel`testAuthor\d393148d-d0c6-49d2-8df2-f020117cd57e.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="ic_edit_black_48dp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\ic_edit_black_48dp.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -129,5 +135,20 @@
   </data>
   <data name="ic_person_black_48dp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\ic_person_black_48dp.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="testLevel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\testLevel`testAuthor\testLevel.realm;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="testLevel_realm" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\testLevel`testAuthor\testLevel.realm.lock;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="_549fdcb6_a858_410b_9935_f29dfabe1748" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\testLevel`testAuthor\549fdcb6-a858-410b-9935-f29dfabe1748.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="_794be95c_5c84_4d09_b492_faca9bc90b41" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\testLevel`testAuthor\794be95c-5c84-4d09-b492-faca9bc90b41.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="_85b1a2ea_615b_4ca5_8f20_cd5759a71c14" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\testLevel`testAuthor\85b1a2ea-615b-4ca5-8f20-cd5759a71c14.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

@@ -13,7 +13,12 @@ namespace appFBLA2019
 
         public App ()
 		{
-			this.InitializeComponent();
+            // Initialize Live Reload.
+#if DEBUG
+            //LiveReload.Init();
+#endif
+
+            this.InitializeComponent();
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
             /*REMOVE DURING RELEASE*/
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");

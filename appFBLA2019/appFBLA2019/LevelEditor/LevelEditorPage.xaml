@@ -8,17 +8,19 @@
             <Button x:Name="ButtonCreate" 
                     Text="Create new level" 
                     Clicked="ButtonCreate_Clicked" 
-                    WidthRequest="40" 
-                    HeightRequest="40" 
-                    BorderRadius="20"
-                    VerticalOptions="CenterAndExpand"></Button>
+                    WidthRequest="80" 
+                    HeightRequest="80" 
+                    BorderRadius="40"
+                    VerticalOptions="CenterAndExpand"
+                    HorizontalOptions="Center"></Button>
             <Button x:Name="ButtonEdit" 
                     Text="Edit existing level" 
                     Clicked="ButtonEdit_Clicked" 
-                    WidthRequest="40" 
-                    HeightRequest="40" 
-                    BorderRadius="20"
-                    VerticalOptions="CenterAndExpand"></Button>
+                    WidthRequest="80" 
+                    HeightRequest="80" 
+                    BorderRadius="40"
+                    VerticalOptions="CenterAndExpand"
+                    HorizontalOptions="Center"></Button>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
