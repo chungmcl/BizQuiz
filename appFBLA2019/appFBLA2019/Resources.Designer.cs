@@ -63,56 +63,6 @@ namespace appFBLA2019 {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] _549fdcb6_a858_410b_9935_f29dfabe1748 {
-            get {
-                object obj = ResourceManager.GetObject("_549fdcb6_a858_410b_9935_f29dfabe1748", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] _794be95c_5c84_4d09_b492_faca9bc90b41 {
-            get {
-                object obj = ResourceManager.GetObject("_794be95c_5c84_4d09_b492_faca9bc90b41", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] _85b1a2ea_615b_4ca5_8f20_cd5759a71c14 {
-            get {
-                object obj = ResourceManager.GetObject("_85b1a2ea_615b_4ca5_8f20_cd5759a71c14", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] b1332110_0571_4e99_bd41_112fe39f0a24 {
-            get {
-                object obj = ResourceManager.GetObject("b1332110_0571_4e99_bd41_112fe39f0a24", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] d393148d_d0c6_49d2_8df2_f020117cd57e {
-            get {
-                object obj = ResourceManager.GetObject("d393148d_d0c6_49d2_8df2_f020117cd57e", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] ic_edit_black_48dp {
             get {
                 object obj = ResourceManager.GetObject("ic_edit_black_48dp", resourceCulture);
@@ -146,26 +96,6 @@ namespace appFBLA2019 {
         internal static byte[] ic_person_black_48dp {
             get {
                 object obj = ResourceManager.GetObject("ic_person_black_48dp", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] testLevel {
-            get {
-                object obj = ResourceManager.GetObject("testLevel", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] testLevel_realm {
-            get {
-                object obj = ResourceManager.GetObject("testLevel_realm", resourceCulture);
                 return ((byte[])(obj));
             }
         }
