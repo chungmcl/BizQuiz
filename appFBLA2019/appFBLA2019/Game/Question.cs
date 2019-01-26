@@ -72,26 +72,22 @@ namespace appFBLA2019
         /// The potential answers to the question. The correct answer will be prefixed with "c/".
         /// The rest will be prefixed with "x/".
         /// </param>
-        public Question(string question, byte[] image, bool needsPicture, params string[] answers)
+        public Question(string question, byte[] image, params string[] answers)
         {
             this.QuestionText = question;
             //tries to assign the params to the local Answers property which in turn assigns the fields
             //if answers is null, throws an exception
             this.Status = 0;
-            this.NeedsPicture = needsPicture;
             this.Answers = answers ?? throw new ArgumentException("Must have at least one answer!");
-            if(needsPicture)
-            {
-                ImageByteArray = new byte[image.Length];
-                image.CopyTo(this.ImageByteArray, 0);
-            }
-
+            image.CopyTo(this.ImageByteArray, 0);
         }
 
-        /// <summary>
-        /// Empty constructor
-        /// </summary>
-        public Question() : this ("This question is empty!", new byte[0], false, new string[0])
+        public Question(string question, params string[] answers) : this(question, new byte[0], answers)
+        {
+            this.NeedsPicture = false;
+        }
+
+        public Question() : this ("This question is empty!", new byte[0], new string[0])
         {
 
         }
