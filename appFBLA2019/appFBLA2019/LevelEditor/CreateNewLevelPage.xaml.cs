@@ -150,39 +150,82 @@ namespace appFBLA2019
             // Returns user to front page of LevelEditor
             this.Navigation.PushAsync(new LevelEditorPage());
         }
-    }
 
-    class QuestionFrame : Frame
-    {
-        QuestionFrame()
+        public void AddNewQuestion(string question, params string[] answers)
         {
-            ((Button)this.frameStack.Children[0]).Clicked += new EventHandler(ButtonRemove_Clicked);
-        }
-
-        private void ButtonRemove_Clicked(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        StackLayout frameStack = new StackLayout
-        {
-            FlowDirection = FlowDirection.LeftToRight,
-            Orientation = StackOrientation.Vertical,
-            Children =
+            Frame frame = new Frame()
             {
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                CornerRadius = 10
+            };
 
-                new Button
-                {
-                    Text = "Remove Question",
-                    
-                },
+            StackLayout frameStack = new StackLayout
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                Orientation = StackOrientation.Vertical
+            };
 
-                new Entry
-                {
-                    Placeholder = "Enter question",
-                }
+            Button Remove = new Button();
+            {
+                Remove.Text = "Remove Question";
+                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
             }
-        };
+            frameStack.Children.Add(Remove);
+
+            Entry Question = new Entry
+            {
+                Placeholder = "Enter question",
+                Text = question,
+            };
+            frameStack.Children.Add(Question);
+
+            Entry AnswerCorrect = new Entry
+            {
+                Placeholder = "Enter correct answer",
+                Text = answers[0],
+            };
+            frameStack.Children.Add(AnswerCorrect);
+
+            Entry AnswerWrongOne = new Entry
+            {
+                Placeholder = "Enter a possible answer",
+                Text = answers[1],
+            };
+            frameStack.Children.Add(AnswerWrongOne);
+
+            Entry AnswerWrongTwo = new Entry
+            {
+                Placeholder = "Enter a possible answer",
+                Text = answers[2],
+            };
+            frameStack.Children.Add(AnswerWrongTwo);
+
+            Entry AnswerWrongThree = new Entry
+            {
+                Placeholder = "Enter a possible answer",
+                Text = answers[3],
+            };
+            frameStack.Children.Add(AnswerWrongThree);
+
+            Button AddImage = new Button();
+            {
+                AddImage.Text = "Add Image";
+                AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
+
+            }
+
+            Image image = new Image
+            {
+                IsEnabled = false,
+            };
+            frameStack.Children.Add(image);
+            frameStack.Children.Add(AddImage);
+
+            frame.Content = frameStack;
+            this.StackLayoutQuestionStack.Children.Add(frame);
+        }
     }
 
+    
 }

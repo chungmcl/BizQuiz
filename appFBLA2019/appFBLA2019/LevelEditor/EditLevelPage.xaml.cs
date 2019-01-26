@@ -21,20 +21,8 @@ namespace appFBLA2019
         }
 
         // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
-        // This fires evertime the User selects an item in the selector.
-        // Also this isn't actually being called for some reason.
-        //void OnPickerSelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    var picker = (Picker)sender;
-        //    int selectedIndex = picker.SelectedIndex;
 
-        //    if (selectedIndex != -1)
-        //    {
-        //        DatbaseNameLabel.Text = (string)picker.ItemsSource[selectedIndex];
-        //    }
-        //}
-
-            // Get the list of Quizes the user can edit
+        // Get the list of Quizes the user can edit
         private void FindDatabase()
         {
             List<string> databaseList = new List<string>();
@@ -47,19 +35,35 @@ namespace appFBLA2019
             foreach (string levelName in subFolderNames)
             {
                 if (levelName.Contains('`'))
-                    databaseList.Add(levelName.Remove(levelName.IndexOf('`'), levelName.Count() - levelName.IndexOf('`')).Substring(28));
+                {
+                    // Might have to change this up when it comes to release as Levels will be stored somewhere else!
+                    databaseList.Add(levelName.Remove(levelName.IndexOf('`'),
+                        levelName.Count() - levelName.IndexOf('`')).Substring(30));
+                }
+
             }
 
             PickerLevelSelect.ItemsSource = databaseList;
-            DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, "testAuthor");
         }
 
-        // Called when the user presses the button to edit a quiz
+        // Called when the user presses the button to edit a quiz, Sets up the edit page
         private void ButtonEditLevel_Clicked(object sender, EventArgs e)
         {
             if(PickerLevelSelect.SelectedIndex != -1) // If the user has selected something then open the page
             {
-                this.Navigation.PushAsync(new CreateNewLevelPage()); // Right now it just opens a new level, should open selected level
+                DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, "testAuthor");
+                CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
+                // Add the questions from the database to the page to edit
+                foreach (Question question in DBHandler.Database.GetQuestions()) 
+                {
+                    levelPage.AddNewQuestion(
+                           question.QuestionText,
+                           question.CorrectAnswer,
+                           question.AnswerOne,
+                           question.AnswerTwo,
+                           question.AnswerThree);
+                }
+                this.Navigation.PushAsync(levelPage);
             }
             
         }
