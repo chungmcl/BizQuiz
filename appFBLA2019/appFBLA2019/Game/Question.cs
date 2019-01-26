@@ -79,8 +79,12 @@ namespace appFBLA2019
             //if answers is null, throws an exception
             this.Status = 0;
             this.Answers = answers ?? throw new ArgumentException("Must have at least one answer!");
-            ImageByteArray = new byte[image.Length];
             image.CopyTo(this.ImageByteArray, 0);
+        }
+
+        public Question(string question, params string[] answers) : this(question, new byte[0], answers)
+        {
+            this.NeedsPicture = false;
         }
 
         public Question() : this ("This question is empty!", new byte[0], new string[0])
