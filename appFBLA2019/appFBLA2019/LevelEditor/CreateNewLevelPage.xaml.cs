@@ -130,6 +130,10 @@ namespace appFBLA2019
                     
                     IList<View> children = ((StackLayout)frame.Content).Children;
 
+                    //if (((Image)children[6]).IsEnabled)
+                    //{
+                    //    byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
+                    //}
                     byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
                     Question addThis = new Question(
                         ((Entry)children[1]).Text,
