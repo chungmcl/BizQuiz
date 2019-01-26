@@ -96,15 +96,13 @@ namespace appFBLA2019
             await CrossMedia.Current.Initialize();
             Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
 
-            //Stream stream = file.GetStream();
-
-            //MemoryStream ms = new MemoryStream();
-            //stream.CopyTo(ms);
-            //byte[] Image = ms.ToArray();
-            
+;
             // Couldn't think of a proper way, but just used the StyleId property to store the file path as a string
             ((Image)StackLayoutQuestionStack.Children[6]).StyleId = file.Path;
             ((Image)StackLayoutQuestionStack.Children[6]).Source = file.Path;
+
+            // Enables the image
+            ((Image)StackLayoutQuestionStack.Children[6]).IsEnabled = true;
         }
 
         // Called when the add question button is clicked
@@ -135,7 +133,8 @@ namespace appFBLA2019
                     byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
                     Question addThis = new Question(
                         ((Entry)children[1]).Text,
-                        b,
+                        b, // The image
+                        ((Image)children[6]).IsEnabled, // If the image exsists
                         "c/" + ((Entry)children[2]).Text,
                         "x/" + ((Entry)children[3]).Text,
                         "x/" + ((Entry)children[4]).Text,
