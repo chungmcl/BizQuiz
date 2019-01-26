@@ -129,20 +129,27 @@ namespace appFBLA2019
                 {
                     
                     IList<View> children = ((StackLayout)frame.Content).Children;
-
-                    //if (((Image)children[6]).IsEnabled)
-                    //{
-                    //    byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
-                    //}
-                    byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
-                    Question addThis = new Question(
-                        ((Entry)children[1]).Text,
-                        b, // The image
-                        ((Image)children[6]).IsEnabled, // If the image exsists
-                        "c/" + ((Entry)children[2]).Text,
-                        "x/" + ((Entry)children[3]).Text,
-                        "x/" + ((Entry)children[4]).Text,
-                        "x/" + ((Entry)children[5]).Text);
+                    Question addThis;
+                    if (((Image)children[6]).IsEnabled) // if needs picture
+                    {
+                        byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
+                        addThis = new Question(
+                                ((Entry)children[1]).Text,
+                                b, // The image
+                                "c/" + ((Entry)children[2]).Text,
+                                "x/" + ((Entry)children[3]).Text,
+                                "x/" + ((Entry)children[4]).Text,
+                                "x/" + ((Entry)children[5]).Text);
+                    }
+                    else // if not needs picture
+                    {
+                        addThis = new Question(
+                                ((Entry)children[1]).Text,
+                                "c/" + ((Entry)children[2]).Text,
+                                "x/" + ((Entry)children[3]).Text,
+                                "x/" + ((Entry)children[4]).Text,
+                                "x/" + ((Entry)children[5]).Text);
+                    }
 
                     questionsToAdd.Add(addThis);
 
@@ -152,9 +159,9 @@ namespace appFBLA2019
 
             // Returns user to front page of LevelEditor
             this.Navigation.PushAsync(new LevelEditorPage());
-        }
+        }  
 
-        public void AddNewQuestion(string question, params string[] answers)
+        public void AddNewQuestion(string question, byte[] imageAsBytes, bool needsPicture, params string[] answers)
         {
             Frame frame = new Frame()
             {
@@ -220,8 +227,12 @@ namespace appFBLA2019
 
             Image image = new Image
             {
-                IsEnabled = false,
+                IsEnabled = needsPicture,            
             };
+
+            //Gets the imagesource from they byte array
+            if (IsEnabled)
+                image.Source = ImageSource.FromStream(() => new MemoryStream(imageAsBytes));
             frameStack.Children.Add(image);
             frameStack.Children.Add(AddImage);
 

@@ -58,7 +58,9 @@ namespace appFBLA2019
                 {
                     levelPage.AddNewQuestion(
                            question.QuestionText,
-                           question.CorrectAnswer,
+                           question.ImageByteArray,
+                           question.NeedsPicture,
+                           question.CorrectAnswer,                         
                            question.AnswerOne,
                            question.AnswerTwo,
                            question.AnswerThree);
