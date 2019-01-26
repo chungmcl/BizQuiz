@@ -79,6 +79,7 @@ namespace appFBLA2019
             //if answers is null, throws an exception
             this.Status = 0;
             this.Answers = answers ?? throw new ArgumentException("Must have at least one answer!");
+            ImageByteArray = new byte[image.Length];
             image.CopyTo(this.ImageByteArray, 0);
         }
 

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using Realms;
 using System.Linq;
 using System.IO;
+using Xamarin.Forms;
 
 namespace appFBLA2019
 {
@@ -45,7 +44,7 @@ namespace appFBLA2019
             {
                 string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
                 question.DBId = dbPrimaryKey;
-                MemoryStream ms = new MemoryStream(question.ImageByteArray);
+                File.WriteAllBytes("dbPrimaryKey.jpg", question.ImageByteArray);
                 this.realmDB.Write(() =>
                 {
                     this.realmDB.Add(question);
