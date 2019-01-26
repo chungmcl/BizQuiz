@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,12 +38,18 @@ namespace appFBLA2019
         private void FindDatabase()
         {
             List<string> databaseList = new List<string>();
-            // get a list of all databases the user has.
-            // Either thats on the server or on the device.
-            // Im not sure yet.
-            databaseList.Add("levelTest");
-            databaseList.Add("testdatabaseHEY");
-            databaseList.Add("okay");
+
+
+            // get a list of all databases the user has on the device
+
+
+            string[] subFolderNames = Directory.GetDirectories(App.Path);
+            foreach (string levelName in subFolderNames)
+            {
+                if (levelName.Contains('`'))
+                    databaseList.Add(levelName.Remove(levelName.IndexOf('`'), levelName.Count() - levelName.IndexOf('`')).Substring(28));
+            }
+
             PickerLevelSelect.ItemsSource = databaseList;
             DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, "testAuthor");
         }

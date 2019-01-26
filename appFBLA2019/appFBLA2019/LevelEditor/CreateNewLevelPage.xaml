@@ -12,8 +12,8 @@
                 <StackLayout x:Name="StackLayoutQuestionStack" Padding="10">
                     <!--Things added in code-->
                 </StackLayout>
-                <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked"/>
-                <Button x:Name="ButtonCreateLevel" Text="Create" Clicked="ButtonCreateLevel_Clicked"/>
+                <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" BorderRadius="20"/>
+                <Button x:Name="ButtonCreateLevel" Text="Create" Clicked="ButtonCreateLevel_Clicked" BorderRadius="20"/>
             </StackLayout> 
         </ScrollView>
 
