@@ -16,8 +16,8 @@ namespace appFBLA2019
 	{
 		public ProfilePage ()
 		{
-			this.InitializeComponent ();
-		}
+            this.InitializeComponent();
+        }
 
         private async void ButtonToLoginPage_Clicked(object sender, EventArgs e)
         {
