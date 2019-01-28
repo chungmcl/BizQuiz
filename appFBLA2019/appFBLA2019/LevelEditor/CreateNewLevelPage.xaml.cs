@@ -17,7 +17,6 @@ namespace appFBLA2019
 		public CreateNewLevelPage()
 		{           
 			this.InitializeComponent();
-            this.AddNewQuestion();
         }
 
         private void AddNewQuestion()
@@ -26,7 +25,7 @@ namespace appFBLA2019
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
-                CornerRadius = 10
+                CornerRadius = 10,
             };
 
             StackLayout frameStack = new StackLayout
@@ -35,10 +34,15 @@ namespace appFBLA2019
                 Orientation = StackOrientation.Vertical
             };
 
-            Button Remove = new Button();
+            ImageButton Remove = new ImageButton();
             {
-                Remove.Text = "Remove Question";
+                Remove.Source = "ic_delete_black_48dp.png";
                 Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
+                Remove.ScaleX = .3;
+                Remove.ScaleY = .3;
+                Remove.Margin = 0;
+                Remove.HorizontalOptions = LayoutOptions.End;
+                //Remove.BackgroundColor = Color.Transparent;
             }
             frameStack.Children.Add(Remove);
 
@@ -76,7 +80,7 @@ namespace appFBLA2019
             {
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
-
+                AddImage.CornerRadius = 20;
             }
 
             Image image = new Image
@@ -111,54 +115,68 @@ namespace appFBLA2019
             this.AddNewQuestion();
         }
 
+        // Removes the Question Frame
         private void ButtonRemove_Clicked(object sender, EventArgs e)
         {
-            // This just removed the first question, Not the question the button is on.
-            this.StackLayoutQuestionStack.Children.RemoveAt(0);
+            this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent)));
         }
 
+        // Creates the Level
         private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
-            // Later, need to impliment username to pass through
-            DBHandler.SelectDatabase(this.EntryLevelName.Text, "testAuthor");
-            List<Question> questionsToAdd = new List<Question>();  // A list of questions to add to the database \
-            // Loops through each question frame on the screen 
-            foreach (Frame frame in this.StackLayoutQuestionStack.Children)
+            if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
             {
-                for (int i = 0; i < ((StackLayout)frame.Content).Children.Count; i++)
-                {
-                    
-                    IList<View> children = ((StackLayout)frame.Content).Children;
-                    Question addThis;
-                    if (((Image)children[6]).IsEnabled) // if needs picture
-                    {
-                        byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
-                        addThis = new Question(
-                                ((Entry)children[1]).Text,
-                                b, // The image
-                                "c/" + ((Entry)children[2]).Text,
-                                "x/" + ((Entry)children[3]).Text,
-                                "x/" + ((Entry)children[4]).Text,
-                                "x/" + ((Entry)children[5]).Text);
-                    }
-                    else // if not needs picture
-                    {
-                        addThis = new Question(
-                                ((Entry)children[1]).Text,
-                                "c/" + ((Entry)children[2]).Text,
-                                "x/" + ((Entry)children[3]).Text,
-                                "x/" + ((Entry)children[4]).Text,
-                                "x/" + ((Entry)children[5]).Text);
-                    }
-
-                    questionsToAdd.Add(addThis);
-
-                }
+                DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
             }
-            DBHandler.Database.AddQuestions(questionsToAdd);
+            else if (this.StackLayoutQuestionStack.Children.Count < 2)
+            {
+                DisplayAlert("Couldn't Create Level", "Please create at least two questions", "OK");
+            }
+            else
+            {
+                // Later, need to impliment username to pass through
+                DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), "testAuthor");
+                List<Question> questionsToAdd = new List<Question>();  // A list of questions to add to the database \
+                // Loops through each question frame on the screen 
+                foreach (Frame frame in this.StackLayoutQuestionStack.Children)
+                {
+                
+                    for (int i = 0; i < ((StackLayout)frame.Content).Children.Count; i++)
+                    {
+                    
+                        IList<View> children = ((StackLayout)frame.Content).Children;
+                        Question addThis;
+                        if (((Image)children[6]).IsEnabled) // if needs picture
+                        {
+                            byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
+                            addThis = new Question(
+                                    ((Entry)children[1]).Text,
+                                    b, // The image
+                                    "c/" + ((Entry)children[2]).Text,
+                                    "x/" + ((Entry)children[3]).Text,
+                                    "x/" + ((Entry)children[4]).Text,
+                                    "x/" + ((Entry)children[5]).Text);
+                        }
+                        else // if not needs picture
+                        {
+                            addThis = new Question(
+                                    ((Entry)children[1]).Text,
+                                    "c/" + ((Entry)children[2]).Text,
+                                    "x/" + ((Entry)children[3]).Text,
+                                    "x/" + ((Entry)children[4]).Text,
+                                    "x/" + ((Entry)children[5]).Text);
+                        }
 
-            // Returns user to front page of LevelEditor
-            this.Navigation.PushAsync(new LevelEditorPage());
+                        questionsToAdd.Add(addThis);
+
+                    }
+                }
+                DBHandler.Database.AddQuestions(questionsToAdd);
+
+                // Returns user to front page of LevelEditor
+                this.Navigation.PushAsync(new LevelEditorPage());
+            }
+ 
         }  
 
         public void AddNewQuestion(string question, byte[] imageAsBytes, bool needsPicture, params string[] answers)
@@ -176,10 +194,10 @@ namespace appFBLA2019
                 Orientation = StackOrientation.Vertical
             };
 
-            Button Remove = new Button();
+            ImageButton Remove = new ImageButton();
             {
-                Remove.Text = "Remove Question";
-                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
+                Remove.Source = "ic_delete_black_48dp.png";
+                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);               
             }
             frameStack.Children.Add(Remove);
 
@@ -222,7 +240,7 @@ namespace appFBLA2019
             {
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
-
+                AddImage.CornerRadius = 20;
             }
 
             Image image = new Image
@@ -239,7 +257,10 @@ namespace appFBLA2019
             frame.Content = frameStack;
             this.StackLayoutQuestionStack.Children.Add(frame);
         }
-    }
 
-    
+        public void SetLevelName(string levelName)
+        {
+            EntryLevelName.Text = levelName;
+        }
+    }
 }

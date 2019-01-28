@@ -20,6 +20,17 @@ namespace appFBLA2019
             
         }
 
+        private void OnPickerSelectedIndexChanged(Object sender, EventArgs e)
+        {
+            var picker = (Picker)sender;
+            int selectedIndex = picker.SelectedIndex;
+
+            if (selectedIndex != -1)
+            {
+                ButtonEditLevel.IsEnabled = true;
+            }
+        }
+        
         // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
 
         // Get the list of Quizes the user can edit
@@ -56,11 +67,12 @@ namespace appFBLA2019
                 // Add the questions from the database to the page to edit
                 foreach (Question question in DBHandler.Database.GetQuestions()) 
                 {
+                    levelPage.SetLevelName((string)PickerLevelSelect.SelectedItem);
                     levelPage.AddNewQuestion(
                            question.QuestionText,
                            question.ImageByteArray,
                            question.NeedsPicture,
-                           question.CorrectAnswer,                         
+                           question.CorrectAnswer,
                            question.AnswerOne,
                            question.AnswerTwo,
                            question.AnswerThree);
