@@ -4,65 +4,104 @@ using System.Text;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace appFBLA2019
 {
     public static class ServerConnector
     {
-        private static TcpClient tcp;
-        private static NetworkStream nwStream;
-        private const string serverIP = "50.106.17.86";
-        private const int serverPort = 7777;
-        private const int timeoutTimeMilliseconds = 5000;
-        private const double timeoutTimeSeconds = 5;
+        private const int maxFileSize = 2147483591; // Max byte size for arrays in C#, slightly under int.MaxValue - Can't process anything over this
+        private const int headerSize = 5;
 
-        /// <summary>
-        /// Sends request to server database to add/create new account
-        /// </summary>
-        /// <param name="username">Username to be added</param>
-        /// <param name="password">Password to be added</param>
-        /// <returns>True if connected and sent, false if could not connect</returns>
-        public static async Task<bool> QueryDB(string dbQuery)
+        public static TcpClient client;
+        public static NetworkStream netStream;  // Raw-data stream of connection.
+        public static SslStream ssl;            // Encrypts connection using SSL.
+
+        public static string Server { get; set; }
+        public static int Port { get { return 7777; } }
+
+        public static void SendData(ServerRequestTypes dataType, object data)
         {
-            tcp = new TcpClient();
-            IAsyncResult result = tcp.BeginConnect(serverIP, serverPort, null, null);
-
-            bool connectionSuccess = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(timeoutTimeSeconds));
-
-            if (!connectionSuccess)
+            switch (dataType)
             {
-                return false;
+                case (ServerRequestTypes.AddJPEGImage):
+                    break;
+                case (ServerRequestTypes.AddRealmFile):
+                    break;
+                case (ServerRequestTypes.LoginAccount):
+                    break;
+                case (ServerRequestTypes.RegisterAccount):
+                    break;
+                case (ServerRequestTypes.StringData):
+                    break;
+                case (ServerRequestTypes.GetJPEGImage):
+                    break;
+                case (ServerRequestTypes.GetRealmFile):
+                    break;
+                case (ServerRequestTypes.GetEmail):
+                    break;
+
             }
-            else
-            {
-                byte[] sendBuffer = Encoding.ASCII.GetBytes(dbQuery);
 
-                nwStream = tcp.GetStream();
-
-                nwStream.WriteTimeout = timeoutTimeMilliseconds;
-                nwStream.Write(sendBuffer, 0, sendBuffer.Length);
-
-                return true;
-            }
         }
 
-        /// <summary>
-        /// Receive data/message from database proceeding sending request
-        /// </summary>
-        /// <returns>The data/message from the server</returns>
-        public async static Task<string> ReceiveFromDB()
+        private static void SendByteArray(byte[] data)
         {
+            ssl.Write(data, 0, data.Length);
+            ssl.Flush();
+        }
 
-            byte[] bytesToRead = new byte[tcp.ReceiveBufferSize];
-            nwStream.ReadTimeout = timeoutTimeMilliseconds;
-            int bytesRead = nwStream.Read(bytesToRead, 0, tcp.ReceiveBufferSize);
-            string databaseMessage = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
+        private static void SetupConnection()
+        {
+            client = new TcpClient(AddressFamily.InterNetworkV6);
+            client.Client.DualMode = true;
+            var result = client.BeginConnect(Server, Port, null, null);
+            var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(7));
+            if (!success)
+            {
+                throw new Exception("Failed to connect - Timeout exception.");
+            }
 
-            tcp.Client.Disconnect(true);
-            tcp.Client.Close();
-            tcp.Close();
+            netStream = client.GetStream();
 
-            return databaseMessage;
+            ssl = new SslStream(netStream, false,
+                new RemoteCertificateValidationCallback(ValidateCert));
+
+            ssl.WriteTimeout = 5000;
+
+            ssl.AuthenticateAsClient("BizQuizServer");
+        }
+
+        private static void CloseConn() // Close connection.
+        {
+            ssl.Close();
+            netStream.Close();
+            client.Close();
+        }
+
+        public static bool ValidateCert(object sender, X509Certificate certificate,
+              X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            return true; // Allow untrusted certificates.
         }
     }
+    
+    public enum ServerRequestTypes
+    {
+        // "Command" Requests
+        StringData = 0b00000001,
+        AddJPEGImage = 0b00000010,
+        AddRealmFile = 0b00000011,
+        LoginAccount = 0b00000100,
+        RegisterAccount = 0b00000101,
+        DeleteAccount = 0b00000110,
+        ConfirmEmail = 0b00000111,
+
+        // "Get" Requests
+        GetEmail = 0b00001001,
+        GetJPEGImage = 0b00001010,
+        GetRealmFile = 0b00001011
+    }
 }
+
