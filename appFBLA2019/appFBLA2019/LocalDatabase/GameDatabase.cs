@@ -16,12 +16,14 @@ namespace appFBLA2019
         public Realm realmDB;
         public readonly string fileName;
         private string dbPath;
+        private string dbFolderPath;
         
-        public GameDatabase(string dbPath, string fileName)
+        public GameDatabase(string dbFolderPath, string fileName)
         {
             try
             {
-                this.dbPath = dbPath;
+                this.dbPath = dbFolderPath + fileName;
+                this.dbFolderPath = dbFolderPath;
                 RealmConfiguration rC = new RealmConfiguration(dbPath);
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = fileName;
@@ -35,6 +37,10 @@ namespace appFBLA2019
         public List<Question> GetQuestions()
         {
             IQueryable<Question> queryable = this.realmDB.All<Question>();
+            foreach (Question question in queryable)
+            {
+                question.ImagePath = dbFolderPath + question.DBId + ".jpg";
+            }
             return new List<Question>(queryable);
         }
 
