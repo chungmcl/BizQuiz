@@ -39,7 +39,8 @@ namespace appFBLA2019
             IQueryable<Question> queryable = this.realmDB.All<Question>();
             foreach (Question question in queryable)
             {
-                question.ImagePath = dbFolderPath + question.DBId + ".jpg";
+                if (question.NeedsPicture)
+                    question.ImagePath = dbFolderPath + question.DBId + ".jpg";
             }
             return new List<Question>(queryable);
         }
