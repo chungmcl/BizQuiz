@@ -19,9 +19,11 @@ namespace appFBLA2019
 			this.InitializeComponent();
         }
 
-
-
-        // Called when the user presses the Add Image button on a question eiditor
+        /// <summary>
+        /// Called when the user presses the Add Image button on a question eiditor
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonAddImage_Clicked(object sender, EventArgs e)
         {
             await CrossMedia.Current.Initialize();
@@ -29,26 +31,41 @@ namespace appFBLA2019
 
 ;
             // Couldn't think of a proper way, but just used the StyleId property to store the file path as a string
-            ((Image)StackLayoutQuestionStack.Children[6]).StyleId = file.Path;
-            ((Image)StackLayoutQuestionStack.Children[6]).Source = file.Path;
+            // CURRENT: NEED TO SET THE STYLEID AND SOURCE OF THE CURRENT QUESTION TO FILE.PATH
+
+
+            //((Image)StackLayoutQuestionStack.Children[6]).StyleId = file.Path;
+            //((Image)StackLayoutQuestionStack.Children[6]).Source = file.Path;
 
             // Enables the image
             ((Image)StackLayoutQuestionStack.Children[6]).IsEnabled = true;
         }
 
-        // Called when the add question button is clicked
+        /// <summary>
+        /// Called when the add question button is clicked and adds a new question
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonAddQuestion_Clicked(object sender, EventArgs e)
         {
             this.AddNewQuestion();
         }
 
-        // Removes the Question Frame
+        /// <summary>
+        /// Removes the Question Frame when remove button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonRemove_Clicked(object sender, EventArgs e)
         {
             this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent)));
         }
 
-        // Creates the Level
+        /// <summary>
+        /// Creates the Level
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
@@ -81,10 +98,9 @@ namespace appFBLA2019
 
                     if (((Image)children[6]).IsEnabled) // if needs picture
                         {
-                            byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
                             addThis = new Question(
                                     ((Entry)children[1]).Text,
-                                    b, // The image
+                                    children[6].StyleId, // The image path
                                     answers);
                         }
                         else // if not needs picture
@@ -105,21 +121,32 @@ namespace appFBLA2019
             }
         }
 
-        // This is a private AddNewQuestions for when the user creates a brand new question
+        /// <summary>
+        /// a private AddNewQuestions for when the user creates a brand new question
+        /// </summary>
         private void AddNewQuestion()
         {
-            byte[] noImage = new byte[0];
-            AddNewQuestion(null, noImage, null);
+            string[] noAnswers = new string[0];
+            AddNewQuestion(null, "", noAnswers);
         }
 
-        // This AddNewQuestions is for if the question contains no image
+        /// <summary>
+        /// This AddNewQuestions is for if the question contains no image
+        /// </summary>
+        /// <param name="question">the Question to answer</param>
+        /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
         public void AddNewQuestion(string question, params string[] answers)
         {
             AddNewQuestion(question, null, answers);
         }
 
-        // This add New Questions contains parameters for images for when a question contains an image.
-        public void AddNewQuestion(string question, byte[] imageAsBytes, params string[] answers)
+        /// <summary>
+        /// This add New Questions contains parameters for images for when a question contains an image.
+        /// </summary>
+        /// <param name="question">the Question to answer</param>
+        /// <param name="imagePath">the path for the image corrosponding to the question</param>
+        /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
+        public void AddNewQuestion(string question, string imagePath, params string[] answers)
         {
             Frame frame = new Frame()
             {
@@ -155,7 +182,7 @@ namespace appFBLA2019
                 Placeholder = "Enter correct answer",
                 
             };
-            if (answers != null)
+            if (answers.Count() != 0)
                 AnswerCorrect.Text = answers[0];
             frameStack.Children.Add(AnswerCorrect);
 
@@ -163,7 +190,7 @@ namespace appFBLA2019
             {
                 Placeholder = "Enter a possible answer",
             };
-            if (answers != null)
+            if (answers.Count() != 0)
                 AnswerWrongOne.Text = answers[1];
             frameStack.Children.Add(AnswerWrongOne);
 
@@ -171,7 +198,7 @@ namespace appFBLA2019
             {
                 Placeholder = "Enter a possible answer",
             };
-            if (answers != null)
+            if (answers.Count() != 0)
                 AnswerWrongTwo.Text = answers[2];
             frameStack.Children.Add(AnswerWrongTwo);
 
@@ -179,7 +206,7 @@ namespace appFBLA2019
             {
                 Placeholder = "Enter a possible answer",
             };
-            if (answers != null)
+            if (answers.Count() != 0)
                 AnswerWrongThree.Text = answers[2];
             frameStack.Children.Add(AnswerWrongThree);
 
@@ -188,24 +215,25 @@ namespace appFBLA2019
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
                 AddImage.CornerRadius = 20;
+                AddImage.IsEnabled = false;
             }
 
-            bool needsPicture = true;
-            if (imageAsBytes.Length == 0)
-                needsPicture = false;
+            bool needsPicture = false;
+            if (imagePath != "")
+                needsPicture = true;
             Image image = new Image
             {
-                IsEnabled = needsPicture,            
+                IsEnabled = needsPicture,          
             };
-
-            //Gets the imagesource from they byte array
-            if (IsEnabled)
+            frameStack.Children.Add(image);
+            frameStack.Children.Add(AddImage);
+            //Gets the image from the imagePath
+            if (image.IsEnabled)
             {
-                image.Source = ImageSource.FromStream(() => new MemoryStream(imageAsBytes));
-                frameStack.Children.Add(image);
+                image.Source = imagePath;
             }
-            else
-                frameStack.Children.Add(AddImage);
+            else // or adds the add image button
+                AddImage.IsEnabled = true;
 
             frame.Content = frameStack;
             this.StackLayoutQuestionStack.Children.Add(frame);

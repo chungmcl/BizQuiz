@@ -64,6 +64,7 @@ namespace appFBLA2019
                 DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, "testAuthor");
                 CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
                 // Add the questions from the database to the page to edit
+                List<Question> test = DBHandler.Database.GetQuestions();
                 foreach (Question question in DBHandler.Database.GetQuestions()) 
                 {
                     string[] answers = new string[] {
@@ -76,7 +77,7 @@ namespace appFBLA2019
 
                     if (question.NeedsPicture) // Check if the question needs an image or not
                     {
-                        levelPage.AddNewQuestion(question.QuestionText, question.ImageByteArray, answers);
+                        levelPage.AddNewQuestion(question.QuestionText, question.ImagePath, answers);
                     }
                     else
                     {

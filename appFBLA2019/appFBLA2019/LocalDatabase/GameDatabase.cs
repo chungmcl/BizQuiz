@@ -39,12 +39,13 @@ namespace appFBLA2019
         public List<Question> GetQuestions()
         {
             IQueryable<Question> queryable = this.realmDB.All<Question>();
-            foreach (Question question in queryable)
+            List<Question> questions = new List<Question>(queryable);
+            for (int i = 0; i < queryable.Count(); i++)
             {
-                if (question.NeedsPicture)
-                    question.ImagePath = dbFolderPath + question.DBId + ".jpg";
+                if (questions[i].NeedsPicture)
+                    questions[i].ImagePath = dbFolderPath + "/" + questions[i].DBId + ".jpg";
             }
-            return new List<Question>(queryable);
+            return questions;
         }
 
         public void AddQuestions(List<Question> questions)
