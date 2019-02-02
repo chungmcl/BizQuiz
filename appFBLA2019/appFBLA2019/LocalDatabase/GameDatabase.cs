@@ -13,20 +13,22 @@ namespace appFBLA2019
     /// </summary>
     public class GameDatabase
     {
+        private const string realmExtension = ".realm";
+
         public Realm realmDB;
         public readonly string fileName;
         private string dbPath;
         private string dbFolderPath;
         
-        public GameDatabase(string dbFolderPath, string fileName)
+        public GameDatabase(string dbFolderPath, string levelTitle)
         {
             try
             {
-                this.dbPath = dbFolderPath + fileName;
+                this.dbPath = dbFolderPath + $"/{levelTitle}{realmExtension}";
                 this.dbFolderPath = dbFolderPath;
                 RealmConfiguration rC = new RealmConfiguration(dbPath);
                 this.realmDB = Realm.GetInstance(rC);
-                this.fileName = fileName;
+                this.fileName = $"/{levelTitle}{realmExtension}";
             }
             catch (Exception ex)
             {
