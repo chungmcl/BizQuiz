@@ -19,80 +19,7 @@ namespace appFBLA2019
 			this.InitializeComponent();
         }
 
-        private void AddNewQuestion()
-        {
-            Frame frame = new Frame()
-            {
-                VerticalOptions = LayoutOptions.FillAndExpand,
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                CornerRadius = 10,
-            };
 
-            StackLayout frameStack = new StackLayout
-            {
-                FlowDirection = FlowDirection.LeftToRight,
-                Orientation = StackOrientation.Vertical
-            };
-
-            ImageButton Remove = new ImageButton();
-            {
-                Remove.Source = "ic_delete_black_48dp.png";
-                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
-                Remove.ScaleX = .3;
-                Remove.ScaleY = .3;
-                Remove.Margin = 0;
-                Remove.HorizontalOptions = LayoutOptions.End;
-                //Remove.BackgroundColor = Color.Transparent;
-            }
-            frameStack.Children.Add(Remove);
-
-            Entry Question = new Entry
-            {
-                Placeholder = "Enter question",
-            };
-            frameStack.Children.Add(Question);
-
-            Entry AnswerCorrect = new Entry
-            {
-                Placeholder = "Enter correct answer"
-            };
-            frameStack.Children.Add(AnswerCorrect);
-
-            Entry AnswerWrongOne = new Entry
-            {
-                Placeholder = "Enter a possible answer"
-            };
-            frameStack.Children.Add(AnswerWrongOne);
-
-            Entry AnswerWrongTwo = new Entry
-            {
-                Placeholder = "Enter a possible answer"
-            };
-            frameStack.Children.Add(AnswerWrongTwo);
-
-            Entry AnswerWrongThree = new Entry
-            {
-                Placeholder = "Enter a possible answer"
-            };
-            frameStack.Children.Add(AnswerWrongThree);      
-
-            Button AddImage = new Button();
-            {
-                AddImage.Text = "Add Image";
-                AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
-                AddImage.CornerRadius = 20;
-            }
-
-            Image image = new Image
-            {
-                IsEnabled = false,
-            };
-            frameStack.Children.Add(image);
-            frameStack.Children.Add(AddImage);
-
-            frame.Content = frameStack;
-            this.StackLayoutQuestionStack.Children.Add(frame);
-        }
 
         // Called when the user presses the Add Image button on a question eiditor
         private async void ButtonAddImage_Clicked(object sender, EventArgs e)
@@ -140,31 +67,31 @@ namespace appFBLA2019
                 // Loops through each question frame on the screen 
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
-                
+
                     for (int i = 0; i < ((StackLayout)frame.Content).Children.Count; i++)
                     {
-                    
+
                         IList<View> children = ((StackLayout)frame.Content).Children;
                         Question addThis;
-                        if (((Image)children[6]).IsEnabled) // if needs picture
+
+                        string[] answers = { "c/" + ((Entry)children[2]).Text,
+                                    "x/" + ((Entry)children[3]).Text,
+                                    "x/" + ((Entry)children[4]).Text,
+                                    "x/" + ((Entry)children[5]).Text};
+
+                    if (((Image)children[6]).IsEnabled) // if needs picture
                         {
                             byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
                             addThis = new Question(
                                     ((Entry)children[1]).Text,
                                     b, // The image
-                                    "c/" + ((Entry)children[2]).Text,
-                                    "x/" + ((Entry)children[3]).Text,
-                                    "x/" + ((Entry)children[4]).Text,
-                                    "x/" + ((Entry)children[5]).Text);
+                                    answers);
                         }
                         else // if not needs picture
                         {
                             addThis = new Question(
                                     ((Entry)children[1]).Text,
-                                    "c/" + ((Entry)children[2]).Text,
-                                    "x/" + ((Entry)children[3]).Text,
-                                    "x/" + ((Entry)children[4]).Text,
-                                    "x/" + ((Entry)children[5]).Text);
+                                    answers);
                         }
 
                         questionsToAdd.Add(addThis);
@@ -176,10 +103,23 @@ namespace appFBLA2019
                 // Returns user to front page of LevelEditor
                 this.Navigation.PushAsync(new LevelEditorPage());
             }
- 
-        }  
+        }
 
-        public void AddNewQuestion(string question, byte[] imageAsBytes, bool needsPicture, params string[] answers)
+        // This is a private AddNewQuestions for when the user creates a brand new question
+        private void AddNewQuestion()
+        {
+            byte[] noImage = new byte[0];
+            AddNewQuestion(null, noImage, null);
+        }
+
+        // This AddNewQuestions is for if the question contains no image
+        public void AddNewQuestion(string question, params string[] answers)
+        {
+            AddNewQuestion(question, null, answers);
+        }
+
+        // This add New Questions contains parameters for images for when a question contains an image.
+        public void AddNewQuestion(string question, byte[] imageAsBytes, params string[] answers)
         {
             Frame frame = new Frame()
             {
@@ -204,36 +144,43 @@ namespace appFBLA2019
             Entry Question = new Entry
             {
                 Placeholder = "Enter question",
-                Text = question,
+                
             };
+            if (question != null) 
+                Question.Text = question;
             frameStack.Children.Add(Question);
 
             Entry AnswerCorrect = new Entry
             {
                 Placeholder = "Enter correct answer",
-                Text = answers[0],
+                
             };
+            if (answers != null)
+                AnswerCorrect.Text = answers[0];
             frameStack.Children.Add(AnswerCorrect);
 
             Entry AnswerWrongOne = new Entry
             {
                 Placeholder = "Enter a possible answer",
-                Text = answers[1],
             };
+            if (answers != null)
+                AnswerWrongOne.Text = answers[1];
             frameStack.Children.Add(AnswerWrongOne);
 
             Entry AnswerWrongTwo = new Entry
             {
                 Placeholder = "Enter a possible answer",
-                Text = answers[2],
             };
+            if (answers != null)
+                AnswerWrongTwo.Text = answers[2];
             frameStack.Children.Add(AnswerWrongTwo);
 
             Entry AnswerWrongThree = new Entry
             {
                 Placeholder = "Enter a possible answer",
-                Text = answers[3],
             };
+            if (answers != null)
+                AnswerWrongThree.Text = answers[2];
             frameStack.Children.Add(AnswerWrongThree);
 
             Button AddImage = new Button();
@@ -243,6 +190,9 @@ namespace appFBLA2019
                 AddImage.CornerRadius = 20;
             }
 
+            bool needsPicture = true;
+            if (imageAsBytes.Length == 0)
+                needsPicture = false;
             Image image = new Image
             {
                 IsEnabled = needsPicture,            
@@ -250,9 +200,12 @@ namespace appFBLA2019
 
             //Gets the imagesource from they byte array
             if (IsEnabled)
+            {
                 image.Source = ImageSource.FromStream(() => new MemoryStream(imageAsBytes));
-            frameStack.Children.Add(image);
-            frameStack.Children.Add(AddImage);
+                frameStack.Children.Add(image);
+            }
+            else
+                frameStack.Children.Add(AddImage);
 
             frame.Content = frameStack;
             this.StackLayoutQuestionStack.Children.Add(frame);

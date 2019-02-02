@@ -67,15 +67,22 @@ namespace appFBLA2019
                 // Add the questions from the database to the page to edit
                 foreach (Question question in DBHandler.Database.GetQuestions()) 
                 {
-                    levelPage.SetLevelName((string)PickerLevelSelect.SelectedItem);
-                    levelPage.AddNewQuestion(
-                           question.QuestionText,
-                           question.ImageByteArray,
-                           question.NeedsPicture,
+                    string[] answers = new string[] {
                            question.CorrectAnswer,
                            question.AnswerOne,
                            question.AnswerTwo,
-                           question.AnswerThree);
+                           question.AnswerThree };
+
+                    levelPage.SetLevelName((string)PickerLevelSelect.SelectedItem);
+
+                    if (question.NeedsPicture) // Check if the question needs an image or not
+                    {
+                        levelPage.AddNewQuestion(question.QuestionText, question.ImageByteArray, answers);
+                    }
+                    else
+                    {
+                        levelPage.AddNewQuestion(question.QuestionText, answers);
+                    }
                 }
                 this.Navigation.PushAsync(levelPage);
             }
