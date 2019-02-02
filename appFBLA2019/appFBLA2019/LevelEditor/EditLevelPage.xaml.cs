@@ -17,7 +17,6 @@ namespace appFBLA2019
         {
             InitializeComponent();
             FindDatabase();
-            
         }
 
         private void OnPickerSelectedIndexChanged(Object sender, EventArgs e)

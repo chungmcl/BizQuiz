@@ -45,8 +45,10 @@ namespace appFBLA2019
                 string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
                 question.DBId = dbPrimaryKey;
 
+                byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
+
                 if (question.NeedsPicture)
-                    File.WriteAllBytes("dbPrimaryKey.jpg", question.ImageByteArray);
+                    File.WriteAllBytes("dbPrimaryKey.jpg", imageByteArray);
 
                 this.realmDB.Write(() =>
                 {
