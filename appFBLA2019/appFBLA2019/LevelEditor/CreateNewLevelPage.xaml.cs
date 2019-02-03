@@ -26,19 +26,23 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ButtonAddImage_Clicked(object sender, EventArgs e)
         {
+
             await CrossMedia.Current.Initialize();
             Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
 
-;
-            // Couldn't think of a proper way, but just used the StyleId property to store the file path as a string
-            // CURRENT: NEED TO SET THE STYLEID AND SOURCE OF THE CURRENT QUESTION TO FILE.PATH
+            if (file != null) // if the user actually picked an image
+            {
+                // just used the StyleId property to store the file path as a string However Im not sure I need
+                Image currentImage = ((Image)((StackLayout)((Button)sender).Parent).Children[6]);
 
+                currentImage.StyleId = file.Path;
+                currentImage.Source = file.Path;
 
-            //((Image)StackLayoutQuestionStack.Children[6]).StyleId = file.Path;
-            //((Image)StackLayoutQuestionStack.Children[6]).Source = file.Path;
+                // Enables the image
+                currentImage.IsEnabled = true;
+                ((Button)sender).IsVisible = false;
+            }
 
-            // Enables the image
-            ((Image)StackLayoutQuestionStack.Children[6]).IsEnabled = true;
         }
 
         /// <summary>
@@ -100,7 +104,7 @@ namespace appFBLA2019
                         {
                             addThis = new Question(
                                     ((Entry)children[1]).Text,
-                                    children[6].StyleId, // The image path
+                                    children[6].StyleId, // adds image using The image path in StyleId
                                     answers);
                         }
                         else // if not needs picture
@@ -148,27 +152,27 @@ namespace appFBLA2019
         /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
         public void AddNewQuestion(string question, string imagePath, params string[] answers)
         {
-            Frame frame = new Frame()
+            Frame frame = new Frame() // The frame that holds everything
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 CornerRadius = 10
             };
 
-            StackLayout frameStack = new StackLayout
+            StackLayout frameStack = new StackLayout //the stack that holds all the info in the frame
             {
                 FlowDirection = FlowDirection.LeftToRight,
                 Orientation = StackOrientation.Vertical
             };
 
-            ImageButton Remove = new ImageButton();
+            ImageButton Remove = new ImageButton(); // the button to remove the question
             {
                 Remove.Source = "ic_delete_black_48dp.png";
                 Remove.Clicked += new EventHandler(ButtonRemove_Clicked);               
             }
             frameStack.Children.Add(Remove);
 
-            Entry Question = new Entry
+            Entry Question = new Entry // The question
             {
                 Placeholder = "Enter question",
                 
@@ -177,7 +181,7 @@ namespace appFBLA2019
                 Question.Text = question;
             frameStack.Children.Add(Question);
 
-            Entry AnswerCorrect = new Entry
+            Entry AnswerCorrect = new Entry // The correct answer
             {
                 Placeholder = "Enter correct answer",
                 
@@ -186,7 +190,7 @@ namespace appFBLA2019
                 AnswerCorrect.Text = answers[0];
             frameStack.Children.Add(AnswerCorrect);
 
-            Entry AnswerWrongOne = new Entry
+            Entry AnswerWrongOne = new Entry // A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
@@ -194,7 +198,7 @@ namespace appFBLA2019
                 AnswerWrongOne.Text = answers[1];
             frameStack.Children.Add(AnswerWrongOne);
 
-            Entry AnswerWrongTwo = new Entry
+            Entry AnswerWrongTwo = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
@@ -202,7 +206,7 @@ namespace appFBLA2019
                 AnswerWrongTwo.Text = answers[2];
             frameStack.Children.Add(AnswerWrongTwo);
 
-            Entry AnswerWrongThree = new Entry
+            Entry AnswerWrongThree = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
@@ -210,7 +214,7 @@ namespace appFBLA2019
                 AnswerWrongThree.Text = answers[2];
             frameStack.Children.Add(AnswerWrongThree);
 
-            Button AddImage = new Button();
+            Button AddImage = new Button(); // The add Image button
             {
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
@@ -221,10 +225,11 @@ namespace appFBLA2019
             bool needsPicture = false;
             if (imagePath != "")
                 needsPicture = true;
-            Image image = new Image
+            Image image = new Image // The image itself
             {
                 IsEnabled = needsPicture,          
             };
+
             frameStack.Children.Add(image);
             frameStack.Children.Add(AddImage);
             //Gets the image from the imagePath
@@ -235,7 +240,9 @@ namespace appFBLA2019
             else // or adds the add image button
                 AddImage.IsEnabled = true;
 
+            // finally add the stacklayout we just set up to the frame
             frame.Content = frameStack;
+            // and add the frame to the the other stacklaout.
             this.StackLayoutQuestionStack.Children.Add(frame);
         }
 
