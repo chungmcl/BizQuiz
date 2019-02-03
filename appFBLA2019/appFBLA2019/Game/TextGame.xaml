@@ -2,12 +2,14 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.TextGame"
-             xmlns:local="clr-namespace:appFBLA2019">
-    <StackLayout>
+             xmlns:local="clr-namespace:appFBLA2019"
+             NavigationPage.BackButtonTitle="true">
+    <StackLayout x:Name="StackLayoutMain">
         <ProgressBar VerticalOptions="Start"/>
         <Label x:Name="LabelQuestion" VerticalOptions="FillAndExpand" FontSize="Large"/>
         <Label x:Name="LabelDebug" VerticalOptions="FillAndExpand"/>
-        <Grid HeightRequest="320" VerticalOptions="End" x:Name="GridButtons">
+        <Image x:Name="QuestionImage" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+        <Grid HeightRequest="320" VerticalOptions="End" x:Name="GridEntryObjects">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>

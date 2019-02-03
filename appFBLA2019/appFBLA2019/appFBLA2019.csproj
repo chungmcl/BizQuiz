@@ -9,9 +9,42 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ic_delete_black_48dp.png" />
+    <None Remove="Resources\testLevel`testAuthor\549fdcb6-a858-410b-9935-f29dfabe1748.jpg" />
+    <None Remove="Resources\testLevel`testAuthor\794be95c-5c84-4d09-b492-faca9bc90b41.jpg" />
+    <None Remove="Resources\testLevel`testAuthor\85b1a2ea-615b-4ca5-8f20-cd5759a71c14.jpg" />
+    <None Remove="Resources\testLevel`testAuthor\b1332110-0571-4e99-bd41-112fe39f0a24.jpg" />
+    <None Remove="Resources\testLevel`testAuthor\d393148d-d0c6-49d2-8df2-f020117cd57e.jpg" />
+    <None Remove="Resources\testLevel`testAuthor\testLevel.realm" />
+    <None Remove="Resources\testLevel`testAuthor\testLevel.realm.lock" />
+    <None Remove="Resources\testLevel`testAuthor\testLevel.realm.management\access_control.control.mx" />
+    <None Remove="Resources\testLevel`testAuthor\testLevel.realm.management\access_control.write.mx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ic_delete_black_48dp.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\testLevel`testAuthor\549fdcb6-a858-410b-9935-f29dfabe1748.jpg" />
+    <EmbeddedResource Include="Resources\testLevel`testAuthor\794be95c-5c84-4d09-b492-faca9bc90b41.jpg" />
+    <EmbeddedResource Include="Resources\testLevel`testAuthor\85b1a2ea-615b-4ca5-8f20-cd5759a71c14.jpg" />
+    <EmbeddedResource Include="Resources\testLevel`testAuthor\b1332110-0571-4e99-bd41-112fe39f0a24.jpg" />
+    <EmbeddedResource Include="Resources\testLevel`testAuthor\d393148d-d0c6-49d2-8df2-f020117cd57e.jpg" />
+    <EmbeddedResource Include="Resources\testLevel`testAuthor\testLevel.realm" />
+    <EmbeddedResource Include="Resources\testLevel`testAuthor\testLevel.realm.lock" />
+    <EmbeddedResource Include="Resources\testLevel`testAuthor\testLevel.realm.management\access_control.control.mx" />
+    <EmbeddedResource Include="Resources\testLevel`testAuthor\testLevel.realm.management\access_control.write.mx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Plugin.FacebookClient" Version="1.4.0" />
-    <PackageReference Include="Realm" Version="3.3.0" />
-    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
+    <PackageReference Include="Plugin.Share" Version="7.1.1" />
+    <PackageReference Include="Realm" Version="3.4.0" />
+    <PackageReference Include="Realm.Database" Version="3.4.0" />
+    <PackageReference Include="Realm.DataBinding" Version="1.2.0" />
+    <PackageReference Include="Xam.Plugin.Media" Version="4.0.1.5" />
+    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1029999" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +56,11 @@
     </Compile>
     <Compile Update="LevelEditor\LevelEditorPage.xaml.cs">
       <DependentUpon>LevelEditorPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -53,6 +91,10 @@
     </EmbeddedResource>
     <EmbeddedResource Update="MainPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

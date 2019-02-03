@@ -15,7 +15,7 @@ namespace appFBLA2019
 		public LevelEditorPage ()
 		{
 			this.InitializeComponent ();
-		}
+        }
 
         private void ButtonEdit_Clicked(object sender, EventArgs e)
         {

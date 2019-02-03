@@ -14,7 +14,8 @@ namespace appFBLA2019_Tests
         public void TestFileCreation()
         {
             string fileName = "newFile";
-            DBHandler.SelectDatabase(fileName);
+            // TO DO: Pass in username of level author
+            //DBHandler.SelectDatabase(fileName);
 
             string path = Path.Combine(
                           Environment.GetFolderPath(

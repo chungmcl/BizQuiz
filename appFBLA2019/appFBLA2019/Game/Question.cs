@@ -11,16 +11,23 @@ namespace appFBLA2019
     public class Question : RealmObject, IComparable
     {
         // Primary key ID for database
+        // Once set, IT CAN NEVER BE CHANGED.
         [PrimaryKey]
-        public int DBId { get; set; }
+        public string DBId { get; set; }
         // SQLITE WILL IGNORE ALL PROPERTIES THAT ARE NOT DEFINED BY public { get; set; }
 
         //declare enum (to use this type other places, say Question.QuestionStatus)
         //public enum QuestionStatus { Unanswered, Failed, Correct }
         public int Status { get; set; }
 
+        // 0 = Multiple choice, 1 = Text answer w/o upper/lower case, 2 = Text answer with upper/lower case
+        public int QuestionType { get; set; }
         public string QuestionText { get; set; }
         public string CorrectAnswer { get; set; }
+        public bool NeedsPicture { get; set; }
+
+        [Ignored]
+        public string ImagePath { get; set; }
 
         public string[] Answers
         {
@@ -65,16 +72,22 @@ namespace appFBLA2019
         /// The potential answers to the question. The correct answer will be prefixed with "c/".
         /// The rest will be prefixed with "x/".
         /// </param>
-        public Question(string question, params string[] answers)
+        public Question(string question, string imagePath, params string[] answers)
         {
             this.QuestionText = question;
             //tries to assign the params to the local Answers property which in turn assigns the fields
             //if answers is null, throws an exception
             this.Status = 0;
             this.Answers = answers ?? throw new ArgumentException("Must have at least one answer!");
+            this.ImagePath = imagePath;
         }
 
-        public Question() : this ("This question is empty!", new string[0])
+        public Question(string question, params string[] answers) : this(question, null, answers)
+        {
+            this.NeedsPicture = false;
+        }
+
+        public Question() : this ("This question is empty!", null, new string[0])
         {
 
         }
