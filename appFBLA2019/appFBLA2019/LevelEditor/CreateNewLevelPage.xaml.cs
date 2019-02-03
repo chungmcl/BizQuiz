@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Timers;
 using Plugin.Media;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -100,7 +100,7 @@ namespace appFBLA2019
                                     "x/" + ((Entry)children[4]).Text,
                                     "x/" + ((Entry)children[5]).Text};
 
-                    if (((Image)children[6]).IsEnabled) // if needs picture
+                        if (((Image)children[6]).IsEnabled) // if needs picture
                         {
                             addThis = new Question(
                                     ((Entry)children[1]).Text,
@@ -168,7 +168,9 @@ namespace appFBLA2019
             ImageButton Remove = new ImageButton(); // the button to remove the question
             {
                 Remove.Source = "ic_delete_black_48dp.png";
-                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);               
+                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
+                Remove.BackgroundColor = Color.Transparent;
+                Remove.IsEnabled = false;
             }
             frameStack.Children.Add(Remove);
 
@@ -219,7 +221,7 @@ namespace appFBLA2019
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
                 AddImage.CornerRadius = 20;
-                AddImage.IsEnabled = false;
+                AddImage.IsVisible = false;
             }
 
             bool needsPicture = false;
@@ -238,7 +240,38 @@ namespace appFBLA2019
                 image.Source = imagePath;
             }
             else // or adds the add image button
-                AddImage.IsEnabled = true;
+                AddImage.IsVisible = true;
+
+            // This part deals with swiping Not quite working
+            SwipeGestureRecognizer swipe = new SwipeGestureRecognizer{ Direction = SwipeDirection.Left };
+            swipe.Swiped += (object sender, SwipedEventArgs e) =>
+            {
+                System.Timers.Timer deleteTimer = new System.Timers.Timer(1000);
+                deleteTimer.Elapsed += (object source, ElapsedEventArgs f) =>
+                {
+                    ((Frame)sender).Content = null;
+                    ((Frame)sender).IsVisible = false;
+                };
+
+                System.Timers.Timer swipeTimer = new System.Timers.Timer(30);          
+                swipeTimer.Elapsed += (object source, ElapsedEventArgs f) =>
+                {
+                    ((Frame)sender).TranslationX -= 50;
+                };
+
+                swipeTimer.Enabled = true;
+                // "sender" is a reference to the object that was swiped
+                // "sender" was tested and it returned the correct Frame
+                //this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
+                // It is throwing an exception when this code is called because 
+                // To my best guess, it's trying to delete the object that it's in while being actively in use
+                //this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
+                // This techinically works but doesn't genuinely remove the object from memory
+
+                
+            };
+
+            frame.GestureRecognizers.Add(swipe);
 
             // finally add the stacklayout we just set up to the frame
             frame.Content = frameStack;
@@ -246,7 +279,22 @@ namespace appFBLA2019
             this.StackLayoutQuestionStack.Children.Add(frame);
         }
 
-        public void SetLevelName(string levelName)
+        void OnSwiped(object sender, SwipedEventArgs e)
+        {
+            System.Timers.Timer timer = new System.Timers.Timer(20);
+
+            timer.Elapsed += (object source, ElapsedEventArgs f) =>
+            {
+                ((Frame)((StackLayout)((SwipeGestureRecognizer)sender).Parent).Parent).TranslationX++;
+            };
+
+            timer.Enabled = true;
+
+            this.StackLayoutQuestionStack.Children.Remove((Frame)(sender));
+        }
+
+
+            public void SetLevelName(string levelName)
         {
             EntryLevelName.Text = levelName;
         }
