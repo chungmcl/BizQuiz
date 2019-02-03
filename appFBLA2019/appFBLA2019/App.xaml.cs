@@ -13,7 +13,8 @@ namespace appFBLA2019
 
         public App ()
 		{
-			this.InitializeComponent();
+
+            this.InitializeComponent();
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
             /*REMOVE DURING RELEASE*/
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");

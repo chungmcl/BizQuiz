@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using Realms;
 using System.Linq;
+using System.IO;
+using Xamarin.Forms;
 
 namespace appFBLA2019
 {
@@ -13,16 +13,22 @@ namespace appFBLA2019
     /// </summary>
     public class GameDatabase
     {
+        private const string realmExtension = ".realm";
+
         public Realm realmDB;
         public readonly string fileName;
+        private string dbPath;
+        private string dbFolderPath;
         
-        public GameDatabase(string dbPath, string fileName)
+        public GameDatabase(string dbFolderPath, string levelTitle)
         {
             try
             {
+                this.dbPath = dbFolderPath + $"/{levelTitle}{realmExtension}";
+                this.dbFolderPath = dbFolderPath;
                 RealmConfiguration rC = new RealmConfiguration(dbPath);
                 this.realmDB = Realm.GetInstance(rC);
-                this.fileName = fileName;
+                this.fileName = $"/{levelTitle}{realmExtension}";
             }
             catch (Exception ex)
             {
@@ -33,6 +39,11 @@ namespace appFBLA2019
         public List<Question> GetQuestions()
         {
             IQueryable<Question> queryable = this.realmDB.All<Question>();
+            foreach (Question question in queryable)
+            {
+                if (question.NeedsPicture)
+                    question.ImagePath = dbFolderPath + question.DBId + ".jpg";
+            }
             return new List<Question>(queryable);
         }
 
@@ -42,6 +53,12 @@ namespace appFBLA2019
             {
                 string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
                 question.DBId = dbPrimaryKey;
+
+                byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
+
+                if (question.NeedsPicture)
+                    File.WriteAllBytes("dbPrimaryKey.jpg", imageByteArray);
+
                 this.realmDB.Write(() =>
                 {
                     this.realmDB.Add(question);
