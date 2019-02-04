@@ -12,7 +12,7 @@ namespace appFBLA2019
 
         public ScoreRecord(double score)
         {
-            this.DateTime = System.DateTime.Now.ToString();
+            this.DateTime = System.DateTime.Now.ToShortDateString() + System.DateTime.Now.ToShortTimeString();
             this.Score = score;
         }
 

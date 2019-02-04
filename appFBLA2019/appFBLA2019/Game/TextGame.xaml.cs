@@ -119,8 +119,7 @@ namespace appFBLA2019
             }
             else // Finished level
             {
-                DBHandler.Database.AddScore(new ScoreRecord(this.score));
-                LevelEndPage levelEndPage = (new LevelEndPage(this.score, this.level.Questions.Count));
+                LevelEndPage levelEndPage = (new LevelEndPage(new ScoreRecord(this.score), this.level.Questions.Count));
                 levelEndPage.Finished += this.OnFinished;
                 await this.Navigation.PushModalAsync(levelEndPage);
             }
@@ -160,10 +159,10 @@ namespace appFBLA2019
 
         private async Task CorrectAnswer(bool isMultipleChoice)
         {
-            this.LabelDebug.Text = "Correct!";
+            this.LabelFeedback.Text = "Correct!";
             //add 2 points for getting it right first time, 1 point for getting it right a second time or later
             if (this.currentQuestion.Status == 0)
-                this.score += 2;
+            { this.score += 2; this.LabelFeedback.Text += " First try!"; }
             else
                 this.score++;
 
@@ -189,7 +188,7 @@ namespace appFBLA2019
 
         private async Task IncorrectAnswer(bool isMultipleChoice)
         {
-            this.LabelDebug.Text = "Incorrect!";
+            this.LabelFeedback.Text = "Incorrect!";
             // 1 represents 'failed'
 
             DBHandler.Database.realmDB.Write(() =>

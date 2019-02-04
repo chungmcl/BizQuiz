@@ -18,10 +18,12 @@ namespace appFBLA2019
     {
         public delegate void FinishedEventHandler(object source, EventArgs eventArgs);
         public event FinishedEventHandler Finished;
-        public LevelEndPage(int score, int totalQuestions)
+        private ScoreRecord score;
+        public LevelEndPage(ScoreRecord score, int totalQuestions)
         {
             this.InitializeComponent();
-            this.LabelScore.Text = $"{score}/{totalQuestions}";
+            DBHandler.Database.AddScore(score);
+            this.LabelScore.Text = $"{score.Score}/{totalQuestions * 2}";
         }
 
         private async void ButtonShareToFacebook_Clicked(object sender, EventArgs e)
