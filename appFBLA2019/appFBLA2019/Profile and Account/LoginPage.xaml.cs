@@ -27,13 +27,13 @@ namespace appFBLA2019
             
             if (await completedRequest)
             {
-                string response = await ServerConnector.ReceiveFromDB();
+                OperationReturnMessage response = await ServerConnector.ReceiveFromServerORM();
 
-                if (response == "true/-")
+                if (response == OperationReturnMessage.True)
                 {
                     Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
                 }
-                else if (response == "true/confirmEmail/-")
+                else if (response == OperationReturnMessage.TrueConfirmEmail)
                 {
                     Device.BeginInvokeOnMainThread(async() =>
                     {
@@ -46,7 +46,7 @@ namespace appFBLA2019
                 else
                 {
                     Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Login Failed: " + response.Split('/')[1]);
+                    this.LabelMessage.Text = "Login Failed.");
                 }
             }
             else

@@ -34,7 +34,7 @@ namespace appFBLA2019
                     break;
 
                 case (ServerRequestTypes.LoginAccount):
-                    string data
+                    string toSend = (string)data;
                     break;
 
                 case (ServerRequestTypes.RegisterAccount):
@@ -57,6 +57,16 @@ namespace appFBLA2019
                     break;
 
             }
+            return false;
+        }
+
+        public static Task<string> ReceiveFromServerStringData()
+        {
+            
+        }
+
+        public static Task<OperationReturnMessage> ReceiveFromServerORM()
+        {
 
         }
 
@@ -64,6 +74,22 @@ namespace appFBLA2019
         {
             ssl.Write(data, 0, data.Length);
             ssl.Flush();
+        }
+
+        private static byte[] GenerateByteArray(int size)
+        {
+            byte[] buffer = new byte[1024];
+            List<byte> data = new List<byte>();
+            int bytes = -1;
+            do
+            {
+                bytes = ssl.Read(buffer, 0, buffer.Length);
+                if (bytes > 0)
+                    data.AddRange(buffer);
+            } while (data.Count < size);
+            data.RemoveRange(size, data.Count - size);
+            Console.WriteLine($"Received all {size} bytes");
+            return data.ToArray();
         }
 
         private static void SetupConnection()
@@ -101,26 +127,37 @@ namespace appFBLA2019
         }
     }
 
-    public enum ServerRequestTypes
+    public enum ServerRequestTypes : byte
     {
         // "Command" Requests
-        StringData = 0b00000001,
-        AddJPEGImage = 0b00000010,
-        AddRealmFile = 0b00000011,
-        LoginAccount = 0b00000100,
-        RegisterAccount = 0b00000101,
-        DeleteAccount = 0b00000110,
-        ConfirmEmail = 0b00000111,
+        StringData,
+        AddJPEGImage,
+        AddRealmFile,
+        LoginAccount,
+        RegisterAccount,
+        DeleteAccount,
+        ConfirmEmail,
+        ChangeEmail,
 
         // "Get" Requests
-        GetEmail = 0b00001001,
-        GetJPEGImage = 0b00001010,
-        GetRealmFile = 0b00001011,
+        GetEmail,
+        GetJPEGImage,
+        GetRealmFile,
 
         // Returns
-        SavedJPEGImage = 0b00001100,
-        SavedRealmFile = 0b00001101,
-        GotEmail = 0b00001110
+        SavedJPEGImage,
+        SavedRealmFile,
+        GotEmail,
+        True,
+        False,
+        TrueConfirmEmail
+    }
+
+    public enum OperationReturnMessage : byte
+    {
+        True,
+        False,
+        TrueConfirmEmail
     }
 }
 

@@ -28,8 +28,8 @@ namespace appFBLA2019
         {
             try
             {
-                await ServerConnector.QueryDB($"getEmail/{this.username}/-");
-                this.email = await ServerConnector.ReceiveFromDB();
+                await ServerConnector.SendData(ServerRequestTypes.GetEmail, $"getEmail/{this.username}/-");
+                this.email = await ServerConnector.ReceiveFromServerStringData();
 
                 Device.BeginInvokeOnMainThread(() =>
                 this.LabelTitle.Text =
@@ -51,14 +51,14 @@ namespace appFBLA2019
 
         private async Task ConfirmEmail(string confirmationCode, string username)
         {
-            Task<bool> completedRequest = ServerConnector.QueryDB(
+            Task<bool> completedRequest = ServerConnector.SendData(ServerRequestTypes.ConfirmEmail, 
                     $"confirmEmail/{username}/{confirmationCode}/-");
 
             if (await completedRequest)
             {
-                string returnData = await ServerConnector.ReceiveFromDB();
+                OperationReturnMessage returnData = await ServerConnector.ReceiveFromServerORM();
 
-                if (returnData == "true/-")
+                if (returnData == OperationReturnMessage.True)
                 {
                     Device.BeginInvokeOnMainThread(async () =>
                     {
@@ -88,12 +88,12 @@ namespace appFBLA2019
 
         private async Task ChangeEmail(string newEmail, string username)
         {
-            Task<bool> completedRequest = ServerConnector.QueryDB($"changeEmail/{username}/{newEmail}/-");
+            Task<bool> completedRequest = ServerConnector.SendData(ServerRequestTypes.ChangeEmail, $"changeEmail/{username}/{newEmail}/-");
 
             if (await completedRequest)
             {
-                string result = await ServerConnector.ReceiveFromDB();
-                if (result == "true/-")
+                OperationReturnMessage result = await ServerConnector.ReceiveFromServerORM();
+                if (result == OperationReturnMessage.True)
                 {
                     Device.BeginInvokeOnMainThread(() =>
                     this.LabelMessage.Text = $"Enter the confirmation code sent to {newEmail}");
@@ -101,7 +101,7 @@ namespace appFBLA2019
                 else
                 {
                     Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Email could not be changed: {result.Split('/')[1]}");
+                    this.LabelMessage.Text = $"Email could not be changed.");
                 }
             }
             else
