@@ -23,7 +23,6 @@ namespace appFBLA2019
         // 0 = Multiple choice, 1 = Text answer w/o upper/lower case, 2 = Text answer with upper/lower case
         public int QuestionType { get; set; }
         public string QuestionText { get; set; }
-        public string CorrectAnswer { get; set; }
         public bool NeedsPicture { get; set; }
 
         [Ignored]
@@ -33,7 +32,7 @@ namespace appFBLA2019
         {
             //turns the 4 answers into an easy to use array
             get
-            { return new string[] { this.AnswerOne, this.AnswerTwo, this.AnswerThree, this.AnswerFour }; }
+            { return new string[] { this.CorrectAnswer, this.AnswerOne, this.AnswerTwo, this.AnswerThree }; }
             //takes an array, makes sure it can be used in our answers, and assigns it to the answers
             private set
             {
@@ -44,24 +43,17 @@ namespace appFBLA2019
                 value.CopyTo(temp, 0);
 
                 //makes sure there's actually a value to assign, otherwise makes it empty
-                this.AnswerOne = temp[0]?.Split('/')[1] ?? "";
-                this.AnswerTwo = temp[1]?.Split('/')[1] ?? "";
-                this.AnswerThree = temp[2]?.Split('/')[1] ?? "";
-                this.AnswerFour = temp[3]?.Split('/')[1] ?? "";
-
-                //once the answers are assigned, find the correct one and assign it to CorrectAnswer
-                foreach (string answer in temp)
-                {
-                    if (answer != null && answer[0] == 'c')
-                        this.CorrectAnswer = answer.Split('/')[1];
-                }
+                this.CorrectAnswer = temp[0];
+                this.AnswerOne = temp[1];
+                this.AnswerTwo = temp[2];
+                this.AnswerThree = temp[3];
             }
         }
 
+        public string CorrectAnswer { get; set; }
         public string AnswerOne { get; set; }
         public string AnswerTwo { get; set; }
         public string AnswerThree { get; set; }
-        public string AnswerFour { get; set; }
 
 
         /// <summary>
