@@ -8,6 +8,8 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EmailConfirmationPage : ContentPage
     {
+        private const int maxEmailLengthSize = 640;
+
         private string username;
         private string email;
 
@@ -28,12 +30,12 @@ namespace appFBLA2019
         {
             try
             {
-                await ServerConnector.SendData(ServerRequestTypes.GetEmail, $"getEmail/{this.username}/-");
-                this.email = await ServerConnector.ReceiveFromServerStringData();
+                await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.GetEmail, $"{this.username}/-"));
+                this.email = await Task.Run(() => ServerConnector.ReceiveFromServerStringData());
 
                 Device.BeginInvokeOnMainThread(() =>
                 this.LabelTitle.Text =
-                $"Enter the confirmation code sent to {this.email.Split('/')[1]}");
+                $"Enter the confirmation code sent to {this.email}");
             }
             catch
             {
@@ -51,12 +53,12 @@ namespace appFBLA2019
 
         private async Task ConfirmEmail(string confirmationCode, string username)
         {
-            Task<bool> completedRequest = ServerConnector.SendData(ServerRequestTypes.ConfirmEmail, 
-                    $"confirmEmail/{username}/{confirmationCode}/-");
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.ConfirmEmail, 
+                    $"{username}/{confirmationCode}/-"));
 
-            if (await completedRequest)
+            if (completedRequest)
             {
-                OperationReturnMessage returnData = await ServerConnector.ReceiveFromServerORM();
+                OperationReturnMessage returnData = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
 
                 if (returnData == OperationReturnMessage.True)
                 {
@@ -88,11 +90,11 @@ namespace appFBLA2019
 
         private async Task ChangeEmail(string newEmail, string username)
         {
-            Task<bool> completedRequest = ServerConnector.SendData(ServerRequestTypes.ChangeEmail, $"changeEmail/{username}/{newEmail}/-");
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.ChangeEmail, $"{username}/{newEmail}/-"));
 
-            if (await completedRequest)
+            if (completedRequest)
             {
-                OperationReturnMessage result = await ServerConnector.ReceiveFromServerORM();
+                OperationReturnMessage result = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
                 if (result == OperationReturnMessage.True)
                 {
                     Device.BeginInvokeOnMainThread(() =>

@@ -23,11 +23,11 @@ namespace appFBLA2019
         private async void Login(string username, string password)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Waiting...");
-            Task<bool> completedRequest = ServerConnector.SendData(ServerRequestTypes.LoginAccount, $"loginAccount/{username}/{password}/-");
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.LoginAccount, $"{username}/{password}/-"));
             
-            if (await completedRequest)
+            if (completedRequest)
             {
-                OperationReturnMessage response = await ServerConnector.ReceiveFromServerORM();
+                OperationReturnMessage response = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
 
                 if (response == OperationReturnMessage.True)
                 {

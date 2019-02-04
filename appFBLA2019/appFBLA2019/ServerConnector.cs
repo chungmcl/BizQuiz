@@ -21,7 +21,7 @@ namespace appFBLA2019
         public static string Server { get; set; }
         public static int Port { get { return 7777; } }
 
-        public async static Task<bool> SendData(ServerRequestTypes dataType, object data)
+        public static bool SendData(ServerRequestTypes dataType, object data)
         {
             switch (dataType)
             {
@@ -34,8 +34,14 @@ namespace appFBLA2019
                     break;
 
                 case (ServerRequestTypes.LoginAccount):
-                    string toSend = (string)data;
-                    break;
+                    string dataAsString = (string)data;
+                    byte[] dataAsBytes = Encoding.Unicode.GetBytes(dataAsString);
+                    byte[] headerData = GenerateHeaderData(dataType, (uint)dataAsBytes.Length);
+                    byte[] toSend = new byte[headerData.Length + dataAsBytes.Length];
+                    headerData.CopyTo(toSend, 0);
+                    dataAsBytes.CopyTo(toSend, headerData.Length);
+                    SendByteArray(toSend);
+                    return true;
 
                 case (ServerRequestTypes.RegisterAccount):
 
@@ -60,20 +66,31 @@ namespace appFBLA2019
             return false;
         }
 
-        public static Task<string> ReceiveFromServerStringData()
+        public static string ReceiveFromServerStringData()
         {
-            
+            string data = Encoding.Unicode.GetString(GenerateByteArray1024Bytes());
+            data = data.Trim();
+            return data;
         }
 
-        public static Task<OperationReturnMessage> ReceiveFromServerORM()
+        public static OperationReturnMessage ReceiveFromServerORM()
         {
-
+            return (OperationReturnMessage)(GenerateByteArray(1)[0]);
         }
 
         private static void SendByteArray(byte[] data)
         {
             ssl.Write(data, 0, data.Length);
             ssl.Flush();
+        }
+
+        private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
+        {
+            byte[] headerData = new byte[5];
+            headerData[0] = (byte)type;
+            byte[] dataSize = BitConverter.GetBytes(size);
+            dataSize.CopyTo(headerData, 1);
+            return headerData;
         }
 
         private static byte[] GenerateByteArray(int size)
@@ -88,8 +105,14 @@ namespace appFBLA2019
                     data.AddRange(buffer);
             } while (data.Count < size);
             data.RemoveRange(size, data.Count - size);
-            Console.WriteLine($"Received all {size} bytes");
             return data.ToArray();
+        }
+
+        private static byte[] GenerateByteArray1024Bytes()
+        {
+            byte[] buffer = new byte[1024];
+            ssl.Read(buffer, 0, buffer.Length);
+            return buffer;
         }
 
         private static void SetupConnection()

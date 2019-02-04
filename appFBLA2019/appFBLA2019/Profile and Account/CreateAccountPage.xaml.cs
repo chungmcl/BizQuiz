@@ -26,13 +26,13 @@ namespace appFBLA2019
 
         private async Task CreateAccount(string username, string password, string email)
         {
-            Task<bool> completedRequest = ServerConnector.SendData(ServerRequestTypes.RegisterAccount, 
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.RegisterAccount, 
                 $"createAccount/{username}/{password}" +
-                $"/{email}/-");
+                $"/{email}/-"));
 
-            if (await completedRequest)
+            if (completedRequest)
             {
-                OperationReturnMessage databaseReturnInfo = await ServerConnector.ReceiveFromServerORM();
+                OperationReturnMessage databaseReturnInfo = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
 
                 if (databaseReturnInfo == OperationReturnMessage.True)
                 {
