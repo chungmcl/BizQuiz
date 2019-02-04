@@ -13,7 +13,6 @@ namespace appFBLA2019
     static class DBHandler
     {
         public static GameDatabase Database { get; private set; }
-        private const string realmExtension = ".realm";
         
         /// <summary>
         /// 
@@ -47,8 +46,7 @@ namespace appFBLA2019
 
                     string folderPath = App.Path + $"/{levelTitle}`{author}";
                     Directory.CreateDirectory(folderPath);
-                    string inFolderFileName = $"/{levelTitle}{realmExtension}";
-                    Database = new GameDatabase(folderPath + inFolderFileName, levelTitle);
+                    Database = new GameDatabase(folderPath, levelTitle);
 
                     return true;
                 }

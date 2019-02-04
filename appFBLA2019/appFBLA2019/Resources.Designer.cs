@@ -63,6 +63,16 @@ namespace appFBLA2019 {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] ic_delete_black_48dp {
+            get {
+                object obj = ResourceManager.GetObject("ic_delete_black_48dp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] ic_edit_black_48dp {
             get {
                 object obj = ResourceManager.GetObject("ic_edit_black_48dp", resourceCulture);
