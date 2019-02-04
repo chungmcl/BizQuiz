@@ -62,7 +62,20 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private void ButtonRemove_Clicked(object sender, EventArgs e)
         {
-            this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent)));
+            this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
+            //Animate A deletion
+            //((Frame)((StackLayout)((ImageButton)sender).Parent).Parent).TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
+
+            //System.Timers.Timer time = new Timer(200);
+            //time.Start();
+            //time.Elapsed += (object source, ElapsedEventArgs f) =>
+            //{
+            //    this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
+            //    time.Stop();
+            //    time.Dispose();
+            //};
+
+
         }
 
         /// <summary>
