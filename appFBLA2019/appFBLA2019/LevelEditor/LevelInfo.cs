@@ -6,9 +6,9 @@ namespace appFBLA2019.LevelEditor
 {
     class LevelInfo : Realms.RealmObject
     {
-        public string Author;
-        public string DateEdited;
-        public string Category;
-        public string LevelID
+        public string Author { get; set; }
+        public string DateEdited { get; set; }
+        public string Category { get; set; }
+        public string LevelID { get; set; }
     }
 }
