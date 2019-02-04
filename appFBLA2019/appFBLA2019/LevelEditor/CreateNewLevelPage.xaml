@@ -4,15 +4,17 @@
              x:Class="appFBLA2019.CreateNewLevelPage">
     <ContentPage.Content>
         <ScrollView>
-            <StackLayout>
-                <Label Text="Create a new level"
+            <StackLayout Padding="25">
+                <Label Text="Create Your Own Quiz"
                     VerticalOptions="Start"
-                    HorizontalOptions="CenterAndExpand" />
+                    HorizontalOptions="Start"
+                    FontAttributes="bold"
+                    FontSize="40"/>
                 <Entry x:Name="EntryLevelName"  Placeholder="Level Name" />
                 <StackLayout x:Name="StackLayoutQuestionStack" Padding="10">
                     <!--Things added in code-->
                 </StackLayout>
-                <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" CornerRadius="20" Margin="10"/>
+                <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" CornerRadius="20" Margin="20"/>
                 <Button x:Name="ButtonCreateLevel" Text="Create" Clicked="ButtonCreateLevel_Clicked" CornerRadius="20" Margin="20"/>
             </StackLayout> 
         </ScrollView>

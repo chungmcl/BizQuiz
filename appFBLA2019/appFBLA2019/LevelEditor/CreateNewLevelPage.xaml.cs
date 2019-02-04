@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Timers;
 using Plugin.Media;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -19,36 +19,70 @@ namespace appFBLA2019
 			this.InitializeComponent();
         }
 
-
-
-        // Called when the user presses the Add Image button on a question eiditor
+        /// <summary>
+        /// Called when the user presses the Add Image button on a question eiditor
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonAddImage_Clicked(object sender, EventArgs e)
         {
+
             await CrossMedia.Current.Initialize();
             Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
 
-;
-            // Couldn't think of a proper way, but just used the StyleId property to store the file path as a string
-            ((Image)StackLayoutQuestionStack.Children[6]).StyleId = file.Path;
-            ((Image)StackLayoutQuestionStack.Children[6]).Source = file.Path;
+            if (file != null) // if the user actually picked an image
+            {
+                // just used the StyleId property to store the file path as a string However Im not sure I need
+                Image currentImage = ((Image)((StackLayout)((Button)sender).Parent).Children[6]);
 
-            // Enables the image
-            ((Image)StackLayoutQuestionStack.Children[6]).IsEnabled = true;
+                currentImage.StyleId = file.Path;
+                currentImage.Source = file.Path;
+
+                // Enables the image
+                currentImage.IsEnabled = true;
+                ((Button)sender).IsVisible = false;
+            }
+
         }
 
-        // Called when the add question button is clicked
+        /// <summary>
+        /// Called when the add question button is clicked and adds a new question
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonAddQuestion_Clicked(object sender, EventArgs e)
         {
             this.AddNewQuestion();
         }
 
-        // Removes the Question Frame
+        /// <summary>
+        /// Removes the Question Frame when remove button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonRemove_Clicked(object sender, EventArgs e)
         {
-            this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent)));
+            this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
+            //Animate A deletion
+            //((Frame)((StackLayout)((ImageButton)sender).Parent).Parent).TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
+
+            //System.Timers.Timer time = new Timer(200);
+            //time.Start();
+            //time.Elapsed += (object source, ElapsedEventArgs f) =>
+            //{
+            //    this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
+            //    time.Stop();
+            //    time.Dispose();
+            //};
+
+
         }
 
-        // Creates the Level
+        /// <summary>
+        /// Creates the Level
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
@@ -79,12 +113,11 @@ namespace appFBLA2019
                                     "x/" + ((Entry)children[4]).Text,
                                     "x/" + ((Entry)children[5]).Text};
 
-                    if (((Image)children[6]).IsEnabled) // if needs picture
+                        if (((Image)children[6]).IsEnabled) // if needs picture
                         {
-                            byte[] b = File.ReadAllBytes(((Image)children[6]).StyleId);
                             addThis = new Question(
                                     ((Entry)children[1]).Text,
-                                    b, // The image
+                                    children[6].StyleId, // adds image using The image path in StyleId
                                     answers);
                         }
                         else // if not needs picture
@@ -105,43 +138,59 @@ namespace appFBLA2019
             }
         }
 
-        // This is a private AddNewQuestions for when the user creates a brand new question
+        /// <summary>
+        /// a private AddNewQuestions for when the user creates a brand new question
+        /// </summary>
         private void AddNewQuestion()
         {
-            byte[] noImage = new byte[0];
-            AddNewQuestion(null, noImage, null);
+            string[] noAnswers = new string[0];
+            AddNewQuestion(null, "", noAnswers);
         }
 
-        // This AddNewQuestions is for if the question contains no image
+        /// <summary>
+        /// This AddNewQuestions is for if the question contains no image
+        /// </summary>
+        /// <param name="question">the Question to answer</param>
+        /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
         public void AddNewQuestion(string question, params string[] answers)
         {
             AddNewQuestion(question, null, answers);
         }
 
-        // This add New Questions contains parameters for images for when a question contains an image.
-        public void AddNewQuestion(string question, byte[] imageAsBytes, params string[] answers)
+        /// <summary>
+        /// This add New Questions contains parameters for images for when a question contains an image.
+        /// </summary>
+        /// <param name="question">the Question to answer</param>
+        /// <param name="imagePath">the path for the image corrosponding to the question</param>
+        /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
+        public void AddNewQuestion(string question, string imagePath, params string[] answers)
         {
-            Frame frame = new Frame()
+            Frame frame = new Frame() // The frame that holds everything
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 CornerRadius = 10
             };
 
-            StackLayout frameStack = new StackLayout
+            StackLayout frameStack = new StackLayout //the stack that holds all the info in the frame
             {
                 FlowDirection = FlowDirection.LeftToRight,
                 Orientation = StackOrientation.Vertical
             };
 
-            ImageButton Remove = new ImageButton();
+            ImageButton Remove = new ImageButton(); // the button to remove the question
             {
                 Remove.Source = "ic_delete_black_48dp.png";
-                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);               
+                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
+                Remove.BackgroundColor = Color.Transparent;
+                Remove.HeightRequest = 40;
+                Remove.WidthRequest = 40;
+                Remove.HorizontalOptions = LayoutOptions.End;
+                Remove.VerticalOptions = LayoutOptions.Start;
             }
             frameStack.Children.Add(Remove);
 
-            Entry Question = new Entry
+            Entry Question = new Entry // The question
             {
                 Placeholder = "Enter question",
                 
@@ -150,68 +199,86 @@ namespace appFBLA2019
                 Question.Text = question;
             frameStack.Children.Add(Question);
 
-            Entry AnswerCorrect = new Entry
+            Entry AnswerCorrect = new Entry // The correct answer
             {
                 Placeholder = "Enter correct answer",
                 
             };
-            if (answers != null)
+            if (answers.Count() != 0)
                 AnswerCorrect.Text = answers[0];
             frameStack.Children.Add(AnswerCorrect);
 
-            Entry AnswerWrongOne = new Entry
+            Entry AnswerWrongOne = new Entry // A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            if (answers != null)
+            if (answers.Count() != 0)
                 AnswerWrongOne.Text = answers[1];
             frameStack.Children.Add(AnswerWrongOne);
 
-            Entry AnswerWrongTwo = new Entry
+            Entry AnswerWrongTwo = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            if (answers != null)
+            if (answers.Count() != 0)
                 AnswerWrongTwo.Text = answers[2];
             frameStack.Children.Add(AnswerWrongTwo);
 
-            Entry AnswerWrongThree = new Entry
+            Entry AnswerWrongThree = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            if (answers != null)
+            if (answers.Count() != 0)
                 AnswerWrongThree.Text = answers[2];
             frameStack.Children.Add(AnswerWrongThree);
 
-            Button AddImage = new Button();
+            Button AddImage = new Button(); // The add Image button
             {
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
                 AddImage.CornerRadius = 20;
+                AddImage.IsVisible = false;
             }
 
-            bool needsPicture = true;
-            if (imageAsBytes.Length == 0)
-                needsPicture = false;
-            Image image = new Image
+            bool needsPicture = false;
+            if (imagePath != "")
+                needsPicture = true;
+            Image image = new Image // The image itself
             {
-                IsEnabled = needsPicture,            
+                IsEnabled = needsPicture,          
             };
 
-            //Gets the imagesource from they byte array
-            if (IsEnabled)
+            frameStack.Children.Add(image);
+            frameStack.Children.Add(AddImage);
+            //Gets the image from the imagePath
+            if (image.IsEnabled)
             {
-                image.Source = ImageSource.FromStream(() => new MemoryStream(imageAsBytes));
-                frameStack.Children.Add(image);
+                image.Source = imagePath;
             }
-            else
-                frameStack.Children.Add(AddImage);
-
+            else // or adds the add image button
+                AddImage.IsVisible = true;
+            
             frame.Content = frameStack;
+            // and add the frame to the the other stacklaout.
             this.StackLayoutQuestionStack.Children.Add(frame);
         }
 
-        public void SetLevelName(string levelName)
+        void OnSwiped(object sender, SwipedEventArgs e)
+        {
+            System.Timers.Timer timer = new System.Timers.Timer(20);
+
+            timer.Elapsed += (object source, ElapsedEventArgs f) =>
+            {
+                ((Frame)((StackLayout)((SwipeGestureRecognizer)sender).Parent).Parent).TranslationX++;
+            };
+
+            timer.Enabled = true;
+
+            this.StackLayoutQuestionStack.Children.Remove((Frame)(sender));
+        }
+
+
+            public void SetLevelName(string levelName)
         {
             EntryLevelName.Text = levelName;
         }
