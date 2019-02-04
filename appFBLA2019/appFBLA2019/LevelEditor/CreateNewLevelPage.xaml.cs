@@ -94,21 +94,24 @@ namespace appFBLA2019
             {
                 // Later, need to impliment username to pass through
                 DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), "testAuthor");
-                List<Question> questionsToAdd = new List<Question>();  // A list of questions to add to the database \
+
+                //Delete everything in it right now
+                DBHandler.Database.DeleteQuestions(DBHandler.Database.GetQuestions().ToArray());
+
+                List<Question> questionsToAdd = new List<Question>();  // A list of questions to add to the database
                 // Loops through each question frame on the screen 
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
                     // A list of all the children of the current frame
                     IList<View> children = ((StackLayout)frame.Content).Children;
                     
-
                     Question addThis;
 
                     //The answers to the question
-                    string[] answers = { "c/" + ((Entry)children[2]).Text, //Correct
-                                "x/" + ((Entry)children[3]).Text, // Incorect
-                                "x/" + ((Entry)children[4]).Text, // Incorect
-                                "x/" + ((Entry)children[5]).Text}; // Incorect
+                    string[] answers = {((Entry)children[2]).Text, //Correct
+                                ((Entry)children[3]).Text, // Incorect
+                                ((Entry)children[4]).Text, // Incorect
+                                ((Entry)children[5]).Text}; // Incorect
 
                     if (((Image)children[6]).IsEnabled) // if needs image
                     {
@@ -151,7 +154,7 @@ namespace appFBLA2019
         /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
         public void AddNewQuestion(string question, params string[] answers)
         {
-            AddNewQuestion(question, null, answers);
+            AddNewQuestion(question, "", answers);
         }
 
         /// <summary>
