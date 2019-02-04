@@ -38,6 +38,7 @@ namespace appFBLA2019
                 case (ServerRequestTypes.LoginAccount):
                 case (ServerRequestTypes.RegisterAccount):
                 case (ServerRequestTypes.StringData):
+                case (ServerRequestTypes.GetEmail):
                     SendStringData((string)data, dataType);
                     return true;
 
@@ -48,10 +49,6 @@ namespace appFBLA2019
                 case (ServerRequestTypes.GetRealmFile):
 
                     break;
-
-                case (ServerRequestTypes.GetEmail):
-                    break;
-
             }
             return false;
         }
@@ -69,14 +66,16 @@ namespace appFBLA2019
 
         public static string ReceiveFromServerStringData()
         {
-            string data = Encoding.Unicode.GetString(GenerateByteArray1024Bytes());
+            int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
+            string data = Encoding.Unicode.GetString(ReadByteArray(size));
             data = data.Trim();
             return data;
         }
 
         public static OperationReturnMessage ReceiveFromServerORM()
         {
-            return (OperationReturnMessage)(GenerateByteArray(1)[0]);
+            int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
+            return (OperationReturnMessage)(ReadByteArray(size)[0]);
         }
 
         private static void SendByteArray(byte[] data)
@@ -94,26 +93,25 @@ namespace appFBLA2019
             return headerData;
         }
 
-        private static byte[] GenerateByteArray(int size)
+        private static byte[] ReadByteArray(int size)
         {
             byte[] buffer = new byte[1024];
+
             List<byte> data = new List<byte>();
             int bytes = -1;
+            int bytesRead = 0;
             do
             {
-                bytes = ssl.Read(buffer, 0, buffer.Length);
+
+                bytes = ssl.Read(buffer, 0, size - bytesRead);
+                bytesRead += bytes;
                 if (bytes > 0)
-                    data.AddRange(buffer);
+                    for (int i = 0; i < bytes; i++)
+                        data.Add(buffer[i]);
+
             } while (data.Count < size);
             data.RemoveRange(size, data.Count - size);
             return data.ToArray();
-        }
-
-        private static byte[] GenerateByteArray1024Bytes()
-        {
-            byte[] buffer = new byte[1024];
-            ssl.Read(buffer, 0, buffer.Length);
-            return buffer;
         }
 
         private static void SetupConnection()
