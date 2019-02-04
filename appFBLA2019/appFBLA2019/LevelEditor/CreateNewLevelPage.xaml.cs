@@ -9,6 +9,7 @@ using Plugin.Media;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+
 namespace appFBLA2019
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
@@ -60,22 +61,18 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ButtonRemove_Clicked(object sender, EventArgs e)
+        async private void ButtonRemove_Clicked(object sender, EventArgs e)
         {
-            this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
-            //Animate A deletion
-            //((Frame)((StackLayout)((ImageButton)sender).Parent).Parent).TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
+            bool answer = await DisplayAlert("Warning", "Are you sure you would like to delete this question?", "Yes", "No");
+            if (answer == true)
+            {
+                //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
 
-            //System.Timers.Timer time = new Timer(200);
-            //time.Start();
-            //time.Elapsed += (object source, ElapsedEventArgs f) =>
-            //{
-            //    this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
-            //    time.Stop();
-            //    time.Dispose();
-            //};
-
-
+                Frame frame = ((Frame)((StackLayout)((ImageButton)sender).Parent).Parent);
+                //Animate A deletion
+                await frame.TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
+                this.StackLayoutQuestionStack.Children.Remove(frame);
+            }
         }
 
         /// <summary>
@@ -101,36 +98,34 @@ namespace appFBLA2019
                 // Loops through each question frame on the screen 
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
+                    // A list of all the children of the current frame
+                    IList<View> children = ((StackLayout)frame.Content).Children;
+                    
 
-                    for (int i = 0; i < ((StackLayout)frame.Content).Children.Count; i++)
+                    Question addThis; // What to add
+                    string[] answers = { "c/" + ((Entry)children[2]).Text,
+                                "x/" + ((Entry)children[3]).Text,
+                                "x/" + ((Entry)children[4]).Text,
+                                "x/" + ((Entry)children[5]).Text};
+
+                    if (((Image)children[6]).IsEnabled) // if needs picture
                     {
-
-                        IList<View> children = ((StackLayout)frame.Content).Children;
-                        Question addThis;
-
-                        string[] answers = { "c/" + ((Entry)children[2]).Text,
-                                    "x/" + ((Entry)children[3]).Text,
-                                    "x/" + ((Entry)children[4]).Text,
-                                    "x/" + ((Entry)children[5]).Text};
-
-                        if (((Image)children[6]).IsEnabled) // if needs picture
-                        {
-                            addThis = new Question(
-                                    ((Entry)children[1]).Text,
-                                    children[6].StyleId, // adds image using The image path in StyleId
-                                    answers);
-                        }
-                        else // if not needs picture
-                        {
-                            addThis = new Question(
-                                    ((Entry)children[1]).Text,
-                                    answers);
-                        }
+                        addThis = new Question(
+                                ((Entry)children[1]).Text,
+                                children[6].StyleId, // adds image using The image path in StyleId
+                                answers);
+                    }
+                    else // if not needs picture
+                    {
+                        addThis = new Question(
+                                ((Entry)children[1]).Text,
+                                answers);
+                    }
 
                         questionsToAdd.Add(addThis);
-
-                    }
                 }
+                
+                // Adds the list of questions to the database
                 DBHandler.Database.AddQuestions(questionsToAdd);
 
                 // Returns user to front page of LevelEditor
@@ -263,22 +258,8 @@ namespace appFBLA2019
             this.StackLayoutQuestionStack.Children.Add(frame);
         }
 
-        void OnSwiped(object sender, SwipedEventArgs e)
-        {
-            System.Timers.Timer timer = new System.Timers.Timer(20);
 
-            timer.Elapsed += (object source, ElapsedEventArgs f) =>
-            {
-                ((Frame)((StackLayout)((SwipeGestureRecognizer)sender).Parent).Parent).TranslationX++;
-            };
-
-            timer.Enabled = true;
-
-            this.StackLayoutQuestionStack.Children.Remove((Frame)(sender));
-        }
-
-
-            public void SetLevelName(string levelName)
+        public void SetLevelName(string levelName)
         {
             EntryLevelName.Text = levelName;
         }

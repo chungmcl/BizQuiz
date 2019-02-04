@@ -10,10 +10,9 @@ namespace appFBLA2019
 	public partial class App : Application
 	{
         public static string Path;
-
+            
         public App ()
 		{
-
             this.InitializeComponent();
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
             /*REMOVE DURING RELEASE*/
@@ -32,6 +31,7 @@ namespace appFBLA2019
             //}
             //DBHandler.Database.AddQuestions(questions);
         }
+
 
         protected override void OnStart ()
 		{
