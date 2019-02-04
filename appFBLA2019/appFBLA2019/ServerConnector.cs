@@ -34,22 +34,10 @@ namespace appFBLA2019
                     break;
 
                 case (ServerRequestTypes.LoginAccount):
-                    string dataAsString = (string)data;
-                    byte[] dataAsBytes = Encoding.Unicode.GetBytes(dataAsString);
-                    byte[] headerData = GenerateHeaderData(dataType, (uint)dataAsBytes.Length);
-                    byte[] toSend = new byte[headerData.Length + dataAsBytes.Length];
-                    headerData.CopyTo(toSend, 0);
-                    dataAsBytes.CopyTo(toSend, headerData.Length);
-                    SendByteArray(toSend);
-                    return true;
-
                 case (ServerRequestTypes.RegisterAccount):
-
-                    break;
-
                 case (ServerRequestTypes.StringData):
-
-                    break;
+                    SendStringData((string)data, dataType);
+                    return true;
 
                 case (ServerRequestTypes.GetJPEGImage):
 
@@ -64,6 +52,17 @@ namespace appFBLA2019
 
             }
             return false;
+        }
+
+        private static void SendStringData(string data, ServerRequestTypes dataType)
+        {
+            string dataAsString = data;
+            byte[] dataAsBytes = Encoding.Unicode.GetBytes(dataAsString);
+            byte[] headerData = GenerateHeaderData(dataType, (uint)dataAsBytes.Length);
+            byte[] toSend = new byte[headerData.Length + dataAsBytes.Length];
+            headerData.CopyTo(toSend, 0);
+            dataAsBytes.CopyTo(toSend, headerData.Length);
+            SendByteArray(toSend);
         }
 
         public static string ReceiveFromServerStringData()
