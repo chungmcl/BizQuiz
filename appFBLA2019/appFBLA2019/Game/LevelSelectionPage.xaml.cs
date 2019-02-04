@@ -1,33 +1,42 @@
-﻿using System;
+﻿//BizQuiz App 2019
+
+
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-    
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class LevelSelectionPage : ContentPage
-	{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class LevelSelectionPage : ContentPage
+    {
+        #region Public Constructors
+
         public LevelSelectionPage()
-		{
-            this.InitializeComponent ();
-            // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored
-            // WHEN the app is is RELEASED (See DBHandler)
+        {
+            this.InitializeComponent();
+            // TO DO: Replace "DependencyService... .GetStorage()" with the location where the
+            // databases are being stored WHEN the app is is RELEASED (See DBHandler)
             string[] subFolderNames = Directory.GetDirectories(App.Path);
             List<string[]> levels = new List<string[]>();
             foreach (string levelName in subFolderNames)
             {
                 if (levelName.Contains('`'))
+                {
                     levels.Add(new string[] { (levelName.Remove(0, App.Path.Length + 1).Split('`'))[0], (levelName.Remove(0, App.Path.Length).Split('`'))[1] });
+                }
             }
             this.Setup(levels);
         }
+
+        #endregion Public Constructors
+
+        #region Private Methods
 
         // TO DO: Display author name of level
         private void Setup(List<string[]> levels)
@@ -79,5 +88,7 @@ namespace appFBLA2019
                 this.ButtonStack.Children.Add(frame);
             }
         }
+
+        #endregion Private Methods
     }
 }

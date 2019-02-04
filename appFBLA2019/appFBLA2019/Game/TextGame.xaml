@@ -5,19 +5,15 @@
              xmlns:local="clr-namespace:appFBLA2019"
              NavigationPage.BackButtonTitle="true">
     <StackLayout x:Name="StackLayoutMain">
-        <ProgressBar VerticalOptions="Start"/>
-        <Label x:Name="LabelQuestion" VerticalOptions="FillAndExpand" FontSize="Large"/>
-        <Label x:Name="LabelFeedback" VerticalOptions="FillAndExpand"/>
-        <Image x:Name="QuestionImage" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
-        <Grid HeightRequest="320" VerticalOptions="End" x:Name="GridEntryObjects">
+        <ProgressBar x:Name="ProgressBar" Progress = "0" ProgressColor="Accent" VerticalOptions="Start" />
+        <Label x:Name="LabelQuestion" VerticalOptions="FillAndExpand" FontSize="Large" />
+        <Label x:Name="LabelFeedback" VerticalOptions="FillAndExpand" />
+        <Image x:Name="QuestionImage" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />
+        <Grid VerticalOptions="EndAndExpand" x:Name="ButtonGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
         </Grid>
     </StackLayout>
 </ContentPage>

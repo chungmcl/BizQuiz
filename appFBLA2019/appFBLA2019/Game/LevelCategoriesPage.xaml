@@ -4,8 +4,7 @@
                         x:Class="appFBLA2019.LevelCategoriesPage"
                         xmlns:local="clr-namespace:appFBLA2019"
                         xmlns:sys="clr-namespace:System;assembly=netstandard">
-    <local:LevelSelectionPage Title="FBLA"/>
-    <local:LevelSelectionPage Title="Technology Events"/>
-    <local:LevelSelectionPage Title="Business Events"/>
-
+    <local:LevelSelectionPage Title="FBLA" />
+    <local:LevelSelectionPage Title="Technology Events" />
+    <local:LevelSelectionPage Title="Business Events" />
 </TabbedPage>

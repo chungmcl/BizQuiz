@@ -1,12 +1,11 @@
-﻿using Plugin.FacebookClient;
+﻿//BizQuiz App 2019
+
+using Plugin.FacebookClient;
 using Plugin.FacebookClient.Abstractions;
 using Plugin.Share;
 using Plugin.Share.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -16,9 +15,8 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LevelEndPage : ContentPage
     {
-        public delegate void FinishedEventHandler(object source, EventArgs eventArgs);
-        public event FinishedEventHandler Finished;
-        private ScoreRecord score;
+        #region Public Constructors
+
         public LevelEndPage(ScoreRecord score, int totalQuestions)
         {
             this.InitializeComponent();
@@ -26,16 +24,47 @@ namespace appFBLA2019
             this.LabelScore.Text = $"{score.Score}/{totalQuestions * 2}";
         }
 
-        private async void ButtonShareToFacebook_Clicked(object sender, EventArgs e)
+        #endregion Public Constructors
+
+        #region Public Delegates
+
+        public delegate void FinishedEventHandler(object source, EventArgs eventArgs);
+
+        #endregion Public Delegates
+
+        #region Public Events
+
+        public event FinishedEventHandler Finished;
+
+        #endregion Public Events
+
+        #region Protected Methods
+
+        protected virtual void OnFinished()
         {
-            FacebookShareLinkContent linkContent = new FacebookShareLinkContent("Check out my score!", new Uri("https://github.com/chungmcl"));
-            var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
+            this.Finished?.Invoke(this, EventArgs.Empty);
         }
+
+        #endregion Protected Methods
+
+        #region Private Properties + Fields
+
+        private ScoreRecord score;
+
+        #endregion Private Properties + Fields
+
+        #region Private Methods
 
         private async void ButtonDone_Clicked(object sender, EventArgs e)
         {
             this.OnFinished();
             await this.Navigation.PopModalAsync(true);
+        }
+
+        private async void ButtonShareToFacebook_Clicked(object sender, EventArgs e)
+        {
+            FacebookShareLinkContent linkContent = new FacebookShareLinkContent("Check out my score!", new Uri("https://github.com/chungmcl"));
+            var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
         }
 
         private async void ButtonShareToOtherMedia_Clicked(object sender, EventArgs e)
@@ -47,12 +76,8 @@ namespace appFBLA2019
                 Title = "Title",
                 Url = "https://github.com/chungmcl",
             });
-
         }
 
-        protected virtual void OnFinished()
-        {
-            this.Finished?.Invoke(this, EventArgs.Empty);
-        }
+        #endregion Private Methods
     }
 }
