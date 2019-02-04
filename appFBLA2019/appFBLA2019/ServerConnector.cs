@@ -21,24 +21,38 @@ namespace appFBLA2019
         public static string Server { get; set; }
         public static int Port { get { return 7777; } }
 
-        public static void SendData(ServerRequestTypes dataType, object data)
+        public async static Task<bool> SendData(ServerRequestTypes dataType, object data)
         {
             switch (dataType)
             {
                 case (ServerRequestTypes.AddJPEGImage):
+
                     break;
+
                 case (ServerRequestTypes.AddRealmFile):
+
                     break;
+
                 case (ServerRequestTypes.LoginAccount):
+                    string data
                     break;
+
                 case (ServerRequestTypes.RegisterAccount):
+
                     break;
+
                 case (ServerRequestTypes.StringData):
+
                     break;
+
                 case (ServerRequestTypes.GetJPEGImage):
+
                     break;
+
                 case (ServerRequestTypes.GetRealmFile):
+
                     break;
+
                 case (ServerRequestTypes.GetEmail):
                     break;
 
@@ -69,7 +83,7 @@ namespace appFBLA2019
                 new RemoteCertificateValidationCallback(ValidateCert));
 
             ssl.WriteTimeout = 5000;
-
+            
             ssl.AuthenticateAsClient("BizQuizServer");
         }
 
@@ -86,7 +100,7 @@ namespace appFBLA2019
             return true; // Allow untrusted certificates.
         }
     }
-    
+
     public enum ServerRequestTypes
     {
         // "Command" Requests
@@ -101,7 +115,12 @@ namespace appFBLA2019
         // "Get" Requests
         GetEmail = 0b00001001,
         GetJPEGImage = 0b00001010,
-        GetRealmFile = 0b00001011
+        GetRealmFile = 0b00001011,
+
+        // Returns
+        SavedJPEGImage = 0b00001100,
+        SavedRealmFile = 0b00001101,
+        GotEmail = 0b00001110
     }
 }
 

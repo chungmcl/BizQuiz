@@ -23,7 +23,7 @@ namespace appFBLA2019
         private async void Login(string username, string password)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Waiting...");
-            Task<bool> completedRequest = ServerConnector.QueryDB($"loginAccount/{username}/{password}/-");
+            Task<bool> completedRequest = ServerConnector.SendData(ServerRequestTypes.LoginAccount, $"loginAccount/{username}/{password}/-");
             
             if (await completedRequest)
             {
