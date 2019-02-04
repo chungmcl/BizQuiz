@@ -19,18 +19,10 @@ namespace appFBLA2019
             /*REMOVE DURING RELEASE*/
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
+
+            ServerConnector.Server = "50.106.17.86";
             
             this.MainPage = new NavigationPage(new MainPage());
-
-            /*REMOVE DURING RELEASE*/
-            // If you want to generate a testLevel 
-            //DBHandler.SelectDatabase("testLevel", "testAuthor");
-            //List<Question> questions = new List<Question>();
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    questions.Add(new Question());
-            //}
-            //DBHandler.Database.AddQuestions(questions);
         }
 
         protected override void OnStart ()

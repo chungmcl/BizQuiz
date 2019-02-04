@@ -23,6 +23,8 @@ namespace appFBLA2019
 
         public static bool SendData(ServerRequestTypes dataType, object data)
         {
+            SetupConnection();
+
             switch (dataType)
             {
                 case (ServerRequestTypes.AddJPEGImage):

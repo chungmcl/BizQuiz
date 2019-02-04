@@ -27,14 +27,14 @@ namespace appFBLA2019
         private async Task CreateAccount(string username, string password, string email)
         {
             bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.RegisterAccount, 
-                $"createAccount/{username}/{password}" +
+                $"{username}/{password}" +
                 $"/{email}/-"));
 
             if (completedRequest)
             {
                 OperationReturnMessage databaseReturnInfo = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
 
-                if (databaseReturnInfo == OperationReturnMessage.True)
+                if (databaseReturnInfo == OperationReturnMessage.TrueConfirmEmail)
                 {
                     Device.BeginInvokeOnMainThread(async () =>
                     {
