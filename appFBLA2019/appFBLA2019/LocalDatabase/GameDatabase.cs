@@ -68,6 +68,13 @@ namespace appFBLA2019
             }
         }
 
+        public void DeleteQuestions(Question question)
+        {
+            if (question.NeedsPicture)
+                File.Delete(dbFolderPath + "/" + question.DBId + ".jpg");
+            this.realmDB.Remove(question);
+        }
+
         public void AddScore(ScoreRecord score)
         {
             this.realmDB.Write(() =>
