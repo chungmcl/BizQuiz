@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ic_delete_black_48dp.png" />
     <None Remove="Resources\testLevel`testAuthor\549fdcb6-a858-410b-9935-f29dfabe1748.jpg" />
     <None Remove="Resources\testLevel`testAuthor\794be95c-5c84-4d09-b492-faca9bc90b41.jpg" />
     <None Remove="Resources\testLevel`testAuthor\85b1a2ea-615b-4ca5-8f20-cd5759a71c14.jpg" />
@@ -18,6 +19,10 @@
     <None Remove="Resources\testLevel`testAuthor\testLevel.realm.lock" />
     <None Remove="Resources\testLevel`testAuthor\testLevel.realm.management\access_control.control.mx" />
     <None Remove="Resources\testLevel`testAuthor\testLevel.realm.management\access_control.write.mx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ic_delete_black_48dp.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,8 +43,9 @@
     <PackageReference Include="Realm" Version="3.4.0" />
     <PackageReference Include="Realm.Database" Version="3.4.0" />
     <PackageReference Include="Realm.DataBinding" Version="1.2.0" />
+    <PackageReference Include="SkiaSharp" Version="1.68.0" />
     <PackageReference Include="Xam.Plugin.Media" Version="4.0.1.5" />
-    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1009999" />
+    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1029999" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,9 +73,6 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="LevelEditor\CreateNewLevelPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LevelEditor\EditLevelPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="LevelEditor\LevelEditorPage.xaml">
