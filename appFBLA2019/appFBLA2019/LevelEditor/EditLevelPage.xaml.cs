@@ -24,9 +24,32 @@ namespace appFBLA2019
             var picker = (Picker)sender;
             int selectedIndex = picker.SelectedIndex;
 
-            if (selectedIndex != -1)
-            {
-                ButtonEditLevel.IsEnabled = true;
+            if (selectedIndex != -1) // If the user has selected something then open the page
+            { 
+                DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, "testAuthor");
+                CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
+                // Add the questions from the database to the page to edit
+                List<Question> test = DBHandler.Database.GetQuestions();
+                foreach (Question question in DBHandler.Database.GetQuestions())
+                {
+                    string[] answers = new string[] {
+                           question.CorrectAnswer,
+                           question.AnswerOne,
+                           question.AnswerTwo,
+                           question.AnswerThree };
+
+                    levelPage.SetLevelName((string)PickerLevelSelect.SelectedItem);
+
+                    if (question.NeedsPicture) // Check if the question needs an image or not
+                    {
+                        levelPage.AddNewQuestion(question.QuestionText, question.ImagePath, answers);
+                    }
+                    else
+                    {
+                        levelPage.AddNewQuestion(question.QuestionText, answers);
+                    }
+                }
+                this.Navigation.PushAsync(levelPage);
             }
         }
         
@@ -57,36 +80,36 @@ namespace appFBLA2019
         }
 
         // Called when the user presses the button to edit a quiz, Sets up the edit page
-        private void ButtonEditLevel_Clicked(object sender, EventArgs e)
-        {
-            if(PickerLevelSelect.SelectedIndex != -1) // If the user has selected something then open the page
-            {
-                DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, "testAuthor");
-                CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
-                // Add the questions from the database to the page to edit
-                List<Question> test = DBHandler.Database.GetQuestions();
-                foreach (Question question in DBHandler.Database.GetQuestions()) 
-                {
-                    string[] answers = new string[] {
-                           question.CorrectAnswer,
-                           question.AnswerOne,
-                           question.AnswerTwo,
-                           question.AnswerThree };
+        //private void ButtonEditLevel_Clicked(object sender, EventArgs e)
+        //{
+        //    if(PickerLevelSelect.SelectedIndex != -1) // If the user has selected something then open the page
+        //    {
+        //        DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, "testAuthor");
+        //        CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
+        //        // Add the questions from the database to the page to edit
+        //        List<Question> test = DBHandler.Database.GetQuestions();
+        //        foreach (Question question in DBHandler.Database.GetQuestions()) 
+        //        {
+        //            string[] answers = new string[] {
+        //                   question.CorrectAnswer,
+        //                   question.AnswerOne,
+        //                   question.AnswerTwo,
+        //                   question.AnswerThree };
 
-                    levelPage.SetLevelName((string)PickerLevelSelect.SelectedItem);
+        //            levelPage.SetLevelName((string)PickerLevelSelect.SelectedItem);
 
-                    if (question.NeedsPicture) // Check if the question needs an image or not
-                    {
-                        levelPage.AddNewQuestion(question.QuestionText, question.ImagePath, answers);
-                    }
-                    else
-                    {
-                        levelPage.AddNewQuestion(question.QuestionText, answers);
-                    }
-                }
-                this.Navigation.PushAsync(levelPage);
-            }
+        //            if (question.NeedsPicture) // Check if the question needs an image or not
+        //            {
+        //                levelPage.AddNewQuestion(question.QuestionText, question.ImagePath, answers);
+        //            }
+        //            else
+        //            {
+        //                levelPage.AddNewQuestion(question.QuestionText, answers);
+        //            }
+        //        }
+        //        this.Navigation.PushAsync(levelPage);
+        //    }
             
-        }
+        //}
     }
 }

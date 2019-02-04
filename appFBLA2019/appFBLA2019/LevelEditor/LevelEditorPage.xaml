@@ -5,6 +5,13 @@
     <!--Addtional pages may be added programatically into a CarouselPage-->
     <ContentPage.Content>
         <StackLayout>
+            <Picker Title="Select a Quiz to Edit" 
+                    x:Name="PickerLevelSelect" 
+                    WidthRequest="40"
+                    SelectedIndexChanged="OnPickerSelectedIndexChanged"/>
+            <Label  Text="OR" 
+                    VerticalOptions="CenterAndExpand"
+                    HorizontalOptions="Center"/>
             <Button x:Name="ButtonCreate" 
                     Text="Create new level" 
                     Clicked="ButtonCreate_Clicked" 
@@ -12,15 +19,7 @@
                     HeightRequest="80" 
                     BorderRadius="40"
                     VerticalOptions="CenterAndExpand"
-                    HorizontalOptions="Center"></Button>
-            <Button x:Name="ButtonEdit" 
-                    Text="Edit existing level" 
-                    Clicked="ButtonEdit_Clicked" 
-                    WidthRequest="80" 
-                    HeightRequest="80" 
-                    BorderRadius="40"
-                    VerticalOptions="CenterAndExpand"
-                    HorizontalOptions="Center"></Button>
+                    HorizontalOptions="Center"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

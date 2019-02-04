@@ -241,39 +241,7 @@ namespace appFBLA2019
             }
             else // or adds the add image button
                 AddImage.IsVisible = true;
-
-            // This part deals with swiping Not quite working
-            SwipeGestureRecognizer swipe = new SwipeGestureRecognizer{ Direction = SwipeDirection.Left };
-            swipe.Swiped += (object sender, SwipedEventArgs e) =>
-            {
-                System.Timers.Timer deleteTimer = new System.Timers.Timer(1000);
-                deleteTimer.Elapsed += (object source, ElapsedEventArgs f) =>
-                {
-                    ((Frame)sender).Content = null;
-                    ((Frame)sender).IsVisible = false;
-                };
-
-                System.Timers.Timer swipeTimer = new System.Timers.Timer(30);          
-                swipeTimer.Elapsed += (object source, ElapsedEventArgs f) =>
-                {
-                    ((Frame)sender).TranslationX -= 50;
-                };
-
-                swipeTimer.Enabled = true;
-                // "sender" is a reference to the object that was swiped
-                // "sender" was tested and it returned the correct Frame
-                //this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
-                // It is throwing an exception when this code is called because 
-                // To my best guess, it's trying to delete the object that it's in while being actively in use
-                //this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
-                // This techinically works but doesn't genuinely remove the object from memory
-
-                
-            };
-
-            frame.GestureRecognizers.Add(swipe);
-
-            // finally add the stacklayout we just set up to the frame
+            
             frame.Content = frameStack;
             // and add the frame to the the other stacklaout.
             this.StackLayoutQuestionStack.Children.Add(frame);
