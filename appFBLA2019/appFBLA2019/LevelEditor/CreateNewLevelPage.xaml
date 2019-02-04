@@ -4,7 +4,7 @@
              x:Class="appFBLA2019.CreateNewLevelPage">
     <ContentPage.Content>
         <ScrollView>
-            <StackLayout>
+            <StackLayout Padding="25">
                 <Label Text="Create Your Own Quiz"
                     VerticalOptions="Start"
                     HorizontalOptions="Start"

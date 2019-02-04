@@ -170,7 +170,10 @@ namespace appFBLA2019
                 Remove.Source = "ic_delete_black_48dp.png";
                 Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
                 Remove.BackgroundColor = Color.Transparent;
-                Remove.IsEnabled = false;
+                Remove.HeightRequest = 40;
+                Remove.WidthRequest = 40;
+                Remove.HorizontalOptions = LayoutOptions.End;
+                Remove.VerticalOptions = LayoutOptions.Start;
             }
             frameStack.Children.Add(Remove);
 

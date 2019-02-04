@@ -4,21 +4,28 @@
              x:Class="appFBLA2019.LevelEditorPage">
     <!--Addtional pages may be added programatically into a CarouselPage-->
     <ContentPage.Content>
-        <StackLayout>
+        <StackLayout Padding="35">
+            <Label  Text="With BizQuiz, you can create your own quiz to test you or your friends on anything from FBLA to native american culture!" 
+                    Margin="50"
+                    VerticalOptions="Start"
+                    HorizontalOptions="Center"
+                    FontSize="Large"/>
             <Picker Title="Select a Quiz to Edit" 
                     x:Name="PickerLevelSelect" 
                     WidthRequest="40"
                     SelectedIndexChanged="OnPickerSelectedIndexChanged"/>
             <Label  Text="OR" 
-                    VerticalOptions="CenterAndExpand"
-                    HorizontalOptions="Center"/>
+                    Margin="50"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    FontSize="Large"/>
             <Button x:Name="ButtonCreate" 
                     Text="Create new level" 
                     Clicked="ButtonCreate_Clicked" 
-                    WidthRequest="80" 
-                    HeightRequest="80" 
-                    BorderRadius="40"
-                    VerticalOptions="CenterAndExpand"
+                    WidthRequest="100" 
+                    HeightRequest="100" 
+                    BorderRadius="50"
+                    VerticalOptions="Start"
                     HorizontalOptions="Center"/>
         </StackLayout>
     </ContentPage.Content>
