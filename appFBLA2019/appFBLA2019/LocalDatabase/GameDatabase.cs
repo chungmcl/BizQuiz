@@ -74,7 +74,10 @@ namespace appFBLA2019
             {
                 if (question.NeedsPicture)
                     File.Delete(dbFolderPath + "/" + question.DBId + ".jpg");
-                this.realmDB.Remove(question);
+                this.realmDB.Write(() =>
+                {
+                    this.realmDB.Remove(question);
+                });
             }
         }
 
