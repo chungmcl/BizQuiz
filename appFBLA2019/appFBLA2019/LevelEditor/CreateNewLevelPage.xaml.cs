@@ -102,16 +102,18 @@ namespace appFBLA2019
                     IList<View> children = ((StackLayout)frame.Content).Children;
                     
 
-                    Question addThis; // What to add
-                    string[] answers = { "c/" + ((Entry)children[2]).Text,
-                                "x/" + ((Entry)children[3]).Text,
-                                "x/" + ((Entry)children[4]).Text,
-                                "x/" + ((Entry)children[5]).Text};
+                    Question addThis;
 
-                    if (((Image)children[6]).IsEnabled) // if needs picture
+                    //The answers to the question
+                    string[] answers = { "c/" + ((Entry)children[2]).Text, //Correct
+                                "x/" + ((Entry)children[3]).Text, // Incorect
+                                "x/" + ((Entry)children[4]).Text, // Incorect
+                                "x/" + ((Entry)children[5]).Text}; // Incorect
+
+                    if (((Image)children[6]).IsEnabled) // if needs image
                     {
                         addThis = new Question(
-                                ((Entry)children[1]).Text,
+                                ((Entry)children[1]).Text, // The 
                                 children[6].StyleId, // adds image using The image path in StyleId
                                 answers);
                     }
