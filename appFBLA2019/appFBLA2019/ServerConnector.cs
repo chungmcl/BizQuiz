@@ -37,8 +37,9 @@ namespace appFBLA2019
 
                 case (ServerRequestTypes.LoginAccount):
                 case (ServerRequestTypes.RegisterAccount):
-                case (ServerRequestTypes.StringData):
                 case (ServerRequestTypes.GetEmail):
+                case (ServerRequestTypes.ConfirmEmail):
+                case (ServerRequestTypes.StringData):
                     SendStringData((string)data, dataType);
                     return true;
 

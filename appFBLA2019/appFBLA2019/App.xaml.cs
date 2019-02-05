@@ -15,20 +15,23 @@ namespace appFBLA2019
 		{
             this.InitializeComponent();
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
-            /*REMOVE DURING RELEASE*/
+
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
 
-            ServerConnector.Server = "50.106.17.86";
-            
             this.MainPage = new NavigationPage(new MainPage());
         }
 
 
-        protected override void OnStart ()
+        protected override async void OnStart ()
 		{
-            
             // Handle when your app starts
+
+            /*REMOVE DURING RELEASE*/
+            ServerConnector.Server = "50.106.17.86";
+
+            await CredentialManager.CheckLoginStatus();
+            CredentialManager.StartTimedCheckLoginStatus();
         }
 
 		protected override void OnSleep ()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using static appFBLA2019.CreateAccountPage;
@@ -32,6 +33,7 @@ namespace appFBLA2019
                 if (response == OperationReturnMessage.True)
                 {
                     Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
+                    CredentialManager.SaveCredential(username, password);
                 }
                 else if (response == OperationReturnMessage.TrueConfirmEmail)
                 {
@@ -42,6 +44,7 @@ namespace appFBLA2019
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         await this.Navigation.PushModalAsync(confirmationPage);
                     });
+                    CredentialManager.SaveCredential(username, password);
                 }
                 else
                 {
