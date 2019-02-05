@@ -57,6 +57,8 @@ namespace appFBLA2019
             }
             this.Navigation.PushAsync(levelPage);
         }
+        // Reset the picker value
+        picker.SelectedIndex = -1;
     }
 
     // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
@@ -69,7 +71,7 @@ namespace appFBLA2019
 
         // get a list of all databases the user has on the device
 
-
+        
         string[] subFolderNames = Directory.GetDirectories(App.Path);
         foreach (string levelName in subFolderNames)
         {

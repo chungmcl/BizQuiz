@@ -3,6 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.CreateNewLevelPage"
              Title="BizQuiz">
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Icon="BizQuizLogo.png" Order="Primary" />
+        <ToolbarItem Icon="ic_done_white_48dp.png"  Priority="0" Name="Done" Order="Primary"  Activated="ButtonCreateLevel_Clicked"/>
+    </ContentPage.ToolbarItems>
+    
     <ContentPage.Content>
         <StackLayout BackgroundColor="White">
             <Label Text="Create Your Own Quiz"
@@ -10,16 +16,14 @@
                         HorizontalOptions="Start"
                         FontAttributes="bold"
                         FontSize="40"/>
-            <Entry x:Name="EntryLevelName"  Placeholder="Level Name" WidthRequest="10" BackgroundColor="LightGray"/>
+            <Entry x:Name="EntryLevelName"  Placeholder="Level Name"/>
             <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand">
                 <StackLayout>
                     <StackLayout x:Name="StackLayoutQuestionStack" Padding="10" />
                     <!--Things added in code-->
                 </StackLayout>
             </ScrollView>
-                <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" CornerRadius="20" Margin="20"/>
-                <Button x:Name="ButtonCreateLevel" Text="Create" Clicked="ButtonCreateLevel_Clicked" CornerRadius="20" Margin="20"/>
-        </StackLayout> 
-
+            <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" CornerRadius="20" Margin="20"/>
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>

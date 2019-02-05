@@ -134,7 +134,7 @@ namespace appFBLA2019
                 DBHandler.Database.AddQuestions(questionsToAdd);
 
                 // Returns user to front page of LevelEditor
-                this.Navigation.PushAsync(new LevelEditorPage());
+                this.Navigation.PopAsync(true);
             }
         }
 
