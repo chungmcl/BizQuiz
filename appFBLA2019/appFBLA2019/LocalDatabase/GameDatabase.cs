@@ -58,6 +58,7 @@ namespace appFBLA2019
                 if (question.NeedsPicture)
                 {
                     byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
+                    // TO DO: Convert imageByteArray to JPG with a DependencyService before saving
                     File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
                 }
 
@@ -67,6 +68,13 @@ namespace appFBLA2019
                 });
             }
         }
+
+        // To update an existing question in the database:
+        //
+        // DBHandler.Database.realmDB.Write(() =>
+        //         yourQuestion.Property = newValue
+        //     );
+        //
 
         public void DeleteQuestions(params Question[] questions)
         {
