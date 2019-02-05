@@ -110,17 +110,18 @@ namespace appFBLA2019
                     Question addThis;
 
                     //The answers to the question
-                    string[] answers = {((Entry)children[2]).Text, //Correct
-                                ((Entry)children[3]).Text, // Incorect
-                                ((Entry)children[4]).Text, // Incorect
-                                ((Entry)children[5]).Text}; // Incorect
+                    string[] answers = {((Entry)children[2]).Text, //Correct answer
+                                ((Entry)children[3]).Text, // Incorect answer
+                                ((Entry)children[4]).Text, // Incorect answer
+                                ((Entry)children[5]).Text}; // Incorect answer
 
                     if (((ImageButton)children[6]).IsEnabled) // if needs image
                     {
                         addThis = new Question(
-                                ((Entry)children[1]).Text, // The 
-                                ((ImageButton)children[6]).Source.ToString(), // adds image using the image source
+                                ((Entry)children[1]).Text, // The Question
+                                ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
                                 answers);
+                        addThis.NeedsPicture = true;
                     }
                     else // if not needs picture
                     {
