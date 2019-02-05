@@ -9,6 +9,7 @@ using Plugin.Media;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+
 namespace appFBLA2019
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
@@ -60,9 +61,18 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ButtonRemove_Clicked(object sender, EventArgs e)
+        async private void ButtonRemove_Clicked(object sender, EventArgs e)
         {
-            this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent)));
+            bool answer = await DisplayAlert("Warning", "Are you sure you would like to delete this question?", "Yes", "No");
+            if (answer == true)
+            {
+                //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
+
+                Frame frame = ((Frame)((StackLayout)((ImageButton)sender).Parent).Parent);
+                //Animate A deletion
+                await frame.TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
+                this.StackLayoutQuestionStack.Children.Remove(frame);
+            }
         }
 
         /// <summary>
@@ -84,40 +94,43 @@ namespace appFBLA2019
             {
                 // Later, need to impliment username to pass through
                 DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), "testAuthor");
-                List<Question> questionsToAdd = new List<Question>();  // A list of questions to add to the database \
+
+                //Delete everything in it right now
+                DBHandler.Database.DeleteQuestions(DBHandler.Database.GetQuestions().ToArray());
+
+                List<Question> questionsToAdd = new List<Question>();  // A list of questions to add to the database
                 // Loops through each question frame on the screen 
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
+                    // A list of all the children of the current frame
+                    IList<View> children = ((StackLayout)frame.Content).Children;
+                    
+                    Question addThis;
 
-                    for (int i = 0; i < ((StackLayout)frame.Content).Children.Count; i++)
+                    //The answers to the question
+                    string[] answers = {((Entry)children[2]).Text, //Correct
+                                ((Entry)children[3]).Text, // Incorect
+                                ((Entry)children[4]).Text, // Incorect
+                                ((Entry)children[5]).Text}; // Incorect
+
+                    if (((Image)children[6]).IsEnabled) // if needs image
                     {
-
-                        IList<View> children = ((StackLayout)frame.Content).Children;
-                        Question addThis;
-
-                        string[] answers = { "c/" + ((Entry)children[2]).Text,
-                                    "x/" + ((Entry)children[3]).Text,
-                                    "x/" + ((Entry)children[4]).Text,
-                                    "x/" + ((Entry)children[5]).Text};
-
-                        if (((Image)children[6]).IsEnabled) // if needs picture
-                        {
-                            addThis = new Question(
-                                    ((Entry)children[1]).Text,
-                                    children[6].StyleId, // adds image using The image path in StyleId
-                                    answers);
-                        }
-                        else // if not needs picture
-                        {
-                            addThis = new Question(
-                                    ((Entry)children[1]).Text,
-                                    answers);
-                        }
+                        addThis = new Question(
+                                ((Entry)children[1]).Text, // The 
+                                children[6].StyleId, // adds image using The image path in StyleId
+                                answers);
+                    }
+                    else // if not needs picture
+                    {
+                        addThis = new Question(
+                                ((Entry)children[1]).Text,
+                                answers);
+                    }
 
                         questionsToAdd.Add(addThis);
-
-                    }
                 }
+                
+                // Adds the list of questions to the database
                 DBHandler.Database.AddQuestions(questionsToAdd);
 
                 // Returns user to front page of LevelEditor
@@ -141,7 +154,7 @@ namespace appFBLA2019
         /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
         public void AddNewQuestion(string question, params string[] answers)
         {
-            AddNewQuestion(question, null, answers);
+            AddNewQuestion(question, "", answers);
         }
 
         /// <summary>
@@ -170,7 +183,10 @@ namespace appFBLA2019
                 Remove.Source = "ic_delete_black_48dp.png";
                 Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
                 Remove.BackgroundColor = Color.Transparent;
-                Remove.IsEnabled = false;
+                Remove.HeightRequest = 40;
+                Remove.WidthRequest = 40;
+                Remove.HorizontalOptions = LayoutOptions.End;
+                Remove.VerticalOptions = LayoutOptions.Start;
             }
             frameStack.Children.Add(Remove);
 
@@ -241,60 +257,14 @@ namespace appFBLA2019
             }
             else // or adds the add image button
                 AddImage.IsVisible = true;
-
-            // This part deals with swiping Not quite working
-            SwipeGestureRecognizer swipe = new SwipeGestureRecognizer{ Direction = SwipeDirection.Left };
-            swipe.Swiped += (object sender, SwipedEventArgs e) =>
-            {
-                System.Timers.Timer deleteTimer = new System.Timers.Timer(1000);
-                deleteTimer.Elapsed += (object source, ElapsedEventArgs f) =>
-                {
-                    ((Frame)sender).Content = null;
-                    ((Frame)sender).IsVisible = false;
-                };
-
-                System.Timers.Timer swipeTimer = new System.Timers.Timer(30);          
-                swipeTimer.Elapsed += (object source, ElapsedEventArgs f) =>
-                {
-                    ((Frame)sender).TranslationX -= 50;
-                };
-
-                swipeTimer.Enabled = true;
-                // "sender" is a reference to the object that was swiped
-                // "sender" was tested and it returned the correct Frame
-                //this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
-                // It is throwing an exception when this code is called because 
-                // To my best guess, it's trying to delete the object that it's in while being actively in use
-                //this.StackLayoutQuestionStack.Children.Remove(((Frame)sender));
-                // This techinically works but doesn't genuinely remove the object from memory
-
-                
-            };
-
-            frame.GestureRecognizers.Add(swipe);
-
-            // finally add the stacklayout we just set up to the frame
+            
             frame.Content = frameStack;
             // and add the frame to the the other stacklaout.
             this.StackLayoutQuestionStack.Children.Add(frame);
         }
 
-        void OnSwiped(object sender, SwipedEventArgs e)
-        {
-            System.Timers.Timer timer = new System.Timers.Timer(20);
 
-            timer.Elapsed += (object source, ElapsedEventArgs f) =>
-            {
-                ((Frame)((StackLayout)((SwipeGestureRecognizer)sender).Parent).Parent).TranslationX++;
-            };
-
-            timer.Enabled = true;
-
-            this.StackLayoutQuestionStack.Children.Remove((Frame)(sender));
-        }
-
-
-            public void SetLevelName(string levelName)
+        public void SetLevelName(string levelName)
         {
             EntryLevelName.Text = levelName;
         }
