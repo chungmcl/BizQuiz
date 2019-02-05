@@ -58,7 +58,14 @@ namespace appFBLA2019
                 if (question.NeedsPicture)
                 {
                     byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
-                    // TO DO: Convert imageByteArray to JPG with a DependencyService before saving
+
+                    if (!question.ImagePath.Contains(".jpg"))
+                    {
+                        Stream imageStream = DependencyService.Get<IGetImage>().GetJPGStreamFromByteArray(imageByteArray);
+                        MemoryStream imageMemoryStream = new MemoryStream();
+                        imageStream.CopyTo(imageMemoryStream);
+                        imageByteArray = imageMemoryStream.ToArray();
+                    }
                     File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
                 }
 
