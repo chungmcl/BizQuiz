@@ -3,9 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.CreateNewLevelPage"
              Title="BizQuiz">
-    
+
     <ContentPage.ToolbarItems>
-        <ToolbarItem Icon="BizQuizLogo.png" Order="Primary" />
         <ToolbarItem Icon="ic_done_white_48dp.png"  Priority="0" Name="Done" Order="Primary"  Activated="ButtonCreateLevel_Clicked"/>
     </ContentPage.ToolbarItems>
     

@@ -33,15 +33,17 @@ namespace appFBLA2019
 
             if (file != null) // if the user actually picked an image
             {
-                // just used the StyleId property to store the file path as a string However Im not sure I need
-                Image currentImage = ((Image)((StackLayout)((Button)sender).Parent).Children[6]);
+                ImageButton currentImage;
 
-                currentImage.StyleId = file.Path;
+                currentImage = ((ImageButton)((StackLayout)((View)sender).Parent).Children[6]);
+ 
+
                 currentImage.Source = file.Path;
 
                 // Enables the image
                 currentImage.IsEnabled = true;
-                ((Button)sender).IsVisible = false;
+                if (sender is Button)
+                    ((Button)sender).IsVisible = false;
             }
 
         }
@@ -76,7 +78,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Creates the Level
+        /// Saves the user created level
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -95,7 +97,7 @@ namespace appFBLA2019
                 // Later, need to impliment username to pass through
                 DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), "testAuthor");
 
-                //Delete everything in it right now
+                // clear the database to prevent duplication
                 DBHandler.Database.DeleteQuestions(DBHandler.Database.GetQuestions().ToArray());
 
                 List<Question> questionsToAdd = new List<Question>();  // A list of questions to add to the database
@@ -113,11 +115,11 @@ namespace appFBLA2019
                                 ((Entry)children[4]).Text, // Incorect
                                 ((Entry)children[5]).Text}; // Incorect
 
-                    if (((Image)children[6]).IsEnabled) // if needs image
+                    if (((ImageButton)children[6]).IsEnabled) // if needs image
                     {
                         addThis = new Question(
                                 ((Entry)children[1]).Text, // The 
-                                children[6].StyleId, // adds image using The image path in StyleId
+                                ((ImageButton)children[6]).Source.ToString(), // adds image using the image source
                                 answers);
                     }
                     else // if not needs picture
@@ -232,21 +234,26 @@ namespace appFBLA2019
                 AnswerWrongThree.Text = answers[2];
             frameStack.Children.Add(AnswerWrongThree);
 
+            bool needsPicture = false;
+            if (imagePath != "")
+                needsPicture = true;
+
             Button AddImage = new Button(); // The add Image button
             {
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
                 AddImage.CornerRadius = 20;
                 AddImage.IsVisible = false;
+                
             }
 
-            bool needsPicture = false;
-            if (imagePath != "")
-                needsPicture = true;
-            Image image = new Image // The image itself
+
+            ImageButton image = new ImageButton(); // The image itself
             {
-                IsEnabled = needsPicture,          
-            };
+                image.IsEnabled = needsPicture;
+                image.Clicked += new EventHandler(ButtonAddImage_Clicked);
+                image.BackgroundColor = Color.Transparent;
+            }
 
             frameStack.Children.Add(image);
             frameStack.Children.Add(AddImage);
