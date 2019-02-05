@@ -63,8 +63,13 @@ namespace appFBLA2019
                     {
                         Stream imageStream = DependencyService.Get<IGetImage>().GetJPGStreamFromByteArray(imageByteArray);
                         MemoryStream imageMemoryStream = new MemoryStream();
+
+                        imageStream.Position = 0;
                         imageStream.CopyTo(imageMemoryStream);
-                        imageByteArray = imageMemoryStream.ToArray();
+
+                        imageMemoryStream.Position = 0;
+                        imageByteArray = new byte[imageMemoryStream.Length];
+                        imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
                     }
                     File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
                 }
