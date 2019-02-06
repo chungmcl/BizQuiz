@@ -23,7 +23,12 @@ namespace appFBLA2019
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.White);
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.DarkBlue);
 #endif
-            this.BarTextColor = Color.White;
+            this.BarTextColor = Color.White;            
+        }
+
+        public void RefreshDatabase()
+        {
+            this.EditPage.FindDatabase();
         }
     }
 }

@@ -192,7 +192,11 @@ namespace appFBLA2019
                     }
                 }
 
-                // Returns user to front page of LevelEditor
+                // Returns user to front page of LevelEditor and refreshed database
+                var stack = this.Navigation.NavigationStack;
+                if (stack[stack.Count - 2] is MainPage)
+                    ((MainPage)stack[stack.Count - 2]).RefreshDatabase();
+
                 this.Navigation.PopAsync(true);
             }
         }

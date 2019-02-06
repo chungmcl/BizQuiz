@@ -62,10 +62,10 @@ namespace appFBLA2019
         {
             this.FindDatabase();
 
-            Timer timer = new Timer(15000);
-            timer.Elapsed += this.OnTimedEvent;
-            timer.AutoReset = true;
-            timer.Enabled = true;
+            //Timer timer = new Timer(15000);
+            //timer.Elapsed += this.OnTimedEvent;
+            //timer.AutoReset = true;
+            //timer.Enabled = true;
         }
 
 
@@ -97,7 +97,7 @@ namespace appFBLA2019
 
             }
 
-            PickerLevelSelect.ItemsSource = databaseList;
+            this.PickerLevelSelect.ItemsSource = databaseList;
         }
 
     }

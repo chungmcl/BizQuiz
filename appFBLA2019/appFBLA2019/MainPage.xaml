@@ -9,7 +9,7 @@
     BarTextColor="White"
     >
     <local:LevelCategoriesPage Title="Standard Levels" Icon="ic_landscape_black_48dp.png"/>
-    <local:LevelEditorPage Title="Level Editor" Icon="ic_edit_black_48dp.png"/>
+    <local:LevelEditorPage Title="Level Editor" Icon="ic_edit_black_48dp.png" x:Name="EditPage"/>
     <ContentPage Title="Leaderboards" Icon="ic_group_black_48dp.png"/>
     <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png"/>
 </TabbedPage>
