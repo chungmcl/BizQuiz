@@ -28,25 +28,39 @@ namespace appFBLA2019
         [Ignored]
         public string ImagePath { get; set; }
 
-        public string[] Answers
+        [Ignored]
+        public List<string> Answers
         {
             //turns the 4 answers into an easy to use array
             get
-            { return new string[] { this.CorrectAnswer, this.AnswerOne, this.AnswerTwo, this.AnswerThree }; }
+            { return new List<string> { this.CorrectAnswer, this.AnswerOne, this.AnswerTwo, this.AnswerThree }; }
             //takes an array, makes sure it can be used in our answers, and assigns it to the answers
             private set
             {
                 //temp has empty spaces so we dont assign from a null spot in value
                 string[] temp = new string[4];
-                if (value.Length > 4)
+                if (value.Count > 4)
+                {
                     throw new ArgumentException("You can only have 4 answers!");
+                }
+
                 value.CopyTo(temp, 0);
 
                 //makes sure there's actually a value to assign, otherwise makes it empty
-                this.CorrectAnswer = temp[0];
-                this.AnswerOne = temp[1];
-                this.AnswerTwo = temp[2];
-                this.AnswerThree = temp[3];
+
+                this.CorrectAnswer = temp[0]?.Split('/')[1] ?? "";
+                this.AnswerOne = temp[1]?.Split('/')[1] ?? "";
+                this.AnswerTwo = temp[2]?.Split('/')[1] ?? "";
+                this.AnswerThree = temp[3]?.Split('/')[1] ?? "";
+
+                //once the answers are assigned, find the correct one and assign it to CorrectAnswer
+                foreach (string answer in temp)
+                {
+                    if (answer != null && answer[0] == 'c')
+                    {
+                        this.CorrectAnswer = answer.Split('/')[1];
+                    }
+                }
             }
         }
 
@@ -59,10 +73,10 @@ namespace appFBLA2019
         /// <summary>
         /// Creates a question object given the question and answers
         /// </summary>
-        /// <param name="question">What to ask the user</param>
-        /// <param name="answersIn">
-        /// The potential answers to the question. The correct answer will be prefixed with "c/".
-        /// The rest will be prefixed with "x/".
+        /// <param name="question">  What to ask the user </param>
+        /// <param name="answersIn"> 
+        /// The potential answers to the question. The correct answer will be prefixed with "c/". The
+        /// rest will be prefixed with "x/".
         /// </param>
         public Question(string question, string imagePath, params string[] answers)
         {
@@ -70,7 +84,7 @@ namespace appFBLA2019
             //tries to assign the params to the local Answers property which in turn assigns the fields
             //if answers is null, throws an exception
             this.Status = 0;
-            this.Answers = answers ?? throw new ArgumentException("Must have at least one answer!");
+            this.Answers = new List<string>(answers) ?? throw new ArgumentException("Must have at least one answer!");
             this.ImagePath = imagePath;
         }
 

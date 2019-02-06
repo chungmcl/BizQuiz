@@ -193,6 +193,7 @@ namespace appFBLA2019
                     int currentRow = 0;
                     int currentColumn = 0;
                     int span = 1;
+
                     //remove empty answers
                     question.Answers.RemoveAll(x => x == "");
 
@@ -202,9 +203,9 @@ namespace appFBLA2019
                         ButtonGrid.HeightRequest = 160;
                         ButtonGrid.RowDefinitions =
                             new RowDefinitionCollection
-                {
-                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
-                };
+                            {
+                                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
+                            };
                     }
 
                     for (int i = 0; i < question.Answers.Count(); i++)
