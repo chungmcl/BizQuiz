@@ -26,15 +26,15 @@ namespace appFBLA2019
 
         private async Task CreateAccount(string username, string password, string email)
         {
-            Task<bool> completedRequest = ServerConnector.QueryDB(
-                $"createAccount/{username}/{password}" +
-                $"/{email}/-");
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.RegisterAccount, 
+                $"{username}/{password}" +
+                $"/{email}/-"));
 
-            if (await completedRequest)
+            if (completedRequest)
             {
-                string databaseReturnInfo = await ServerConnector.ReceiveFromDB();
+                OperationReturnMessage databaseReturnInfo = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
 
-                if (databaseReturnInfo == "true/-")
+                if (databaseReturnInfo == OperationReturnMessage.TrueConfirmEmail)
                 {
                     Device.BeginInvokeOnMainThread(async () =>
                     {
@@ -47,9 +47,8 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    string errorMessage = (databaseReturnInfo.Split('/'))[1];
                     Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Account could not be created: {errorMessage}");
+                    this.LabelMessage.Text = $"Account could not be created.");
                 }
             }
             else
