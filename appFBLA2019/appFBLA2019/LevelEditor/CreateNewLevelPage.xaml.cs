@@ -231,7 +231,7 @@ namespace appFBLA2019
 
             ImageButton Remove = new ImageButton(); // the button to remove the question
             {
-                Remove.Source = "ic_delete_black_48dp.png";
+                Remove.Source = "ic_close_black_48dp.png";
                 Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
                 Remove.BackgroundColor = Color.Transparent;
                 Remove.HeightRequest = 40;
@@ -253,8 +253,8 @@ namespace appFBLA2019
             Entry AnswerCorrect = new Entry // The correct answer
             {
                 Placeholder = "Enter correct answer",
-                
             };
+            AnswerCorrect.TranslationX += 10;
             if (question != null)
                 AnswerCorrect.Text = question.CorrectAnswer;
 
@@ -264,6 +264,7 @@ namespace appFBLA2019
             {
                 Placeholder = "Enter a possible answer",
             };
+            AnswerWrongOne.TranslationX += 10;
             if (question != null)
                 AnswerWrongOne.Text = question.AnswerOne;
 
@@ -273,6 +274,7 @@ namespace appFBLA2019
             {
                 Placeholder = "Enter a possible answer",
             };
+            AnswerWrongTwo.TranslationX += 20;
             if (question != null)
                 AnswerWrongTwo.Text = question.AnswerTwo;
             frameStack.Children.Add(AnswerWrongTwo);
@@ -281,6 +283,7 @@ namespace appFBLA2019
             {
                 Placeholder = "Enter a possible answer",
             };
+            AnswerWrongThree.TranslationX += 10;
             if (question != null)
                 AnswerWrongThree.Text = question.AnswerThree;
             frameStack.Children.Add(AnswerWrongThree);
