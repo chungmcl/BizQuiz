@@ -10,7 +10,24 @@ namespace appFBLA2019
 {
     public static class CredentialManager
     {
-        public static string Username{ get; private set; }
+        public static string Username
+        {
+            get
+            {
+                return Username;
+            }
+            private set
+            {
+                if (Username == null)
+                    Username = "";
+
+                lock (Username)
+                {
+                    Username = value;
+                }
+            }
+        }
+
         public static bool IsLoggedIn { get; private set; }
 
         public static void SaveCredential(string username, string password)
@@ -30,22 +47,32 @@ namespace appFBLA2019
 
             if (CrossConnectivity.Current.IsConnected)
             {
-                if ((username != null) && (password != null))
+                if (((username != null) && (password != null)) && ((username != "") && (password != "")))
                 {
-                    ServerConnector.SendData(ServerRequestTypes.LoginAccount, username + "/" + password + "/-");
-                    OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
-                    if (message == OperationReturnMessage.True || message == OperationReturnMessage.TrueConfirmEmail)
-                        IsLoggedIn = true;
+                    if (ServerConnector.SendData(ServerRequestTypes.LoginAccount, username + "/" + password + "/-"))
+                    {
+                        OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
+                        if (message == OperationReturnMessage.True || message == OperationReturnMessage.TrueConfirmEmail)
+                            IsLoggedIn = true;
+                        else
+                        {
+                            IsLoggedIn = false;
+
+                            await Task.Run(async () => await SecureStorage.SetAsync("password", ""));
+                        }
+                        return message;
+                    }
                     else
-                        IsLoggedIn = false;
-                    return message;
+                    {
+                        return OperationReturnMessage.False;
+                    }
                 }
                 else
                 {
                     return OperationReturnMessage.False;
                 }
             }
-            else
+            else // If the user is offline
             {
                 if ((username != null) && (password != null))
                 {
@@ -60,7 +87,7 @@ namespace appFBLA2019
 
         /// <summary>
         /// Check if the current saved login credentials match with the server - Is the user logged in?
-        /// Checks every five minutes.
+        /// Checks every two minutes.
         /// Sets the IsLoggedIn property of CredentialManager.
         /// </summary>
         public static void StartTimedCheckLoginStatus()

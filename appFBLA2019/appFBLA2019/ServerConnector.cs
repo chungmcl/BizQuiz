@@ -22,8 +22,16 @@ namespace appFBLA2019
         public static string Server { get; set; }
         public static int Port { get { return 7777; } }
 
+        /// <summary>
+        /// Send a request or data to the server.
+        /// </summary>
+        /// <param name="dataType">The type of request/data to be sent</param>
+        /// <param name="data">The data/string query to send</param>
+        /// <returns>If the data successfully sent or not</returns>
         public static bool SendData(ServerRequestTypes dataType, object data)
         {
+            // Lock to prevent thread collision between multiple threads
+            // (Possibly between CredentialManager and the user)
             if (SetupConnection())
             {
                 switch (dataType)
@@ -140,36 +148,46 @@ namespace appFBLA2019
 
         private static bool SetupConnection()
         {
-            if (CrossConnectivity.Current.IsConnected)
+            try
             {
-                try
+                if (CrossConnectivity.Current.IsConnected)
                 {
-                    client = new TcpClient(AddressFamily.InterNetworkV6);
-                    client.Client.DualMode = true;
-                    var result = client.BeginConnect(Server, Port, null, null);
-                    var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(7));
-                    if (!success)
+                    client = new TcpClient();
+                    lock (client)
                     {
-                        throw new Exception("Failed to connect - Timeout exception.");
+                        client = new TcpClient(AddressFamily.InterNetworkV6);
+                        client.Client.DualMode = true;
+                        var result = client.BeginConnect(Server, Port, null, null);
+                        var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(7));
+                        if (!success)
+                        {
+                            throw new Exception("Failed to connect - Timeout exception.");
+                        }
+
+                        netStream = client.GetStream();
+
+                        lock (netStream)
+                        {
+                            ssl = new SslStream(netStream, false,
+                            new RemoteCertificateValidationCallback(ValidateCert));
+
+                            lock (ssl)
+                            {
+                                ssl.WriteTimeout = 5000;
+                                ssl.ReadTimeout = 10000;
+
+                                ssl.AuthenticateAsClient("BizQuizServer");
+                                return true;
+                            }
+                        }
                     }
-
-                    netStream = client.GetStream();
-
-                    ssl = new SslStream(netStream, false,
-                        new RemoteCertificateValidationCallback(ValidateCert));
-
-                    ssl.WriteTimeout = 5000;
-                    ssl.ReadTimeout = 10000;
-
-                    ssl.AuthenticateAsClient("BizQuizServer");
-                    return true;
                 }
-                catch
+                else
                 {
                     return false;
                 }
             }
-            else
+            catch
             {
                 return false;
             }
