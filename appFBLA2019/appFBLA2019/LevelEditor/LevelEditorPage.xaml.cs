@@ -42,7 +42,7 @@ namespace appFBLA2019
                            question.CorrectAnswer,
                            question.AnswerOne,
                            question.AnswerTwo,
-                           question.AnswerThree };
+                           question.AnswerThree};
 
                 levelPage.SetLevelName((string)PickerLevelSelect.SelectedItem);
 

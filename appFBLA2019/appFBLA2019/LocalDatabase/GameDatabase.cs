@@ -55,14 +55,28 @@ namespace appFBLA2019
                 string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
                 question.DBId = dbPrimaryKey;
 
-                byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
-
                 if (question.NeedsPicture)
-                    File.WriteAllBytes("dbPrimaryKey.jpg", imageByteArray);
+                {
+                    byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
+                    File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+                }
 
                 this.realmDB.Write(() =>
                 {
                     this.realmDB.Add(question);
+                });
+            }
+        }
+
+        public void DeleteQuestions(params Question[] questions)
+        {
+            foreach (Question question in questions)
+            {
+                if (question.NeedsPicture)
+                    File.Delete(dbFolderPath + "/" + question.DBId + ".jpg");
+                this.realmDB.Write(() =>
+                {
+                    this.realmDB.Remove(question);
                 });
             }
         }

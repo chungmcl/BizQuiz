@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using static appFBLA2019.CreateAccountPage;
@@ -23,17 +24,18 @@ namespace appFBLA2019
         private async void Login(string username, string password)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Waiting...");
-            Task<bool> completedRequest = ServerConnector.QueryDB($"loginAccount/{username}/{password}/-");
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.LoginAccount, $"{username}/{password}/-"));
             
-            if (await completedRequest)
+            if (completedRequest)
             {
-                string response = await ServerConnector.ReceiveFromDB();
+                OperationReturnMessage response = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
 
-                if (response == "true/-")
+                if (response == OperationReturnMessage.True)
                 {
                     Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
+                    CredentialManager.SaveCredential(username, password);
                 }
-                else if (response == "true/confirmEmail/-")
+                else if (response == OperationReturnMessage.TrueConfirmEmail)
                 {
                     Device.BeginInvokeOnMainThread(async() =>
                     {
@@ -42,11 +44,12 @@ namespace appFBLA2019
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         await this.Navigation.PushModalAsync(confirmationPage);
                     });
+                    CredentialManager.SaveCredential(username, password);
                 }
                 else
                 {
                     Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Login Failed: " + response.Split('/')[1]);
+                    this.LabelMessage.Text = "Login Failed.");
                 }
             }
             else

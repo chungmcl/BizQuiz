@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<TabbedPage
+<TabbedPage 
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:appFBLA2019"
     x:Class="appFBLA2019.MainPage"
     Title="BizQuiz"
     BarBackgroundColor="#2196F3"
-    BarTextColor="White">
-
-    <local:LevelCategoriesPage Title="Standard Levels" Icon="ic_landscape_black_48dp.png" />
-    <local:LevelEditorPage Title="Level Editor" Icon="ic_edit_black_48dp.png" />
-    <ContentPage Title="Leaderboards" Icon="ic_group_black_48dp.png" />
-    <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png" />
+    BarTextColor="White"
+    >
+    <local:LevelCategoriesPage Title="Standard Levels" Icon="ic_landscape_black_48dp.png"/>
+    <local:LevelEditorPage Title="Level Editor" Icon="ic_edit_black_48dp.png"/>
+    <ContentPage Title="Leaderboards" Icon="ic_group_black_48dp.png"/>
+    <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png"/>
 </TabbedPage>
