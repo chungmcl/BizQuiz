@@ -20,6 +20,9 @@ namespace appFBLA2019
         public static SslStream ssl;            // Encrypts connection using SSL.
 
         public static string Server { get; set; }
+
+        // Server Release Build: 7777
+        // Server Debug Build: 7778
         public static int Port { get { return 7777; } }
 
         /// <summary>
