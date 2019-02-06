@@ -33,15 +33,17 @@ namespace appFBLA2019
 
             if (file != null) // if the user actually picked an image
             {
-                // just used the StyleId property to store the file path as a string However Im not sure I need
-                Image currentImage = ((Image)((StackLayout)((Button)sender).Parent).Children[6]);
+                ImageButton currentImage;
 
-                currentImage.StyleId = file.Path;
+                currentImage = ((ImageButton)((StackLayout)((View)sender).Parent).Children[6]);
+ 
+
                 currentImage.Source = file.Path;
 
                 // Enables the image
                 currentImage.IsEnabled = true;
-                ((Button)sender).IsVisible = false;
+                if (sender is Button)
+                    ((Button)sender).IsVisible = false;
             }
 
         }
@@ -54,6 +56,8 @@ namespace appFBLA2019
         private void ButtonAddQuestion_Clicked(object sender, EventArgs e)
         {
             this.AddNewQuestion();
+            // Scroll to bottom
+            this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
         }
 
         /// <summary>
@@ -67,7 +71,6 @@ namespace appFBLA2019
             if (answer == true)
             {
                 //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
-
                 Frame frame = ((Frame)((StackLayout)((ImageButton)sender).Parent).Parent);
                 //Animate A deletion
                 await frame.TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
@@ -76,7 +79,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Creates the Level
+        /// Saves the user created level
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -95,30 +98,35 @@ namespace appFBLA2019
                 // Later, need to impliment username to pass through
                 DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), "testAuthor");
 
-                //Delete everything in it right now
-                DBHandler.Database.DeleteQuestions(DBHandler.Database.GetQuestions().ToArray());
+                // clear the database to prevent duplication This needs to be fixed, this is not the way to do it
+                //DBHandler.Database.DeleteQuestions(DBHandler.Database.GetQuestions().ToArray());
 
-                List<Question> questionsToAdd = new List<Question>();  // A list of questions to add to the database
+
+
+                List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
+                List<Question> previousQuestions = DBHandler.Database.GetQuestions(); // A list of questions already in the database
+
                 // Loops through each question frame on the screen 
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
-                    // A list of all the children of the current frame
+                    // A list of all the children of the current frame  
                     IList<View> children = ((StackLayout)frame.Content).Children;
-                    
+
                     Question addThis;
 
                     //The answers to the question
-                    string[] answers = {((Entry)children[2]).Text, //Correct
-                                ((Entry)children[3]).Text, // Incorect
-                                ((Entry)children[4]).Text, // Incorect
-                                ((Entry)children[5]).Text}; // Incorect
+                    string[] answers = {((Entry)children[2]).Text, //Correct answer
+                                ((Entry)children[3]).Text, // Incorect answer
+                                ((Entry)children[4]).Text, // Incorect answer
+                                ((Entry)children[5]).Text}; // Incorect answer
 
-                    if (((Image)children[6]).IsEnabled) // if needs image
+                    if (((ImageButton)children[6]).IsEnabled) // if needs image
                     {
                         addThis = new Question(
-                                ((Entry)children[1]).Text, // The 
-                                children[6].StyleId, // adds image using The image path in StyleId
+                                ((Entry)children[1]).Text, // The Question
+                                ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
                                 answers);
+                        addThis.NeedsPicture = true;
                     }
                     else // if not needs picture
                     {
@@ -127,14 +135,69 @@ namespace appFBLA2019
                                 answers);
                     }
 
-                        questionsToAdd.Add(addThis);
+                    NewQuestions.Add(addThis);
                 }
-                
-                // Adds the list of questions to the database
-                DBHandler.Database.AddQuestions(questionsToAdd);
+
+                // Add if it doesn't already exist,
+                // delete if it doesn't exist anymore, 
+                // update the ones that need to be updated, 
+                // and do nothing to the others
+
+                // It exists/changed if the DBId exists in both old and new list
+                //     - contents are the same: Exists and same
+                //     - contents changed: changed
+                // It's new if DBId isn't present in new list
+                // It's deleted if DBId exists in old questions and not new questions
+
+                if (previousQuestions.Count() == 0) // if the user created this for the first time
+                    DBHandler.Database.AddQuestions(NewQuestions);
+                else
+                {
+                    for (int i = 0; i <= previousQuestions.Count(); i++)
+                    {
+                        bool DBIdSame = false;
+                        // test each old question with each new question
+                        foreach (Question newQuestion in NewQuestions)
+                        {
+                            if (newQuestion.DBId == "")
+                            {
+                                // this is a new question. add it then remove it from the list     
+                                // AddQuestions should be able to take params of questions 
+                                // because It doesn't I have to do this less effective method
+                                DBHandler.Database.AddQuestions(new List<Question> { newQuestion });
+                                NewQuestions.Remove(newQuestion);
+                            }
+                            if (previousQuestions[i] == newQuestion)
+                            {
+                                DBIdSame = true;
+                                NewQuestions.Remove(newQuestion);
+                                // contents are the same, so don't delete or change
+                            }
+                            else if (previousQuestions[i].DBId == newQuestion.DBId)
+                            {
+                                DBIdSame = true;
+                                // the same question, but changed, so update
+                                DBHandler.Database.realmDB.Write(() =>
+                                {
+                                    previousQuestions[i] = newQuestion;
+                                });
+                                NewQuestions.Remove(newQuestion);
+                            }
+                        }
+
+                        if (!DBIdSame) // if the question doesn't exist in the new list
+                        {
+                            // delete it from the database
+                            DBHandler.Database.DeleteQuestions(previousQuestions[i]);
+                        }
+
+                    }
+                }
+
+
 
                 // Returns user to front page of LevelEditor
-                this.Navigation.PushAsync(new LevelEditorPage());
+                this.Navigation.PopAsync(true);
             }
         }
 
@@ -143,18 +206,7 @@ namespace appFBLA2019
         /// </summary>
         private void AddNewQuestion()
         {
-            string[] noAnswers = new string[0];
-            AddNewQuestion(null, "", noAnswers);
-        }
-
-        /// <summary>
-        /// This AddNewQuestions is for if the question contains no image
-        /// </summary>
-        /// <param name="question">the Question to answer</param>
-        /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
-        public void AddNewQuestion(string question, params string[] answers)
-        {
-            AddNewQuestion(question, "", answers);
+            this.AddNewQuestion(null);
         }
 
         /// <summary>
@@ -163,14 +215,17 @@ namespace appFBLA2019
         /// <param name="question">the Question to answer</param>
         /// <param name="imagePath">the path for the image corrosponding to the question</param>
         /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
-        public void AddNewQuestion(string question, string imagePath, params string[] answers)
+        public void AddNewQuestion(Question question)
         {
             Frame frame = new Frame() // The frame that holds everything
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
-                CornerRadius = 10
+                CornerRadius = 10,
+                
             };
+            if (question != null)
+                frame.StyleId = question.DBId;
 
             StackLayout frameStack = new StackLayout //the stack that holds all the info in the frame
             {
@@ -196,7 +251,7 @@ namespace appFBLA2019
                 
             };
             if (question != null) 
-                Question.Text = question;
+                Question.Text = question.QuestionText;
             frameStack.Children.Add(Question);
 
             Entry AnswerCorrect = new Entry // The correct answer
@@ -204,56 +259,61 @@ namespace appFBLA2019
                 Placeholder = "Enter correct answer",
                 
             };
-            if (answers.Count() != 0)
-                AnswerCorrect.Text = answers[0];
+            if (question != null)
+                AnswerCorrect.Text = question.CorrectAnswer;
+
             frameStack.Children.Add(AnswerCorrect);
 
             Entry AnswerWrongOne = new Entry // A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            if (answers.Count() != 0)
-                AnswerWrongOne.Text = answers[1];
+            if (question != null)
+                AnswerWrongOne.Text = question.AnswerOne;
+
             frameStack.Children.Add(AnswerWrongOne);
 
             Entry AnswerWrongTwo = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            if (answers.Count() != 0)
-                AnswerWrongTwo.Text = answers[2];
+            if (question != null)
+                AnswerWrongTwo.Text = question.AnswerTwo;
             frameStack.Children.Add(AnswerWrongTwo);
 
             Entry AnswerWrongThree = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            if (answers.Count() != 0)
-                AnswerWrongThree.Text = answers[2];
+            if (question != null)
+                AnswerWrongThree.Text = question.AnswerThree;
             frameStack.Children.Add(AnswerWrongThree);
+
 
             Button AddImage = new Button(); // The add Image button
             {
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
                 AddImage.CornerRadius = 20;
-                AddImage.IsVisible = false;
+                AddImage.IsVisible = false;              
             }
 
             bool needsPicture = false;
-            if (imagePath != "")
-                needsPicture = true;
-            Image image = new Image // The image itself
+            if (question != null)
+                needsPicture = question.NeedsPicture;
+            ImageButton image = new ImageButton(); // The image itself
             {
-                IsEnabled = needsPicture,          
-            };
+                image.IsEnabled = needsPicture;
+                image.Clicked += new EventHandler(ButtonAddImage_Clicked);
+                image.BackgroundColor = Color.Transparent;
+            }
 
             frameStack.Children.Add(image);
             frameStack.Children.Add(AddImage);
             //Gets the image from the imagePath
             if (image.IsEnabled)
             {
-                image.Source = imagePath;
+                image.Source = question.ImagePath;
             }
             else // or adds the add image button
                 AddImage.IsVisible = true;

@@ -38,25 +38,14 @@ namespace appFBLA2019
             List<Question> test = DBHandler.Database.GetQuestions();
             foreach (Question question in DBHandler.Database.GetQuestions())
             {
-                string[] answers = new string[] {
-                           question.CorrectAnswer,
-                           question.AnswerOne,
-                           question.AnswerTwo,
-                           question.AnswerThree};
 
                 levelPage.SetLevelName((string)PickerLevelSelect.SelectedItem);
-
-                if (question.NeedsPicture) // Check if the question needs an image or not
-                {
-                    levelPage.AddNewQuestion(question.QuestionText, question.ImagePath, answers);
-                }
-                else
-                {
-                    levelPage.AddNewQuestion(question.QuestionText, answers);
-                }
+                levelPage.AddNewQuestion(question);
             }
             this.Navigation.PushAsync(levelPage);
         }
+        // Reset the picker value
+        picker.SelectedIndex = -1;
     }
 
     // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
@@ -69,7 +58,7 @@ namespace appFBLA2019
 
         // get a list of all databases the user has on the device
 
-
+        
         string[] subFolderNames = Directory.GetDirectories(App.Path);
         foreach (string levelName in subFolderNames)
         {
