@@ -20,7 +20,7 @@ namespace appFBLA2019
         public static SslStream ssl;            // Encrypts connection using SSL.
 
         public static string Server { get; set; }
-        public static int Port { get { return 7777; } }
+        public static int Port { get { return 7778; } }
 
         /// <summary>
         /// Send a request or data to the server.
@@ -30,8 +30,6 @@ namespace appFBLA2019
         /// <returns>If the data successfully sent or not</returns>
         public static bool SendData(ServerRequestTypes dataType, object data)
         {
-            // Lock to prevent thread collision between multiple threads
-            // (Possibly between CredentialManager and the user)
             if (SetupConnection())
             {
                 switch (dataType)

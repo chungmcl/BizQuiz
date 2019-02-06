@@ -12,20 +12,7 @@ namespace appFBLA2019
     {
         public static string Username
         {
-            get
-            {
-                return Username;
-            }
-            private set
-            {
-                if (Username == null)
-                    Username = "";
-
-                lock (Username)
-                {
-                    Username = value;
-                }
-            }
+            get; private set;
         }
 
         public static bool IsLoggedIn { get; private set; }
