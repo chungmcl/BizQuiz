@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ic_add_white_48dp.png" />
     <None Remove="Resources\ic_delete_black_48dp.png" />
+    <None Remove="Resources\ic_done_white_48dp.png" />
     <None Remove="Resources\testLevel`testAuthor\549fdcb6-a858-410b-9935-f29dfabe1748.jpg" />
     <None Remove="Resources\testLevel`testAuthor\794be95c-5c84-4d09-b492-faca9bc90b41.jpg" />
     <None Remove="Resources\testLevel`testAuthor\85b1a2ea-615b-4ca5-8f20-cd5759a71c14.jpg" />
@@ -22,7 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\ic_add_white_48dp.png" />
     <EmbeddedResource Include="Resources\ic_delete_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_done_white_48dp.png" />
   </ItemGroup>
 
   <ItemGroup>

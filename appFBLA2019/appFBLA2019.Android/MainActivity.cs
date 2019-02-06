@@ -53,19 +53,19 @@ namespace appFBLA2019.Droid
             BitmapFactory.Options bitopt = new BitmapFactory.Options();
             bitopt.InMutable = true;
             Bitmap resultBitmap = BitmapFactory.DecodeByteArray(image, 0, image.Length, bitopt);
-            int width = resultBitmap.Width;
-            int height = resultBitmap.Height;
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    int argb = resultBitmap.GetPixel(x, y);
-                    if (argb == Android.Graphics.Color.Transparent)
-                    {
-                        resultBitmap.SetPixel(x, y, Android.Graphics.Color.White);
-                    }
-                }
-            }
+            //int width = resultBitmap.Width;
+            //int height = resultBitmap.Height;
+            //for (int x = 0; x < width; x++)
+            //{
+            //    for (int y = 0; y < height; y++)
+            //    {
+            //        int argb = resultBitmap.GetPixel(x, y);
+            //        if (argb == Android.Graphics.Color.Transparent)
+            //        {
+            //            resultBitmap.SetPixel(x, y, Android.Graphics.Color.White);
+            //        }
+            //    }
+            //}
 
             MemoryStream outStream = new MemoryStream();
             resultBitmap.Compress(Bitmap.CompressFormat.Jpeg, 100, outStream);

@@ -95,13 +95,8 @@ namespace appFBLA2019
             }
             else
             {
-                // Later, need to impliment username to pass through
-                DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), "testAuthor");
-
-                // clear the database to prevent duplication This needs to be fixed, this is not the way to do it
-                //DBHandler.Database.DeleteQuestions(DBHandler.Database.GetQuestions().ToArray());
-
-
+                // Open Database or create it
+                DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), CredentialManager.Username);
 
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
                 List<Question> previousQuestions = DBHandler.Database.GetQuestions(); // A list of questions already in the database
@@ -149,13 +144,14 @@ namespace appFBLA2019
                 // It's new if DBId isn't present in new list
                 // It's deleted if DBId exists in old questions and not new questions
 
+                // Work in progress, algorithm might be off.
                 if (previousQuestions.Count() == 0) // if the user created this for the first time
                     DBHandler.Database.AddQuestions(NewQuestions);
                 else
                 {
-                    for (int i = 0; i <= previousQuestions.Count(); i++)
+                    for (int i = 0; i <= previousQuestions.Count() - 1; i++)
                     {
-                        bool DBIdSame = false;
+                        bool DBIdSame = true;
                         // test each old question with each new question
                         foreach (Question newQuestion in NewQuestions)
                         {
@@ -183,6 +179,8 @@ namespace appFBLA2019
                                 });
                                 NewQuestions.Remove(newQuestion);
                             }
+                            else
+                                DBIdSame = false;
                         }
 
                         if (!DBIdSame) // if the question doesn't exist in the new list
@@ -193,8 +191,6 @@ namespace appFBLA2019
 
                     }
                 }
-
-
 
                 // Returns user to front page of LevelEditor
                 this.Navigation.PopAsync(true);
