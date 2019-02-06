@@ -59,7 +59,12 @@ namespace appFBLA2019
                 {
                     byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
 
-                    if (!question.ImagePath.Contains(".jpg"))
+                    if (!question.ImagePath.Contains(".jpg") 
+                        || !question.ImagePath.Contains(".jpeg") 
+                        || !question.ImagePath.Contains(".jpe") 
+                        || !question.ImagePath.Contains(".jif")
+                        || !question.ImagePath.Contains(".jfif")
+                        || !question.ImagePath.Contains(".jfi"))
                     {
                         Stream imageStream = DependencyService.Get<IGetImage>().GetJPGStreamFromByteArray(imageByteArray);
                         MemoryStream imageMemoryStream = new MemoryStream();
