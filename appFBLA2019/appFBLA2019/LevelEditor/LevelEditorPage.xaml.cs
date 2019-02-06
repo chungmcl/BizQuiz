@@ -11,13 +11,14 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+
+    [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LevelEditorPage : ContentPage
 	{
 	    public LevelEditorPage ()
 	    {
 		    this.InitializeComponent ();
-            this.SetUp();
+            this.FindDatabase();
         }
 
         private void ButtonCreate_Clicked(object sender, EventArgs e)
@@ -58,23 +59,6 @@ namespace appFBLA2019
 
         // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
 
-        private void SetUp()
-        {
-            this.FindDatabase();
-
-            //Timer timer = new Timer(15000);
-            //timer.Elapsed += this.OnTimedEvent;
-            //timer.AutoReset = true;
-            //timer.Enabled = true;
-        }
-
-
-        private void OnTimedEvent(object sender, ElapsedEventArgs e)
-        {
-            this.FindDatabase();
-        }
-
-
 
         // Get the list of Quizes the user can edit
         public void FindDatabase()
@@ -100,5 +84,9 @@ namespace appFBLA2019
             this.PickerLevelSelect.ItemsSource = databaseList;
         }
 
+        private void PickerLevelSelect_Focused(object sender, FocusEventArgs e)
+        {
+            this.FindDatabase();
+        }
     }
 }

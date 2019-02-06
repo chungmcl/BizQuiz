@@ -25,10 +25,5 @@ namespace appFBLA2019
 #endif
             this.BarTextColor = Color.White;            
         }
-
-        public void RefreshDatabase()
-        {
-            this.EditPage.FindDatabase();
-        }
     }
 }

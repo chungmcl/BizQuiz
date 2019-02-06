@@ -15,7 +15,7 @@
                     x:Name="PickerLevelSelect" 
                     WidthRequest="40"
                     SelectedIndexChanged="OnPickerSelectedIndexChanged"
-                    />
+                    Focused="PickerLevelSelect_Focused"/>
             <Label  Text="OR" 
                     Margin="50"
                     VerticalOptions="Center"

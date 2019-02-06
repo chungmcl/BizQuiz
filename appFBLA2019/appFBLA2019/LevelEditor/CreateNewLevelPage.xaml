@@ -9,20 +9,23 @@
     </ContentPage.ToolbarItems>
     
     <ContentPage.Content>
-        <StackLayout BackgroundColor="White">
-            <Label Text="Create Your Own Quiz"
-                        VerticalOptions="Start"
-                        HorizontalOptions="Start"
-                        FontAttributes="bold"
-                        FontSize="40"/>
-            <Entry x:Name="EntryLevelName"  Placeholder="Level Name"/>
-            <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand" x:Name ="ScrollViewQuestions">
-                <StackLayout x:Name="stkMain">
-                    <StackLayout x:Name="StackLayoutQuestionStack" Padding="10" />
-                    <!--Things added in code-->
-                </StackLayout>
-            </ScrollView>
-            <Button x:Name="ButtonAddQuestion" Image="ic_add_white_48dp" HorizontalOptions="End" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" HeightRequest="50" WidthRequest="50" CornerRadius="25" BackgroundColor="#AE213A" Margin="20"/>
-        </StackLayout>
+        <AbsoluteLayout>
+            <StackLayout BackgroundColor="White" AbsoluteLayout.LayoutBounds="0, 0, 1.0, 1.0" AbsoluteLayout.LayoutFlags="All">
+                <Label Text="Create Your Own Quiz"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Start"
+                            FontAttributes="bold"
+                            FontSize="40"/>
+                <Entry x:Name="EntryLevelName"  Placeholder="Level Name"/>
+                <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand" x:Name ="ScrollViewQuestions">
+                    <StackLayout x:Name="stkMain">
+                        <StackLayout x:Name="StackLayoutQuestionStack" Padding="10" />
+                        <!--Things added in code-->
+                    </StackLayout>
+                </ScrollView>
+            </StackLayout>
+            <Button AbsoluteLayout.LayoutBounds="1, 1, .8, .9" AbsoluteLayout.LayoutFlags="All"
+                x:Name="ButtonAddQuestion" FontSize="Large" TextColor="White" Text="+" HorizontalOptions="End" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" HeightRequest="50" WidthRequest="50" CornerRadius="25" BackgroundColor="#AE213A" Margin="20"/>
+        </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>
