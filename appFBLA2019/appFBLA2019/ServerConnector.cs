@@ -30,8 +30,6 @@ namespace appFBLA2019
         /// <returns>If the data successfully sent or not</returns>
         public static bool SendData(ServerRequestTypes dataType, object data)
         {
-            // Lock to prevent thread collision between multiple threads
-            // (Possibly between CredentialManager and the user)
             if (SetupConnection())
             {
                 switch (dataType)
