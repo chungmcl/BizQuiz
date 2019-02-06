@@ -30,6 +30,7 @@ namespace appFBLA2019
         public async static Task<OperationReturnMessage> CheckLoginStatus()
         {
             string username = await SecureStorage.GetAsync("username");
+            Username = username;
             string password = await SecureStorage.GetAsync("password");
 
             if (CrossConnectivity.Current.IsConnected)
