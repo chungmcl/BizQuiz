@@ -16,8 +16,8 @@
                         FontAttributes="bold"
                         FontSize="40"/>
             <Entry x:Name="EntryLevelName"  Placeholder="Level Name"/>
-            <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand">
-                <StackLayout>
+            <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand" x:Name ="ScrollViewQuestions">
+                <StackLayout x:Name="stkMain">
                     <StackLayout x:Name="StackLayoutQuestionStack" Padding="10" />
                     <!--Things added in code-->
                 </StackLayout>
