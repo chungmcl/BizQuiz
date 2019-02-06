@@ -119,15 +119,5 @@ namespace appFBLA2019 {
                 return ((byte[])(obj));
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] testLevel {
-            get {
-                object obj = ResourceManager.GetObject("testLevel", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }
