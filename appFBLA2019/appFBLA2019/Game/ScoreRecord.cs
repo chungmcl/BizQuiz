@@ -7,8 +7,8 @@ namespace appFBLA2019
 {
     public class ScoreRecord : RealmObject, IComparable
     {
-        public string DateTime { get; set; }
-        public double Score { get; set; }
+        public IList<double> Scores { get; set; }
+        public string LevelName
 
         public ScoreRecord(double score)
         {

@@ -99,6 +99,20 @@ namespace appFBLA2019
             });
         }
 
+        public void EditQuestion(Question oldQuestion, Question updatedQuestion)
+        {
+            DBHandler.Database.realmDB.Write(() =>
+            {
+                oldQuestion = updatedQuestion;
+            });
+
+            if (updatedQuestion.NeedsPicture)
+            {
+                byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
+                File.WriteAllBytes(dbFolderPath + "/" + oldQuestion.DBId + ".jpg", imageByteArray);
+            }
+        }
+
         public double GetAvgScore()
         {
             if (this.realmDB != null)
