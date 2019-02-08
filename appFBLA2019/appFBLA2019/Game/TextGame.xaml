@@ -9,7 +9,7 @@
             <ProgressBar x:Name="ProgressBar" Progress = "0" VerticalOptions="Start" HeightRequest="10" />
             <Label x:Name="LabelQuestion" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="bold" FontSize="40" />
             <Label x:Name="LabelFeedback" VerticalOptions="FillAndExpand" />
-            <Image x:Name="QuestionImage" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />
+            <Image x:Name="QuestionImage" VerticalOptions="Start" HorizontalOptions="FillAndExpand" />
             <Grid VerticalOptions="EndAndExpand" x:Name="ButtonGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />

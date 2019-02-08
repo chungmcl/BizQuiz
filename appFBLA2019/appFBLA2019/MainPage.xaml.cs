@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//BizQuiz App 2019
 
+using System;
+using System.Collections.Generic;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using System.IO;
+using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MainPage : Xamarin.Forms.TabbedPage
-	{
-		public MainPage ()
-		{
-			this.InitializeComponent ();
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class MainPage : Xamarin.Forms.TabbedPage
+    {
+        public MainPage()
+        {
+            this.InitializeComponent();
             // Default tabs on Android are on top - Set to bottom on Android (to serve as Navigation)
 #if __ANDROID__
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);

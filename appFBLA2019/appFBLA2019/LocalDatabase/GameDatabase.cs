@@ -10,8 +10,7 @@ using Xamarin.Forms;
 namespace appFBLA2019
 {
     /// <summary>
-    /// Object representing the database file selected through DBHandler. Contains methods to modify
-    /// the database file.
+    /// Object representing the database file selected through DBHandler. Contains methods to modify the database file.
     /// </summary>
     public class GameDatabase
     {
@@ -21,13 +20,13 @@ namespace appFBLA2019
             {
                 this.dbPath = dbFolderPath + $"/{levelTitle}{realmExtension}";
                 this.dbFolderPath = dbFolderPath;
-                RealmConfiguration rC = new RealmConfiguration(dbPath);
+                RealmConfiguration rC = new RealmConfiguration(this.dbPath);
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = $"/{levelTitle}{realmExtension}";
             }
             catch (Exception ex)
             {
-                ex.ToString();
+                string test = ex.Message.ToString();
             }
         }
 
@@ -38,38 +37,13 @@ namespace appFBLA2019
         {
             foreach (Question question in questions)
             {
-                string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
-                question.DBId = dbPrimaryKey;
-
-                if (question.NeedsPicture)
-                {
-                    byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
-
-                    if (!question.ImagePath.Contains(".jpg")
-                        || !question.ImagePath.Contains(".jpeg")
-                        || !question.ImagePath.Contains(".jpe")
-                        || !question.ImagePath.Contains(".jif")
-                        || !question.ImagePath.Contains(".jfif")
-                        || !question.ImagePath.Contains(".jfi"))
-                    {
-                        Stream imageStream = DependencyService.Get<IGetImage>().GetJPGStreamFromByteArray(imageByteArray);
-                        MemoryStream imageMemoryStream = new MemoryStream();
-
-                        imageStream.Position = 0;
-                        imageStream.CopyTo(imageMemoryStream);
-
-                        imageMemoryStream.Position = 0;
-                        imageByteArray = new byte[imageMemoryStream.Length];
-                        imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
-                    }
-                    File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
-                }
-
-                this.realmDB.Write(() =>
-                {
-                    this.realmDB.Add(question);
-                });
+                this.SaveQuestion(question);
             }
+        }
+
+        public void AddQuestions(Question question)
+        {
+            this.SaveQuestion(question);
         }
 
         public void AddScore(ScoreRecord score)
@@ -86,7 +60,7 @@ namespace appFBLA2019
             {
                 if (question.NeedsPicture)
                 {
-                    File.Delete(dbFolderPath + "/" + question.DBId + ".jpg");
+                    File.Delete(this.dbFolderPath + "/" + question.DBId + ".jpg");
                 }
 
                 this.realmDB.Write(() =>
@@ -96,9 +70,20 @@ namespace appFBLA2019
             }
         }
 
-        // To update an existing question in the database:
-        //
-        // DBHandler.Database.realmDB.Write(() => yourQuestion.Property = newValue );
+        public void EditQuestion(Question updatedQuestion)
+        {
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(updatedQuestion, update: true);
+            });
+
+            if (updatedQuestion.NeedsPicture)
+            {
+                byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
+                File.WriteAllBytes(this.dbFolderPath + "/" + updatedQuestion.DBId + ".jpg", imageByteArray);
+            }
+        }
+
         public double GetAvgScore()
         {
             if (this.realmDB != null)
@@ -133,14 +118,31 @@ namespace appFBLA2019
             {
                 if (questions[i].NeedsPicture)
                 {
-                    questions[i].ImagePath = dbFolderPath + "/" + questions[i].DBId + ".jpg";
+                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].DBId + ".jpg";
                 }
             }
             return questions;
         }
 
         private const string realmExtension = ".realm";
-        private string dbFolderPath;
-        private string dbPath;
+        private readonly string dbFolderPath;
+        private readonly string dbPath;
+
+        private void SaveQuestion(Question question)
+        {
+            string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
+            question.DBId = dbPrimaryKey;
+
+            if (question.NeedsPicture)
+            {
+                byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
+                File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+            }
+
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(question);
+            });
+        }
     }
 }

@@ -1,7 +1,8 @@
-﻿using System;
+﻿//BizQuiz App 2019
+
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace appFBLA2019
 {

@@ -1,24 +1,43 @@
-﻿using System;
+﻿//BizQuiz App 2019
 
+using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using System.Threading.Tasks;
 
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CreateAccountPage : ContentPage
     {
-        public delegate void AccountCreatedEventHandler(object source, AccountCreatedEventArgs eventArgs);
-        public event AccountCreatedEventHandler AccountCreated;
         public CreateAccountPage()
         {
-            InitializeComponent();
+            this.InitializeComponent();
+        }
+
+        public delegate void AccountCreatedEventHandler(object source, AccountCreatedEventArgs eventArgs);
+
+        public event AccountCreatedEventHandler AccountCreated;
+
+        public class AccountCreatedEventArgs : EventArgs
+        {
+            public bool EmailConfirmed { get; set; }
+            public string Username { get; set; }
+        }
+
+        protected void OnAccountCreated(bool emailConfirmed)
+        {
+            this.AccountCreated?.Invoke(this,
+                new AccountCreatedEventArgs
+                {
+                    EmailConfirmed = emailConfirmed,
+                    Username = this.EntryUsername.Text.Trim()
+                });
         }
 
         private void ButtonCreateAccount_Clicked(object sender, EventArgs e)
         {
-            Task createAccount = Task.Run(() => CreateAccount(
+            Task createAccount = Task.Run(() => this.CreateAccount(
                 this.EntryUsername.Text.Trim(),
                 this.EntryPassword.Text.Trim(),
                 this.EntryEmail.Text.Trim()));
@@ -26,7 +45,7 @@ namespace appFBLA2019
 
         private async Task CreateAccount(string username, string password, string email)
         {
-            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.RegisterAccount, 
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.RegisterAccount,
                 $"{username}/{password}" +
                 $"/{email}/-"));
 
@@ -58,33 +77,16 @@ namespace appFBLA2019
             }
         }
 
-        private async void OnEmailConfirmed(object source, EventArgs eventArgs)
-        {
-            OnAccountCreated(true);
-            await this.Navigation.PopAsync();
-        }
-
         private async void OnConfirmLaterSelected(object source, EventArgs eventArgs)
         {
-            OnAccountCreated(false);
+            this.OnAccountCreated(false);
             await this.Navigation.PopAsync();
         }
 
-        protected void OnAccountCreated(bool emailConfirmed)
+        private async void OnEmailConfirmed(object source, EventArgs eventArgs)
         {
-            this.AccountCreated?.Invoke(this,
-                new AccountCreatedEventArgs
-                {
-                    EmailConfirmed = emailConfirmed,
-                    Username = this.EntryUsername.Text.Trim()
-                });
+            this.OnAccountCreated(true);
+            await this.Navigation.PopAsync();
         }
-
-        public class AccountCreatedEventArgs : EventArgs
-        {
-            public bool EmailConfirmed { get; set; }
-            public string Username { get; set; }
-        }
-
     }
 }

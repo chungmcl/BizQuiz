@@ -5,11 +5,11 @@
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
+                VerticalOptions="CenterAndExpand"
                 HorizontalOptions="CenterAndExpand" />
             <Button x:Name="ButtonAddQuestion"
                     Text="Add Question"
-                    Clicked="ButtonAddQuestion_Clicked"/>
+                    Clicked="ButtonAddQuestion_Clicked" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

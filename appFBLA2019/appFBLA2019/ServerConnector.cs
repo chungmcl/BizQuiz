@@ -1,33 +1,89 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net.Sockets;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
+﻿//BizQuiz App 2019
+
 using Plugin.Connectivity;
+using System;
+using System.Collections.Generic;
+using System.Net.Security;
+using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace appFBLA2019
 {
+    public enum OperationReturnMessage : byte
+    {
+        True,
+        False,
+        TrueConfirmEmail
+    }
+
+    public enum ServerRequestTypes : byte
+    {
+        // "Command" Requests
+        StringData,
+
+        AddJPEGImage,
+        AddRealmFile,
+        LoginAccount,
+        RegisterAccount,
+        DeleteAccount,
+        ConfirmEmail,
+        ChangeEmail,
+
+        // "Get" Requests
+        GetEmail,
+        GetJPEGImage,
+        GetRealmFile,
+
+        // Returns
+        SavedJPEGImage,
+        SavedRealmFile,
+        GotEmail,
+        True,
+        False,
+        TrueConfirmEmail
+    }
+
     public static class ServerConnector
     {
-        private const int maxFileSize = 2147483591; // Max byte size for arrays in C#, slightly under int.MaxValue - Can't process anything over this
-        private const int headerSize = 5;
-
-        public static TcpClient client;
-        public static NetworkStream netStream;  // Raw-data stream of connection.
-        public static SslStream ssl;            // Encrypts connection using SSL.
-
-        public static string Server { get; set; }
+        // Server Release Build: 7777 Server Debug Build: 7778
         public static int Port { get { return 7777; } }
 
+        public static string Server { get; set; }
+        public static TcpClient client;
+        public static NetworkStream netStream;
+
+        // Raw-data stream of connection.
+        public static SslStream ssl;
+
+        public static OperationReturnMessage ReceiveFromServerORM()
+        {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
+                return (OperationReturnMessage)(ReadByteArray(size)[0]);
+            }
+            else
+            {
+                return OperationReturnMessage.False;
+            }
+        }
+
+        public static string ReceiveFromServerStringData()
+        {
+            int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
+            string data = Encoding.Unicode.GetString(ReadByteArray(size));
+            data = data.Trim();
+            return data;
+        }
+
+        // Encrypts connection using SSL.
         /// <summary>
         /// Send a request or data to the server.
         /// </summary>
-        /// <param name="dataType">The type of request/data to be sent</param>
-        /// <param name="data">The data/string query to send</param>
-        /// <returns>If the data successfully sent or not</returns>
+        /// <param name="dataType"> The type of request/data to be sent </param>
+        /// <param name="data">     The data/string query to send </param>
+        /// <returns> If the data successfully sent or not </returns>
         public static bool SendData(ServerRequestTypes dataType, object data)
         {
             if (SetupConnection())
@@ -66,45 +122,21 @@ namespace appFBLA2019
             }
         }
 
-        private static void SendStringData(string data, ServerRequestTypes dataType)
+        public static bool ValidateCert(object sender, X509Certificate certificate,
+              X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            string dataAsString = data;
-            byte[] dataAsBytes = Encoding.Unicode.GetBytes(dataAsString);
-            byte[] headerData = GenerateHeaderData(dataType, (uint)dataAsBytes.Length);
-            byte[] toSend = new byte[headerData.Length + dataAsBytes.Length];
-            headerData.CopyTo(toSend, 0);
-            dataAsBytes.CopyTo(toSend, headerData.Length);
-            SendByteArray(toSend);
+            return true; // Allow untrusted certificates.
         }
 
-        public static string ReceiveFromServerStringData()
-        {
-            int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
-            string data = Encoding.Unicode.GetString(ReadByteArray(size));
-            data = data.Trim();
-            return data;
-        }
+        private const int headerSize = 5;
+        private const int maxFileSize = 2147483591;
 
-        public static OperationReturnMessage ReceiveFromServerORM()
+        // Max byte size for arrays in C#, slightly under int.MaxValue - Can't process anything over this
+        private static void CloseConn() // Close connection.
         {
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
-                return (OperationReturnMessage)(ReadByteArray(size)[0]);
-            }
-            else
-            {
-                return OperationReturnMessage.False;
-            }
-        }
-
-        private static void SendByteArray(byte[] data)
-        {
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                ssl.Write(data, 0, data.Length);
-                ssl.Flush();
-            }
+            ssl.Close();
+            netStream.Close();
+            client.Close();
         }
 
         private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
@@ -127,13 +159,15 @@ namespace appFBLA2019
                 int bytesRead = 0;
                 do
                 {
-
                     bytes = ssl.Read(buffer, 0, size - bytesRead);
                     bytesRead += bytes;
                     if (bytes > 0)
+                    {
                         for (int i = 0; i < bytes; i++)
+                        {
                             data.Add(buffer[i]);
-
+                        }
+                    }
                 } while (data.Count < size);
                 data.RemoveRange(size, data.Count - size);
                 return data.ToArray();
@@ -142,6 +176,26 @@ namespace appFBLA2019
             {
                 return null;
             }
+        }
+
+        private static void SendByteArray(byte[] data)
+        {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                ssl.Write(data, 0, data.Length);
+                ssl.Flush();
+            }
+        }
+
+        private static void SendStringData(string data, ServerRequestTypes dataType)
+        {
+            string dataAsString = data;
+            byte[] dataAsBytes = Encoding.Unicode.GetBytes(dataAsString);
+            byte[] headerData = GenerateHeaderData(dataType, (uint)dataAsBytes.Length);
+            byte[] toSend = new byte[headerData.Length + dataAsBytes.Length];
+            headerData.CopyTo(toSend, 0);
+            dataAsBytes.CopyTo(toSend, headerData.Length);
+            SendByteArray(toSend);
         }
 
         private static bool SetupConnection()
@@ -190,52 +244,5 @@ namespace appFBLA2019
                 return false;
             }
         }
-
-        private static void CloseConn() // Close connection.
-        {
-            ssl.Close();
-            netStream.Close();
-            client.Close();
-        }
-
-        public static bool ValidateCert(object sender, X509Certificate certificate,
-              X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {
-            return true; // Allow untrusted certificates.
-        }
-    }
-
-    public enum ServerRequestTypes : byte
-    {
-        // "Command" Requests
-        StringData,
-        AddJPEGImage,
-        AddRealmFile,
-        LoginAccount,
-        RegisterAccount,
-        DeleteAccount,
-        ConfirmEmail,
-        ChangeEmail,
-
-        // "Get" Requests
-        GetEmail,
-        GetJPEGImage,
-        GetRealmFile,
-
-        // Returns
-        SavedJPEGImage,
-        SavedRealmFile,
-        GotEmail,
-        True,
-        False,
-        TrueConfirmEmail
-    }
-
-    public enum OperationReturnMessage : byte
-    {
-        True,
-        False,
-        TrueConfirmEmail
     }
 }
-

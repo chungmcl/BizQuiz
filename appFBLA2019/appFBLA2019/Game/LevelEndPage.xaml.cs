@@ -15,8 +15,6 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LevelEndPage : ContentPage
     {
-        #region Public Constructors
-
         public LevelEndPage(ScoreRecord score, int totalQuestions)
         {
             this.InitializeComponent();
@@ -24,36 +22,16 @@ namespace appFBLA2019
             this.LabelScore.Text = $"{score.Score}/{totalQuestions * 2}";
         }
 
-        #endregion Public Constructors
-
-        #region Public Delegates
-
         public delegate void FinishedEventHandler(object source, EventArgs eventArgs);
 
-        #endregion Public Delegates
-
-        #region Public Events
-
         public event FinishedEventHandler Finished;
-
-        #endregion Public Events
-
-        #region Protected Methods
 
         protected virtual void OnFinished()
         {
             this.Finished?.Invoke(this, EventArgs.Empty);
         }
 
-        #endregion Protected Methods
-
-        #region Private Properties + Fields
-
         private ScoreRecord score;
-
-        #endregion Private Properties + Fields
-
-        #region Private Methods
 
         private async void ButtonDone_Clicked(object sender, EventArgs e)
         {
@@ -77,7 +55,5 @@ namespace appFBLA2019
                 Url = "https://github.com/chungmcl",
             });
         }
-
-        #endregion Private Methods
     }
 }

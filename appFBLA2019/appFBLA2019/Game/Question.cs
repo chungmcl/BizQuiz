@@ -3,13 +3,11 @@
 using Realms;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace appFBLA2019
 {
     /// <summary>
-    /// The question object holds both the question text and answers for a particular question to ask
-    /// the user.
+    /// The question object holds both the question text and answers for a particular question to ask the user.
     /// </summary>
     public class Question : RealmObject, IComparable
     {
@@ -17,10 +15,7 @@ namespace appFBLA2019
         /// Creates a question object given the question and answers
         /// </summary>
         /// <param name="question">  What to ask the user </param>
-        /// <param name="answersIn"> 
-        /// The potential answers to the question. The correct answer will be prefixed with "c/". The
-        /// rest will be prefixed with "x/".
-        /// </param>
+        /// <param name="answersIn"> The potential answers to the question. The correct answer will be prefixed with "c/". The rest will be prefixed with "x/". </param>
         public Question(string question, string imagePath, params string[] answers)
         {
             this.QuestionText = question;
@@ -88,8 +83,7 @@ namespace appFBLA2019
 
         public string QuestionText { get; set; }
 
-        // 0 = Multiple choice, 1 = Text answer w/o upper/lower case, 2 = Text answer with
-        // upper/lower case
+        // 0 = Multiple choice, 1 = Text answer w/o upper/lower case, 2 = Text answer with upper/lower case
         public int QuestionType { get; set; }
 
         //declare enum (to use this type other places, say Question.QuestionStatus)

@@ -5,7 +5,6 @@
              xmlns:local="clr-namespace:appFBLA2019">
     <ContentPage>
         <StackLayout>
-            
         </StackLayout>
     </ContentPage>
 </CarouselPage>

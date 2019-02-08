@@ -5850,16 +5850,16 @@ namespace appFBLA2019.Droid
 			public const int ic_audiotrack_light = 2130837626;
 			
 			// aapt resource value: 0x7f02007b
-			public const int ic_delete_black_48dp = 2130837627;
+			public const int ic_close_black_48dp = 2130837627;
 			
 			// aapt resource value: 0x7f02007c
-			public const int ic_dialog_close_dark = 2130837628;
+			public const int ic_delete_black_48dp = 2130837628;
 			
 			// aapt resource value: 0x7f02007d
-			public const int ic_dialog_close_light = 2130837629;
+			public const int ic_dialog_close_dark = 2130837629;
 			
 			// aapt resource value: 0x7f02007e
-			public const int ic_done_black_48dp = 2130837630;
+			public const int ic_dialog_close_light = 2130837630;
 			
 			// aapt resource value: 0x7f02007f
 			public const int ic_done_white_48dp = 2130837631;

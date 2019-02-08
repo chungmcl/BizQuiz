@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -15,10 +14,10 @@ namespace appFBLA2019
     {
         public TextGame(Level level)
         {
-            this.score = 0;
             this.InitializeComponent();
             this.level = level;
-            level.ResetLevel();
+            this.score = 0;
+            this.random = new Random();
 
             // Save as reference
             this.currentQuestion = level.GetQuestion();
@@ -41,19 +40,19 @@ namespace appFBLA2019
         private Random random;
         private int score;
 
-        private async Task CheckButtonAnswer(string answer)
+        private void CheckButtonAnswer(string answer)
         {
             if (answer == this.currentQuestion.CorrectAnswer)
             {
-                await this.CorrectAnswer(true);
+                this.CorrectAnswer(true);
             }
             else
             {
-                await this.IncorrectAnswer(true);
+                this.IncorrectAnswer(true);
             }
         }
 
-        private async Task CheckTextAnswer(string answer, bool checkCase)
+        private void CheckTextAnswer(string answer, bool checkCase)
         {
             answer = answer.Trim();
             string correctAnswer = this.currentQuestion.CorrectAnswer;
@@ -65,15 +64,15 @@ namespace appFBLA2019
 
             if (answer == correctAnswer)
             {
-                await this.CorrectAnswer(false);
+                this.CorrectAnswer(false);
             }
             else
             {
-                await this.IncorrectAnswer(false);
+                this.IncorrectAnswer(false);
             }
         }
 
-        private async Task CorrectAnswer(bool isMultipleChoice)
+        private void CorrectAnswer(bool isMultipleChoice)
         {
             this.LabelFeedback.Text = "Correct!";
             //add 2 points for getting it right first time, 1 point for getting it right a second time or later
@@ -91,7 +90,6 @@ namespace appFBLA2019
 
             if (isMultipleChoice)
             {
-                // Get the next question
                 this.ResetButtons();
             }
             else
@@ -99,12 +97,26 @@ namespace appFBLA2019
                 this.ResetTextEntry();
             }
 
-            // Save as reference
-            this.currentQuestion = this.level.GetQuestion();
-            this.SetUpNextQuestion(this.currentQuestion);
+            this.CycleQuestion();
         }
 
-        private async Task IncorrectAnswer(bool isMultipleChoice)
+        private void CycleQuestion()
+        {
+            if (this.level.QuestionsAvailable)
+            {
+                // Save as reference
+                this.currentQuestion = this.level.GetQuestion();
+                this.SetUpNextQuestion(this.currentQuestion);
+            }
+            else // Finished level
+            {
+                LevelEndPage levelEndPage = (new LevelEndPage(new ScoreRecord(this.score), this.level.Questions.Count));
+                levelEndPage.Finished += this.OnFinished;
+                this.Navigation.PushModalAsync(levelEndPage);
+            }
+        }
+
+        private void IncorrectAnswer(bool isMultipleChoice)
         {
             this.LabelFeedback.Text = "Incorrect!";
 
@@ -122,23 +134,16 @@ namespace appFBLA2019
                 this.ResetTextEntry();
             }
 
-            // Save as reference
-            this.currentQuestion = this.level.GetQuestion();
-            this.SetUpNextQuestion(this.level.GetQuestion());
+            this.CycleQuestion();
         }
 
         private void ResetButtons()
         {
             // Grab reference of object, then remove
-
-            List<Button> toRemove = new List<Button>();
-            foreach (Button button in this.ButtonGrid.Children.ToList())
+            foreach (Button button in this.ButtonGrid.Children.ToArray())
             {
+                //button.TranslateTo(button.X, 1000, 10000, Easing.CubicIn);
                 this.ButtonGrid.Children.Remove(button);
-            }
-            for (int i = 0; i < toRemove.Count; i++)
-            {
-                this.ButtonGrid.Children.Remove(toRemove[i]);
             }
         }
 
@@ -160,154 +165,142 @@ namespace appFBLA2019
 
         private void SetUpNextQuestion(Question question)
         {
-            if (this.level.QuestionsAvailable)
+            if (question.QuestionText == "" || question.CorrectAnswer == "")
             {
-                this.LabelQuestion.Text = question.QuestionText;
-                this.correct = question.CorrectAnswer;
-                List<string> answers = question.Answers;
+                question.Status = 3;
+                this.CycleQuestion();
+                return;
+            }
 
-                this.ButtonGrid.Children.Clear();
-                this.ButtonGrid.HeightRequest = 320;
-                this.ButtonGrid.RowDefinitions = new RowDefinitionCollection
+            this.LabelQuestion.Text = question.QuestionText;
+            this.correct = question.CorrectAnswer;
+            List<string> answers = question.Answers;
+
+            this.ButtonGrid.Children.Clear();
+            this.ButtonGrid.HeightRequest = 320;
+            this.ButtonGrid.RowDefinitions = new RowDefinitionCollection
                 {
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star },
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
                 };
-                StackLayoutMain.ForceLayout();
 
-                this.QuestionImage.IsEnabled = question.NeedsPicture;
-                // The image will ALWAYS be named after the DBId
-                this.QuestionImage.Source = question.DBId + ".jpg"; // Add cases for all JPG file extensions(for example, ".jpeg")
-                this.ProgressBar.ProgressTo(((double)this.level.Questions.Count() - (double)this.level.QuestionsRemaining) / (double)this.level.Questions.Count(), 500, Easing.SpringOut);
+            //this.QuestionImage.IsEnabled = question.NeedsPicture;
+            // The image will ALWAYS be named after the DBId
+            this.QuestionImage.Source = ImageSource.FromFile(question.DBId + ".jpg"); // Add cases for all JPG file extensions(for example, ".jpeg")
+            this.QuestionImage.Aspect = Aspect.AspectFit;
+            this.ProgressBar.ProgressTo(((double)this.level.Questions.Count() - (double)this.level.QuestionsRemaining) / (double)this.level.Questions.Count(), 500, Easing.SpringOut);
 
-                if (question.QuestionType == 0) // If multiple-choice button question
+            if (question.QuestionType == 0) // If multiple-choice button question
+            {
+                int currentRow = 0;
+                int currentColumn = 0;
+
+                //remove empty answers
+                answers.RemoveAll(x => x == "");
+
+                //if there are only 2 answers there are only two rows
+                if (answers.Count() < 3)
                 {
-                    int currentRow = 0;
-                    int currentColumn = 0;
-                    int span = 1;
-
-                    //remove empty answers
-                    answers.RemoveAll(x => x == "");
-
-                    //if there are only 2 answers there are only two rows
-                    if (answers.Count() < 3)
-                    {
-                        ButtonGrid.HeightRequest = 160;
-                        ButtonGrid.RowDefinitions =
-                            new RowDefinitionCollection
-                            {
+                    this.ButtonGrid.HeightRequest = 160;
+                    this.ButtonGrid.RowDefinitions =
+                        new RowDefinitionCollection
+                        {
                                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
-                            };
-                        StackLayoutMain.ForceLayout();
-                    }
-
-                    this.Shuffle(answers);
-
-                    for (int i = 0; i < answers.Count(); i++)
-                    {
-                        string answer = answers[i];
-                        Button button = new Button
-                        {
-                            Text = answer,
-                            CornerRadius = 25
                         };
-                        if (answer == "")
-                        { button.IsEnabled = false; break; }
-
-                        button.Clicked += async (object sender, EventArgs e) =>
-                        {
-                            await this.CheckButtonAnswer((sender as Button).Text);
-                        };
-
-                        //BROKEN
-                        ////2 is a magic number here for the number of columns
-                        //currentColumn = Math.Abs((i % 2) - 1);
-                        ////row is determined (basically) by being greater than 2
-                        //currentRow = Math.Max(Math.Sign(i - 2), 0);
-
-                        //this is gross and messy, need to find a better way to place buttons correctly with math and stuff
-                        switch (i)
-                        {
-                            case 0:
-                                currentColumn = 0;
-                                currentRow = 0;
-                                break;
-
-                            case 1:
-                                currentColumn = 1;
-                                currentRow = 0;
-                                break;
-
-                            case 2:
-                                currentColumn = 0;
-                                currentRow = 1;
-                                break;
-
-                            case 3:
-                                currentColumn = 1;
-                                currentRow = 1;
-                                break;
-                        }
-
-                        this.ButtonGrid.Children.Add(button, currentColumn, currentRow);
-                        Grid.SetColumnSpan(button, span);
-                        if (i == 2 && answers.Count() == 3)
-                        {
-                            Grid.SetRowSpan(button, 2);
-                        }
-                    }
                 }
-                else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
+
+                this.Shuffle(answers);
+
+                for (int i = 0; i < answers.Count(); i++)
                 {
-                    Entry entry = new Entry();
-                    Button buttonCheckAnswer = new Button
+                    string answer = answers[i];
+                    Button button = new Button
                     {
-                        Text = "Check Answer",
+                        Text = answer,
                         CornerRadius = 25
                     };
-                    buttonCheckAnswer.Clicked += async (object sender, EventArgs e) =>
-                    {
-                        // Can we do this with null-conditional operators?
-                        if (entry.Text == null)
-                        {
-                            await this.CheckTextAnswer("", (question.QuestionType == 2));
-                        }
-                        else
-                        {
-                            await this.CheckTextAnswer(entry.Text, (question.QuestionType == 2));
-                        }
-                    };
-                    this.ButtonGrid.Children.Add(entry, 0, 0);
-                    this.ButtonGrid.Children.Add(buttonCheckAnswer, 0, 1);
 
-                    Grid.SetColumnSpan(entry, 2);
-                    Grid.SetColumnSpan(buttonCheckAnswer, 2);
+                    button.Clicked += async (object sender, EventArgs e) =>
+                    {
+                        this.CheckButtonAnswer((sender as Button).Text);
+                    };
+
+                    //BROKEN
+                    ////2 is a magic number here for the number of columns
+                    //currentColumn = Math.Abs((i % 2) - 1);
+                    ////row is determined (basically) by being greater than 2
+                    //currentRow = Math.Max(Math.Sign(i - 2), 0);
+
+                    //this is gross and messy, need to find a better way to place buttons correctly with math and stuff
+                    switch (i)
+                    {
+                        case 0:
+                            currentColumn = 0;
+                            currentRow = 0;
+                            break;
+
+                        case 1:
+                            currentColumn = 1;
+                            currentRow = 0;
+                            break;
+
+                        case 2:
+                            currentColumn = 0;
+                            currentRow = 1;
+                            break;
+
+                        case 3:
+                            currentColumn = 1;
+                            currentRow = 1;
+                            break;
+                    }
+
+                    this.ButtonGrid.Children.Add(button, currentColumn, currentRow);
+                    if (i == 2 && answers.Count() == 3)
+                    {
+                        Grid.SetColumnSpan(button, 2);
+                    }
+                    this.StackLayoutMain.ForceLayout();
                 }
             }
-            else // Finished level
+            else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
             {
-                LevelEndPage levelEndPage = (new LevelEndPage(new ScoreRecord(this.score), this.level.Questions.Count));
-                levelEndPage.Finished += this.OnFinished;
-                this.Navigation.PushModalAsync(levelEndPage);
+                Entry entry = new Entry();
+                Button buttonCheckAnswer = new Button
+                {
+                    Text = "Check Answer",
+                    CornerRadius = 25
+                };
+                buttonCheckAnswer.Clicked += async (object sender, EventArgs e) =>
+                {
+                    // Can we do this with null-conditional operators?
+                    if (entry.Text == null)
+                    {
+                        this.CheckTextAnswer("", (question.QuestionType == 2));
+                    }
+                    else
+                    {
+                        this.CheckTextAnswer(entry.Text, (question.QuestionType == 2));
+                    }
+                };
+                this.ButtonGrid.Children.Add(entry, 0, 0);
+                this.ButtonGrid.Children.Add(buttonCheckAnswer, 0, 1);
+
+                Grid.SetColumnSpan(entry, 2);
+                Grid.SetColumnSpan(buttonCheckAnswer, 2);
             }
         }
 
         private void Shuffle(List<String> answers)
         {
             int n = answers.Count;
-            try
+            while (n > 1)
             {
-                while (n > 1)
-                {
-                    n--;
-                    int k = this.random.Next(n + 1);
-                    String value = answers[k];
-                    answers[k] = answers[n];
-                    answers[n] = value;
-                }
-            }
-            catch (Exception ex)
-            {
+                n--;
+                int k = this.random.Next(n + 1);
+                String value = answers[k];
+                answers[k] = answers[n];
+                answers[n] = value;
             }
         }
     }

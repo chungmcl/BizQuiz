@@ -1,7 +1,8 @@
-﻿using Plugin.Connectivity;
+﻿//BizQuiz App 2019
+
+using Plugin.Connectivity;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -21,13 +22,13 @@ namespace appFBLA2019
         {
             Username = username;
 
-            Task.Run(async() => await SecureStorage.SetAsync("username", username));
-            Task.Run(async() => await SecureStorage.SetAsync("password", password));
+            Task.Run(async () => await SecureStorage.SetAsync("username", username));
+            Task.Run(async () => await SecureStorage.SetAsync("password", password));
 
             IsLoggedIn = true;
         }
 
-        public async static Task<OperationReturnMessage> CheckLoginStatus()
+        public static async Task<OperationReturnMessage> CheckLoginStatus()
         {
             string username = await SecureStorage.GetAsync("username");
             Username = username;
@@ -41,7 +42,9 @@ namespace appFBLA2019
                     {
                         OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
                         if (message == OperationReturnMessage.True || message == OperationReturnMessage.TrueConfirmEmail)
+                        {
                             IsLoggedIn = true;
+                        }
                         else
                         {
                             IsLoggedIn = false;
@@ -74,21 +77,21 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Check if the current saved login credentials match with the server - Is the user logged in?
-        /// Checks every two minutes.
-        /// Sets the IsLoggedIn property of CredentialManager.
+        /// Check if the current saved login credentials match with the server - Is the user logged in? Checks every two minutes. Sets the IsLoggedIn property of CredentialManager.
         /// </summary>
         public static void StartTimedCheckLoginStatus()
         {
             var minutes = TimeSpan.FromMinutes(2.0);
             Device.StartTimer(minutes, () =>
             {
-                Task.Run(async() =>
+                Task.Run(async () =>
                 {
                     if (IsLoggedIn)
+                    {
                         await CheckLoginStatus();
+                    }
                 });
-                
+
                 // Return true to continue the timer
                 return true;
             });

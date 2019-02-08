@@ -8,43 +8,41 @@
             Spacing="20"
             Padding="20">
 
-            <Label x:Name="Title" Text="FBLA Mobile App Dev" Font="Bold"
-                   HorizontalOptions="Center"/>
+            <Label x:Name="Header" Text="FBLA Mobile App Dev" Font="Bold"
+                   HorizontalOptions="Center" />
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="3*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Label Text="Username" Grid.Column="0" Grid.Row="0"/>
-                <Label Text="Password" Grid.Column="0" Grid.Row="1"/>
+                <Label Text="Username" Grid.Column="0" Grid.Row="0" />
+                <Label Text="Password" Grid.Column="0" Grid.Row="1" />
 
                 <Entry x:Name="EntryUsername" Grid.Column="1" Grid.Row="0"
-                       HorizontalOptions="FillAndExpand"/>
+                       HorizontalOptions="FillAndExpand" />
                 <Entry x:Name="EntryPassword" Grid.Column="1" Grid.Row="1"
                        IsPassword="True"
-                       HorizontalOptions="FillAndExpand"/>
+                       HorizontalOptions="FillAndExpand" />
             </Grid>
 
             <StackLayout
                 Spacing="5">
                 <Button x:Name="ButtonLogin"
                     Text="Login"
-                    Clicked="ButtonLogin_Clicked"/>
+                    Clicked="ButtonLogin_Clicked" />
 
                 <Button x:Name="ButtonToCreateAccountPage"
                     Text="Create New Account"
-                    Clicked="ButtonToCreateAccountPage_Clicked"
-                    />
+                    Clicked="ButtonToCreateAccountPage_Clicked" />
 
                 <Label x:Name="LabelMessage" Text="" Font="Bold"
-                       HorizontalOptions="Center"/>
+                       HorizontalOptions="Center" />
             </StackLayout>
-
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -1,7 +1,5 @@
 ﻿//BizQuiz App 2019
 
-
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,25 +11,16 @@ namespace appFBLA2019
 {
     public class Level
     {
-        #region Public Constructors
-
         //this one will be used in the app for database stuff
         /// <summary>
         /// Select/create database file for the current game/topic, Load the questions from file
         /// </summary>
-        /// <param name="levelTitle"> 
-        /// The name of the database file - if one does not yet exist, it will create one based on
-        /// the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME.
-        /// </param>
+        /// <param name="levelTitle"> The name of the database file - if one does not yet exist, it will create one based on the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME. </param>
         /// <param name="author">     The username of the author of the level </param>
         public Level(string levelTitle, string author)
         {
             DBHandler.SelectDatabase(levelTitle, author);
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties + Fields
 
         public List<Question> Questions { get; set; }
 
@@ -40,6 +29,7 @@ namespace appFBLA2019
         {
             get
             {
+                this.Questions.Sort();
                 if (this.Questions != null)
                 {
                     return this.Questions[0].Status != 2;
@@ -52,6 +42,7 @@ namespace appFBLA2019
         {
             get
             {
+                this.Questions.Sort();
                 if (this.Questions != null)
                 {
                     //uses a predicate to find the # of questions with a status lower than 2 (failed or unattempted)
@@ -60,10 +51,6 @@ namespace appFBLA2019
                 return 0;
             }
         }
-
-        #endregion Public Properties + Fields
-
-        #region Public Methods
 
         //returns the avg score that the player gets on this level
         public static double GetLevelAvgScore(string level, string author)
@@ -102,6 +89,7 @@ namespace appFBLA2019
         public void LoadQuestions()
         {
             this.Questions = DBHandler.Database.GetQuestions();
+            this.ResetLevel();
         }
 
         public void ResetLevel()
@@ -116,13 +104,7 @@ namespace appFBLA2019
                );
         }
 
-        #endregion Public Methods
-
-        #region Internal Properties + Fields
-
         internal string Title { get; private set; }
-
-        #endregion Internal Properties + Fields
 
         //leave this here, it can be the filebased constructor
 
@@ -185,12 +167,9 @@ namespace appFBLA2019
         //    this.questions.Sort();
         //}
 
-        #region Private Methods
-
         private void GetImageNames()
         {
-            // Replace "DependencyService... .GetStorage()" with the location where the databases are
-            // being stored when the app is is released (See DBHandler)
+            // Replace "DependencyService... .GetStorage()" with the location where the databases are being stored when the app is is released (See DBHandler)
             DirectoryInfo dInfo = new DirectoryInfo(App.Path);
 
             List<FileInfo> files = dInfo.GetFiles("*.jpg").ToList();
@@ -203,7 +182,5 @@ namespace appFBLA2019
 
             // TO DO: Generate list of file locations and store as property so TextGame can access
         }
-
-        #endregion Private Methods
     }
 }
