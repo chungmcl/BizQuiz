@@ -15,9 +15,27 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class CreateNewLevelPage : ContentPage
 	{
-		public CreateNewLevelPage()
+        private string originalAuthor;
+        private string originalName;
+
+        /// <summary>
+        /// Constructing from an already existing level
+        /// </summary>
+        /// <param name="originalName"></param>
+        /// <param name="originalAuthor"></param>
+		public CreateNewLevelPage(string originalName, string originalAuthor)
 		{           
 			this.InitializeComponent();
+            this.originalAuthor = originalAuthor;
+            this.originalName = originalName;
+        }
+        
+        /// <summary>
+        /// Constructing a brand new level
+        /// </summary>
+        public CreateNewLevelPage()
+        {
+            this.InitializeComponent();
         }
 
         /// <summary>
@@ -95,11 +113,23 @@ namespace appFBLA2019
             }
             else
             {
-                // Open Database or create it
+                // Set previousQuestions to the correct previous questions
+                List<Question> previousQuestions = new List<Question>(); ; // A list of questions already in the database
+                if (this.originalAuthor != CredentialManager.Username)
+                {
+                    DBHandler.SelectDatabase(this.originalName, this.originalAuthor);                 
+                }                   
+                else
+                {
+                    DBHandler.SelectDatabase(this.originalName, CredentialManager.Username);                   
+                }
+                previousQuestions = DBHandler.Database.GetQuestions();
+                
+                // Now open the database the user just made, might be the same as the one already open
                 DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), CredentialManager.Username);
 
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
-                List<Question> previousQuestions = DBHandler.Database.GetQuestions(); // A list of questions already in the database
+                
 
                 // Loops through each question frame on the screen 
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
@@ -165,20 +195,18 @@ namespace appFBLA2019
 
                     }
 
-                    foreach (Question newQuestion in NewQuestions)
-                    {
-                        if (newQuestion.DBId == null)
-                        {
-                            // this is a new question. add it
-                            DBHandler.Database.AddQuestions(newQuestion);
-                        }
-                        else
-                            this.DisplayAlert("Uh Oh", "How the heck did this happen", "OK");
-                    }
+                    // Add all the questions that aren't eddited
+                    DBHandler.Database.AddQuestions(NewQuestions);
 
 
                 }
 
+                // If they renamed the level, delete the old one
+                if (this.originalName != this.EntryLevelName.Text.Trim())
+                {
+                    Directory.Delete(App.Path + "/" + this.originalName + "`" + this.originalAuthor, true);
+                }
+                    
                 // Returns user to front page of LevelEditor and refreshed database
                 this.Navigation.PopAsync(true);
             }
