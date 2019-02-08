@@ -152,14 +152,8 @@ namespace appFBLA2019
                             {
                                 DBIdSame = true;
                                 // the same question, but changed, so update
- 
-
-                                DBHandler.Database.realmDB.Write(() =>
-                                {
-                                    previousQuestions[i] = newQuestion;
-                                });
+                                DBHandler.Database.EditQuestion(newQuestion);
                                 NewQuestions.Remove(newQuestion);
-
                                 break;
                             }
                             else

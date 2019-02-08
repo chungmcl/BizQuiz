@@ -99,17 +99,19 @@ namespace appFBLA2019
             });
         }
 
-        public void EditQuestion(Question oldQuestion, Question updatedQuestion)
+        public void EditQuestion(Question updatedQuestion)
         {
+
             this.realmDB.Write(() =>
             {
-                oldQuestion = updatedQuestion;
+                this.realmDB.Add(updatedQuestion, update: true);
             });
+
 
             if (updatedQuestion.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
-                File.WriteAllBytes(dbFolderPath + "/" + oldQuestion.DBId + ".jpg", imageByteArray);
+                File.WriteAllBytes(dbFolderPath + "/" + updatedQuestion.DBId + ".jpg", imageByteArray);
             }
         }
 
