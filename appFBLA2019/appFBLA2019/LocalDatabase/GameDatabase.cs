@@ -101,7 +101,7 @@ namespace appFBLA2019
 
         public void EditQuestion(Question oldQuestion, Question updatedQuestion)
         {
-            DBHandler.Database.realmDB.Write(() =>
+            this.realmDB.Write(() =>
             {
                 oldQuestion = updatedQuestion;
             });
