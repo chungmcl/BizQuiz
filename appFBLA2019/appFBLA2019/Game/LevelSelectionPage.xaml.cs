@@ -62,9 +62,6 @@ namespace appFBLA2019
                 });
 
                 DBHandler.SelectDatabase(level[0], level[1]);
-                double avgScore = Level.GetLevelAvgScore(level[0], level[1]);
-
-                (frameStack.Children[1] as Label).Text = avgScore.ToString("00.0") ?? "0%";
 
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>

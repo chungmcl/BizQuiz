@@ -119,7 +119,6 @@ namespace appFBLA2019
             }
             else // Finished level
             {
-                DBHandler.Database.AddScore(new ScoreRecord(this.score));
                 LevelEndPage levelEndPage = (new LevelEndPage(this.score, this.level.Questions.Count));
                 levelEndPage.Finished += this.OnFinished;
                 await this.Navigation.PushModalAsync(levelEndPage);
