@@ -26,7 +26,7 @@ namespace appFBLA2019
             {
                 this.dbPath = dbFolderPath + $"/{levelTitle}{realmExtension}";
                 this.dbFolderPath = dbFolderPath;
-                RealmConfiguration rC = new RealmConfiguration(dbPath);
+                RealmConfiguration rC = new RealmConfiguration(this.dbPath);
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = $"/{levelTitle}{realmExtension}";
             }
@@ -43,7 +43,7 @@ namespace appFBLA2019
             for (int i = 0; i < queryable.Count(); i++)
             {
                 if (questions[i].NeedsPicture)
-                    questions[i].ImagePath = dbFolderPath + "/" + questions[i].DBId + ".jpg";
+                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].DBId + ".jpg";
             }
             return questions;
         }
@@ -76,7 +76,7 @@ namespace appFBLA2019
                         imageByteArray = new byte[imageMemoryStream.Length];
                         imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
                     }
-                    File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+                    File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
                 }
 
                 this.realmDB.Write(() =>
@@ -98,7 +98,7 @@ namespace appFBLA2019
             foreach (Question question in questions)
             {
                 if (question.NeedsPicture)
-                    File.Delete(dbFolderPath + "/" + question.DBId + ".jpg");
+                    File.Delete(this.dbFolderPath + "/" + question.DBId + ".jpg");
                 this.realmDB.Write(() =>
                 {
                     this.realmDB.Remove(question);

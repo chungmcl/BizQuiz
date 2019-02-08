@@ -38,7 +38,7 @@ namespace appFBLA2019
             {
                 if (selectedIndex != -1) // If the user has selected something then open the page
                 {
-                    DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, "testAuthor");
+                    DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, CredentialManager.Username);
                     CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
                                                                              // Add the questions from the database to the page to edit
                     List<Question> test = DBHandler.Database.GetQuestions();

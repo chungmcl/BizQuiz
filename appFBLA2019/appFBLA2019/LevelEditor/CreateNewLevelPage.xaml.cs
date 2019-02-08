@@ -67,7 +67,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         async private void ButtonRemove_Clicked(object sender, EventArgs e)
         {
-            bool answer = await DisplayAlert("Warning", "Are you sure you would like to delete this question?", "Yes", "No");
+            bool answer = await this.DisplayAlert("Warning", "Are you sure you would like to delete this question?", "Yes", "No");
             if (answer == true)
             {
                 //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
@@ -87,11 +87,11 @@ namespace appFBLA2019
         {
             if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
             {
-                DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
+                this.DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
             }
             else if (this.StackLayoutQuestionStack.Children.Count < 2)
             {
-                DisplayAlert("Couldn't Create Level", "Please create at least two questions", "OK");
+                this.DisplayAlert("Couldn't Create Level", "Please create at least two questions", "OK");
             }
             else
             {
@@ -107,8 +107,7 @@ namespace appFBLA2019
                     // A list of all the children of the current frame  
                     IList<View> children = ((StackLayout)frame.Content).Children;
 
-                    Question addThis;
-
+                    Question addThis;        
                     //The answers to the question
                     string[] answers = {((Entry)children[2]).Text, //Correct answer
                                 ((Entry)children[3]).Text, // Incorect answer
@@ -120,8 +119,7 @@ namespace appFBLA2019
                         addThis = new Question(
                                 ((Entry)children[1]).Text, // The Question
                                 ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
-                                answers);
-                        addThis.NeedsPicture = true;
+                                answers) { NeedsPicture = true } ;
                     }
                     else // if not needs picture
                     {
@@ -129,7 +127,7 @@ namespace appFBLA2019
                                 ((Entry)children[1]).Text,
                                 answers);
                     }
-
+                    addThis.DBId = frame.StyleId; // Set the dbid
                     NewQuestions.Add(addThis);
                 }
 
@@ -155,21 +153,8 @@ namespace appFBLA2019
                         // test each old question with each new question
                         foreach (Question newQuestion in NewQuestions)
                         {
-                            if (newQuestion.DBId == "")
-                            {
-                                // this is a new question. add it then remove it from the list     
-                                // AddQuestions should be able to take params of questions 
-                                // because It doesn't I have to do this less effective method
-                                DBHandler.Database.AddQuestions(new List<Question> { newQuestion });
-                                NewQuestions.Remove(newQuestion);
-                            }
-                            if (previousQuestions[i] == newQuestion)
-                            {
-                                DBIdSame = true;
-                                NewQuestions.Remove(newQuestion);
-                                // contents are the same, so don't delete or change
-                            }
-                            else if (previousQuestions[i].DBId == newQuestion.DBId)
+                            
+                            if (previousQuestions[i].DBId == newQuestion.DBId)
                             {
                                 DBIdSame = true;
                                 // the same question, but changed, so update
@@ -178,18 +163,29 @@ namespace appFBLA2019
                                     previousQuestions[i] = newQuestion;
                                 });
                                 NewQuestions.Remove(newQuestion);
+                                break;
                             }
                             else
                                 DBIdSame = false;
                         }
 
-                        if (!DBIdSame) // if the question doesn't exist in the new list
-                        {
-                            // delete it from the database
+                        if (!DBIdSame) // if the question doesn't exist in the new list. delete it
                             DBHandler.Database.DeleteQuestions(previousQuestions[i]);
-                        }
 
                     }
+
+                    foreach (Question newQuestion in NewQuestions)
+                    {
+                        if (newQuestion.DBId == null)
+                        {
+                            // this is a new question. add it then remove it from the list     
+                            // AddQuestions should be able to take params of questions 
+                            // because It doesn't I have to do this less effective method
+                            DBHandler.Database.AddQuestions(new List<Question> { newQuestion });
+                        }
+                    }
+
+
                 }
 
                 // Returns user to front page of LevelEditor and refreshed database
@@ -232,7 +228,7 @@ namespace appFBLA2019
             ImageButton Remove = new ImageButton(); // the button to remove the question
             {
                 Remove.Source = "ic_close_black_48dp.png";
-                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
+                Remove.Clicked += new EventHandler(this.ButtonRemove_Clicked);
                 Remove.BackgroundColor = Color.Transparent;
                 Remove.HeightRequest = 40;
                 Remove.WidthRequest = 40;
@@ -274,7 +270,7 @@ namespace appFBLA2019
             {
                 Placeholder = "Enter a possible answer",
             };
-            AnswerWrongTwo.TranslationX += 20;
+            AnswerWrongTwo.TranslationX += 10;
             if (question != null)
                 AnswerWrongTwo.Text = question.AnswerTwo;
             frameStack.Children.Add(AnswerWrongTwo);
@@ -292,7 +288,7 @@ namespace appFBLA2019
             Button AddImage = new Button(); // The add Image button
             {
                 AddImage.Text = "Add Image";
-                AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
+                AddImage.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
                 AddImage.CornerRadius = 20;
                 AddImage.IsVisible = false;              
             }
@@ -303,7 +299,7 @@ namespace appFBLA2019
             ImageButton image = new ImageButton(); // The image itself
             {
                 image.IsEnabled = needsPicture;
-                image.Clicked += new EventHandler(ButtonAddImage_Clicked);
+                image.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
                 image.BackgroundColor = Color.Transparent;
             }
 
@@ -325,7 +321,7 @@ namespace appFBLA2019
 
         public void SetLevelName(string levelName)
         {
-            EntryLevelName.Text = levelName;
+            this.EntryLevelName.Text = levelName;
         }
     }
 }
