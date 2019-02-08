@@ -136,12 +136,6 @@ namespace appFBLA2019
                 // update the ones that need to be updated, 
                 // and do nothing to the others
 
-                // It exists/changed if the DBId exists in both old and new list
-                //     - contents are the same: Exists and same
-                //     - contents changed: changed
-                // It's new if DBId isn't present in new list
-                // It's deleted if DBId exists in old questions and not new questions
-
                 // Work in progress, algorithm might be off.
                 if (previousQuestions.Count() == 0) // if the user created this for the first time
                     DBHandler.Database.AddQuestions(NewQuestions);
@@ -158,11 +152,14 @@ namespace appFBLA2019
                             {
                                 DBIdSame = true;
                                 // the same question, but changed, so update
+ 
+
                                 DBHandler.Database.realmDB.Write(() =>
                                 {
                                     previousQuestions[i] = newQuestion;
                                 });
                                 NewQuestions.Remove(newQuestion);
+
                                 break;
                             }
                             else
@@ -178,11 +175,11 @@ namespace appFBLA2019
                     {
                         if (newQuestion.DBId == null)
                         {
-                            // this is a new question. add it then remove it from the list     
-                            // AddQuestions should be able to take params of questions 
-                            // because It doesn't I have to do this less effective method
-                            DBHandler.Database.AddQuestions(new List<Question> { newQuestion });
+                            // this is a new question. add it
+                            DBHandler.Database.AddQuestions(newQuestion);
                         }
+                        else
+                            this.DisplayAlert("Uh Oh", "How the heck did this happen", "OK");
                     }
 
 
