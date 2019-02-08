@@ -26,7 +26,7 @@ namespace appFBLA2019
             {
                 this.dbPath = dbFolderPath + $"/{levelTitle}{realmExtension}";
                 this.dbFolderPath = dbFolderPath;
-                RealmConfiguration rC = new RealmConfiguration(this.dbPath);
+                RealmConfiguration rC = new RealmConfiguration(dbPath);
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = $"/{levelTitle}{realmExtension}";
             }
@@ -43,7 +43,7 @@ namespace appFBLA2019
             for (int i = 0; i < queryable.Count(); i++)
             {
                 if (questions[i].NeedsPicture)
-                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].DBId + ".jpg";
+                    questions[i].ImagePath = dbFolderPath + "/" + questions[i].DBId + ".jpg";
             }
             return questions;
         }
@@ -52,53 +52,38 @@ namespace appFBLA2019
         {
             foreach (Question question in questions)
             {
-                string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
-                question.DBId = dbPrimaryKey;
-
-                if (question.NeedsPicture)
-                {
-                    byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
-
-                    if (!question.ImagePath.Contains(".jpg") 
-                        || !question.ImagePath.Contains(".jpeg") 
-                        || !question.ImagePath.Contains(".jpe") 
-                        || !question.ImagePath.Contains(".jif")
-                        || !question.ImagePath.Contains(".jfif")
-                        || !question.ImagePath.Contains(".jfi"))
-                    {
-                        Stream imageStream = DependencyService.Get<IGetImage>().GetJPGStreamFromByteArray(imageByteArray);
-                        MemoryStream imageMemoryStream = new MemoryStream();
-
-                        imageStream.Position = 0;
-                        imageStream.CopyTo(imageMemoryStream);
-
-                        imageMemoryStream.Position = 0;
-                        imageByteArray = new byte[imageMemoryStream.Length];
-                        imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
-                    }
-                    File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
-                }
-
-                this.realmDB.Write(() =>
-                {
-                    this.realmDB.Add(question);
-                });
+                SaveQuestion(question);
             }
         }
 
-        // To update an existing question in the database:
-        //
-        // DBHandler.Database.realmDB.Write(() =>
-        //         yourQuestion.Property = newValue
-        //     );
-        //
+        public void AddQuestions(Question question)
+        {
+            SaveQuestion(question);
+        }
+
+        private void SaveQuestion(Question question)
+        {
+            string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
+            question.DBId = dbPrimaryKey;
+
+            if (question.NeedsPicture)
+            {
+                byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
+                File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+            }
+
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(question);
+            });
+        }
 
         public void DeleteQuestions(params Question[] questions)
         {
             foreach (Question question in questions)
             {
                 if (question.NeedsPicture)
-                    File.Delete(this.dbFolderPath + "/" + question.DBId + ".jpg");
+                    File.Delete(dbFolderPath + "/" + question.DBId + ".jpg");
                 this.realmDB.Write(() =>
                 {
                     this.realmDB.Remove(question);
