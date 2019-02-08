@@ -5,24 +5,26 @@
              Title="BizQuiz">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Icon="ic_done_white_48dp.png"  Priority="0" Name="Done" Order="Primary"  Activated="ButtonCreateLevel_Clicked"/>
+        <ToolbarItem Icon="ic_done_white_48dp.png"  Priority="0" Name="Done" Order="Primary"  Activated="ButtonCreateLevel_Clicked" />
     </ContentPage.ToolbarItems>
-    
+
     <ContentPage.Content>
-        <StackLayout BackgroundColor="White">
-            <Label Text="Create Your Own Quiz"
+        <ScrollView>
+            <StackLayout BackgroundColor="White">
+                <Label Text="Create Your Own Quiz"
                         VerticalOptions="Start"
                         HorizontalOptions="Start"
                         FontAttributes="bold"
-                        FontSize="40"/>
-            <Entry x:Name="EntryLevelName"  Placeholder="Level Name"/>
-            <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand" x:Name ="ScrollViewQuestions">
-                <StackLayout x:Name="stkMain">
-                    <StackLayout x:Name="StackLayoutQuestionStack" Padding="10" />
-                    <!--Things added in code-->
-                </StackLayout>
-            </ScrollView>
-            <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" CornerRadius="20" Margin="20"/>
-        </StackLayout>
+                        FontSize="40" />
+                <Entry x:Name="EntryLevelName"  Placeholder="Level Name" />
+                <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand" x:Name ="ScrollViewQuestions">
+                    <StackLayout x:Name="stkMain">
+                        <StackLayout x:Name="StackLayoutQuestionStack" Padding="10" />
+                        <!--Things added in code-->
+                    </StackLayout>
+                </ScrollView>
+                <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" CornerRadius="20" Margin="20" />
+            </StackLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

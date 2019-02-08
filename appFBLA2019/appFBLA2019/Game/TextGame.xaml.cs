@@ -13,13 +13,12 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class TextGame : ContentPage
     {
-        #region Public Constructors
-
         public TextGame(Level level)
         {
             this.score = 0;
             this.InitializeComponent();
             this.level = level;
+            level.ResetLevel();
 
             // Save as reference
             this.currentQuestion = level.GetQuestion();
@@ -30,28 +29,17 @@ namespace appFBLA2019
             }
         }
 
-        #endregion Public Constructors
-
-        #region Public Methods
-
         public async void OnFinished(object source, EventArgs args)
         {
             this.level.ResetLevel();
             await this.Navigation.PopAsync();
         }
 
-        #endregion Public Methods
-
-        #region Private Properties + Fields
-
         private string correct;
         private Question currentQuestion;
         private Level level;
+        private Random random;
         private int score;
-
-        #endregion Private Properties + Fields
-
-        #region Private Methods
 
         private async Task CheckButtonAnswer(string answer)
         {
@@ -113,7 +101,7 @@ namespace appFBLA2019
 
             // Save as reference
             this.currentQuestion = this.level.GetQuestion();
-            await this.SetUpNextQuestion(this.currentQuestion);
+            this.SetUpNextQuestion(this.currentQuestion);
         }
 
         private async Task IncorrectAnswer(bool isMultipleChoice)
@@ -136,7 +124,7 @@ namespace appFBLA2019
 
             // Save as reference
             this.currentQuestion = this.level.GetQuestion();
-            await this.SetUpNextQuestion(this.level.GetQuestion());
+            this.SetUpNextQuestion(this.level.GetQuestion());
         }
 
         private void ResetButtons()
@@ -170,12 +158,14 @@ namespace appFBLA2019
             }
         }
 
-        private async Task SetUpNextQuestion(Question question)
+        private void SetUpNextQuestion(Question question)
         {
             if (this.level.QuestionsAvailable)
             {
                 this.LabelQuestion.Text = question.QuestionText;
                 this.correct = question.CorrectAnswer;
+                List<string> answers = question.Answers;
+
                 this.ButtonGrid.Children.Clear();
                 this.ButtonGrid.HeightRequest = 320;
                 this.ButtonGrid.RowDefinitions = new RowDefinitionCollection
@@ -183,11 +173,13 @@ namespace appFBLA2019
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star },
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
                 };
-                this.QuestionImage.IsEnabled = question.NeedsPicture;
+                StackLayoutMain.ForceLayout();
 
+                this.QuestionImage.IsEnabled = question.NeedsPicture;
                 // The image will ALWAYS be named after the DBId
                 this.QuestionImage.Source = question.DBId + ".jpg"; // Add cases for all JPG file extensions(for example, ".jpeg")
-                await this.ProgressBar.ProgressTo((this.level.Questions.Count() - this.level.QuestionsRemaining) / this.level.Questions.Count, 200, Easing.SpringOut);
+                this.ProgressBar.ProgressTo(((double)this.level.Questions.Count() - (double)this.level.QuestionsRemaining) / (double)this.level.Questions.Count(), 500, Easing.SpringOut);
+
                 if (question.QuestionType == 0) // If multiple-choice button question
                 {
                     int currentRow = 0;
@@ -195,10 +187,10 @@ namespace appFBLA2019
                     int span = 1;
 
                     //remove empty answers
-                    question.Answers.RemoveAll(x => x == "");
+                    answers.RemoveAll(x => x == "");
 
                     //if there are only 2 answers there are only two rows
-                    if (question.Answers.Count() < 3)
+                    if (answers.Count() < 3)
                     {
                         ButtonGrid.HeightRequest = 160;
                         ButtonGrid.RowDefinitions =
@@ -206,11 +198,14 @@ namespace appFBLA2019
                             {
                                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
                             };
+                        StackLayoutMain.ForceLayout();
                     }
 
-                    for (int i = 0; i < question.Answers.Count(); i++)
+                    this.Shuffle(answers);
+
+                    for (int i = 0; i < answers.Count(); i++)
                     {
-                        string answer = question.Answers[i];
+                        string answer = answers[i];
                         Button button = new Button
                         {
                             Text = answer,
@@ -256,7 +251,7 @@ namespace appFBLA2019
 
                         this.ButtonGrid.Children.Add(button, currentColumn, currentRow);
                         Grid.SetColumnSpan(button, span);
-                        if (i == 2 && question.Answers.Count() == 3)
+                        if (i == 2 && answers.Count() == 3)
                         {
                             Grid.SetRowSpan(button, 2);
                         }
@@ -293,10 +288,27 @@ namespace appFBLA2019
             {
                 LevelEndPage levelEndPage = (new LevelEndPage(new ScoreRecord(this.score), this.level.Questions.Count));
                 levelEndPage.Finished += this.OnFinished;
-                await this.Navigation.PushModalAsync(levelEndPage);
+                this.Navigation.PushModalAsync(levelEndPage);
             }
         }
 
-        #endregion Private Methods
+        private void Shuffle(List<String> answers)
+        {
+            int n = answers.Count;
+            try
+            {
+                while (n > 1)
+                {
+                    n--;
+                    int k = this.random.Next(n + 1);
+                    String value = answers[k];
+                    answers[k] = answers[n];
+                    answers[n] = value;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
     }
 }

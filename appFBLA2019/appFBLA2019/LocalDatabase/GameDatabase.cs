@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//BizQuiz App 2019
+
 using Realms;
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xamarin.Forms;
 
 namespace appFBLA2019
 {
     /// <summary>
-    /// Object representing the database file selected through DBHandler.
-    /// Contains methods to modify the database file.
+    /// Object representing the database file selected through DBHandler. Contains methods to modify
+    /// the database file.
     /// </summary>
     public class GameDatabase
     {
-        private const string realmExtension = ".realm";
-
-        public Realm realmDB;
-        public readonly string fileName;
-        private string dbPath;
-        private string dbFolderPath;
-        
         public GameDatabase(string dbFolderPath, string levelTitle)
         {
             try
@@ -36,17 +31,8 @@ namespace appFBLA2019
             }
         }
 
-        public List<Question> GetQuestions()
-        {
-            IQueryable<Question> queryable = this.realmDB.All<Question>();
-            List<Question> questions = new List<Question>(queryable);
-            for (int i = 0; i < queryable.Count(); i++)
-            {
-                if (questions[i].NeedsPicture)
-                    questions[i].ImagePath = dbFolderPath + "/" + questions[i].DBId + ".jpg";
-            }
-            return questions;
-        }
+        public readonly string fileName;
+        public Realm realmDB;
 
         public void AddQuestions(List<Question> questions)
         {
@@ -59,9 +45,9 @@ namespace appFBLA2019
                 {
                     byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
 
-                    if (!question.ImagePath.Contains(".jpg") 
-                        || !question.ImagePath.Contains(".jpeg") 
-                        || !question.ImagePath.Contains(".jpe") 
+                    if (!question.ImagePath.Contains(".jpg")
+                        || !question.ImagePath.Contains(".jpeg")
+                        || !question.ImagePath.Contains(".jpe")
                         || !question.ImagePath.Contains(".jif")
                         || !question.ImagePath.Contains(".jfif")
                         || !question.ImagePath.Contains(".jfi"))
@@ -86,26 +72,6 @@ namespace appFBLA2019
             }
         }
 
-        // To update an existing question in the database:
-        //
-        // DBHandler.Database.realmDB.Write(() =>
-        //         yourQuestion.Property = newValue
-        //     );
-        //
-
-        public void DeleteQuestions(params Question[] questions)
-        {
-            foreach (Question question in questions)
-            {
-                if (question.NeedsPicture)
-                    File.Delete(dbFolderPath + "/" + question.DBId + ".jpg");
-                this.realmDB.Write(() =>
-                {
-                    this.realmDB.Remove(question);
-                });
-            }
-        }
-
         public void AddScore(ScoreRecord score)
         {
             this.realmDB.Write(() =>
@@ -114,6 +80,25 @@ namespace appFBLA2019
             });
         }
 
+        public void DeleteQuestions(params Question[] questions)
+        {
+            foreach (Question question in questions)
+            {
+                if (question.NeedsPicture)
+                {
+                    File.Delete(dbFolderPath + "/" + question.DBId + ".jpg");
+                }
+
+                this.realmDB.Write(() =>
+                {
+                    this.realmDB.Remove(question);
+                });
+            }
+        }
+
+        // To update an existing question in the database:
+        //
+        // DBHandler.Database.realmDB.Write(() => yourQuestion.Property = newValue );
         public double GetAvgScore()
         {
             if (this.realmDB != null)
@@ -139,5 +124,23 @@ namespace appFBLA2019
                 return 0.0;
             }
         }
+
+        public List<Question> GetQuestions()
+        {
+            IQueryable<Question> queryable = this.realmDB.All<Question>();
+            List<Question> questions = new List<Question>(queryable);
+            for (int i = 0; i < queryable.Count(); i++)
+            {
+                if (questions[i].NeedsPicture)
+                {
+                    questions[i].ImagePath = dbFolderPath + "/" + questions[i].DBId + ".jpg";
+                }
+            }
+            return questions;
+        }
+
+        private const string realmExtension = ".realm";
+        private string dbFolderPath;
+        private string dbPath;
     }
 }

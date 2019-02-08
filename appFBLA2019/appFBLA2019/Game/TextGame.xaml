@@ -4,16 +4,18 @@
              x:Class="appFBLA2019.TextGame"
              xmlns:local="clr-namespace:appFBLA2019"
              NavigationPage.BackButtonTitle="true">
-    <StackLayout x:Name="StackLayoutMain">
-        <ProgressBar x:Name="ProgressBar" Progress = "0" ProgressColor="Accent" VerticalOptions="Start" />
-        <Label x:Name="LabelQuestion" VerticalOptions="FillAndExpand" FontSize="Large" />
-        <Label x:Name="LabelFeedback" VerticalOptions="FillAndExpand" />
-        <Image x:Name="QuestionImage" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />
-        <Grid VerticalOptions="EndAndExpand" x:Name="ButtonGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-        </Grid>
-    </StackLayout>
+    <ScrollView x:Name="StackLayoutMain">
+        <StackLayout>
+            <ProgressBar x:Name="ProgressBar" Progress = "0" VerticalOptions="Start" HeightRequest="10" />
+            <Label x:Name="LabelQuestion" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="bold" FontSize="40" />
+            <Label x:Name="LabelFeedback" VerticalOptions="FillAndExpand" />
+            <Image x:Name="QuestionImage" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />
+            <Grid VerticalOptions="EndAndExpand" x:Name="ButtonGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </StackLayout>
+    </ScrollView>
 </ContentPage>

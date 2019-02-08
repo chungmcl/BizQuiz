@@ -1,7 +1,5 @@
 ﻿//BizQuiz App 2019
 
-
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,7 +43,8 @@ namespace appFBLA2019
             {
                 Frame frame = new Frame()
                 {
-                    VerticalOptions = LayoutOptions.FillAndExpand,
+                    HeightRequest = 100,
+                    VerticalOptions = LayoutOptions.Center,
                     HorizontalOptions = LayoutOptions.FillAndExpand,
                     CornerRadius = 10
                 };

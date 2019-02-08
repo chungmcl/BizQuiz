@@ -1,33 +1,178 @@
-﻿using System;
+﻿//BizQuiz App 2019
+
+using Plugin.Media;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
-using Plugin.Media;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class CreateNewLevelPage : ContentPage
-	{
-		public CreateNewLevelPage()
-		{           
-			this.InitializeComponent();
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class CreateNewLevelPage : ContentPage
+    {
+        public CreateNewLevelPage()
+        {
+            this.InitializeComponent();
+        }
+
+        /// <summary>
+        /// This add New Questions contains parameters for images for when a question contains an image.
+        /// </summary>
+        /// <param name="question">  the Question to answer </param>
+        /// <param name="imagePath"> the path for the image corrosponding to the question </param>
+        /// <param name="answers">   
+        /// the first is the correct answer, the rest are incorrect answers
+        /// </param>
+        public void AddNewQuestion(Question question)
+        {
+            Frame frame = new Frame() // The frame that holds everything
+            {
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                CornerRadius = 10,
+            };
+            if (question != null)
+            {
+                frame.StyleId = question.DBId;
+            }
+
+            StackLayout frameStack = new StackLayout //the stack that holds all the info in the frame
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                Orientation = StackOrientation.Vertical
+            };
+
+            ImageButton Remove = new ImageButton(); // the button to remove the question
+            {
+                Remove.Source = "ic_delete_black_48dp.png";
+                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
+                Remove.BackgroundColor = Color.Transparent;
+                Remove.HeightRequest = 40;
+                Remove.WidthRequest = 40;
+                Remove.HorizontalOptions = LayoutOptions.End;
+                Remove.VerticalOptions = LayoutOptions.Start;
+            }
+            frameStack.Children.Add(Remove);
+
+            Entry Question = new Entry // The question
+            {
+                Placeholder = "Enter question",
+            };
+            if (question != null)
+            {
+                Question.Text = question.QuestionText;
+            }
+
+            frameStack.Children.Add(Question);
+
+            Entry AnswerCorrect = new Entry // The correct answer
+            {
+                Placeholder = "Enter correct answer",
+            };
+            if (question != null)
+            {
+                AnswerCorrect.Text = question.CorrectAnswer;
+            }
+
+            frameStack.Children.Add(AnswerCorrect);
+
+            Entry AnswerWrongOne = new Entry // A wrong answer
+            {
+                Placeholder = "Enter a possible answer",
+            };
+            if (question != null)
+            {
+                AnswerWrongOne.Text = question.AnswerOne;
+            }
+
+            frameStack.Children.Add(AnswerWrongOne);
+
+            Entry AnswerWrongTwo = new Entry// A wrong answer
+            {
+                Placeholder = "Enter a possible answer",
+            };
+            if (question != null)
+            {
+                AnswerWrongTwo.Text = question.AnswerTwo;
+            }
+
+            frameStack.Children.Add(AnswerWrongTwo);
+
+            Entry AnswerWrongThree = new Entry// A wrong answer
+            {
+                Placeholder = "Enter a possible answer",
+            };
+            if (question != null)
+            {
+                AnswerWrongThree.Text = question.AnswerThree;
+            }
+
+            frameStack.Children.Add(AnswerWrongThree);
+
+            Button AddImage = new Button(); // The add Image button
+            {
+                AddImage.Text = "Add Image";
+                AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
+                AddImage.CornerRadius = 20;
+                AddImage.IsVisible = false;
+            }
+
+            bool needsPicture = false;
+            if (question != null)
+            {
+                needsPicture = question.NeedsPicture;
+            }
+
+            ImageButton image = new ImageButton(); // The image itself
+            {
+                image.IsEnabled = needsPicture;
+                image.Clicked += new EventHandler(ButtonAddImage_Clicked);
+                image.BackgroundColor = Color.Transparent;
+            }
+
+            frameStack.Children.Add(image);
+            frameStack.Children.Add(AddImage);
+            //Gets the image from the imagePath
+            if (image.IsEnabled)
+            {
+                image.Source = question.ImagePath;
+            }
+            else // or adds the add image button
+            {
+                AddImage.IsVisible = true;
+            }
+
+            frame.Content = frameStack;
+            // and add the frame to the the other stacklaout.
+            this.StackLayoutQuestionStack.Children.Add(frame);
+        }
+
+        public void SetLevelName(string levelName)
+        {
+            EntryLevelName.Text = levelName;
+        }
+
+        /// <summary>
+        /// a private AddNewQuestions for when the user creates a brand new question
+        /// </summary>
+        private void AddNewQuestion()
+        {
+            this.AddNewQuestion(null);
         }
 
         /// <summary>
         /// Called when the user presses the Add Image button on a question eiditor
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private async void ButtonAddImage_Clicked(object sender, EventArgs e)
         {
-
             await CrossMedia.Current.Initialize();
             Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
 
@@ -36,23 +181,23 @@ namespace appFBLA2019
                 ImageButton currentImage;
 
                 currentImage = ((ImageButton)((StackLayout)((View)sender).Parent).Children[6]);
- 
 
                 currentImage.Source = file.Path;
 
                 // Enables the image
                 currentImage.IsEnabled = true;
                 if (sender is Button)
+                {
                     ((Button)sender).IsVisible = false;
+                }
             }
-
         }
 
         /// <summary>
         /// Called when the add question button is clicked and adds a new question
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private void ButtonAddQuestion_Clicked(object sender, EventArgs e)
         {
             this.AddNewQuestion();
@@ -61,28 +206,10 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Removes the Question Frame when remove button is clicked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        async private void ButtonRemove_Clicked(object sender, EventArgs e)
-        {
-            bool answer = await DisplayAlert("Warning", "Are you sure you would like to delete this question?", "Yes", "No");
-            if (answer == true)
-            {
-                //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
-                Frame frame = ((Frame)((StackLayout)((ImageButton)sender).Parent).Parent);
-                //Animate A deletion
-                await frame.TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
-                this.StackLayoutQuestionStack.Children.Remove(frame);
-            }
-        }
-
-        /// <summary>
         /// Saves the user created level
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
@@ -101,15 +228,13 @@ namespace appFBLA2019
                 // clear the database to prevent duplication This needs to be fixed, this is not the way to do it
                 //DBHandler.Database.DeleteQuestions(DBHandler.Database.GetQuestions().ToArray());
 
-
-
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
                 List<Question> previousQuestions = DBHandler.Database.GetQuestions(); // A list of questions already in the database
 
-                // Loops through each question frame on the screen 
+                // Loops through each question frame on the screen
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
-                    // A list of all the children of the current frame  
+                    // A list of all the children of the current frame
                     IList<View> children = ((StackLayout)frame.Content).Children;
 
                     Question addThis;
@@ -138,22 +263,21 @@ namespace appFBLA2019
                     NewQuestions.Add(addThis);
                 }
 
-                // Add if it doesn't already exist,
-                // delete if it doesn't exist anymore, 
-                // update the ones that need to be updated, 
-                // and do nothing to the others
+                // Add if it doesn't already exist, delete if it doesn't exist anymore, update the
+                // ones that need to be updated, and do nothing to the others
 
                 // It exists/changed if the DBId exists in both old and new list
-                //     - contents are the same: Exists and same
-                //     - contents changed: changed
-                // It's new if DBId isn't present in new list
-                // It's deleted if DBId exists in old questions and not new questions
+                // - contents are the same: Exists and same
+                // - contents changed: changed It's new if DBId isn't present in new list It's
+                // deleted if DBId exists in old questions and not new questions
 
                 if (previousQuestions.Count() == 0) // if the user created this for the first time
+                {
                     DBHandler.Database.AddQuestions(NewQuestions);
+                }
                 else
                 {
-                    for (int i = 0; i <= previousQuestions.Count(); i++)
+                    for (int i = 0; i < previousQuestions.Count(); i++)
                     {
                         bool DBIdSame = false;
                         // test each old question with each new question
@@ -161,9 +285,9 @@ namespace appFBLA2019
                         {
                             if (newQuestion.DBId == "")
                             {
-                                // this is a new question. add it then remove it from the list     
-                                // AddQuestions should be able to take params of questions 
-                                // because It doesn't I have to do this less effective method
+                                // this is a new question. add it then remove it from the list
+                                // AddQuestions should be able to take params of questions because It
+                                // doesn't I have to do this less effective method
                                 DBHandler.Database.AddQuestions(new List<Question> { newQuestion });
                                 NewQuestions.Remove(newQuestion);
                             }
@@ -190,11 +314,8 @@ namespace appFBLA2019
                             // delete it from the database
                             DBHandler.Database.DeleteQuestions(previousQuestions[i]);
                         }
-
                     }
                 }
-
-
 
                 // Returns user to front page of LevelEditor
                 this.Navigation.PopAsync(true);
@@ -202,131 +323,21 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// a private AddNewQuestions for when the user creates a brand new question
+        /// Removes the Question Frame when remove button is clicked
         /// </summary>
-        private void AddNewQuestion()
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
+        private async void ButtonRemove_Clicked(object sender, EventArgs e)
         {
-            this.AddNewQuestion(null);
-        }
-
-        /// <summary>
-        /// This add New Questions contains parameters for images for when a question contains an image.
-        /// </summary>
-        /// <param name="question">the Question to answer</param>
-        /// <param name="imagePath">the path for the image corrosponding to the question</param>
-        /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
-        public void AddNewQuestion(Question question)
-        {
-            Frame frame = new Frame() // The frame that holds everything
+            bool answer = await DisplayAlert("Warning", "Are you sure you would like to delete this question?", "Yes", "No");
+            if (answer == true)
             {
-                VerticalOptions = LayoutOptions.FillAndExpand,
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                CornerRadius = 10,
-                
-            };
-            if (question != null)
-                frame.StyleId = question.DBId;
-
-            StackLayout frameStack = new StackLayout //the stack that holds all the info in the frame
-            {
-                FlowDirection = FlowDirection.LeftToRight,
-                Orientation = StackOrientation.Vertical
-            };
-
-            ImageButton Remove = new ImageButton(); // the button to remove the question
-            {
-                Remove.Source = "ic_delete_black_48dp.png";
-                Remove.Clicked += new EventHandler(ButtonRemove_Clicked);
-                Remove.BackgroundColor = Color.Transparent;
-                Remove.HeightRequest = 40;
-                Remove.WidthRequest = 40;
-                Remove.HorizontalOptions = LayoutOptions.End;
-                Remove.VerticalOptions = LayoutOptions.Start;
+                //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
+                Frame frame = ((Frame)((StackLayout)((ImageButton)sender).Parent).Parent);
+                //Animate A deletion
+                await frame.TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
+                this.StackLayoutQuestionStack.Children.Remove(frame);
             }
-            frameStack.Children.Add(Remove);
-
-            Entry Question = new Entry // The question
-            {
-                Placeholder = "Enter question",
-                
-            };
-            if (question != null) 
-                Question.Text = question.QuestionText;
-            frameStack.Children.Add(Question);
-
-            Entry AnswerCorrect = new Entry // The correct answer
-            {
-                Placeholder = "Enter correct answer",
-                
-            };
-            if (question != null)
-                AnswerCorrect.Text = question.CorrectAnswer;
-
-            frameStack.Children.Add(AnswerCorrect);
-
-            Entry AnswerWrongOne = new Entry // A wrong answer
-            {
-                Placeholder = "Enter a possible answer",
-            };
-            if (question != null)
-                AnswerWrongOne.Text = question.AnswerOne;
-
-            frameStack.Children.Add(AnswerWrongOne);
-
-            Entry AnswerWrongTwo = new Entry// A wrong answer
-            {
-                Placeholder = "Enter a possible answer",
-            };
-            if (question != null)
-                AnswerWrongTwo.Text = question.AnswerTwo;
-            frameStack.Children.Add(AnswerWrongTwo);
-
-            Entry AnswerWrongThree = new Entry// A wrong answer
-            {
-                Placeholder = "Enter a possible answer",
-            };
-            if (question != null)
-                AnswerWrongThree.Text = question.AnswerThree;
-            frameStack.Children.Add(AnswerWrongThree);
-
-
-            Button AddImage = new Button(); // The add Image button
-            {
-                AddImage.Text = "Add Image";
-                AddImage.Clicked += new EventHandler(ButtonAddImage_Clicked);
-                AddImage.CornerRadius = 20;
-                AddImage.IsVisible = false;              
-            }
-
-            bool needsPicture = false;
-            if (question != null)
-                needsPicture = question.NeedsPicture;
-            ImageButton image = new ImageButton(); // The image itself
-            {
-                image.IsEnabled = needsPicture;
-                image.Clicked += new EventHandler(ButtonAddImage_Clicked);
-                image.BackgroundColor = Color.Transparent;
-            }
-
-            frameStack.Children.Add(image);
-            frameStack.Children.Add(AddImage);
-            //Gets the image from the imagePath
-            if (image.IsEnabled)
-            {
-                image.Source = question.ImagePath;
-            }
-            else // or adds the add image button
-                AddImage.IsVisible = true;
-            
-            frame.Content = frameStack;
-            // and add the frame to the the other stacklaout.
-            this.StackLayoutQuestionStack.Children.Add(frame);
-        }
-
-
-        public void SetLevelName(string levelName)
-        {
-            EntryLevelName.Text = levelName;
         }
     }
 }
