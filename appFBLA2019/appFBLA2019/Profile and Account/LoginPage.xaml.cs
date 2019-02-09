@@ -10,6 +10,8 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentView
     {
+        public delegate void LoggedinEventHandler(object source, EventArgs eventArgs);
+        public event LoggedinEventHandler LoggedIn;
         public LoginPage()
         {
             this.InitializeComponent();
@@ -34,7 +36,7 @@ namespace appFBLA2019
                 {
                     Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
                     CredentialManager.SaveCredential(username, password);
-                    await this.Navigation.PopAsync();
+                    OnLoggedIn();
                 }
                 else if (response == OperationReturnMessage.TrueConfirmEmail)
                 {
@@ -46,6 +48,7 @@ namespace appFBLA2019
                         await this.Navigation.PushModalAsync(confirmationPage);
                     });
                     CredentialManager.SaveCredential(username, password);
+                    OnLoggedIn();
                 }
                 else
                 {
@@ -66,11 +69,14 @@ namespace appFBLA2019
             await this.Navigation.PushAsync(createAccountPage);
         }
 
-        public async void OnEmailConfirmed(object source, EventArgs args)
+        public void OnEmailConfirmed(object source, EventArgs args)
         {
             this.LabelMessage.Text = "Login Successful!";
+        }
 
-            await this.Navigation.PopAsync();
+        protected virtual void OnLoggedIn()
+        {
+            this.LoggedIn?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnAccountCreated(object source, AccountCreatedEventArgs accountArgs)

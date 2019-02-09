@@ -17,6 +17,7 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ProfilePage : ContentPage
     {
+
         public ProfilePage()
         {
             this.InitializeComponent();
@@ -47,6 +48,8 @@ namespace appFBLA2019
                     ToolbarItem accountSettingsButton = new ToolbarItem();
                     accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
                     accountSettingsButton.Icon = FileImageSource.FromResource("ic_settings_black_48dp.png") as FileImageSource;
+
+                    this.LabelUsername.Text = CredentialManager.Username;
                 }
                 else
                 {
@@ -54,6 +57,7 @@ namespace appFBLA2019
                     {
                         this.ToolbarItems.RemoveAt(0);
                     }
+                    this.LocalLoginPage.LoggedIn += OnLoggedIn;
                 }
 
                 this.ActivityIndicator.IsRunning = false;
@@ -64,7 +68,19 @@ namespace appFBLA2019
 
         private async void ToolbarItemAccountSettings_Clicked(object sender, EventArgs e)
         {
-            await this.Navigation.PushAsync(new AccountSettingsPage());
+            AccountSettingsPage accountSettingsPage = new AccountSettingsPage();
+            accountSettingsPage.SignedOut += OnSignedOut;
+            await this.Navigation.PushModalAsync(accountSettingsPage);
+        }
+
+        public async void OnLoggedIn(object source, EventArgs eventArgs)
+        {
+            await Task.Run(() => UpdateProfilePage(false));
+        }
+
+        public async void OnSignedOut(object source, EventArgs eventArgs)
+        {
+            await Task.Run(() => UpdateProfilePage(false));
         }
     }
 }

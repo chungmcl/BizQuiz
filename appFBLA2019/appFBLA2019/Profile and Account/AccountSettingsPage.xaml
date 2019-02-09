@@ -4,9 +4,7 @@
              x:Class="appFBLA2019.AccountSettingsPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <Button x:Name="ButtonLogout" Text="Sign Out of Account" Clicked="ButtonLogout_Clicked"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

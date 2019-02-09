@@ -22,7 +22,9 @@
                          IsVisible="False"
                          >
                 <ScrollView>
-
+                    <StackLayout>
+                        <Label x:Name="LabelUsername" />
+                    </StackLayout>
                 </ScrollView>
             </StackLayout>
             
