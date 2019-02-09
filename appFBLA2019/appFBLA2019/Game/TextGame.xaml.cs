@@ -3,7 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -19,13 +20,7 @@ namespace appFBLA2019
             this.score = 0;
             this.random = new Random();
 
-            // Save as reference
-            this.currentQuestion = level.GetQuestion();
-
-            if (this.currentQuestion != null)
-            {
-                this.SetUpNextQuestion(this.currentQuestion);
-            }
+            this.CycleQuestion();
         }
 
         public async void OnFinished(object source, EventArgs args)
@@ -34,20 +29,53 @@ namespace appFBLA2019
             await this.Navigation.PopAsync();
         }
 
+        protected override void OnAppearing()
+        {
+            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
+            this.StackLayoutMain.WidthRequest = this.RelativeLayout.Width;
+            this.StackLayoutMain.HeightRequest = this.RelativeLayout.Height;
+
+            this.ButtonGrid.WidthRequest = this.StackLayoutMain.Width;
+            this.ButtonGrid.HeightRequest = this.StackLayoutMain.Height;
+        }
+
         private string correct;
         private Question currentQuestion;
         private Level level;
         private Random random;
         private int score;
 
+        private void AnimateNextBanner()
+        {
+            this.NextBanner.IsEnabled = true;
+            this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.BounceOut);
+        }
+
+        private void Button_Clicked(object sender, EventArgs e)
+        {
+            this.CycleQuestion();
+        }
+
         private void CheckButtonAnswer(string answer)
         {
+            foreach (Button button in this.ButtonGrid.Children)
+            {
+                button.IsEnabled = false;
+                if (button.Text != answer)
+                {
+                    button.BackgroundColor = Color.Accent.AddLuminosity(-.05);
+                }
+            }
             if (answer == this.currentQuestion.CorrectAnswer)
             {
+                ((Button)this.ButtonGrid.Children.Where(x => (x as Button).Text == this.currentQuestion.CorrectAnswer).First()).BackgroundColor = Color.Green;
+                this.NextBanner.BackgroundColor = Color.LightGreen;
                 this.CorrectAnswer(true);
             }
             else
             {
+                ((Button)this.ButtonGrid.Children.Where(x => (x as Button).Text == answer).First()).BackgroundColor = Color.Red;
+                this.NextBanner.BackgroundColor = Color.Red.AddLuminosity(-.05);
                 this.IncorrectAnswer(true);
             }
         }
@@ -75,9 +103,12 @@ namespace appFBLA2019
         private void CorrectAnswer(bool isMultipleChoice)
         {
             this.LabelFeedback.Text = "Correct!";
+            this.LabelFeedback.TextColor = Color.White;
             //add 2 points for getting it right first time, 1 point for getting it right a second time or later
             if (this.currentQuestion.Status == 0)
-            { this.score += 2; this.LabelFeedback.Text += " First try!"; }
+            {
+                this.score += 2; this.LabelFeedback.Text += " First try!";
+            }
             else
             {
                 this.score++;
@@ -88,20 +119,12 @@ namespace appFBLA2019
                 this.currentQuestion.Status = 2
             );
 
-            if (isMultipleChoice)
-            {
-                this.ResetButtons();
-            }
-            else
-            {
-                this.ResetTextEntry();
-            }
-
-            this.CycleQuestion();
+            this.AnimateNextBanner();
         }
 
         private void CycleQuestion()
         {
+            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
             if (this.level.QuestionsAvailable)
             {
                 // Save as reference
@@ -119,55 +142,24 @@ namespace appFBLA2019
         private void IncorrectAnswer(bool isMultipleChoice)
         {
             this.LabelFeedback.Text = "Incorrect!";
+            this.LabelFeedback.TextColor = Color.White;
 
             // 1 represents 'failed'
             DBHandler.Database.realmDB.Write(() =>
                 this.level.Questions[0].Status = 1
             );
 
-            if (isMultipleChoice)
-            {
-                this.ResetButtons();
-            }
-            else
-            {
-                this.ResetTextEntry();
-            }
-
-            this.CycleQuestion();
-        }
-
-        private void ResetButtons()
-        {
-            // Grab reference of object, then remove
-            foreach (Button button in this.ButtonGrid.Children.ToArray())
-            {
-                //button.TranslateTo(button.X, 1000, 10000, Easing.CubicIn);
-                this.ButtonGrid.Children.Remove(button);
-            }
-        }
-
-        private void ResetTextEntry()
-        {
-            // Grab reference of object, then remove
-
-            // Define List of type View due to multiple types inheriting from view in GridEntryObjects
-            List<View> toRemove = new List<View>();
-            foreach (View entryObject in this.ButtonGrid.Children)
-            {
-                toRemove.Add(entryObject);
-            }
-            for (int i = 0; i < toRemove.Count; i++)
-            {
-                this.ButtonGrid.Children.Remove(toRemove[i]);
-            }
+            this.AnimateNextBanner();
         }
 
         private void SetUpNextQuestion(Question question)
         {
             if (question.QuestionText == "" || question.CorrectAnswer == "")
             {
-                question.Status = 3;
+                DBHandler.Database.realmDB.Write(() =>
+                {
+                    question.Status = 3;
+                });
                 this.CycleQuestion();
                 return;
             }
@@ -177,17 +169,12 @@ namespace appFBLA2019
             List<string> answers = question.Answers;
 
             this.ButtonGrid.Children.Clear();
-            this.ButtonGrid.HeightRequest = 320;
             this.ButtonGrid.RowDefinitions = new RowDefinitionCollection
-                {
+            {
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star },
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
-                };
+            };
 
-            //this.QuestionImage.IsEnabled = question.NeedsPicture;
-            // The image will ALWAYS be named after the DBId
-            this.QuestionImage.Source = ImageSource.FromFile(question.DBId + ".jpg"); // Add cases for all JPG file extensions(for example, ".jpeg")
-            this.QuestionImage.Aspect = Aspect.AspectFit;
             this.ProgressBar.ProgressTo(((double)this.level.Questions.Count() - (double)this.level.QuestionsRemaining) / (double)this.level.Questions.Count(), 500, Easing.SpringOut);
 
             if (question.QuestionType == 0) // If multiple-choice button question
@@ -208,7 +195,6 @@ namespace appFBLA2019
                                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
                         };
                 }
-
                 this.Shuffle(answers);
 
                 for (int i = 0; i < answers.Count(); i++)
@@ -217,20 +203,18 @@ namespace appFBLA2019
                     Button button = new Button
                     {
                         Text = answer,
-                        CornerRadius = 25
+                        FontSize = 45,
+                        CornerRadius = 25,
+                        BackgroundColor = Color.Accent,
+                        TextColor = Color.White
                     };
 
-                    button.Clicked += async (object sender, EventArgs e) =>
+                    button.Clicked += (object sender, EventArgs e) =>
                     {
-                        this.CheckButtonAnswer((sender as Button).Text);
+                        this.CheckButtonAnswer(((Button)sender).Text);
                     };
 
-                    //BROKEN
-                    ////2 is a magic number here for the number of columns
-                    //currentColumn = Math.Abs((i % 2) - 1);
-                    ////row is determined (basically) by being greater than 2
-                    //currentRow = Math.Max(Math.Sign(i - 2), 0);
-
+                    this.ButtonGrid.Children.Add(button, 0, i);
                     //this is gross and messy, need to find a better way to place buttons correctly with math and stuff
                     switch (i)
                     {
@@ -260,6 +244,11 @@ namespace appFBLA2019
                     {
                         Grid.SetColumnSpan(button, 2);
                     }
+
+                    //this.QuestionImage.IsEnabled = question.NeedsPicture;
+                    //// The image will ALWAYS be named after the DBId
+                    //this.QuestionImage.Source = ImageSource.FromFile(question.ImagePath); // Add cases for all JPG file extensions(for example, ".jpeg")
+                    //this.QuestionImage.Aspect = Aspect.AspectFit;
                     this.StackLayoutMain.ForceLayout();
                 }
             }
@@ -271,7 +260,7 @@ namespace appFBLA2019
                     Text = "Check Answer",
                     CornerRadius = 25
                 };
-                buttonCheckAnswer.Clicked += async (object sender, EventArgs e) =>
+                buttonCheckAnswer.Clicked += (object sender, EventArgs e) =>
                 {
                     // Can we do this with null-conditional operators?
                     if (entry.Text == null)

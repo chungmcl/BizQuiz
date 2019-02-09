@@ -4,18 +4,25 @@
              x:Class="appFBLA2019.TextGame"
              xmlns:local="clr-namespace:appFBLA2019"
              NavigationPage.BackButtonTitle="true">
-    <ScrollView x:Name="StackLayoutMain">
-        <StackLayout>
-            <ProgressBar x:Name="ProgressBar" Progress = "0" VerticalOptions="Start" HeightRequest="10" />
-            <Label x:Name="LabelQuestion" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="bold" FontSize="40" />
-            <Label x:Name="LabelFeedback" VerticalOptions="FillAndExpand" />
-            <Image x:Name="QuestionImage" VerticalOptions="Start" HorizontalOptions="FillAndExpand" />
-            <Grid VerticalOptions="EndAndExpand" x:Name="ButtonGrid">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-            </Grid>
-        </StackLayout>
-    </ScrollView>
+    <ContentPage.Content>
+        <RelativeLayout x:Name="RelativeLayout">
+            <Frame x:Name="NextBanner" Padding="10" CornerRadius="10" IsEnabled="False">
+                <StackLayout>
+                    <Label x:Name="LabelFeedback" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="Italic" FontSize="40" />
+                    <Button x:Name="NextButton" Text="Next question" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" Clicked="Button_Clicked" FontSize="30" />
+                </StackLayout>
+            </Frame>
+            <StackLayout x:Name="StackLayoutMain" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                <Label x:Name="LabelQuestion" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="bold" FontSize="50" />
+                <ProgressBar x:Name="ProgressBar" VerticalOptions="Start" Progress = "0" HeightRequest="10" ProgressColor="Accent" />
+                <Image x:Name="QuestionImage" VerticalOptions="Start" HorizontalOptions="CenterAndExpand" IsEnabled="False" />
+                <Grid VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" x:Name="ButtonGrid" Padding="10,100,10,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
+            </StackLayout>
+        </RelativeLayout>
+    </ContentPage.Content>
 </ContentPage>
