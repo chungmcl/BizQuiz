@@ -34,6 +34,7 @@ namespace appFBLA2019
                 {
                     Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
                     CredentialManager.SaveCredential(username, password);
+                    await this.Navigation.PopAsync();
                 }
                 else if (response == OperationReturnMessage.TrueConfirmEmail)
                 {
@@ -65,9 +66,11 @@ namespace appFBLA2019
             await this.Navigation.PushAsync(createAccountPage);
         }
 
-        public void OnEmailConfirmed(object source, EventArgs args)
+        public async void OnEmailConfirmed(object source, EventArgs args)
         {
             this.LabelMessage.Text = "Login Successful!";
+
+            await this.Navigation.PopAsync();
         }
 
         private void OnAccountCreated(object source, AccountCreatedEventArgs accountArgs)
