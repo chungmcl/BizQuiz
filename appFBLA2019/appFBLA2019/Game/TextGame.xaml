@@ -6,7 +6,7 @@
              NavigationPage.BackButtonTitle="true">
     <ContentPage.Content>
         <RelativeLayout x:Name="RelativeLayout">
-            <Frame x:Name="NextBanner" Padding="10" CornerRadius="10" IsEnabled="False">
+            <Frame x:Name="NextBanner" Padding="10" CornerRadius="10">
                 <StackLayout>
                     <Label x:Name="LabelFeedback" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="Italic" FontSize="40" />
                     <Button x:Name="NextButton" Text="Next question" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" Clicked="Button_Clicked" FontSize="30" />

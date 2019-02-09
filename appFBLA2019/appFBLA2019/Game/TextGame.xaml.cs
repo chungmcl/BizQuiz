@@ -32,6 +32,7 @@ namespace appFBLA2019
         protected override void OnAppearing()
         {
             this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
+
             this.StackLayoutMain.WidthRequest = this.RelativeLayout.Width;
             this.StackLayoutMain.HeightRequest = this.RelativeLayout.Height;
 
@@ -45,10 +46,9 @@ namespace appFBLA2019
         private Random random;
         private int score;
 
-        private void AnimateNextBanner()
+        private async Task AnimateNextBanner()
         {
-            this.NextBanner.IsEnabled = true;
-            this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.BounceOut);
+            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.BounceOut);
         }
 
         private void Button_Clicked(object sender, EventArgs e)
@@ -56,7 +56,7 @@ namespace appFBLA2019
             this.CycleQuestion();
         }
 
-        private void CheckButtonAnswer(string answer)
+        private async void CheckButtonAnswer(string answer)
         {
             foreach (Button button in this.ButtonGrid.Children)
             {
@@ -70,13 +70,13 @@ namespace appFBLA2019
             {
                 ((Button)this.ButtonGrid.Children.Where(x => (x as Button).Text == this.currentQuestion.CorrectAnswer).First()).BackgroundColor = Color.Green;
                 this.NextBanner.BackgroundColor = Color.LightGreen;
-                this.CorrectAnswer(true);
+                await this.CorrectAnswer(true);
             }
             else
             {
                 ((Button)this.ButtonGrid.Children.Where(x => (x as Button).Text == answer).First()).BackgroundColor = Color.Red;
                 this.NextBanner.BackgroundColor = Color.Red.AddLuminosity(-.05);
-                this.IncorrectAnswer(true);
+                await this.IncorrectAnswer(true);
             }
         }
 
@@ -100,7 +100,7 @@ namespace appFBLA2019
             }
         }
 
-        private void CorrectAnswer(bool isMultipleChoice)
+        private async Task CorrectAnswer(bool isMultipleChoice)
         {
             this.LabelFeedback.Text = "Correct!";
             this.LabelFeedback.TextColor = Color.White;
@@ -119,7 +119,7 @@ namespace appFBLA2019
                 this.currentQuestion.Status = 2
             );
 
-            this.AnimateNextBanner();
+            await this.AnimateNextBanner();
         }
 
         private void CycleQuestion()
@@ -139,7 +139,7 @@ namespace appFBLA2019
             }
         }
 
-        private void IncorrectAnswer(bool isMultipleChoice)
+        private async Task IncorrectAnswer(bool isMultipleChoice)
         {
             this.LabelFeedback.Text = "Incorrect!";
             this.LabelFeedback.TextColor = Color.White;
@@ -149,7 +149,7 @@ namespace appFBLA2019
                 this.level.Questions[0].Status = 1
             );
 
-            this.AnimateNextBanner();
+            await this.AnimateNextBanner();
         }
 
         private void SetUpNextQuestion(Question question)
@@ -245,10 +245,12 @@ namespace appFBLA2019
                         Grid.SetColumnSpan(button, 2);
                     }
 
-                    //this.QuestionImage.IsEnabled = question.NeedsPicture;
-                    //// The image will ALWAYS be named after the DBId
-                    //this.QuestionImage.Source = ImageSource.FromFile(question.ImagePath); // Add cases for all JPG file extensions(for example, ".jpeg")
-                    //this.QuestionImage.Aspect = Aspect.AspectFit;
+                    this.QuestionImage.IsEnabled = question.NeedsPicture;
+                    // The image will ALWAYS be named after the DBId
+                    this.QuestionImage.Source = ImageSource.FromFile(question.ImagePath); // Add cases for all JPG file extensions(for example, ".jpeg")
+                    this.QuestionImage.Aspect = Aspect.AspectFit;
+
+                    this.OnAppearing();
                     this.StackLayoutMain.ForceLayout();
                 }
             }
