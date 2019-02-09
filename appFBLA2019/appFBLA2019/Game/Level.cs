@@ -11,13 +11,6 @@ namespace appFBLA2019
 {
     public class Level
     {
-        //returns the avg score that the player gets on this level
-        public static double GetLevelAvgScore(string level, string author)
-        {
-            DBHandler.SelectDatabase(level, author);
-            return DBHandler.Database.GetAvgScore();
-        }
-
         public List<Question> Questions { get; set; }
         //if the first question has already been answered correctly, then we have 100% completion
         public bool QuestionsAvailable

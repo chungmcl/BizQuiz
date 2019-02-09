@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.LoginPage"
-             Title="Login">
-    <ContentPage.Content>
+             xmlns:local="clr-namespace:appFBLA2019">
+    <ContentView.Content>
         <StackLayout
             Spacing="20"
             Padding="20">
 
-            <Label x:Name="Title" Text="FBLA Mobile App Dev" Font="Bold"
+            <Label x:Name="Title" Text="BizQuiz" Font="Bold"
                    HorizontalOptions="Center"/>
 
             <Grid>
@@ -41,10 +41,11 @@
                     Clicked="ButtonToCreateAccountPage_Clicked"
                     />
 
-                <Label x:Name="LabelMessage" Text="" Font="Bold"
+                <Label x:Name="LabelMessage" Font="Bold"
                        HorizontalOptions="Center"/>
+                <ActivityIndicator x:Name="ActivityIndicator" IsVisible="False"/>
             </StackLayout>
 
         </StackLayout>
-    </ContentPage.Content>
-</ContentPage>
+    </ContentView.Content>
+</ContentView>

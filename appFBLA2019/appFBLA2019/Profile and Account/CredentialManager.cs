@@ -27,6 +27,13 @@ namespace appFBLA2019
             IsLoggedIn = true;
         }
 
+        public static void Logout()
+        {
+            Task.Run(async () => await SecureStorage.SetAsync("password", ""));
+
+            IsLoggedIn = false;
+        }
+
         public async static Task<OperationReturnMessage> CheckLoginStatus()
         {
             string username = await SecureStorage.GetAsync("username");
@@ -46,7 +53,7 @@ namespace appFBLA2019
                         {
                             IsLoggedIn = false;
 
-                            await Task.Run(async () => await SecureStorage.SetAsync("password", ""));
+                            await SecureStorage.SetAsync("password", "");
                         }
                         return message;
                     }

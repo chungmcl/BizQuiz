@@ -14,6 +14,7 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class MainPage : Xamarin.Forms.TabbedPage
 	{
+        private const int profilePageIndex = 3;
 		public MainPage ()
 		{
 			this.InitializeComponent ();
@@ -24,6 +25,23 @@ namespace appFBLA2019
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.FromHex("#003463"));
 #endif
             this.BarTextColor = Color.White;            
+        }
+
+        private void TabbedPage_CurrentPageChanged(object sender, EventArgs e)
+        {
+            var index = this.Children.IndexOf(this.CurrentPage);
+
+            // If your called method requires async code in initialization, define an "IsLoading" property in your page and change and check that accordingly
+            switch (index)
+            {
+                case profilePageIndex:
+                    {
+                        ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[profilePageIndex];
+                        if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
+                            Task.Run(() => profilePage.UpdateProfilePage(true));
+                    }
+                    break;
+            }
         }
     }
 }

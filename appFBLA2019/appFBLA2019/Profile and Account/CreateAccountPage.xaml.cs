@@ -18,6 +18,13 @@ namespace appFBLA2019
 
         private void ButtonCreateAccount_Clicked(object sender, EventArgs e)
         {
+            this.ButtonCreateAccount.IsEnabled = false;
+            this.EntryEmail.IsEnabled = false;
+            this.EntryPassword.IsEnabled = false;
+            this.EntryUsername.IsEnabled = false;
+            this.ActivityIndicator.IsVisible = true;
+            this.ActivityIndicator.IsRunning = true;
+
             Task createAccount = Task.Run(() => CreateAccount(
                 this.EntryUsername.Text.Trim(),
                 this.EntryPassword.Text.Trim(),
@@ -39,6 +46,8 @@ namespace appFBLA2019
                     Device.BeginInvokeOnMainThread(async () =>
                     {
                         this.LabelMessage.Text = "Account successfully created.";
+                        CredentialManager.SaveCredential(username, password);
+
                         var confirmationPage = new EmailConfirmationPage(username);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         confirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;
@@ -56,6 +65,10 @@ namespace appFBLA2019
                 Device.BeginInvokeOnMainThread(() =>
                     this.LabelMessage.Text = "Connection failed: Please try again.");
             }
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ActivityIndicator.IsRunning = false;
+            });
         }
 
         private async void OnEmailConfirmed(object source, EventArgs eventArgs)
