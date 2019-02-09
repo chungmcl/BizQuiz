@@ -91,46 +91,54 @@ namespace appFBLA2019
             }
         }
 
-        public void EditQuestion(Question oldQuestion, Question updatedQuestion)
+        public void AddScore(ScoreRecord score)
         {
             this.realmDB.Write(() =>
             {
-                oldQuestion = updatedQuestion;
-                updatedQuestion.DBId = oldQuestion.DBId;
+                this.realmDB.Add(score);
             });
+        }
+
+        public void EditQuestion(Question updatedQuestion)
+        {
+
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(updatedQuestion, update: true);
+            });
+
 
             if (updatedQuestion.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
-                File.WriteAllBytes(dbFolderPath + "/" + oldQuestion.DBId + ".jpg", imageByteArray);
+                File.WriteAllBytes(dbFolderPath + "/" + updatedQuestion.DBId + ".jpg", imageByteArray);
             }
         }
 
-        // Future addition
-        //public double GetAvgScore()
-        //{
-        //    if (this.realmDB != null)
-        //    {
-        //        IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
-        //        List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
-        //        if (scores.Count <= 0)
-        //        {
-        //            return 0;
-        //        }
-        //        else
-        //        {
-        //            double runningTotal = 0;
-        //            foreach (ScoreRecord score in scores)
-        //            {
-        //                runningTotal += score.Score;
-        //            }
-        //            return runningTotal / scores.Count;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return 0.0;
-        //    }
-        //}
+        public double GetAvgScore()
+        {
+            if (this.realmDB != null)
+            {
+                IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
+                List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
+                if (scores.Count <= 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    double runningTotal = 0;
+                    foreach (ScoreRecord score in scores)
+                    {
+                        runningTotal += score.Score;
+                    }
+                    return runningTotal / scores.Count;
+                }
+            }
+            else
+            {
+                return 0.0;
+            }
+        }
     }
 }

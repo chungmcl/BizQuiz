@@ -9,11 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\ic_delete_black_48dp.png" />
+    <Compile Remove="Resources\testLevel`testAuthor\**" />
+    <EmbeddedResource Remove="Resources\testLevel`testAuthor\**" />
+    <None Remove="Resources\testLevel`testAuthor\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\ic_delete_black_48dp.png" />
+    <None Remove="Resources\ic_done_white_48dp.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ic_done_white_48dp.png" />
   </ItemGroup>
 
   <ItemGroup>
