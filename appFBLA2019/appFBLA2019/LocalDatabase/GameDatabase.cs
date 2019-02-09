@@ -91,13 +91,14 @@ namespace appFBLA2019
             }
         }
 
-        public void AddScore(ScoreRecord score)
-        {
-            this.realmDB.Write(() =>
-            {
-                this.realmDB.Add(score);
-            });
-        }
+        // To be added:
+        //public void AddScore(ScoreRecord score)
+        //{
+        //    this.realmDB.Write(() =>
+        //    {
+        //        this.realmDB.Add(score);
+        //    });
+        //}
 
         public void EditQuestion(Question updatedQuestion)
         {
@@ -115,30 +116,31 @@ namespace appFBLA2019
             }
         }
 
-        public double GetAvgScore()
-        {
-            if (this.realmDB != null)
-            {
-                IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
-                List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
-                if (scores.Count <= 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    double runningTotal = 0;
-                    foreach (ScoreRecord score in scores)
-                    {
-                        runningTotal += score.Score;
-                    }
-                    return runningTotal / scores.Count;
-                }
-            }
-            else
-            {
-                return 0.0;
-            }
-        }
+        // To be added:
+        //public double GetAvgScore()
+        //{
+        //    if (this.realmDB != null)
+        //    {
+        //        IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
+        //        List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
+        //        if (scores.Count <= 0)
+        //        {
+        //            return 0;
+        //        }
+        //        else
+        //        {
+        //            double runningTotal = 0;
+        //            foreach (ScoreRecord score in scores)
+        //            {
+        //                runningTotal += score.Score;
+        //            }
+        //            return runningTotal / scores.Count;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return 0.0;
+        //    }
+        //}
     }
 }

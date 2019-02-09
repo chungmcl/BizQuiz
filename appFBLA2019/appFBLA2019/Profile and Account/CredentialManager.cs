@@ -53,7 +53,7 @@ namespace appFBLA2019
                         {
                             IsLoggedIn = false;
 
-                            await Task.Run(async () => await SecureStorage.SetAsync("password", ""));
+                            await SecureStorage.SetAsync("password", "");
                         }
                         return message;
                     }

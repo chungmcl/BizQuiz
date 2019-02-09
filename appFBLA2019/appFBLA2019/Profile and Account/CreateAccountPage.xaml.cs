@@ -39,6 +39,8 @@ namespace appFBLA2019
                     Device.BeginInvokeOnMainThread(async () =>
                     {
                         this.LabelMessage.Text = "Account successfully created.";
+                        CredentialManager.SaveCredential(username, password);
+
                         var confirmationPage = new EmailConfirmationPage(username);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         confirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;

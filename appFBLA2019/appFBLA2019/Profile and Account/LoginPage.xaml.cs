@@ -8,7 +8,7 @@ using static appFBLA2019.CreateAccountPage;
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LoginPage : ContentPage
+    public partial class LoginPage : ContentView
     {
         public LoginPage()
         {
