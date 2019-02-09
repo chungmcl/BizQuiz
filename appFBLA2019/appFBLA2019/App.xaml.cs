@@ -20,7 +20,6 @@ namespace appFBLA2019
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
 
-            CredentialManager.SaveCredential("", "");
             CredentialManager.StartTimedCheckLoginStatus();
             
             /*REMOVE DURING RELEASE*/

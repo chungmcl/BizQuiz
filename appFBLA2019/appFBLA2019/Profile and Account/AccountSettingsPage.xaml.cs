@@ -30,5 +30,10 @@ namespace appFBLA2019
         {
             this.SignedOut?.Invoke(this, EventArgs.Empty);
         }
+
+        // To do:
+        // Change email
+        // Change password
+        // Delete account permanently
     }
 }

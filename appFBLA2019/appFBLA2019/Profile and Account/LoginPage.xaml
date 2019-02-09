@@ -41,8 +41,9 @@
                     Clicked="ButtonToCreateAccountPage_Clicked"
                     />
 
-                <Label x:Name="LabelMessage" Text="" Font="Bold"
+                <Label x:Name="LabelMessage" Font="Bold"
                        HorizontalOptions="Center"/>
+                <ActivityIndicator x:Name="ActivityIndicator" IsVisible="False"/>
             </StackLayout>
 
         </StackLayout>

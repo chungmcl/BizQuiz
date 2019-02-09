@@ -41,7 +41,7 @@
             <Label x:Name="LabelMessage" Text=""
                    HorizontalOptions="Center"/>
 
-
+            <ActivityIndicator x:Name="ActivityIndicator" IsVisible="false"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

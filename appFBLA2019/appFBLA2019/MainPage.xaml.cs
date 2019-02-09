@@ -31,13 +31,13 @@ namespace appFBLA2019
         {
             var index = this.Children.IndexOf(this.CurrentPage);
 
-            // If your called method requires async code, define an "IsLoading" property in your page and change and check that accordingly
+            // If your called method requires async code in initialization, define an "IsLoading" property in your page and change and check that accordingly
             switch (index)
             {
                 case profilePageIndex:
                     {
                         ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[profilePageIndex];
-                        if (!profilePage.IsLoading)
+                        if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                             Task.Run(() => profilePage.UpdateProfilePage(true));
                     }
                     break;

@@ -19,13 +19,20 @@ namespace appFBLA2019
 
         private void ButtonLogin_Clicked(object sender, EventArgs e)
         {
+            this.LabelMessage.Text = "";
+            this.ButtonLogin.IsEnabled = false;
+            this.ButtonToCreateAccountPage.IsEnabled = false;
             Task login = Task.Run(() => this.Login(this.EntryUsername.Text,
                 this.EntryPassword.Text));
         }
 
         private async void Login(string username, string password)
         {
-            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Waiting...");
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ActivityIndicator.IsVisible = true;
+                this.ActivityIndicator.IsRunning = true;
+            });
             bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.LoginAccount, $"{username}/{password}/-"));
             
             if (completedRequest)
@@ -60,6 +67,15 @@ namespace appFBLA2019
             {
                 Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Connection failed: Please try again.");
             }
+
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ButtonLogin.IsEnabled = true;
+                this.ButtonToCreateAccountPage.IsEnabled = true;
+                this.ActivityIndicator.IsRunning = false;
+                this.ActivityIndicator.IsVisible = false;
+            });
+            
         }
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)

@@ -23,7 +23,8 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
-        public bool IsLoading { get; set; }
+        public bool IsLoading { get; private set; }
+        public bool IsOnLoginPage { get; private set; }
 
         public async Task UpdateProfilePage(bool updateLoginStatus)
         {
@@ -47,7 +48,9 @@ namespace appFBLA2019
                 {
                     ToolbarItem accountSettingsButton = new ToolbarItem();
                     accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
-                    accountSettingsButton.Icon = FileImageSource.FromResource("ic_settings_black_48dp.png") as FileImageSource;
+                    accountSettingsButton.Icon = FileImageSource.FromFile("ic_settings_black_48dp.png") as FileImageSource;
+
+                    this.ToolbarItems.Add(accountSettingsButton);
 
                     this.LabelUsername.Text = CredentialManager.Username;
                 }
@@ -55,8 +58,9 @@ namespace appFBLA2019
                 {
                     if (this.ToolbarItems.Count > 0)
                     {
-                        this.ToolbarItems.RemoveAt(0);
+                        this.ToolbarItems.Clear();
                     }
+                    this.IsOnLoginPage = true;
                     this.LocalLoginPage.LoggedIn += OnLoggedIn;
                 }
 
