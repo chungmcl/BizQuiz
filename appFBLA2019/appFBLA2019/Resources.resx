@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="ic_close_black_48dp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ic_close_black_48dp.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="ic_done_white_48dp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\ic_done_white_48dp.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -132,5 +135,8 @@
   </data>
   <data name="ic_person_black_48dp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\ic_person_black_48dp.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ic_settings_black_48dp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ic_settings_black_48dp.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

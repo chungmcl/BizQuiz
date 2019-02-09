@@ -15,11 +15,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ic_close_black_48dp.png" />
     <None Remove="Resources\ic_done_white_48dp.png" />
+    <None Remove="Resources\ic_edit_black_48dp.png" />
+    <None Remove="Resources\ic_group_black_48dp.png" />
+    <None Remove="Resources\ic_landscape_black_48dp.png" />
+    <None Remove="Resources\ic_person_black_48dp.png" />
+    <None Remove="Resources\ic_settings_black_48dp.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\ic_close_black_48dp.png" />
     <EmbeddedResource Include="Resources\ic_done_white_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_edit_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_group_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_landscape_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_person_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_settings_black_48dp.png" />
   </ItemGroup>
 
   <ItemGroup>

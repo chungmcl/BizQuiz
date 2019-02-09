@@ -1,4 +1,6 @@
-﻿using Plugin.FacebookClient;
+﻿//BizQuiz App 2019
+
+using Plugin.FacebookClient;
 using Plugin.FacebookClient.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -12,15 +14,15 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class ProfilePage : ContentPage
-	{
-        public bool IsLoading { get; set; }
-
-		public ProfilePage ()
-		{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class ProfilePage : ContentPage
+    {
+        public ProfilePage()
+        {
             this.InitializeComponent();
         }
+
+        public bool IsLoading { get; set; }
 
         public async Task UpdateProfilePage(bool updateLoginStatus)
         {
@@ -32,7 +34,9 @@ namespace appFBLA2019
             });
 
             if (updateLoginStatus)
-                await Task.Run(()=> CredentialManager.CheckLoginStatus());
+            {
+                await Task.Run(() => CredentialManager.CheckLoginStatus());
+            }
 
             Device.BeginInvokeOnMainThread(() =>
             {
@@ -42,12 +46,14 @@ namespace appFBLA2019
                 {
                     ToolbarItem accountSettingsButton = new ToolbarItem();
                     accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
-                    accountSettingsButton.Icon = "ic_settings_black_48dp.png";
+                    accountSettingsButton.Icon = FileImageSource.FromResource("ic_settings_black_48dp.png") as FileImageSource;
                 }
                 else
                 {
                     if (this.ToolbarItems.Count > 0)
+                    {
                         this.ToolbarItems.RemoveAt(0);
+                    }
                 }
 
                 this.ActivityIndicator.IsRunning = false;
