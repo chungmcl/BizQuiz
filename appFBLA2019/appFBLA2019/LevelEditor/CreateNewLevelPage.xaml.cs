@@ -412,7 +412,7 @@ namespace appFBLA2019
 
             Label label = ((Label)((StackLayout)((Switch)sender).Parent).Children[1]);
             if (e.Value)
-                label.Text = "Text Question";
+                label.Text = "Text Answer";
             else
                 label.Text = "Multiple Choice";
 
