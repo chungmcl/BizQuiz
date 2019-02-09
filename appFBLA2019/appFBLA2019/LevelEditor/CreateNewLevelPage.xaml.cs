@@ -144,6 +144,14 @@ namespace appFBLA2019
                                 ((Entry)children[4]).Text, // Incorect answer
                                 ((Entry)children[5]).Text}; // Incorect answer
 
+                    // Checks if there is a question set
+                    if (string.IsNullOrWhiteSpace(((Entry)children[1]).Text))
+                    {
+                        this.DisplayAlert("Couldn't Create Level", "Every question must have a question set", "OK");
+                        goto error;
+                    }
+
+
                     if (((ImageButton)children[6]).IsEnabled) // if needs image
                     {
                         addThis = new Question(
@@ -157,14 +165,38 @@ namespace appFBLA2019
                                 ((Entry)children[1]).Text,
                                 answers);
                     }
+                    
+                    // Sets the question type
                     if (((Switch)((StackLayout)children[0]).Children[0]).IsToggled)
                     {
+                        if (string.IsNullOrWhiteSpace(answers[0]))
+                        {
+                            this.DisplayAlert("Couldn't Create Level", "Text answer questions must have an answer", "OK");
+                            goto error;
+                        }
+                            
                         addThis.QuestionType = 1;
                     }
                     else
+                    {
+                        int size = 0;
+                        foreach (string answer in answers)
+                        {
+                            if (!string.IsNullOrWhiteSpace(answer))
+                                size++;
+                        }
+                        if (size < 2 || string.IsNullOrWhiteSpace(answers[0]))
+                        {
+                            this.DisplayAlert("Couldn't Create Level", "Mulitple choice questions must have a correct answer and at least one wrong answer", "OK");
+                            goto error;
+                        }
+                            
                         addThis.QuestionType = 0;
+                    }
+                        
 
                     addThis.DBId = frame.StyleId; // Set the dbid
+
                     NewQuestions.Add(addThis);
                 }
 
@@ -218,6 +250,8 @@ namespace appFBLA2019
                 this.Navigation.PopAsync(true);
                 
             }
+        error:;
+                
         }
 
         /// <summary>
