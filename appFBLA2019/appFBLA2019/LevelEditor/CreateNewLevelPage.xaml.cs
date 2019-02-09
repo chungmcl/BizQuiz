@@ -209,6 +209,7 @@ namespace appFBLA2019
                     
                 // Returns user to front page of LevelEditor and refreshed database
                 this.Navigation.PopAsync(true);
+                
             }
         }
 
@@ -308,8 +309,11 @@ namespace appFBLA2019
             {
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
-                AddImage.CornerRadius = 20;
-                AddImage.IsVisible = false;              
+                AddImage.CornerRadius = 25;
+                AddImage.IsVisible = false;
+                AddImage.HeightRequest = 50;
+                AddImage.BackgroundColor = Color.FromHex("#AE213A");
+                AddImage.TextColor = Color.White;
             }
 
             bool needsPicture = false;

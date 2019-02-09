@@ -21,7 +21,7 @@ namespace appFBLA2019
 #if __ANDROID__
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.White);
-            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.DarkBlue);
+            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.FromHex("#003463"));
 #endif
             this.BarTextColor = Color.White;            
         }
