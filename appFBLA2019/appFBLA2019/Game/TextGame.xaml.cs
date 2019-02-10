@@ -122,9 +122,9 @@ namespace appFBLA2019
             await this.AnimateNextBanner();
         }
 
-        private void CycleQuestion()
+        private async Task CycleQuestion()
         {
-            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
+            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
             if (this.level.QuestionsAvailable)
             {
                 // Save as reference
@@ -135,7 +135,7 @@ namespace appFBLA2019
             {
                 LevelEndPage levelEndPage = (new LevelEndPage(new ScoreRecord(this.score), this.level.Questions.Count));
                 levelEndPage.Finished += this.OnFinished;
-                this.Navigation.PushModalAsync(levelEndPage);
+                await this.Navigation.PushModalAsync(levelEndPage);
             }
         }
 
