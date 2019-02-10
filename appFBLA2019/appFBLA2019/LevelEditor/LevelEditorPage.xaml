@@ -6,29 +6,29 @@
     <!--Addtional pages may be added programatically into a CarouselPage-->
     <ContentPage.Content>
         <StackLayout Padding="35">
-            <Label  Text="With BizQuiz, you can create your own quiz to test you or your friends on anything from FBLA to native american culture!" 
+            <Label  Text="With BizQuiz, you can create your own quiz to test you or your friends on anything from FBLA to more FBLA I guess!"
                     Margin="50"
                     VerticalOptions="Start"
                     HorizontalOptions="Center"
-                    FontSize="Large"/>
-            <Picker Title="Select a Quiz to Edit" 
-                    x:Name="PickerLevelSelect" 
+                    FontSize="Large" />
+            <Picker Title="Select a Quiz to Edit"
+                    x:Name="PickerLevelSelect"
                     WidthRequest="40"
                     SelectedIndexChanged="OnPickerSelectedIndexChanged"
-                    Focused="PickerLevelSelect_Focused"/>
-            <Label  Text="OR" 
+                    Focused="PickerLevelSelect_Focused" />
+            <Label  Text="OR"
                     Margin="50"
                     VerticalOptions="Center"
                     HorizontalOptions="Center"
-                    FontSize="Large"/>
-            <Button x:Name="ButtonCreate" 
-                    Text="Create new level" 
-                    Clicked="ButtonCreate_Clicked" 
-                    WidthRequest="100" 
-                    HeightRequest="100" 
+                    FontSize="Large" />
+            <Button x:Name="ButtonCreate"
+                    Text="Create new level"
+                    Clicked="ButtonCreate_Clicked"
+                    WidthRequest="100"
+                    HeightRequest="100"
                     BorderRadius="50"
                     VerticalOptions="Start"
-                    HorizontalOptions="Center"/>
+                    HorizontalOptions="Center" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

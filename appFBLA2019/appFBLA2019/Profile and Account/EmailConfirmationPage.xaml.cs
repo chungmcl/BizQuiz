@@ -1,4 +1,6 @@
-﻿using System;
+﻿//BizQuiz App 2019
+
+using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -8,16 +10,6 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EmailConfirmationPage : ContentPage
     {
-        private const int maxEmailLengthSize = 640;
-
-        private string username;
-        private string email;
-
-        public delegate void EmailConfirmedEventHandler(object source, EventArgs eventArgs);
-        public event EmailConfirmedEventHandler EmailConfirmed;
-
-        public delegate void ConfirmLaterSelectedEventHandler(object source, EventArgs eventArgs);
-        public event ConfirmLaterSelectedEventHandler ConfirmLaterSelected;
         public EmailConfirmationPage(string username)
         {
             this.InitializeComponent();
@@ -26,22 +18,33 @@ namespace appFBLA2019
             Task getEmail = Task.Run(() => this.GetEmail());
         }
 
-        private async Task GetEmail()
-        {
-            try
-            {
-                await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.GetEmail, $"{this.username}/-"));
-                this.email = await Task.Run(() => ServerConnector.ReceiveFromServerStringData());
+        public delegate void ConfirmLaterSelectedEventHandler(object source, EventArgs eventArgs);
 
-                Device.BeginInvokeOnMainThread(() =>
-                this.LabelTitle.Text =
-                $"Enter the confirmation code sent to {this.email}");
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                this.LabelMessage.Text = "Connection Error: Please Try Again.");
-            }
+        public delegate void EmailConfirmedEventHandler(object source, EventArgs eventArgs);
+
+        public event ConfirmLaterSelectedEventHandler ConfirmLaterSelected;
+
+        public event EmailConfirmedEventHandler EmailConfirmed;
+
+        protected virtual void OnConfirmLaterSelected()
+        {
+            this.ConfirmLaterSelected?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnEmailConfirmed()
+        {
+            this.EmailConfirmed?.Invoke(this, EventArgs.Empty);
+        }
+
+        private const int maxEmailLengthSize = 640;
+
+        private string email;
+        private string username;
+
+        private async void ButtonClose_Clicked(object sender, EventArgs e)
+        {
+            this.OnConfirmLaterSelected();
+            await this.Navigation.PopModalAsync(true);
         }
 
         private void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
@@ -49,36 +52,6 @@ namespace appFBLA2019
             Task confirmEmail = Task.Run(() => this.ConfirmEmail(
                 this.EntryConfirmationCode.Text,
                 this.username));
-        }
-
-        private async Task ConfirmEmail(string confirmationCode, string username)
-        {
-            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.ConfirmEmail, 
-                    $"{username}/{confirmationCode}/-"));
-
-            if (completedRequest)
-            {
-                OperationReturnMessage returnData = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
-
-                if (returnData == OperationReturnMessage.True)
-                {
-                    Device.BeginInvokeOnMainThread(async () =>
-                    {
-                        this.OnEmailConfirmed();
-                        await this.Navigation.PopModalAsync(true);
-                    });
-                }
-                else
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Email could not be confirmed. Please try your code again.");
-                }
-            }
-            else
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Connection failed: Please try again.");
-            }
         }
 
         private void ButtonFixEmail_Clicked(object sender, EventArgs e)
@@ -113,20 +86,52 @@ namespace appFBLA2019
             }
         }
 
-        private async void ButtonClose_Clicked(object sender, EventArgs e)
+        private async Task ConfirmEmail(string confirmationCode, string username)
         {
-            this.OnConfirmLaterSelected();
-            await this.Navigation.PopModalAsync(true);
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.ConfirmEmail,
+                    $"{username}/{confirmationCode}/-"));
+
+            if (completedRequest)
+            {
+                OperationReturnMessage returnData = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
+
+                if (returnData == OperationReturnMessage.True)
+                {
+                    Device.BeginInvokeOnMainThread(async () =>
+                    {
+                        this.OnEmailConfirmed();
+                        await this.Navigation.PopModalAsync(true);
+                    });
+                }
+                else
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = "Email could not be confirmed. Please try your code again.");
+                }
+            }
+            else
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = "Connection failed: Please try again.");
+            }
         }
 
-        protected virtual void OnEmailConfirmed()
+        private async Task GetEmail()
         {
-            this.EmailConfirmed?.Invoke(this, EventArgs.Empty);
-        }
+            try
+            {
+                await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.GetEmail, $"{this.username}/-"));
+                this.email = await Task.Run(() => ServerConnector.ReceiveFromServerStringData());
 
-        protected virtual void OnConfirmLaterSelected()
-        {
-            this.ConfirmLaterSelected?.Invoke(this, EventArgs.Empty);
+                Device.BeginInvokeOnMainThread(() =>
+                this.LabelTitle.Text =
+                $"Enter the confirmation code sent to {this.email}");
+            }
+            catch
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                this.LabelMessage.Text = "Connection Error: Please Try Again.");
+            }
         }
     }
 }

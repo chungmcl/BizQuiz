@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//BizQuiz App 2019
 
+
+
+using System;
+using System.Collections.Generic;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class LevelCategoriesPage : Xamarin.Forms.TabbedPage
-	{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class LevelCategoriesPage : Xamarin.Forms.TabbedPage
+    {
         public LevelCategoriesPage()
         {
             this.InitializeComponent();
@@ -23,5 +22,5 @@ namespace appFBLA2019
 #endif
             this.BarTextColor = Color.White;
         }
-	}
+    }
 }

@@ -5,7 +5,7 @@
     xmlns:local="clr-namespace:appFBLA2019"
     x:Class="appFBLA2019.MainPage"
     Title="BizQuiz"
-    BarBackgroundColor="#2196F3"
+    BarBackgroundColor="#004f96"
     BarTextColor="White"
     x:Name="TabbedPagePage"
     CurrentPageChanged="TabbedPage_CurrentPageChanged"

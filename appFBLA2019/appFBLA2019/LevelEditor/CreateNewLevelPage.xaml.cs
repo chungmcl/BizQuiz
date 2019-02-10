@@ -89,7 +89,7 @@ namespace appFBLA2019
             if (answer == true)
             {
                 //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
-                Frame frame = ((Frame)((StackLayout)((ImageButton)sender).Parent).Parent);
+                Frame frame = (Frame)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent;
                 //Animate A deletion
                 await frame.TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
                 this.StackLayoutQuestionStack.Children.Remove(frame);
@@ -144,6 +144,14 @@ namespace appFBLA2019
                                 ((Entry)children[4]).Text, // Incorect answer
                                 ((Entry)children[5]).Text}; // Incorect answer
 
+                    // Checks if there is a question set
+                    if (string.IsNullOrWhiteSpace(((Entry)children[1]).Text))
+                    {
+                        this.DisplayAlert("Couldn't Create Level", "Every question must have a question set", "OK");
+                        goto error;
+                    }
+
+
                     if (((ImageButton)children[6]).IsEnabled) // if needs image
                     {
                         addThis = new Question(
@@ -157,7 +165,38 @@ namespace appFBLA2019
                                 ((Entry)children[1]).Text,
                                 answers);
                     }
+                    
+                    // Sets the question type
+                    if (((Switch)((StackLayout)children[0]).Children[0]).IsToggled)
+                    {
+                        if (string.IsNullOrWhiteSpace(answers[0]))
+                        {
+                            this.DisplayAlert("Couldn't Create Level", "Text answer questions must have an answer", "OK");
+                            goto error;
+                        }
+                            
+                        addThis.QuestionType = 1;
+                    }
+                    else
+                    {
+                        int size = 0;
+                        foreach (string answer in answers)
+                        {
+                            if (!string.IsNullOrWhiteSpace(answer))
+                                size++;
+                        }
+                        if (size < 2 || string.IsNullOrWhiteSpace(answers[0]))
+                        {
+                            this.DisplayAlert("Couldn't Create Level", "Mulitple choice questions must have a correct answer and at least one wrong answer", "OK");
+                            goto error;
+                        }
+                            
+                        addThis.QuestionType = 0;
+                    }
+                        
+
                     addThis.DBId = frame.StyleId; // Set the dbid
+
                     NewQuestions.Add(addThis);
                 }
 
@@ -209,7 +248,10 @@ namespace appFBLA2019
                     
                 // Returns user to front page of LevelEditor and refreshed database
                 this.Navigation.PopAsync(true);
+                
             }
+        error:;
+                
         }
 
         /// <summary>
@@ -228,6 +270,11 @@ namespace appFBLA2019
         /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
         public void AddNewQuestion(Question question)
         {
+            bool isMultipleChoice = true;
+            if (question != null)
+            {
+                isMultipleChoice = question.QuestionType == 0;
+            }               
             Frame frame = new Frame() // The frame that holds everything
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
@@ -244,7 +291,44 @@ namespace appFBLA2019
                 Orientation = StackOrientation.Vertical
             };
 
-            ImageButton Remove = new ImageButton(); // the button to remove the question
+            // 0
+            StackLayout topStack = new StackLayout
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                Orientation = StackOrientation.Horizontal
+            };
+            frameStack.Children.Add(topStack);
+
+
+
+            // 0 - 0
+            Switch SwitchMultipleChoice = new Switch();
+            {
+
+                SwitchMultipleChoice.Toggled += switcher_Toggled;
+                SwitchMultipleChoice.HorizontalOptions = LayoutOptions.Start;
+                SwitchMultipleChoice.VerticalOptions = LayoutOptions.Start;
+            }
+            topStack.Children.Add(SwitchMultipleChoice);
+
+            // 0 - 1
+            Label labelSwitch = new Label()
+            {
+                FontSize = 24,
+                TextColor = Color.Accent,
+                FontAttributes = FontAttributes.Italic,
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                VerticalOptions = LayoutOptions.Start
+            };
+            if (isMultipleChoice)
+                labelSwitch.Text = "Multiple Choice";
+            else
+                labelSwitch.Text = "Text Answer";
+
+            topStack.Children.Add(labelSwitch);
+
+            // 0 - 2
+            ImageButton Remove = new ImageButton(); // the button to remove the question 
             {
                 Remove.Source = "ic_close_black_48dp.png";
                 Remove.Clicked += new EventHandler(this.ButtonRemove_Clicked);
@@ -254,67 +338,73 @@ namespace appFBLA2019
                 Remove.HorizontalOptions = LayoutOptions.End;
                 Remove.VerticalOptions = LayoutOptions.Start;
             }
-            frameStack.Children.Add(Remove);
+            topStack.Children.Add(Remove);
 
+            // 1
             Entry Question = new Entry // The question
             {
                 Placeholder = "Enter question",
+                FontSize = 20
                 
             };
             if (question != null) 
                 Question.Text = question.QuestionText;
             frameStack.Children.Add(Question);
 
+            // 2
             Entry AnswerCorrect = new Entry // The correct answer
             {
                 Placeholder = "Enter correct answer",
             };
-            AnswerCorrect.TranslationX += 10;
             if (question != null)
                 AnswerCorrect.Text = question.CorrectAnswer;
 
             frameStack.Children.Add(AnswerCorrect);
 
+            // 3
             Entry AnswerWrongOne = new Entry // A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            AnswerWrongOne.TranslationX += 10;
             if (question != null)
                 AnswerWrongOne.Text = question.AnswerOne;
 
             frameStack.Children.Add(AnswerWrongOne);
 
+            // 4
             Entry AnswerWrongTwo = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            AnswerWrongTwo.TranslationX += 10;
             if (question != null)
                 AnswerWrongTwo.Text = question.AnswerTwo;
             frameStack.Children.Add(AnswerWrongTwo);
 
+            // 5
             Entry AnswerWrongThree = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            AnswerWrongThree.TranslationX += 10;
             if (question != null)
                 AnswerWrongThree.Text = question.AnswerThree;
             frameStack.Children.Add(AnswerWrongThree);
 
-
+            // 6
             Button AddImage = new Button(); // The add Image button
             {
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
-                AddImage.CornerRadius = 20;
-                AddImage.IsVisible = false;              
+                AddImage.CornerRadius = 25;
+                AddImage.IsVisible = false;
+                AddImage.HeightRequest = 50;
+                AddImage.BackgroundColor = Color.FromHex("#AE213A");
+                AddImage.TextColor = Color.White;
             }
 
             bool needsPicture = false;
             if (question != null)
                 needsPicture = question.NeedsPicture;
+            // 7
             ImageButton image = new ImageButton(); // The image itself
             {
                 image.IsEnabled = needsPicture;
@@ -331,12 +421,36 @@ namespace appFBLA2019
             }
             else // or adds the add image button
                 AddImage.IsVisible = true;
-            
+
+
+
+            // Dissable extra answers if its not mulitple choice
+            AnswerWrongOne.IsVisible = isMultipleChoice;
+            AnswerWrongTwo.IsVisible = isMultipleChoice;
+            AnswerWrongThree.IsVisible = isMultipleChoice;
+            SwitchMultipleChoice.IsToggled = !isMultipleChoice;
+
             frame.Content = frameStack;
             // and add the frame to the the other stacklaout.
             this.StackLayoutQuestionStack.Children.Add(frame);
+
         }
 
+        private void switcher_Toggled(object sender, ToggledEventArgs e)
+        {
+            StackLayout stack = ((StackLayout)((StackLayout)((Switch)sender).Parent).Parent);
+            stack.Children[3].IsVisible = !e.Value;
+            stack.Children[3].IsVisible = !e.Value;
+            stack.Children[4].IsVisible = !e.Value;
+            stack.Children[5].IsVisible = !e.Value;
+
+            Label label = ((Label)((StackLayout)((Switch)sender).Parent).Children[1]);
+            if (e.Value)
+                label.Text = "Text Answer";
+            else
+                label.Text = "Multiple Choice";
+
+        }
 
         public void SetLevelName(string levelName)
         {
