@@ -63,8 +63,6 @@ namespace appFBLA2019
                     HorizontalOptions = LayoutOptions.End
                 });
 
-                DBHandler.SelectDatabase(level[0], level[1]);
-
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
