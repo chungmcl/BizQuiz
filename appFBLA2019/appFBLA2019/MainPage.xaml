@@ -5,10 +5,13 @@
     xmlns:local="clr-namespace:appFBLA2019"
     x:Class="appFBLA2019.MainPage"
     Title="BizQuiz"
-    BarBackgroundColor="#2196F3"
-    BarTextColor="White">
-    <local:LevelCategoriesPage Title="Standard Levels" Icon="ic_landscape_black_48dp.png" />
-    <local:LevelEditorPage Title="Level Editor" Icon="ic_edit_black_48dp.png" />
-    <ContentPage Title="Leaderboards" Icon="ic_group_black_48dp.png" />
-    <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png" />
+    BarBackgroundColor="#004f96"
+    BarTextColor="White"
+    x:Name="TabbedPagePage"
+    CurrentPageChanged="TabbedPage_CurrentPageChanged"
+    >
+    <local:LevelCategoriesPage Title="Standard Levels" Icon="ic_landscape_black_48dp.png"/>
+    <local:LevelEditorPage Title="Level Editor" Icon="ic_edit_black_48dp.png"/>
+    <ContentPage Title="Leaderboards" Icon="ic_group_black_48dp.png"/>
+    <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png"/>
 </TabbedPage>

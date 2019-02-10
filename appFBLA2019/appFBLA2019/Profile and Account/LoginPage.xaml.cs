@@ -1,7 +1,6 @@
-﻿//BizQuiz App 2019
-
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using static appFBLA2019.CreateAccountPage;
@@ -9,36 +8,33 @@ using static appFBLA2019.CreateAccountPage;
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LoginPage : ContentPage
+    public partial class LoginPage : ContentView
     {
+        public delegate void LoggedinEventHandler(object source, EventArgs eventArgs);
+        public event LoggedinEventHandler LoggedIn;
         public LoginPage()
         {
             this.InitializeComponent();
         }
 
-        public void OnEmailConfirmed(object source, EventArgs args)
-        {
-            this.LabelMessage.Text = "Login Successful!";
-        }
-
         private void ButtonLogin_Clicked(object sender, EventArgs e)
         {
+            this.LabelMessage.Text = "";
+            this.ButtonLogin.IsEnabled = false;
+            this.ButtonToCreateAccountPage.IsEnabled = false;
             Task login = Task.Run(() => this.Login(this.EntryUsername.Text,
                 this.EntryPassword.Text));
         }
 
-        private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)
-        {
-            var createAccountPage = new CreateAccountPage();
-            createAccountPage.AccountCreated += this.OnAccountCreated;
-            await this.Navigation.PushAsync(createAccountPage);
-        }
-
         private async void Login(string username, string password)
         {
-            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Waiting...");
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ActivityIndicator.IsVisible = true;
+                this.ActivityIndicator.IsRunning = true;
+            });
             bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.LoginAccount, $"{username}/{password}/-"));
-
+            
             if (completedRequest)
             {
                 OperationReturnMessage response = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
@@ -47,10 +43,11 @@ namespace appFBLA2019
                 {
                     Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
                     CredentialManager.SaveCredential(username, password);
+                    OnLoggedIn();
                 }
                 else if (response == OperationReturnMessage.TrueConfirmEmail)
                 {
-                    Device.BeginInvokeOnMainThread(async () =>
+                    Device.BeginInvokeOnMainThread(async() =>
                     {
                         this.LabelMessage.Text = "Please confirm your email.";
                         var confirmationPage = new EmailConfirmationPage(username);
@@ -58,6 +55,7 @@ namespace appFBLA2019
                         await this.Navigation.PushModalAsync(confirmationPage);
                     });
                     CredentialManager.SaveCredential(username, password);
+                    OnLoggedIn();
                 }
                 else
                 {
@@ -69,6 +67,32 @@ namespace appFBLA2019
             {
                 Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Connection failed: Please try again.");
             }
+
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ButtonLogin.IsEnabled = true;
+                this.ButtonToCreateAccountPage.IsEnabled = true;
+                this.ActivityIndicator.IsRunning = false;
+                this.ActivityIndicator.IsVisible = false;
+            });
+            
+        }
+
+        private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)
+        {
+            var createAccountPage = new CreateAccountPage();
+            createAccountPage.AccountCreated += this.OnAccountCreated;
+            await this.Navigation.PushAsync(createAccountPage);
+        }
+
+        public void OnEmailConfirmed(object source, EventArgs args)
+        {
+            this.LabelMessage.Text = "Login Successful!";
+        }
+
+        protected virtual void OnLoggedIn()
+        {
+            this.LoggedIn?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnAccountCreated(object source, AccountCreatedEventArgs accountArgs)

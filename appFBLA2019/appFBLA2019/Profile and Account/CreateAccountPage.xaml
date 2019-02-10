@@ -7,36 +7,41 @@
             Spacing="20"
             Padding="20">
 
-            <Label x:Name="LabelTitle" Text="Create New Account" Font="Bold" HorizontalOptions="Center" />
+            <Label x:Name="LabelTitle" Text="Create New Account" Font="Bold" HorizontalOptions="Center"/>
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label Text="Username" Grid.Column="0" Grid.Row="0" />
-                <Label Text="Password" Grid.Column="0" Grid.Row="1" />
-                <Label Text="Email" Grid.Column="0" Grid.Row="2" />
+                <Label Text="Username" Grid.Column="0" Grid.Row="0"/>
+                <Label Text="Password" Grid.Column="0" Grid.Row="1"/>
+                <Label Text="Email" Grid.Column="0" Grid.Row="2"/>
 
                 <Entry x:Name="EntryUsername" Grid.Column="1" Grid.Row="0"
-                       HorizontalOptions="FillAndExpand" />
+                       HorizontalOptions="FillAndExpand"/>
                 <Entry x:Name="EntryPassword" Grid.Column="1" Grid.Row="1"
-                       HorizontalOptions="FillAndExpand" />
+                       HorizontalOptions="FillAndExpand"/>
                 <Entry x:Name="EntryEmail" Grid.Column="1" Grid.Row="2"
-                       HorizontalOptions="FillAndExpand" />
+                       HorizontalOptions="FillAndExpand"/>
+
             </Grid>
+
 
             <Button x:Name="ButtonCreateAccount"
                     Text="Create Account"
-                    Clicked="ButtonCreateAccount_Clicked" />
+                    Clicked="ButtonCreateAccount_Clicked"
+                    />
             <Label x:Name="LabelMessage" Text=""
-                   HorizontalOptions="Center" />
+                   HorizontalOptions="Center"/>
+
+            <ActivityIndicator x:Name="ActivityIndicator" IsVisible="false"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

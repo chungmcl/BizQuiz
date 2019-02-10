@@ -1,48 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.LoginPage"
-             Title="Login">
-    <ContentPage.Content>
+             xmlns:local="clr-namespace:appFBLA2019">
+    <ContentView.Content>
         <StackLayout
             Spacing="20"
             Padding="20">
 
-            <Label x:Name="Header" Text="FBLA Mobile App Dev" Font="Bold"
-                   HorizontalOptions="Center" />
+            <Label x:Name="Title" Text="BizQuiz" Font="Bold"
+                   HorizontalOptions="Center"/>
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label Text="Username" Grid.Column="0" Grid.Row="0" />
-                <Label Text="Password" Grid.Column="0" Grid.Row="1" />
+                <Label Text="Username" Grid.Column="0" Grid.Row="0"/>
+                <Label Text="Password" Grid.Column="0" Grid.Row="1"/>
 
                 <Entry x:Name="EntryUsername" Grid.Column="1" Grid.Row="0"
-                       HorizontalOptions="FillAndExpand" />
+                       HorizontalOptions="FillAndExpand"/>
                 <Entry x:Name="EntryPassword" Grid.Column="1" Grid.Row="1"
                        IsPassword="True"
-                       HorizontalOptions="FillAndExpand" />
+                       HorizontalOptions="FillAndExpand"/>
             </Grid>
 
             <StackLayout
                 Spacing="5">
                 <Button x:Name="ButtonLogin"
                     Text="Login"
-                    Clicked="ButtonLogin_Clicked" />
+                    Clicked="ButtonLogin_Clicked"/>
 
                 <Button x:Name="ButtonToCreateAccountPage"
                     Text="Create New Account"
-                    Clicked="ButtonToCreateAccountPage_Clicked" />
+                    Clicked="ButtonToCreateAccountPage_Clicked"
+                    />
 
-                <Label x:Name="LabelMessage" Text="" Font="Bold"
-                       HorizontalOptions="Center" />
+                <Label x:Name="LabelMessage" Font="Bold"
+                       HorizontalOptions="Center"/>
+                <ActivityIndicator x:Name="ActivityIndicator" IsVisible="False"/>
             </StackLayout>
+
         </StackLayout>
-    </ContentPage.Content>
-</ContentPage>
+    </ContentView.Content>
+</ContentView>
