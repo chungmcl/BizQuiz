@@ -1,112 +1,38 @@
-﻿//BizQuiz App 2019
-
-using Realms;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using Realms;
 using System.Linq;
+using System.IO;
 using Xamarin.Forms;
 
 namespace appFBLA2019
 {
     /// <summary>
-    /// Object representing the database file selected through DBHandler. Contains methods to modify the database file.
+    /// Object representing the database file selected through DBHandler.
+    /// Contains methods to modify the database file.
     /// </summary>
     public class GameDatabase
     {
+        private const string realmExtension = ".realm";
+
+        public Realm realmDB;
+        public readonly string fileName;
+        private string dbPath;
+        private string dbFolderPath;
+        
         public GameDatabase(string dbFolderPath, string levelTitle)
         {
             try
             {
                 this.dbPath = dbFolderPath + $"/{levelTitle}{realmExtension}";
                 this.dbFolderPath = dbFolderPath;
-                RealmConfiguration rC = new RealmConfiguration(this.dbPath);
+                RealmConfiguration rC = new RealmConfiguration(dbPath);
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = $"/{levelTitle}{realmExtension}";
             }
             catch (Exception ex)
             {
                 string test = ex.Message.ToString();
-            }
-        }
-
-        public readonly string fileName;
-        public Realm realmDB;
-
-        public void AddQuestions(List<Question> questions)
-        {
-            foreach (Question question in questions)
-            {
-                this.SaveQuestion(question);
-            }
-        }
-
-        public void AddQuestions(Question question)
-        {
-            this.SaveQuestion(question);
-        }
-
-        public void AddScore(ScoreRecord score)
-        {
-            this.realmDB.Write(() =>
-            {
-                this.realmDB.Add(score);
-            });
-        }
-
-        public void DeleteQuestions(params Question[] questions)
-        {
-            foreach (Question question in questions)
-            {
-                if (question.NeedsPicture)
-                {
-                    File.Delete(this.dbFolderPath + "/" + question.DBId + ".jpg");
-                }
-
-                this.realmDB.Write(() =>
-                {
-                    this.realmDB.Remove(question);
-                });
-            }
-        }
-
-        public void EditQuestion(Question updatedQuestion)
-        {
-            this.realmDB.Write(() =>
-            {
-                this.realmDB.Add(updatedQuestion, update: true);
-            });
-
-            if (updatedQuestion.NeedsPicture)
-            {
-                byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
-                File.WriteAllBytes(this.dbFolderPath + "/" + updatedQuestion.DBId + ".jpg", imageByteArray);
-            }
-        }
-
-        public double GetAvgScore()
-        {
-            if (this.realmDB != null)
-            {
-                IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
-                List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
-                if (scores.Count <= 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    double runningTotal = 0;
-                    foreach (ScoreRecord score in scores)
-                    {
-                        runningTotal += score.Score;
-                    }
-                    return runningTotal / scores.Count;
-                }
-            }
-            else
-            {
-                return 0.0;
             }
         }
 
@@ -117,16 +43,23 @@ namespace appFBLA2019
             for (int i = 0; i < queryable.Count(); i++)
             {
                 if (questions[i].NeedsPicture)
-                {
-                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].DBId + ".jpg";
-                }
+                    questions[i].ImagePath = dbFolderPath + "/" + questions[i].DBId + ".jpg";
             }
             return questions;
         }
 
-        private const string realmExtension = ".realm";
-        private readonly string dbFolderPath;
-        private readonly string dbPath;
+        public void AddQuestions(List<Question> questions)
+        {
+            foreach (Question question in questions)
+            {
+                SaveQuestion(question);
+            }
+        }
+
+        public void AddQuestions(Question question)
+        {
+            SaveQuestion(question);
+        }
 
         private void SaveQuestion(Question question)
         {
@@ -136,7 +69,7 @@ namespace appFBLA2019
             if (question.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
-                File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+                File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
             }
 
             this.realmDB.Write(() =>
@@ -144,5 +77,70 @@ namespace appFBLA2019
                 this.realmDB.Add(question);
             });
         }
+
+        public void DeleteQuestions(params Question[] questions)
+        {
+            foreach (Question question in questions)
+            {
+                if (question.NeedsPicture)
+                    File.Delete(dbFolderPath + "/" + question.DBId + ".jpg");
+                this.realmDB.Write(() =>
+                {
+                    this.realmDB.Remove(question);
+                });
+            }
+        }
+
+        // To be added:
+        //public void AddScore(ScoreRecord score)
+        //{
+        //    this.realmDB.Write(() =>
+        //    {
+        //        this.realmDB.Add(score);
+        //    });
+        //}
+
+        public void EditQuestion(Question updatedQuestion)
+        {
+
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(updatedQuestion, update: true);
+            });
+
+
+            if (updatedQuestion.NeedsPicture)
+            {
+                byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
+                File.WriteAllBytes(dbFolderPath + "/" + updatedQuestion.DBId + ".jpg", imageByteArray);
+            }
+        }
+
+        // To be added:
+        //public double GetAvgScore()
+        //{
+        //    if (this.realmDB != null)
+        //    {
+        //        IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
+        //        List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
+        //        if (scores.Count <= 0)
+        //        {
+        //            return 0;
+        //        }
+        //        else
+        //        {
+        //            double runningTotal = 0;
+        //            foreach (ScoreRecord score in scores)
+        //            {
+        //                runningTotal += score.Score;
+        //            }
+        //            return runningTotal / scores.Count;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return 0.0;
+        //    }
+        //}
     }
 }

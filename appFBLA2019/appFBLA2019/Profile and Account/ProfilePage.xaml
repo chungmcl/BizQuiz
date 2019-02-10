@@ -2,10 +2,33 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.ProfilePage"
-             xmlns:local="clr-namespace:appFBLA2019">
-    <!--This should change between the Profile, Login, Create Account, etc. pages as needed-->
-    <StackLayout>
-        <Button x:Name="ButtonToLoginPage" Text="Login"
-            Clicked="ButtonToLoginPage_Clicked" VerticalOptions="CenterAndExpand" />
-    </StackLayout>
+             xmlns:local="clr-namespace:appFBLA2019"
+             
+             >
+    <ContentPage.Content>
+        <StackLayout>
+
+
+            <ActivityIndicator x:Name="ActivityIndicator" 
+                               Color="Red" 
+                               VerticalOptions="CenterAndExpand"
+                               IsVisible="False"/>
+
+
+            <local:LoginPage x:Name="LocalLoginPage" IsVisible="False"/>
+
+
+            <StackLayout x:Name="StackLayoutProfilePageContent" 
+                         IsVisible="False"
+                         >
+                <ScrollView>
+                    <StackLayout>
+                        <Label x:Name="LabelUsername" />
+                    </StackLayout>
+                </ScrollView>
+            </StackLayout>
+
+
+        </StackLayout>
+    </ContentPage.Content>
 </ContentPage>

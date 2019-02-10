@@ -1,40 +1,289 @@
-﻿//BizQuiz App 2019
-
-using Plugin.Media;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Timers;
+using Plugin.Media;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+
 namespace appFBLA2019
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class CreateNewLevelPage : ContentPage
-    {
+	[XamlCompilation(XamlCompilationOptions.Compile)]
+	public partial class CreateNewLevelPage : ContentPage
+	{
+        private string originalAuthor;
+        private string originalName;
+
+        /// <summary>
+        /// Constructing from an already existing level
+        /// </summary>
+        /// <param name="originalName"></param>
+        /// <param name="originalAuthor"></param>
+		public CreateNewLevelPage(string originalName, string originalAuthor)
+		{           
+			this.InitializeComponent();
+            this.originalAuthor = originalAuthor;
+            this.originalName = originalName;
+        }
+        
+        /// <summary>
+        /// Constructing a brand new level
+        /// </summary>
         public CreateNewLevelPage()
         {
             this.InitializeComponent();
         }
 
         /// <summary>
+        /// Called when the user presses the Add Image button on a question eiditor
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ButtonAddImage_Clicked(object sender, EventArgs e)
+        {
+
+            await CrossMedia.Current.Initialize();
+            Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
+
+            if (file != null) // if the user actually picked an image
+            {
+                ImageButton currentImage;
+
+                currentImage = ((ImageButton)((StackLayout)((View)sender).Parent).Children[6]);
+ 
+
+                currentImage.Source = file.Path;
+
+                // Enables the image
+                currentImage.IsEnabled = true;
+                if (sender is Button)
+                    ((Button)sender).IsVisible = false;
+            }
+
+        }
+
+        /// <summary>
+        /// Called when the add question button is clicked and adds a new question
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonAddQuestion_Clicked(object sender, EventArgs e)
+        {
+            this.AddNewQuestion();
+            // Scroll to bottom
+            this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
+        }
+
+        /// <summary>
+        /// Removes the Question Frame when remove button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        async private void ButtonRemove_Clicked(object sender, EventArgs e)
+        {
+            bool answer = await this.DisplayAlert("Warning", "Are you sure you would like to delete this question?", "Yes", "No");
+            if (answer == true)
+            {
+                //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
+                Frame frame = (Frame)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent;
+                //Animate A deletion
+                await frame.TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
+                this.StackLayoutQuestionStack.Children.Remove(frame);
+            }
+        }
+
+        /// <summary>
+        /// Saves the user created level
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
+            {
+                this.DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
+            }
+            else if (this.StackLayoutQuestionStack.Children.Count < 2)
+            {
+                this.DisplayAlert("Couldn't Create Level", "Please create at least two questions", "OK");
+            }
+            else
+            {
+                // Set previousQuestions to the correct previous questions
+                List<Question> previousQuestions = new List<Question>(); ; // A list of questions already in the database
+                if (this.originalAuthor != CredentialManager.Username)
+                {
+                    DBHandler.SelectDatabase(this.originalName, this.originalAuthor);                 
+                }                   
+                else
+                {
+                    DBHandler.SelectDatabase(this.originalName, CredentialManager.Username);                   
+                }
+                previousQuestions = DBHandler.Database.GetQuestions();
+                
+                // Now open the database the user just made, might be the same as the one already open
+                DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), CredentialManager.Username);
+
+                List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
+                
+
+                // Loops through each question frame on the screen 
+                foreach (Frame frame in this.StackLayoutQuestionStack.Children)
+                {
+                    // A list of all the children of the current frame  
+                    IList<View> children = ((StackLayout)frame.Content).Children;
+
+                    Question addThis;        
+                    //The answers to the question
+                    string[] answers = {((Entry)children[2]).Text, //Correct answer
+                                ((Entry)children[3]).Text, // Incorect answer
+                                ((Entry)children[4]).Text, // Incorect answer
+                                ((Entry)children[5]).Text}; // Incorect answer
+
+                    // Checks if there is a question set
+                    if (string.IsNullOrWhiteSpace(((Entry)children[1]).Text))
+                    {
+                        this.DisplayAlert("Couldn't Create Level", "Every question must have a question set", "OK");
+                        goto error;
+                    }
+
+
+                    if (((ImageButton)children[6]).IsEnabled) // if needs image
+                    {
+                        addThis = new Question(
+                                ((Entry)children[1]).Text, // The Question
+                                ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
+                                answers) { NeedsPicture = true } ;
+                    }
+                    else // if not needs picture
+                    {
+                        addThis = new Question(
+                                ((Entry)children[1]).Text,
+                                answers);
+                    }
+                    
+                    // Sets the question type
+                    if (((Switch)((StackLayout)children[0]).Children[0]).IsToggled)
+                    {
+                        if (string.IsNullOrWhiteSpace(answers[0]))
+                        {
+                            this.DisplayAlert("Couldn't Create Level", "Text answer questions must have an answer", "OK");
+                            goto error;
+                        }
+                            
+                        addThis.QuestionType = 1;
+                    }
+                    else
+                    {
+                        int size = 0;
+                        foreach (string answer in answers)
+                        {
+                            if (!string.IsNullOrWhiteSpace(answer))
+                                size++;
+                        }
+                        if (size < 2 || string.IsNullOrWhiteSpace(answers[0]))
+                        {
+                            this.DisplayAlert("Couldn't Create Level", "Mulitple choice questions must have a correct answer and at least one wrong answer", "OK");
+                            goto error;
+                        }
+                            
+                        addThis.QuestionType = 0;
+                    }
+                        
+
+                    addThis.DBId = frame.StyleId; // Set the dbid
+
+                    NewQuestions.Add(addThis);
+                }
+
+                // Add if it doesn't already exist,
+                // delete if it doesn't exist anymore, 
+                // update the ones that need to be updated, 
+                // and do nothing to the others
+
+                // Work in progress, algorithm might be off.
+                if (previousQuestions.Count() == 0) // if the user created this for the first time
+                    DBHandler.Database.AddQuestions(NewQuestions);
+                else
+                {
+                    for (int i = 0; i <= previousQuestions.Count() - 1; i++)
+                    {
+                        bool DBIdSame = true;
+                        // test each old question with each new question
+                        foreach (Question newQuestion in NewQuestions)
+                        {
+                            
+                            if (previousQuestions[i].DBId == newQuestion.DBId)
+                            {
+                                DBIdSame = true;
+                                // the same question, but changed, so update
+                                DBHandler.Database.EditQuestion(newQuestion);
+                                NewQuestions.Remove(newQuestion);
+                                break;
+                            }
+                            else
+                                DBIdSame = false;
+                        }
+
+                        if (!DBIdSame) // if the question doesn't exist in the new list. delete it
+                            DBHandler.Database.DeleteQuestions(previousQuestions[i]);
+
+                    }
+
+                    // Add all the questions that aren't eddited
+                    DBHandler.Database.AddQuestions(NewQuestions);
+
+
+                }
+
+                // If they renamed the level, delete the old one
+                if (this.originalName != this.EntryLevelName.Text.Trim() && this.originalAuthor == CredentialManager.Username)
+                {
+                    Directory.Delete(App.Path + "/" + this.originalName + "`" + this.originalAuthor, true);
+                }
+                    
+                // Returns user to front page of LevelEditor and refreshed database
+                this.Navigation.PopAsync(true);
+                
+            }
+        error:;
+                
+        }
+
+        /// <summary>
+        /// a private AddNewQuestions for when the user creates a brand new question
+        /// </summary>
+        private void AddNewQuestion()
+        {
+            this.AddNewQuestion(null);
+        }
+
+        /// <summary>
         /// This add New Questions contains parameters for images for when a question contains an image.
         /// </summary>
-        /// <param name="question">  the Question to answer </param>
-        /// <param name="imagePath"> the path for the image corrosponding to the question </param>
-        /// <param name="answers">   the first is the correct answer, the rest are incorrect answers </param>
+        /// <param name="question">the Question to answer</param>
+        /// <param name="imagePath">the path for the image corrosponding to the question</param>
+        /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
         public void AddNewQuestion(Question question)
         {
+            bool isMultipleChoice = true;
+            if (question != null)
+            {
+                isMultipleChoice = question.QuestionType == 0;
+            }               
             Frame frame = new Frame() // The frame that holds everything
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 CornerRadius = 10,
+                
             };
             if (question != null)
-            {
                 frame.StyleId = question.DBId;
-            }
 
             StackLayout frameStack = new StackLayout //the stack that holds all the info in the frame
             {
@@ -42,7 +291,44 @@ namespace appFBLA2019
                 Orientation = StackOrientation.Vertical
             };
 
-            ImageButton Remove = new ImageButton(); // the button to remove the question
+            // 0
+            StackLayout topStack = new StackLayout
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                Orientation = StackOrientation.Horizontal
+            };
+            frameStack.Children.Add(topStack);
+
+
+
+            // 0 - 0
+            Switch SwitchMultipleChoice = new Switch();
+            {
+
+                SwitchMultipleChoice.Toggled += switcher_Toggled;
+                SwitchMultipleChoice.HorizontalOptions = LayoutOptions.Start;
+                SwitchMultipleChoice.VerticalOptions = LayoutOptions.Start;
+            }
+            topStack.Children.Add(SwitchMultipleChoice);
+
+            // 0 - 1
+            Label labelSwitch = new Label()
+            {
+                FontSize = 24,
+                TextColor = Color.Accent,
+                FontAttributes = FontAttributes.Italic,
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                VerticalOptions = LayoutOptions.Start
+            };
+            if (isMultipleChoice)
+                labelSwitch.Text = "Multiple Choice";
+            else
+                labelSwitch.Text = "Text Answer";
+
+            topStack.Children.Add(labelSwitch);
+
+            // 0 - 2
+            ImageButton Remove = new ImageButton(); // the button to remove the question 
             {
                 Remove.Source = "ic_close_black_48dp.png";
                 Remove.Clicked += new EventHandler(this.ButtonRemove_Clicked);
@@ -52,81 +338,73 @@ namespace appFBLA2019
                 Remove.HorizontalOptions = LayoutOptions.End;
                 Remove.VerticalOptions = LayoutOptions.Start;
             }
-            frameStack.Children.Add(Remove);
+            topStack.Children.Add(Remove);
 
+            // 1
             Entry Question = new Entry // The question
             {
                 Placeholder = "Enter question",
+                FontSize = 20
+                
             };
-            if (question != null)
-            {
+            if (question != null) 
                 Question.Text = question.QuestionText;
-            }
-
             frameStack.Children.Add(Question);
 
+            // 2
             Entry AnswerCorrect = new Entry // The correct answer
             {
                 Placeholder = "Enter correct answer",
             };
-            AnswerCorrect.TranslationX += 10;
             if (question != null)
-            {
                 AnswerCorrect.Text = question.CorrectAnswer;
-            }
 
             frameStack.Children.Add(AnswerCorrect);
 
+            // 3
             Entry AnswerWrongOne = new Entry // A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            AnswerWrongOne.TranslationX += 10;
             if (question != null)
-            {
                 AnswerWrongOne.Text = question.AnswerOne;
-            }
 
             frameStack.Children.Add(AnswerWrongOne);
 
+            // 4
             Entry AnswerWrongTwo = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            AnswerWrongTwo.TranslationX += 10;
             if (question != null)
-            {
                 AnswerWrongTwo.Text = question.AnswerTwo;
-            }
-
             frameStack.Children.Add(AnswerWrongTwo);
 
+            // 5
             Entry AnswerWrongThree = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
-            AnswerWrongThree.TranslationX += 10;
             if (question != null)
-            {
                 AnswerWrongThree.Text = question.AnswerThree;
-            }
-
             frameStack.Children.Add(AnswerWrongThree);
 
+            // 6
             Button AddImage = new Button(); // The add Image button
             {
                 AddImage.Text = "Add Image";
                 AddImage.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
-                AddImage.CornerRadius = 20;
+                AddImage.CornerRadius = 25;
                 AddImage.IsVisible = false;
+                AddImage.HeightRequest = 50;
+                AddImage.BackgroundColor = Color.FromHex("#AE213A");
+                AddImage.TextColor = Color.White;
             }
 
             bool needsPicture = false;
             if (question != null)
-            {
                 needsPicture = question.NeedsPicture;
-            }
-
+            // 7
             ImageButton image = new ImageButton(); // The image itself
             {
                 image.IsEnabled = needsPicture;
@@ -142,193 +420,41 @@ namespace appFBLA2019
                 image.Source = question.ImagePath;
             }
             else // or adds the add image button
-            {
                 AddImage.IsVisible = true;
-            }
+
+
+
+            // Dissable extra answers if its not mulitple choice
+            AnswerWrongOne.IsVisible = isMultipleChoice;
+            AnswerWrongTwo.IsVisible = isMultipleChoice;
+            AnswerWrongThree.IsVisible = isMultipleChoice;
+            SwitchMultipleChoice.IsToggled = !isMultipleChoice;
 
             frame.Content = frameStack;
             // and add the frame to the the other stacklaout.
             this.StackLayoutQuestionStack.Children.Add(frame);
+
+        }
+
+        private void switcher_Toggled(object sender, ToggledEventArgs e)
+        {
+            StackLayout stack = ((StackLayout)((StackLayout)((Switch)sender).Parent).Parent);
+            stack.Children[3].IsVisible = !e.Value;
+            stack.Children[3].IsVisible = !e.Value;
+            stack.Children[4].IsVisible = !e.Value;
+            stack.Children[5].IsVisible = !e.Value;
+
+            Label label = ((Label)((StackLayout)((Switch)sender).Parent).Children[1]);
+            if (e.Value)
+                label.Text = "Text Answer";
+            else
+                label.Text = "Multiple Choice";
+
         }
 
         public void SetLevelName(string levelName)
         {
             this.EntryLevelName.Text = levelName;
-        }
-
-        /// <summary>
-        /// a private AddNewQuestions for when the user creates a brand new question
-        /// </summary>
-        private void AddNewQuestion()
-        {
-            this.AddNewQuestion(null);
-        }
-
-        /// <summary>
-        /// Called when the user presses the Add Image button on a question eiditor
-        /// </summary>
-        /// <param name="sender">  </param>
-        /// <param name="e">       </param>
-        private async void ButtonAddImage_Clicked(object sender, EventArgs e)
-        {
-            await CrossMedia.Current.Initialize();
-            Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
-
-            if (file != null) // if the user actually picked an image
-            {
-                ImageButton currentImage;
-
-                currentImage = ((ImageButton)((StackLayout)((View)sender).Parent).Children[6]);
-
-                currentImage.Source = file.Path;
-
-                // Enables the image
-                currentImage.IsEnabled = true;
-                if (sender is Button)
-                {
-                    ((Button)sender).IsVisible = false;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Called when the add question button is clicked and adds a new question
-        /// </summary>
-        /// <param name="sender">  </param>
-        /// <param name="e">       </param>
-        private void ButtonAddQuestion_Clicked(object sender, EventArgs e)
-        {
-            this.AddNewQuestion();
-            // Scroll to bottom
-            this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
-        }
-
-        /// <summary>
-        /// Saves the user created level
-        /// </summary>
-        /// <param name="sender">  </param>
-        /// <param name="e">       </param>
-        private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
-            {
-                this.DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
-            }
-            else if (this.StackLayoutQuestionStack.Children.Count < 2)
-            {
-                this.DisplayAlert("Couldn't Create Level", "Please create at least two questions", "OK");
-            }
-            else
-            {
-                // Open Database or create it
-                DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), CredentialManager.Username);
-
-                List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
-                List<Question> previousQuestions = DBHandler.Database.GetQuestions(); // A list of questions already in the database
-
-                // Loops through each question frame on the screen
-                foreach (Frame frame in this.StackLayoutQuestionStack.Children)
-                {
-                    // A list of all the children of the current frame
-                    IList<View> children = ((StackLayout)frame.Content).Children;
-
-                    Question addThis;
-                    //The answers to the question
-                    string[] answers = {((Entry)children[2]).Text, //Correct answer
-                                ((Entry)children[3]).Text, // Incorect answer
-                                ((Entry)children[4]).Text, // Incorect answer
-                                ((Entry)children[5]).Text}; // Incorect answer
-
-                    if (((ImageButton)children[6]).IsEnabled) // if needs image
-                    {
-                        addThis = new Question(
-                                ((Entry)children[1]).Text, // The Question
-                                ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
-                                answers)
-                        { NeedsPicture = true };
-                    }
-                    else // if not needs picture
-                    {
-                        addThis = new Question(
-                                ((Entry)children[1]).Text,
-                                answers);
-                    }
-                    addThis.DBId = frame.StyleId; // Set the dbid
-                    NewQuestions.Add(addThis);
-                }
-
-                // Add if it doesn't already exist, delete if it doesn't exist anymore, update the ones that need to be updated, and do nothing to the others
-
-                // Work in progress, algorithm might be off.
-                if (previousQuestions.Count() == 0) // if the user created this for the first time
-                {
-                    DBHandler.Database.AddQuestions(NewQuestions);
-                }
-                else
-                {
-                    for (int i = 0; i <= previousQuestions.Count() - 1; i++)
-                    {
-                        bool DBIdSame = true;
-                        // test each old question with each new question
-                        foreach (Question newQuestion in NewQuestions)
-                        {
-                            if (previousQuestions[i].DBId == newQuestion.DBId)
-                            {
-                                DBIdSame = true;
-                                // the same question, but changed, so update
-                                DBHandler.Database.EditQuestion(newQuestion);
-                                NewQuestions.Remove(newQuestion);
-                                break;
-                            }
-                            else
-                            {
-                                DBIdSame = false;
-                            }
-                        }
-
-                        if (!DBIdSame) // if the question doesn't exist in the new list. delete it
-                        {
-                            DBHandler.Database.DeleteQuestions(previousQuestions[i]);
-                        }
-                    }
-
-                    foreach (Question newQuestion in NewQuestions)
-                    {
-                        if (newQuestion.DBId == null)
-                        {
-                            // this is a new question. add it
-                            DBHandler.Database.AddQuestions(newQuestion);
-                        }
-                        else
-                        {
-                            this.DisplayAlert("Uh Oh", "How the heck did this happen", "OK");
-                        }
-                    }
-                }
-
-                // Returns user to front page of LevelEditor and refreshed database
-                this.Navigation.PopAsync(true);
-                this.Navigation.PopAsync(true);
-                this.Navigation.PushAsync(new MainPage());
-            }
-        }
-
-        /// <summary>
-        /// Removes the Question Frame when remove button is clicked
-        /// </summary>
-        /// <param name="sender">  </param>
-        /// <param name="e">       </param>
-        private async void ButtonRemove_Clicked(object sender, EventArgs e)
-        {
-            bool answer = await this.DisplayAlert("Warning", "Are you sure you would like to delete this question?", "Yes", "No");
-            if (answer == true)
-            {
-                //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
-                Frame frame = ((Frame)((StackLayout)((ImageButton)sender).Parent).Parent);
-                //Animate A deletion
-                await frame.TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
-                this.StackLayoutQuestionStack.Children.Remove(frame);
-            }
         }
     }
 }
