@@ -6,6 +6,6 @@
     <!--This should change between the Profile, Login, Create Account, etc. pages as needed-->
     <StackLayout>
         <Button x:Name="ButtonToLoginPage" Text="Login"
-            Clicked="ButtonToLoginPage_Clicked" VerticalOptions="CenterAndExpand"/>
+            Clicked="ButtonToLoginPage_Clicked" VerticalOptions="CenterAndExpand" />
     </StackLayout>
 </ContentPage>

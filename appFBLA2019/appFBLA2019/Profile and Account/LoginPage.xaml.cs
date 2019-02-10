@@ -1,4 +1,6 @@
-﻿using System;
+﻿//BizQuiz App 2019
+
+using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -14,45 +16,15 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
+        public void OnEmailConfirmed(object source, EventArgs args)
+        {
+            this.LabelMessage.Text = "Login Successful!";
+        }
+
         private void ButtonLogin_Clicked(object sender, EventArgs e)
         {
             Task login = Task.Run(() => this.Login(this.EntryUsername.Text,
                 this.EntryPassword.Text));
-        }
-
-        private async void Login(string username, string password)
-        {
-            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Waiting...");
-            Task<bool> completedRequest = ServerConnector.QueryDB($"loginAccount/{username}/{password}/-");
-            
-            if (await completedRequest)
-            {
-                string response = await ServerConnector.ReceiveFromDB();
-
-                if (response == "true/-")
-                {
-                    Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
-                }
-                else if (response == "true/confirmEmail/-")
-                {
-                    Device.BeginInvokeOnMainThread(async() =>
-                    {
-                        this.LabelMessage.Text = "Please confirm your email.";
-                        var confirmationPage = new EmailConfirmationPage(username);
-                        confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
-                        await this.Navigation.PushModalAsync(confirmationPage);
-                    });
-                }
-                else
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Login Failed: " + response.Split('/')[1]);
-                }
-            }
-            else
-            {
-                Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Connection failed: Please try again.");
-            }
         }
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)
@@ -62,9 +34,41 @@ namespace appFBLA2019
             await this.Navigation.PushAsync(createAccountPage);
         }
 
-        public void OnEmailConfirmed(object source, EventArgs args)
+        private async void Login(string username, string password)
         {
-            this.LabelMessage.Text = "Login Successful!";
+            Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Waiting...");
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.LoginAccount, $"{username}/{password}/-"));
+
+            if (completedRequest)
+            {
+                OperationReturnMessage response = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
+
+                if (response == OperationReturnMessage.True)
+                {
+                    Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
+                    CredentialManager.SaveCredential(username, password);
+                }
+                else if (response == OperationReturnMessage.TrueConfirmEmail)
+                {
+                    Device.BeginInvokeOnMainThread(async () =>
+                    {
+                        this.LabelMessage.Text = "Please confirm your email.";
+                        var confirmationPage = new EmailConfirmationPage(username);
+                        confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
+                        await this.Navigation.PushModalAsync(confirmationPage);
+                    });
+                    CredentialManager.SaveCredential(username, password);
+                }
+                else
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = "Login Failed.");
+                }
+            }
+            else
+            {
+                Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Connection failed: Please try again.");
+            }
         }
 
         private void OnAccountCreated(object source, AccountCreatedEventArgs accountArgs)

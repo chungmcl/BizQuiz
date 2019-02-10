@@ -1,23 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="appFBLA2019.CreateNewLevelPage">
-    <ContentPage.Content>
-        <ScrollView>
-            <StackLayout Padding="25">
-                <Label Text="Create Your Own Quiz"
-                    VerticalOptions="Start"
-                    HorizontalOptions="Start"
-                    FontAttributes="bold"
-                    FontSize="40"/>
-                <Entry x:Name="EntryLevelName"  Placeholder="Level Name" />
-                <StackLayout x:Name="StackLayoutQuestionStack" Padding="10">
-                    <!--Things added in code-->
-                </StackLayout>
-                <Button x:Name="ButtonAddQuestion" Text="Add new question" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" CornerRadius="20" Margin="20"/>
-                <Button x:Name="ButtonCreateLevel" Text="Create" Clicked="ButtonCreateLevel_Clicked" CornerRadius="20" Margin="20"/>
-            </StackLayout> 
-        </ScrollView>
+             x:Class="appFBLA2019.CreateNewLevelPage"
+             Title="BizQuiz">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Icon="ic_done_white_48dp.png"  Priority="0" Name="Done" Order="Primary"  Activated="ButtonCreateLevel_Clicked" />
+    </ContentPage.ToolbarItems>
+
+    <ContentPage.Content>
+        <AbsoluteLayout>
+            <StackLayout BackgroundColor="White" AbsoluteLayout.LayoutBounds="0, 0, 1.0, 1.0" AbsoluteLayout.LayoutFlags="All">
+                <Label Text="Create Your Own Quiz"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Start"
+                            FontAttributes="bold"
+                            FontSize="40" />
+                <Entry x:Name="EntryLevelName"  Placeholder="Level Name" />
+                <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand" x:Name ="ScrollViewQuestions">
+                    <StackLayout x:Name="stkMain">
+                        <StackLayout x:Name="StackLayoutQuestionStack" Padding="10" />
+                        <!--Things added in code-->
+                    </StackLayout>
+                </ScrollView>
+            </StackLayout>
+            <Button AbsoluteLayout.LayoutBounds="1, 1, .8, .9" AbsoluteLayout.LayoutFlags="All"
+                x:Name="ButtonAddQuestion" FontSize="Large" TextColor="White" Text="+" HorizontalOptions="End" VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" HeightRequest="50" WidthRequest="50" CornerRadius="25" BackgroundColor="#AE213A" Margin="20" />
+        </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

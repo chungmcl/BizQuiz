@@ -1,89 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+﻿//BizQuiz App 2019
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class LevelEditorPage : ContentPage
-	{
-		public LevelEditorPage ()
-		{
-			this.InitializeComponent ();
-            FindDatabase();
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class LevelEditorPage : ContentPage
+    {
+        public LevelEditorPage()
+        {
+            this.InitializeComponent();
+            this.FindDatabase();
+        }
+
+        // Get the list of Quizes the user can edit
+        public void FindDatabase()
+        {
+            List<string> databaseList = new List<string>();
+
+            // get a list of all databases the user has on the device
+
+            string[] subFolderNames = Directory.GetDirectories(App.Path);
+            foreach (string levelName in subFolderNames)
+            {
+                if (levelName.Contains('`'))
+                {
+                    // Might have to change this up when it comes to release as Levels will be stored somewhere else!
+                    databaseList.Add(levelName.Remove(levelName.IndexOf('`'),
+                        levelName.Count() - levelName.IndexOf('`')).Substring(30));
+                }
+            }
+
+            this.PickerLevelSelect.ItemsSource = databaseList;
         }
 
         private void ButtonCreate_Clicked(object sender, EventArgs e)
         {
-            this.Navigation.PushAsync(new CreateNewLevelPage());
-        }
-        
-
-    private void OnPickerSelectedIndexChanged(Object sender, EventArgs e)
-    {
-        var picker = (Picker)sender;
-        int selectedIndex = picker.SelectedIndex;
-
-        if (selectedIndex != -1) // If the user has selected something then open the page
-        {
-            DBHandler.SelectDatabase((string)PickerLevelSelect.SelectedItem, "testAuthor");
-            CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
-                                                                     // Add the questions from the database to the page to edit
-            List<Question> test = DBHandler.Database.GetQuestions();
-            foreach (Question question in DBHandler.Database.GetQuestions())
+            if (CredentialManager.IsLoggedIn)
             {
-                string[] answers = new string[] {
-                           question.CorrectAnswer,
-                           question.AnswerOne,
-                           question.AnswerTwo,
-                           question.AnswerThree };
+                this.Navigation.PushAsync(new CreateNewLevelPage());
+            }
+            else
+            {
+                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own accout.", "Ok");
+            }
+        }
 
-                levelPage.SetLevelName((string)PickerLevelSelect.SelectedItem);
-
-                if (question.NeedsPicture) // Check if the question needs an image or not
+        private void OnPickerSelectedIndexChanged(Object sender, EventArgs e)
+        {
+            var picker = (Picker)sender;
+            int selectedIndex = picker.SelectedIndex;
+            if (CredentialManager.IsLoggedIn)
+            {
+                if (selectedIndex != -1) // If the user has selected something then open the page
                 {
-                    levelPage.AddNewQuestion(question.QuestionText, question.ImagePath, answers);
-                }
-                else
-                {
-                    levelPage.AddNewQuestion(question.QuestionText, answers);
+                    DBHandler.SelectDatabase((string)this.PickerLevelSelect.SelectedItem, CredentialManager.Username);
+                    CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
+                                                                             // Add the questions from the database to the page to edit
+                    List<Question> test = DBHandler.Database.GetQuestions();
+                    foreach (Question question in DBHandler.Database.GetQuestions())
+                    {
+                        levelPage.SetLevelName((string)this.PickerLevelSelect.SelectedItem);
+                        levelPage.AddNewQuestion(question);
+                    }
+                    this.Navigation.PushAsync(levelPage);
                 }
             }
-            this.Navigation.PushAsync(levelPage);
-        }
-    }
-
-    // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
-
-    // Get the list of Quizes the user can edit
-    private void FindDatabase()
-    {
-        List<string> databaseList = new List<string>();
-
-
-        // get a list of all databases the user has on the device
-
-
-        string[] subFolderNames = Directory.GetDirectories(App.Path);
-        foreach (string levelName in subFolderNames)
-        {
-            if (levelName.Contains('`'))
+            else
             {
-                // Might have to change this up when it comes to release as Levels will be stored somewhere else!
-                databaseList.Add(levelName.Remove(levelName.IndexOf('`'),
-                    levelName.Count() - levelName.IndexOf('`')).Substring(30));
+                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own accout.", "Ok");
             }
-
+            // Reset the picker value
+            picker.SelectedIndex = -1;
         }
 
-        PickerLevelSelect.ItemsSource = databaseList;
+        // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
+        private void PickerLevelSelect_Focused(object sender, FocusEventArgs e)
+        {
+            this.FindDatabase();
+        }
     }
-
-}
 }

@@ -1,68 +1,248 @@
-﻿using System;
+﻿//BizQuiz App 2019
+
+using Plugin.Connectivity;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Net.Security;
 using System.Net.Sockets;
-using System.Threading.Tasks;
-using System.Threading;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace appFBLA2019
 {
+    public enum OperationReturnMessage : byte
+    {
+        True,
+        False,
+        TrueConfirmEmail
+    }
+
+    public enum ServerRequestTypes : byte
+    {
+        // "Command" Requests
+        StringData,
+
+        AddJPEGImage,
+        AddRealmFile,
+        LoginAccount,
+        RegisterAccount,
+        DeleteAccount,
+        ConfirmEmail,
+        ChangeEmail,
+
+        // "Get" Requests
+        GetEmail,
+        GetJPEGImage,
+        GetRealmFile,
+
+        // Returns
+        SavedJPEGImage,
+        SavedRealmFile,
+        GotEmail,
+        True,
+        False,
+        TrueConfirmEmail
+    }
+
     public static class ServerConnector
     {
-        private static TcpClient tcp;
-        private static NetworkStream nwStream;
-        private const string serverIP = "50.106.17.86";
-        private const int serverPort = 7777;
-        private const int timeoutTimeMilliseconds = 5000;
-        private const double timeoutTimeSeconds = 5;
+        // Server Release Build: 7777 Server Debug Build: 7778
+        public static int Port { get { return 7777; } }
 
-        /// <summary>
-        /// Sends request to server database to add/create new account
-        /// </summary>
-        /// <param name="username">Username to be added</param>
-        /// <param name="password">Password to be added</param>
-        /// <returns>True if connected and sent, false if could not connect</returns>
-        public static async Task<bool> QueryDB(string dbQuery)
+        public static string Server { get; set; }
+        public static TcpClient client;
+        public static NetworkStream netStream;
+
+        // Raw-data stream of connection.
+        public static SslStream ssl;
+
+        public static OperationReturnMessage ReceiveFromServerORM()
         {
-            tcp = new TcpClient();
-            IAsyncResult result = tcp.BeginConnect(serverIP, serverPort, null, null);
-
-            bool connectionSuccess = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(timeoutTimeSeconds));
-
-            if (!connectionSuccess)
+            if (CrossConnectivity.Current.IsConnected)
             {
+                int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
+                return (OperationReturnMessage)(ReadByteArray(size)[0]);
+            }
+            else
+            {
+                return OperationReturnMessage.False;
+            }
+        }
+
+        public static string ReceiveFromServerStringData()
+        {
+            int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
+            string data = Encoding.Unicode.GetString(ReadByteArray(size));
+            data = data.Trim();
+            return data;
+        }
+
+        // Encrypts connection using SSL.
+        /// <summary>
+        /// Send a request or data to the server.
+        /// </summary>
+        /// <param name="dataType"> The type of request/data to be sent </param>
+        /// <param name="data">     The data/string query to send </param>
+        /// <returns> If the data successfully sent or not </returns>
+        public static bool SendData(ServerRequestTypes dataType, object data)
+        {
+            if (SetupConnection())
+            {
+                switch (dataType)
+                {
+                    case (ServerRequestTypes.AddJPEGImage):
+
+                        break;
+
+                    case (ServerRequestTypes.AddRealmFile):
+
+                        break;
+
+                    case (ServerRequestTypes.LoginAccount):
+                    case (ServerRequestTypes.RegisterAccount):
+                    case (ServerRequestTypes.GetEmail):
+                    case (ServerRequestTypes.ConfirmEmail):
+                    case (ServerRequestTypes.StringData):
+                        SendStringData((string)data, dataType);
+                        return true;
+
+                    case (ServerRequestTypes.GetJPEGImage):
+
+                        break;
+
+                    case (ServerRequestTypes.GetRealmFile):
+
+                        break;
+                }
                 return false;
             }
             else
             {
-                byte[] sendBuffer = Encoding.ASCII.GetBytes(dbQuery);
-
-                nwStream = tcp.GetStream();
-
-                nwStream.WriteTimeout = timeoutTimeMilliseconds;
-                nwStream.Write(sendBuffer, 0, sendBuffer.Length);
-
-                return true;
+                return false;
             }
         }
 
-        /// <summary>
-        /// Receive data/message from database proceeding sending request
-        /// </summary>
-        /// <returns>The data/message from the server</returns>
-        public async static Task<string> ReceiveFromDB()
+        public static bool ValidateCert(object sender, X509Certificate certificate,
+              X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
+            return true; // Allow untrusted certificates.
+        }
 
-            byte[] bytesToRead = new byte[tcp.ReceiveBufferSize];
-            nwStream.ReadTimeout = timeoutTimeMilliseconds;
-            int bytesRead = nwStream.Read(bytesToRead, 0, tcp.ReceiveBufferSize);
-            string databaseMessage = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
+        private const int headerSize = 5;
+        private const int maxFileSize = 2147483591;
 
-            tcp.Client.Disconnect(true);
-            tcp.Client.Close();
-            tcp.Close();
+        // Max byte size for arrays in C#, slightly under int.MaxValue - Can't process anything over this
+        private static void CloseConn() // Close connection.
+        {
+            ssl.Close();
+            netStream.Close();
+            client.Close();
+        }
 
-            return databaseMessage;
+        private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
+        {
+            byte[] headerData = new byte[5];
+            headerData[0] = (byte)type;
+            byte[] dataSize = BitConverter.GetBytes(size);
+            dataSize.CopyTo(headerData, 1);
+            return headerData;
+        }
+
+        private static byte[] ReadByteArray(int size)
+        {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                byte[] buffer = new byte[1024];
+
+                List<byte> data = new List<byte>();
+                int bytes = -1;
+                int bytesRead = 0;
+                do
+                {
+                    bytes = ssl.Read(buffer, 0, size - bytesRead);
+                    bytesRead += bytes;
+                    if (bytes > 0)
+                    {
+                        for (int i = 0; i < bytes; i++)
+                        {
+                            data.Add(buffer[i]);
+                        }
+                    }
+                } while (data.Count < size);
+                data.RemoveRange(size, data.Count - size);
+                return data.ToArray();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static void SendByteArray(byte[] data)
+        {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                ssl.Write(data, 0, data.Length);
+                ssl.Flush();
+            }
+        }
+
+        private static void SendStringData(string data, ServerRequestTypes dataType)
+        {
+            string dataAsString = data;
+            byte[] dataAsBytes = Encoding.Unicode.GetBytes(dataAsString);
+            byte[] headerData = GenerateHeaderData(dataType, (uint)dataAsBytes.Length);
+            byte[] toSend = new byte[headerData.Length + dataAsBytes.Length];
+            headerData.CopyTo(toSend, 0);
+            dataAsBytes.CopyTo(toSend, headerData.Length);
+            SendByteArray(toSend);
+        }
+
+        private static bool SetupConnection()
+        {
+            try
+            {
+                if (CrossConnectivity.Current.IsConnected)
+                {
+                    client = new TcpClient();
+                    lock (client)
+                    {
+                        client = new TcpClient(AddressFamily.InterNetworkV6);
+                        client.Client.DualMode = true;
+                        var result = client.BeginConnect(Server, Port, null, null);
+                        var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(7));
+                        if (!success)
+                        {
+                            throw new Exception("Failed to connect - Timeout exception.");
+                        }
+
+                        netStream = client.GetStream();
+
+                        lock (netStream)
+                        {
+                            ssl = new SslStream(netStream, false,
+                            new RemoteCertificateValidationCallback(ValidateCert));
+
+                            lock (ssl)
+                            {
+                                ssl.WriteTimeout = 5000;
+                                ssl.ReadTimeout = 10000;
+
+                                ssl.AuthenticateAsClient("BizQuizServer");
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
