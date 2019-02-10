@@ -30,15 +30,15 @@ namespace appFBLA2019
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                // Initialize profile content to avoid wonky UI behavior during async loading
+                this.StackLayoutProfilePageContent.IsVisible = false;
                 this.ActivityIndicator.IsVisible = true;
                 this.ActivityIndicator.IsRunning = true;
                 this.IsLoading = true;
             });
 
             if (updateLoginStatus)
-            {
-                await Task.Run(() => CredentialManager.CheckLoginStatus());
-            }
+                await CredentialManager.CheckLoginStatus();
 
             Device.BeginInvokeOnMainThread(() =>
             {
