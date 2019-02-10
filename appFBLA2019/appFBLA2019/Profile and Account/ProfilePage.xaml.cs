@@ -46,20 +46,22 @@ namespace appFBLA2019
                 this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
                 if (this.StackLayoutProfilePageContent.IsVisible)
                 {
-                    ToolbarItem accountSettingsButton = new ToolbarItem();
-                    accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
-                    accountSettingsButton.Icon = FileImageSource.FromFile("ic_settings_black_48dp.png") as FileImageSource;
+                    if (this.ToolbarItems.Count <= 0)
+                    {
+                        ToolbarItem accountSettingsButton = new ToolbarItem();
+                        accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
+                        accountSettingsButton.Icon = FileImageSource.FromFile("ic_settings_black_48dp.png") as FileImageSource;
 
-                    this.ToolbarItems.Add(accountSettingsButton);
+                        this.ToolbarItems.Add(accountSettingsButton);
+                    }
 
                     this.LabelUsername.Text = CredentialManager.Username;
                 }
                 else
                 {
                     if (this.ToolbarItems.Count > 0)
-                    {
                         this.ToolbarItems.Clear();
-                    }
+
                     this.IsOnLoginPage = true;
                     this.LocalLoginPage.LoggedIn += OnLoggedIn;
                 }
