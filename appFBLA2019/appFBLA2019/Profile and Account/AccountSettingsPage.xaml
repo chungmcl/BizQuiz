@@ -163,6 +163,8 @@
                         </StackLayout>
                     </Frame>
                     
+                    <BoxView VerticalOptions="FillAndExpand"/>
+
                     <Button x:Name="ButtonLogout" 
                         Text="Log Out of Account"
                         Clicked="ButtonLogout_Clicked"
