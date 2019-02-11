@@ -357,10 +357,9 @@ namespace appFBLA2019
                 buttonQuestionType.Clicked += OnButtonQuestionTypeClicked;
                 buttonQuestionType.HorizontalOptions = LayoutOptions.StartAndExpand;
                 buttonQuestionType.VerticalOptions = LayoutOptions.Start;
-                buttonQuestionType.BackgroundColor = Color.Transparent;
-                buttonQuestionType.TextColor = Color.Accent;
-                buttonQuestionType.FontSize = 18;
-                buttonQuestionType.FontAttributes = FontAttributes.Italic;
+                buttonQuestionType.BackgroundColor = Color.LightGray;
+                buttonQuestionType.TextColor = Color.Black;
+                buttonQuestionType.CornerRadius = 25;
             }
 
             if (question == null || question.QuestionType == 0)
@@ -431,6 +430,7 @@ namespace appFBLA2019
             Entry entryAnswerWrongThree = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
+                VerticalOptions = LayoutOptions.StartAndExpand
             };
             if (question != null)
                 entryAnswerWrongThree.Text = question.AnswerThree;
@@ -446,6 +446,7 @@ namespace appFBLA2019
                 AddImage.HeightRequest = 50;
                 AddImage.BackgroundColor = Color.FromHex("#AE213A");
                 AddImage.TextColor = Color.White;
+                AddImage.VerticalOptions = LayoutOptions.End;
             }
 
             bool needsPicture = false;
@@ -457,6 +458,7 @@ namespace appFBLA2019
                 image.IsEnabled = needsPicture;
                 image.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
                 image.BackgroundColor = Color.Transparent;
+                image.VerticalOptions = LayoutOptions.End;
             }
 
             frameStack.Children.Add(image);
@@ -477,12 +479,17 @@ namespace appFBLA2019
                 entryAnswerWrongOne.ReturnCommand = new Command(() => entryAnswerWrongTwo.Focus());
                 entryAnswerWrongTwo.ReturnCommand = new Command(() => entryAnswerWrongThree.Focus());
             }
-
+            else
+            {
+                entryAnswerWrongOne.Opacity = 0;
+                entryAnswerWrongTwo.Opacity = 0;
+                entryAnswerWrongThree.Opacity = 0;
+            }
 
             // Dissable extra answers if its not mulitple choice
             entryAnswerWrongOne.IsVisible = isMultipleChoice;
             entryAnswerWrongTwo.IsVisible = isMultipleChoice;
-            entryAnswerWrongThree.IsVisible = isMultipleChoice;;
+            entryAnswerWrongThree.IsVisible = isMultipleChoice;
 
             frame.Content = frameStack;
             // and add the frame to the the other stacklaout.
@@ -496,24 +503,47 @@ namespace appFBLA2019
 
         async void OnButtonQuestionTypeClicked(object sender, EventArgs e)
         {
-            string action = await DisplayActionSheet("Question Type:", "Cancel", null, "Multiple choice", "Text answer", "Case sensitive text answer");
-            if (action != "Cancel" && action != null)
+            if (((Button)sender).Text == "Question Type: Multiple choice")
             {
-                bool isMultipleChoice = action == "Multiple choice";
                 StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
-                stack.Children[3].IsVisible = isMultipleChoice;
-                stack.Children[4].IsVisible = isMultipleChoice;
-                stack.Children[5].IsVisible = isMultipleChoice;
-                if (isMultipleChoice)
-                {
-                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[3]).Focus());
-                }
-                else
-                {
-                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Unfocus());
-                }
+                Frame frame = ((Frame)stack.Parent);
+                stack.Children[3].FadeTo(0, 150, Easing.CubicInOut);
+                stack.Children[4].FadeTo(0, 150, Easing.CubicInOut);
+                stack.Children[5].FadeTo(0, 150, Easing.CubicInOut);
 
-                ((Button)sender).Text = "Question Type: " + action;
+                await frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width, 
+                    frame.Height - (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut);
+
+                stack.Children[3].IsVisible = false;
+                stack.Children[4].IsVisible = false;
+                stack.Children[5].IsVisible = false;
+
+                ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Unfocus());
+                ((Button)sender).Text = "Question Type: Text answer";
+            }
+            else if (((Button)sender).Text == "Question Type: Text answer")
+            {
+                ((Button)sender).Text = "Question Type: Case sensitive text answer";
+            }
+            else
+            {
+                StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
+
+                stack.Children[3].FadeTo(1, 250, Easing.CubicInOut);
+                stack.Children[4].FadeTo(1, 250, Easing.CubicInOut);
+                stack.Children[5].FadeTo(1, 250, Easing.CubicInOut);
+
+                stack.Children[3].IsVisible = true;
+                stack.Children[4].IsVisible = true;
+                stack.Children[5].IsVisible = true;
+
+                Frame frame = ((Frame)stack.Parent);
+                await frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width, 
+                    frame.Height + (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut);
+
+
+                ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Focus());
+                ((Button)sender).Text = "Question Type: Multiple choice";
             }
         }
 
