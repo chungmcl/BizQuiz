@@ -10,10 +10,11 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EmailConfirmationPage : ContentPage
     {
-        public EmailConfirmationPage(string username)
+        public EmailConfirmationPage(string username, string password)
         {
             this.InitializeComponent();
             this.username = username;
+            this.password = password;
             this.LabelTitle.Text = "Loading...";
             Task getEmail = Task.Run(() => this.GetEmail());
         }
@@ -40,6 +41,7 @@ namespace appFBLA2019
 
         private string email;
         private string username;
+        private string password;
 
         private async void ButtonClose_Clicked(object sender, EventArgs e)
         {
@@ -120,7 +122,7 @@ namespace appFBLA2019
         {
             try
             {
-                await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.GetEmail, $"{this.username}/-"));
+                await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.GetEmail, $"{this.username}/{this.password}/-"));
                 this.email = await Task.Run(() => ServerConnector.ReceiveFromServerStringData());
 
                 Device.BeginInvokeOnMainThread(() =>

@@ -14,7 +14,11 @@ namespace appFBLA2019
     {
         True,
         False,
-        TrueConfirmEmail
+        TrueConfirmEmail,
+        FalseInvalidCredentials,
+        FalseInvalidEmail,
+        FalseUsernameAlreadyExists,
+        FalseNoConnection
     }
 
     public enum ServerRequestTypes : byte
@@ -65,7 +69,7 @@ namespace appFBLA2019
             }
             else
             {
-                return OperationReturnMessage.False;
+                return OperationReturnMessage.FalseNoConnection;
             }
         }
 
@@ -159,15 +163,19 @@ namespace appFBLA2019
                 int bytesRead = 0;
                 do
                 {
-                    bytes = ssl.Read(buffer, 0, size - bytesRead);
+                    int toRead = 0;
+                    if ((size - bytesRead) > buffer.Length)
+                        toRead = buffer.Length - (size - bytesRead);
+                    else
+                        toRead = size - bytesRead;
+
+                    bytes = ssl.Read(buffer, 0, toRead);
                     bytesRead += bytes;
+
                     if (bytes > 0)
-                    {
                         for (int i = 0; i < bytes; i++)
-                        {
                             data.Add(buffer[i]);
-                        }
-                    }
+
                 } while (data.Count < size);
                 data.RemoveRange(size, data.Count - size);
                 return data.ToArray();
