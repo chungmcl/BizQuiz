@@ -145,15 +145,15 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
+        private async void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
             {
-                this.DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
+                await this.DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
             }
             else if (this.StackLayoutQuestionStack.Children.Count < 2)
             {
-                this.DisplayAlert("Couldn't Create Level", "Please create at least two questions", "OK");
+                await this.DisplayAlert("Couldn't Create Level", "Please create at least two questions", "OK");
             }
             else
             {
@@ -184,8 +184,8 @@ namespace appFBLA2019
                     // Checks if there is a question set
                     if (string.IsNullOrWhiteSpace(((Entry)children[1]).Text))
                     {
-                        this.DisplayAlert("Couldn't Create Level", "Every question must have a question set", "OK");
-                        goto error;
+                        await this.DisplayAlert("Couldn't Create Level", "Every question must have a question set", "OK");
+                        goto exit;
                     }
 
 
@@ -217,8 +217,8 @@ namespace appFBLA2019
                         }
                         if (size < 2 || string.IsNullOrWhiteSpace(answers[0]))
                         {
-                            this.DisplayAlert("Couldn't Create Level", "Mulitple choice questions must have a correct answer and at least one wrong answer", "OK");
-                            goto error;
+                            await this.DisplayAlert("Couldn't Create Level", "Mulitple choice questions must have a correct answer and at least one wrong answer", "OK");
+                            goto exit;
                         }
                             
                         addThis.QuestionType = 0;
@@ -227,8 +227,8 @@ namespace appFBLA2019
                     {
                         if (string.IsNullOrWhiteSpace(answers[0]))
                         {
-                            this.DisplayAlert("Couldn't Create Level", "Text answer questions must have an answer", "OK");
-                            goto error;
+                            await this.DisplayAlert("Couldn't Create Level", "Text answer questions must have an answer", "OK");
+                            goto exit;
                         }
 
                         if (questionType == "Question Type: Text answer")
@@ -293,13 +293,17 @@ namespace appFBLA2019
                     Directory.Delete(App.Path + "/" + this.originalName + "`" + this.originalAuthor, true);
                 }
 
+                // Ask what catagory to set the level as.
+                var action = await this.DisplayActionSheet("What catagory is this level?", "Keep Editing", null, "Tech Events", "Finance Events", "Business Events", "FBLA General", "Officers", "Parlimentary Procedure");
                 
+                if (action == "Keep Editing")
+                    goto exit;
 
                 // Returns user to front page of LevelEditor and refreshed database
-                this.Navigation.PopAsync(true);
+                await this.Navigation.PopAsync(true);
                 
             }
-        error:;
+        exit:;
                 
         }
 
