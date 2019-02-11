@@ -51,7 +51,7 @@ namespace appFBLA2019
     public static class ServerConnector
     {
         // Server Release Build: 7777 Server Debug Build: 7778
-        public static int Port { get { return 7777; } }
+        public static int Port { get { return 7778; } }
 
         public static string Server { get; set; }
         public static TcpClient client;
@@ -107,6 +107,7 @@ namespace appFBLA2019
                     case (ServerRequestTypes.GetEmail):
                     case (ServerRequestTypes.ConfirmEmail):
                     case (ServerRequestTypes.StringData):
+                    case (ServerRequestTypes.ChangeEmail):
                         SendStringData((string)data, dataType);
                         return true;
 

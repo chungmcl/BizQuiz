@@ -38,7 +38,8 @@ namespace appFBLA2019
             this.EntryEnterPasswordChangeEmail.IsEnabled = false;
             this.EntryEnterNewEmailChangeEmail.IsEnabled = false;
 
-            if (this.EntryEnterPasswordChangeEmail.Text == null || this.EntryEnterNewEmailChangeEmail.Text == null)
+            if ((this.EntryEnterPasswordChangeEmail.Text == null || this.EntryEnterNewEmailChangeEmail.Text == null) || 
+                (this.EntryEnterPasswordChangeEmail.Text == "" || this.EntryEnterNewEmailChangeEmail.Text == ""))
             {
                 this.LabelChangeEmailMessage.Text = "Fields cannot be empty.";
             }
@@ -50,7 +51,8 @@ namespace appFBLA2019
 
                 if (message == OperationReturnMessage.TrueConfirmEmail)
                 {
-
+                    this.LabelChangeEmailMessage.Text = "Email Changed. Please Confirm Email.";
+                    // Open EmailConfirmationPage
                 }
                 else if (message == OperationReturnMessage.FalseInvalidCredentials)
                 {

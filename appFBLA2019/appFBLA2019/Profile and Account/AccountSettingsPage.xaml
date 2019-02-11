@@ -19,48 +19,8 @@
                 Grid.Column="0"
                 Grid.Row="0">
                 <StackLayout>
-                    <Frame x:Name="FrameChangeEmail"
-                   CornerRadius="10"
-                   HorizontalOptions="FillAndExpand"
-                   VerticalOptions="Fill">
-                        <StackLayout x:Name="StackLayoutChangeEmail">
-
-
-                            <StackLayout
-                            Orientation="Horizontal"
-                            HorizontalOptions="FillAndExpand">
-                                <Label Text="Change Email" 
-                                            Font="Bold,20" 
-                                            HorizontalOptions="StartAndExpand"
-                                            Grid.Column="0" Grid.Row="0"/>
-                                <ImageButton x:Name="ImageButtonCloseChangeEmail"
-                                             Source="ic_arrow_drop_down_black_48dp.png"
-                                             BackgroundColor="Transparent"
-                                             HorizontalOptions="End"
-                                             VerticalOptions="Start"
-                                             WidthRequest="40"
-                                             HeightRequest="40"
-                                             Grid.Column="1" Grid.Row="0"
-                                             Clicked="ImageButtonCloseChangeEmail_Clicked"/>
-                                                    
-                            </StackLayout>
-
-                            <StackLayout x:Name="StackLayoutChangeEmailContent"
-                                 IsVisible="False">
-
-                                <Entry x:Name="EntryEnterPasswordChangeEmail" Placeholder="Enter password"/>
-                                <Entry x:Name="EntryEnterNewEmailChangeEmail" Placeholder="Enter new Email"/>
-                                <Label x:Name="LabelChangeEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
-                                <Button x:Name="ButtonChangeEmail" 
-                                        Text="Change Email"
-                                        Clicked="ButtonChangeEmail_Clicked"/>
-
-                            </StackLayout>
-
-                        </StackLayout>
-                    </Frame>
-
-                    <Frame x:Name="FrameChangePassword"
+                   
+                   <Frame x:Name="FrameChangePassword"
                    CornerRadius="10"
                    HorizontalOptions="FillAndExpand"
                    VerticalOptions="Fill">
@@ -94,7 +54,48 @@
 
                         </StackLayout>
                     </Frame>
+                    
+                    <Frame x:Name="FrameChangeEmail"
+                   CornerRadius="10"
+                   HorizontalOptions="FillAndExpand"
+                   VerticalOptions="Fill">
+                        <StackLayout x:Name="StackLayoutChangeEmail">
 
+
+                            <StackLayout
+                            Orientation="Horizontal"
+                            HorizontalOptions="FillAndExpand">
+                                <Label Text="Change Email" 
+                                            Font="Bold,20" 
+                                            HorizontalOptions="StartAndExpand"
+                                            Grid.Column="0" Grid.Row="0"/>
+                                <ImageButton x:Name="ImageButtonCloseChangeEmail"
+                                             Source="ic_arrow_drop_down_black_48dp.png"
+                                             BackgroundColor="Transparent"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="Start"
+                                             WidthRequest="40"
+                                             HeightRequest="40"
+                                             Grid.Column="1" Grid.Row="0"
+                                             Clicked="ImageButtonCloseChangeEmail_Clicked"/>
+
+                            </StackLayout>
+
+                            <StackLayout x:Name="StackLayoutChangeEmailContent"
+                                 IsVisible="False">
+
+                                <Entry x:Name="EntryEnterPasswordChangeEmail" Placeholder="Enter password"/>
+                                <Entry x:Name="EntryEnterNewEmailChangeEmail" Placeholder="Enter new Email"/>
+                                <Label x:Name="LabelChangeEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
+                                <Button x:Name="ButtonChangeEmail" 
+                                        Text="Change Email"
+                                        Clicked="ButtonChangeEmail_Clicked"/>
+
+                            </StackLayout>
+
+                        </StackLayout>
+                    </Frame>
+                    
                     <Frame x:Name="ConfirmEmail"
                    CornerRadius="10"
                    HorizontalOptions="FillAndExpand"
