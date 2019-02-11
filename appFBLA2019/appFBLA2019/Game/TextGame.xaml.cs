@@ -69,13 +69,13 @@ namespace appFBLA2019
             if (answer == this.currentQuestion.CorrectAnswer)
             {
                 ((Button)this.ButtonGrid.Children.Where(x => (x as Button).Text == this.currentQuestion.CorrectAnswer).First()).BackgroundColor = Color.Green;
-                this.NextBanner.BackgroundColor = Color.LightGreen;
+
                 await this.CorrectAnswer(true);
             }
             else
             {
                 ((Button)this.ButtonGrid.Children.Where(x => (x as Button).Text == answer).First()).BackgroundColor = Color.Red;
-                this.NextBanner.BackgroundColor = Color.Red.AddLuminosity(-.05);
+
                 await this.IncorrectAnswer(true);
             }
         }
@@ -103,6 +103,7 @@ namespace appFBLA2019
         private async Task CorrectAnswer(bool isMultipleChoice)
         {
             this.LabelFeedback.Text = "Correct!";
+            this.NextBanner.BackgroundColor = Color.Green;
             this.LabelFeedback.TextColor = Color.White;
             //add 2 points for getting it right first time, 1 point for getting it right a second time or later
             if (this.currentQuestion.Status == 0)
@@ -133,7 +134,7 @@ namespace appFBLA2019
             }
             else // Finished level
             {
-                LevelEndPage levelEndPage = (new LevelEndPage(new ScoreRecord(this.score), this.level.Questions.Count));
+                LevelEndPage levelEndPage = (new LevelEndPage(this.score, this.level.Questions.Count));
                 levelEndPage.Finished += this.OnFinished;
                 await this.Navigation.PushModalAsync(levelEndPage);
             }
@@ -143,6 +144,7 @@ namespace appFBLA2019
         {
             this.LabelFeedback.Text = "Incorrect!";
             this.LabelFeedback.TextColor = Color.White;
+            this.NextBanner.BackgroundColor = Color.Red;
 
             // 1 represents 'failed'
             DBHandler.Database.realmDB.Write(() =>
@@ -244,14 +246,6 @@ namespace appFBLA2019
                     {
                         Grid.SetColumnSpan(button, 2);
                     }
-
-                    this.QuestionImage.IsEnabled = question.NeedsPicture;
-                    // The image will ALWAYS be named after the DBId
-                    this.QuestionImage.Source = ImageSource.FromFile(question.ImagePath); // Add cases for all JPG file extensions(for example, ".jpeg")
-                    this.QuestionImage.Aspect = Aspect.AspectFit;
-
-                    this.OnAppearing();
-                    this.StackLayoutMain.ForceLayout();
                 }
             }
             else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
@@ -260,19 +254,15 @@ namespace appFBLA2019
                 Button buttonCheckAnswer = new Button
                 {
                     Text = "Check Answer",
-                    CornerRadius = 25
+                    FontSize = 45,
+                    CornerRadius = 25,
+                    BackgroundColor = Color.Accent,
+                    TextColor = Color.White
                 };
                 buttonCheckAnswer.Clicked += (object sender, EventArgs e) =>
                 {
-                    // Can we do this with null-conditional operators?
-                    if (entry.Text == null)
-                    {
-                        this.CheckTextAnswer("", (question.QuestionType == 2));
-                    }
-                    else
-                    {
-                        this.CheckTextAnswer(entry.Text, (question.QuestionType == 2));
-                    }
+                    // Can we do this with null-conditional operators? yes we can
+                    this.CheckTextAnswer(entry.Text ?? "", (question.QuestionType == 2));
                 };
                 this.ButtonGrid.Children.Add(entry, 0, 0);
                 this.ButtonGrid.Children.Add(buttonCheckAnswer, 0, 1);
@@ -280,6 +270,14 @@ namespace appFBLA2019
                 Grid.SetColumnSpan(entry, 2);
                 Grid.SetColumnSpan(buttonCheckAnswer, 2);
             }
+
+            this.QuestionImage.IsEnabled = question.NeedsPicture;
+            // The image will ALWAYS be named after the DBId
+            this.QuestionImage.Source = ImageSource.FromFile(question.ImagePath); // Add cases for all JPG file extensions(for example, ".jpeg")
+            this.QuestionImage.Aspect = Aspect.AspectFit;
+
+            this.OnAppearing();
+            this.StackLayoutMain.ForceLayout();
         }
 
         private void Shuffle(List<String> answers)

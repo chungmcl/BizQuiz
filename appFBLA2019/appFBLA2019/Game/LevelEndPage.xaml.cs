@@ -15,7 +15,7 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LevelEndPage : ContentPage
     {
-        public LevelEndPage(ScoreRecord score, int totalQuestions)
+        public LevelEndPage(int score, int totalQuestions)
         {
             this.InitializeComponent();
             DBHandler.Database.AddScore(score);
