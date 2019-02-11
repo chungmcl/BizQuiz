@@ -38,6 +38,33 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
+        private bool canClose = true;
+
+        /// <summary>
+        /// Overrides the backbutton to make sure the user really wants to leave
+        /// </summary>
+        /// <returns></returns>
+        protected override bool OnBackButtonPressed()
+        {
+            if (this.canClose)
+                this.ShowExitDialogue();
+            return this.canClose;
+        }
+
+        /// <summary>
+        /// Shows the exit dialogue to confirm if the user wants to leave without saving
+        /// </summary>
+        private async void ShowExitDialogue()
+        {
+            var answer = await this.DisplayAlert("Exit Creation", "Are you sure you want to leave? Your progress will not be saved", "Yes, leave", "No, keep working");
+            if (answer)
+            {
+                this.canClose = false;
+                this.OnBackButtonPressed();
+                await this.Navigation.PopAsync(true);
+            }
+        }
+
         /// <summary>
         /// Called when the user presses the Add Image button on a question eiditor
         /// </summary>
@@ -71,11 +98,17 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ButtonAddQuestion_Clicked(object sender, EventArgs e)
+        private async void ButtonAddQuestion_Clicked(object sender, EventArgs e)
         {
-            this.AddNewQuestion();
+            Frame frame = this.AddNewQuestion();
+            double x = frame.X;
+            frame.TranslationX = this.Width;
             // Scroll to bottom
             this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
+
+            //animate in frame           
+            await frame.TranslateTo(x - 10, 0, 500, Easing.CubicOut);
+
         }
 
         /// <summary>
@@ -91,7 +124,18 @@ namespace appFBLA2019
                 //this.StackLayoutQuestionStack.Children.Remove((((Frame)((StackLayout)((ImageButton)sender).Parent).Parent))); // Removes the question
                 Frame frame = (Frame)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent;
                 //Animate A deletion
-                await frame.TranslateTo(-Application.Current.MainPage.Width, 0, 250, Easing.CubicIn);
+                await frame.TranslateTo(-this.Width, 0, 500, Easing.CubicInOut);
+                // There has to be a better way to do this, it looks very rough. 
+                // but hours have been spent on trying to make this look good
+                IList<View> children = ((StackLayout)frame.Children[0]).Children;
+                uint i = 0;
+                foreach (View child in children)
+                {                                                       
+                    await child.LayoutTo(new Rectangle(child.X, child.Y, child.Width, 0), 20 - i, Easing.CubicInOut);
+                    child.IsVisible = false;
+                    i += 2;
+                }
+
                 this.StackLayoutQuestionStack.Children.Remove(frame);
             }
         }
@@ -158,19 +202,12 @@ namespace appFBLA2019
                                 ((Entry)children[1]).Text,
                                 answers);
                     }
-                    
+
+                    string questionType = ((Button)((StackLayout)children[0]).Children[0]).Text;
+
                     // Sets the question type
-                    if (((Switch)((StackLayout)children[0]).Children[0]).IsToggled)
-                    {
-                        if (string.IsNullOrWhiteSpace(answers[0]))
-                        {
-                            this.DisplayAlert("Couldn't Create Level", "Text answer questions must have an answer", "OK");
-                            goto error;
-                        }
-                            
-                        addThis.QuestionType = 1;
-                    }
-                    else
+                    
+                    if (questionType == "Question Type: Multiple choice")
                     {
                         int size = 0;
                         foreach (string answer in answers)
@@ -186,7 +223,19 @@ namespace appFBLA2019
                             
                         addThis.QuestionType = 0;
                     }
-                        
+                    else 
+                    {
+                        if (string.IsNullOrWhiteSpace(answers[0]))
+                        {
+                            this.DisplayAlert("Couldn't Create Level", "Text answer questions must have an answer", "OK");
+                            goto error;
+                        }
+
+                        if (questionType == "Question Type: Text answer")
+                                addThis.QuestionType = 1;
+                        else
+                            addThis.QuestionType = 2;
+                    }
 
                     addThis.DBId = frame.StyleId; // Set the dbid
 
@@ -257,9 +306,9 @@ namespace appFBLA2019
         /// <summary>
         /// a private AddNewQuestions for when the user creates a brand new question
         /// </summary>
-        private void AddNewQuestion()
+        private Frame AddNewQuestion()
         {
-            this.AddNewQuestion(null);
+            return this.AddNewQuestion(null);
         }
 
         /// <summary>
@@ -268,19 +317,17 @@ namespace appFBLA2019
         /// <param name="question">the Question to answer</param>
         /// <param name="imagePath">the path for the image corrosponding to the question</param>
         /// <param name="answers">the first is the correct answer, the rest are incorrect answers</param>
-        public void AddNewQuestion(Question question)
+        public Frame AddNewQuestion(Question question)
         {
             bool isMultipleChoice = true;
             if (question != null)
-            {
                 isMultipleChoice = question.QuestionType == 0;
-            }               
+
             Frame frame = new Frame() // The frame that holds everything
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
-                CornerRadius = 10,
-                
+                CornerRadius = 10,              
             };
             if (question != null)
                 frame.StyleId = question.DBId;
@@ -300,32 +347,26 @@ namespace appFBLA2019
             frameStack.Children.Add(topStack);
 
 
-
-            // 0 - 0
-            Switch SwitchMultipleChoice = new Switch();
-            {
-
-                SwitchMultipleChoice.Toggled += switcher_Toggled;
-                SwitchMultipleChoice.HorizontalOptions = LayoutOptions.Start;
-                SwitchMultipleChoice.VerticalOptions = LayoutOptions.Start;
-            }
-            topStack.Children.Add(SwitchMultipleChoice);
-
             // 0 - 1
-            Label labelSwitch = new Label()
+            Button buttonQuestionType = new Button();
             {
-                FontSize = 24,
-                TextColor = Color.Accent,
-                FontAttributes = FontAttributes.Italic,
-                HorizontalOptions = LayoutOptions.CenterAndExpand,
-                VerticalOptions = LayoutOptions.Start
-            };
-            if (isMultipleChoice)
-                labelSwitch.Text = "Multiple Choice";
-            else
-                labelSwitch.Text = "Text Answer";
+                buttonQuestionType.Clicked += OnButtonQuestionTypeClicked;
+                buttonQuestionType.HorizontalOptions = LayoutOptions.StartAndExpand;
+                buttonQuestionType.VerticalOptions = LayoutOptions.Start;
+                buttonQuestionType.BackgroundColor = Color.Transparent;
+                buttonQuestionType.TextColor = Color.Accent;
+                buttonQuestionType.FontSize = 18;
+                buttonQuestionType.FontAttributes = FontAttributes.Italic;
+            }
 
-            topStack.Children.Add(labelSwitch);
+            if (question == null || question.QuestionType == 0)
+                buttonQuestionType.Text = "Question Type: Multiple choice";
+            else if (question.QuestionType == 1)
+                buttonQuestionType.Text = "Question Type: Text answer";
+            else
+                buttonQuestionType.Text = "Question Type: Case sensitive text answer";
+
+            topStack.Children.Add(buttonQuestionType);
 
             // 0 - 2
             ImageButton Remove = new ImageButton(); // the button to remove the question 
@@ -341,53 +382,55 @@ namespace appFBLA2019
             topStack.Children.Add(Remove);
 
             // 1
-            Entry Question = new Entry // The question
+            Entry entryQuestion = new Entry // The question
             {
                 Placeholder = "Enter question",
                 FontSize = 20
                 
             };
             if (question != null) 
-                Question.Text = question.QuestionText;
-            frameStack.Children.Add(Question);
+                entryQuestion.Text = question.QuestionText;
+            frameStack.Children.Add(entryQuestion);
+
 
             // 2
-            Entry AnswerCorrect = new Entry // The correct answer
+            Entry entryAnswerCorrect = new Entry // The correct answer
             {
                 Placeholder = "Enter correct answer",
             };
             if (question != null)
-                AnswerCorrect.Text = question.CorrectAnswer;
+                entryAnswerCorrect.Text = question.CorrectAnswer;
 
-            frameStack.Children.Add(AnswerCorrect);
+
+            frameStack.Children.Add(entryAnswerCorrect);
 
             // 3
-            Entry AnswerWrongOne = new Entry // A wrong answer
+            Entry entryAnswerWrongOne = new Entry // A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
             if (question != null)
-                AnswerWrongOne.Text = question.AnswerOne;
+                entryAnswerWrongOne.Text = question.AnswerOne;
 
-            frameStack.Children.Add(AnswerWrongOne);
+            frameStack.Children.Add(entryAnswerWrongOne);
 
             // 4
-            Entry AnswerWrongTwo = new Entry// A wrong answer
+            Entry entryAnswerWrongTwo = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
             if (question != null)
-                AnswerWrongTwo.Text = question.AnswerTwo;
-            frameStack.Children.Add(AnswerWrongTwo);
+                entryAnswerWrongTwo.Text = question.AnswerTwo;
+            frameStack.Children.Add(entryAnswerWrongTwo);
 
             // 5
-            Entry AnswerWrongThree = new Entry// A wrong answer
+            Entry entryAnswerWrongThree = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
             };
             if (question != null)
-                AnswerWrongThree.Text = question.AnswerThree;
-            frameStack.Children.Add(AnswerWrongThree);
+                entryAnswerWrongThree.Text = question.AnswerThree;
+            frameStack.Children.Add(entryAnswerWrongThree);
 
             // 6
             Button AddImage = new Button(); // The add Image button
@@ -423,33 +466,51 @@ namespace appFBLA2019
                 AddImage.IsVisible = true;
 
 
+            entryQuestion.ReturnCommand = new Command(() => entryAnswerCorrect.Focus());
+            if(isMultipleChoice)
+            {
+                entryAnswerCorrect.ReturnCommand = new Command(() => entryAnswerWrongOne.Focus());
+                entryAnswerWrongOne.ReturnCommand = new Command(() => entryAnswerWrongTwo.Focus());
+                entryAnswerWrongTwo.ReturnCommand = new Command(() => entryAnswerWrongThree.Focus());
+            }
+
 
             // Dissable extra answers if its not mulitple choice
-            AnswerWrongOne.IsVisible = isMultipleChoice;
-            AnswerWrongTwo.IsVisible = isMultipleChoice;
-            AnswerWrongThree.IsVisible = isMultipleChoice;
-            SwitchMultipleChoice.IsToggled = !isMultipleChoice;
+            entryAnswerWrongOne.IsVisible = isMultipleChoice;
+            entryAnswerWrongTwo.IsVisible = isMultipleChoice;
+            entryAnswerWrongThree.IsVisible = isMultipleChoice;;
 
             frame.Content = frameStack;
             // and add the frame to the the other stacklaout.
             this.StackLayoutQuestionStack.Children.Add(frame);
 
+            return frame;
+           
+
         }
 
-        private void switcher_Toggled(object sender, ToggledEventArgs e)
+
+        async void OnButtonQuestionTypeClicked(object sender, EventArgs e)
         {
-            StackLayout stack = ((StackLayout)((StackLayout)((Switch)sender).Parent).Parent);
-            stack.Children[3].IsVisible = !e.Value;
-            stack.Children[3].IsVisible = !e.Value;
-            stack.Children[4].IsVisible = !e.Value;
-            stack.Children[5].IsVisible = !e.Value;
+            string action = await DisplayActionSheet("Question Type:", "Cancel", null, "Multiple choice", "Text answer", "Case sensitive text answer");
+            if (action != "Cancel" && action != null)
+            {
+                bool isMultipleChoice = action == "Multiple choice";
+                StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
+                stack.Children[3].IsVisible = isMultipleChoice;
+                stack.Children[4].IsVisible = isMultipleChoice;
+                stack.Children[5].IsVisible = isMultipleChoice;
+                if (isMultipleChoice)
+                {
+                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[3]).Focus());
+                }
+                else
+                {
+                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Unfocus());
+                }
 
-            Label label = ((Label)((StackLayout)((Switch)sender).Parent).Children[1]);
-            if (e.Value)
-                label.Text = "Text Answer";
-            else
-                label.Text = "Multiple Choice";
-
+                ((Button)sender).Text = "Question Type: " + action;
+            }
         }
 
         public void SetLevelName(string levelName)

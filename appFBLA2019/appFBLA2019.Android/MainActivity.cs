@@ -28,7 +28,7 @@ namespace appFBLA2019.Droid
             base.OnCreate(bundle);
             FacebookClientManager.Initialize(this);
 
-            Window.SetSoftInputMode(Android.Views.SoftInput.AdjustPan);
+            this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustPan);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             this.LoadApplication(new App());
