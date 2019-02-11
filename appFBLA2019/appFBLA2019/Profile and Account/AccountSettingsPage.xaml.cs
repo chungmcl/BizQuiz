@@ -37,28 +37,37 @@ namespace appFBLA2019
             this.ButtonChangeEmail.IsEnabled = false;
             this.EntryEnterPasswordChangeEmail.IsEnabled = false;
             this.EntryEnterNewEmailChangeEmail.IsEnabled = false;
-            OperationReturnMessage message = await Task.Run(() => ChangeEmail());
+
+            if (this.EntryEnterPasswordChangeEmail.Text == null || this.EntryEnterNewEmailChangeEmail.Text == null)
+            {
+                this.LabelChangeEmailMessage.Text = "Fields cannot be empty.";
+            }
+            else
+            {
+                OperationReturnMessage message = await Task.Run(() => ChangeEmail(CredentialManager.Username,
+                    this.EntryEnterPasswordChangeEmail.Text,
+                    this.EntryEnterNewEmailChangeEmail.Text));
+
+                if (message == OperationReturnMessage.TrueConfirmEmail)
+                {
+
+                }
+                else if (message == OperationReturnMessage.FalseInvalidCredentials)
+                {
+                    this.LabelChangeEmailMessage.Text = "Incorrect password.";
+                }
+                else if (message == OperationReturnMessage.FalseInvalidEmail)
+                {
+                    this.LabelChangeEmailMessage.Text = "Invalid email. Please check the email and try again.";
+                }
+            }
             
-            if (message == OperationReturnMessage.TrueConfirmEmail)
-            {
-
-            }
-            else if (message == OperationReturnMessage.FalseInvalidCredentials)
-            {
-                this.LabelChangeEmailMessage.Text = "Incorrect password.";
-            }
-            else if (message == OperationReturnMessage.FalseInvalidEmail)
-            {
-                this.LabelChangeEmailMessage.Text = "Invalid email. Please check the email and try again.";
-            }
-
-
             this.ButtonChangeEmail.IsEnabled = true;
             this.EntryEnterPasswordChangeEmail.IsEnabled = true;
             this.EntryEnterNewEmailChangeEmail.IsEnabled = true;
         }
 
-        private OperationReturnMessage ChangeEmail()
+        private OperationReturnMessage ChangeEmail(string username, string password, string newEmail)
         {
             ServerConnector.SendData(ServerRequestTypes.ChangeEmail,
                     $"{CredentialManager.Username}/{this.EntryEnterPasswordChangeEmail.Text.Trim()}/{this.EntryEnterNewEmailChangeEmail.Text.Trim()}/-");

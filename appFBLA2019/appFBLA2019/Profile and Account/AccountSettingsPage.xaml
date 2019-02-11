@@ -30,16 +30,19 @@
                             Orientation="Horizontal"
                             HorizontalOptions="FillAndExpand">
                                 <Label Text="Change Email" 
-                               Font="Bold,20" 
-                               HorizontalOptions="StartAndExpand"/>
-                                <ImageButton x:Name="ImageButtonCloseChangeEmail" 
-                                     Source="ic_arrow_drop_down_black_48dp.png"
-                                     BackgroundColor="Transparent"
-                                     HorizontalOptions="End"
-                                     VerticalOptions="Start"
-                                     WidthRequest="40"
-                                     HeightRequest="40"
-                                     Clicked="ImageButtonCloseChangeEmail_Clicked"/>
+                                            Font="Bold,20" 
+                                            HorizontalOptions="StartAndExpand"
+                                            Grid.Column="0" Grid.Row="0"/>
+                                <ImageButton x:Name="ImageButtonCloseChangeEmail"
+                                             Source="ic_arrow_drop_down_black_48dp.png"
+                                             BackgroundColor="Transparent"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="Start"
+                                             WidthRequest="40"
+                                             HeightRequest="40"
+                                             Grid.Column="1" Grid.Row="0"
+                                             Clicked="ImageButtonCloseChangeEmail_Clicked"/>
+                                                    
                             </StackLayout>
 
                             <StackLayout x:Name="StackLayoutChangeEmailContent"
@@ -47,7 +50,7 @@
 
                                 <Entry x:Name="EntryEnterPasswordChangeEmail" Placeholder="Enter password"/>
                                 <Entry x:Name="EntryEnterNewEmailChangeEmail" Placeholder="Enter new Email"/>
-                                <Label x:Name="LabelChangeEmailMessage" Font="Bold,20"/>
+                                <Label x:Name="LabelChangeEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangeEmail" 
                                         Text="Change Email"
                                         Clicked="ButtonChangeEmail_Clicked"/>
@@ -82,7 +85,7 @@
                                 <Entry Placeholder="Enter current password"/>
                                 <Entry Placeholder="Enter new password"/>
                                 <Entry Placeholder="Reenter new password"/>
-                                <Label x:Name="LabelChangePasswordMessage" Font="Bold,20"/>
+                                <Label x:Name="LabelChangePasswordMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangePassword" 
                                         Text="Change Password"
                                         Clicked="ButtonChangePassword_Clicked"/>
@@ -117,7 +120,7 @@
                             <StackLayout x:Name="StackLayoutConfirmEmailContent"
                                  IsVisible="False">
                                 <Entry Placeholder="Enter confirmation code"/>
-                                <Label x:Name="LabelConfirmEmailMessage" Font="Bold,20"/>
+                                <Label x:Name="LabelConfirmEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonConfirmEmail" 
                                         Text="Confirm Email"
                                         Clicked="ButtonConfirmEmail_Clicked"/>
@@ -152,7 +155,7 @@
                             <StackLayout x:Name="StackLayoutDeleteAccountContent"
                                  IsVisible="False">
                                 <Entry Placeholder="Enter password"/>
-                                <Label x:Name="LabelDeleteAccountMessage" Font="Bold,20"/>
+                                <Label x:Name="LabelDeleteAccountMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonDeleteAccount" 
                                         Text="Delete Account"
                                         BackgroundColor="Accent"
