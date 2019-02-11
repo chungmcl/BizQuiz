@@ -14,7 +14,11 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class MainPage : Xamarin.Forms.TabbedPage
 	{
+        private const int levelCatagoriesPage = 0;
+        private const int levelEditorPage = 1;
+        //private const int levelStorePage = 2;
         private const int profilePageIndex = 3;
+
 		public MainPage ()
 		{
 			this.InitializeComponent ();
@@ -36,6 +40,7 @@ namespace appFBLA2019
             {
                 case profilePageIndex:
                     {
+                        // Reference to current instantiation of ProfilePage
                         ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[profilePageIndex];
                         if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                             Task.Run(() => profilePage.UpdateProfilePage(true));

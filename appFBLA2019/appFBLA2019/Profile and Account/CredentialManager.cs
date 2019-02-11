@@ -10,14 +10,11 @@ namespace appFBLA2019
 {
     public static class CredentialManager
     {
-        public static string Username
-        {
-            get; private set;
-        }
-
+        public static string Username { get; private set; }
         public static bool IsLoggedIn { get; private set; }
-
-        public static void SaveCredential(string username, string password)
+        public static bool EmailConfirmed { get; private set; }
+     
+        public static void SaveCredential(string username, string password, bool emailConfirmed)
         {
             Username = username;
 
@@ -32,6 +29,7 @@ namespace appFBLA2019
             Task.Run(async () => await SecureStorage.SetAsync("password", ""));
 
             IsLoggedIn = false;
+            EmailConfirmed = false;
         }
 
         public async static Task<OperationReturnMessage> CheckLoginStatus()
@@ -47,11 +45,20 @@ namespace appFBLA2019
                     if (ServerConnector.SendData(ServerRequestTypes.LoginAccount, username + "/" + password + "/-"))
                     {
                         OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
-                        if (message == OperationReturnMessage.True || message == OperationReturnMessage.TrueConfirmEmail)
+                        if (message == OperationReturnMessage.True)
+                        {
                             IsLoggedIn = true;
+                            EmailConfirmed = true;
+                        }
+                        else if (message == OperationReturnMessage.TrueConfirmEmail)
+                        {
+                            IsLoggedIn = true;
+                            EmailConfirmed = false;
+                        }
                         else
                         {
                             IsLoggedIn = false;
+                            EmailConfirmed = false;
 
                             await SecureStorage.SetAsync("password", "");
                         }
@@ -69,7 +76,7 @@ namespace appFBLA2019
             }
             else // If the user is offline
             {
-                if ((username != null) && (password != null))
+                if (((username != null) && (password != null)) && ((username != "") && (password != "")))
                 {
                     return OperationReturnMessage.False;
                 }

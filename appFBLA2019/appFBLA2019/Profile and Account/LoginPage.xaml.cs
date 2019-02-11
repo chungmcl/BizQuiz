@@ -41,21 +41,24 @@ namespace appFBLA2019
 
                 if (response == OperationReturnMessage.True)
                 {
-                    Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Login Successful!");
-                    CredentialManager.SaveCredential(username, password);
+                    CredentialManager.SaveCredential(username, password, true);
                     OnLoggedIn();
                 }
                 else if (response == OperationReturnMessage.TrueConfirmEmail)
                 {
                     Device.BeginInvokeOnMainThread(async() =>
                     {
-                        this.LabelMessage.Text = "Please confirm your email.";
                         var confirmationPage = new EmailConfirmationPage(username);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         await this.Navigation.PushModalAsync(confirmationPage);
                     });
-                    CredentialManager.SaveCredential(username, password);
+                    CredentialManager.SaveCredential(username, password, false);
                     OnLoggedIn();
+                }
+                else if (response == OperationReturnMessage.FalseInvalidCredentials)
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = "Login Failed - Username and/or Password are Incorrect.");
                 }
                 else
                 {
@@ -98,15 +101,8 @@ namespace appFBLA2019
         private void OnAccountCreated(object source, AccountCreatedEventArgs accountArgs)
         {
             this.EntryUsername.Text = accountArgs.Username;
-            if (accountArgs.EmailConfirmed)
-            {
-                this.LabelMessage.Text = "Account created successfully!";
-            }
-            else
-            {
-                this.LabelMessage.Text = "Account created successfully! " +
-                    "Please confirm your email as soon as possible.";
-            }
+
+            OnLoggedIn();
         }
     }
 }

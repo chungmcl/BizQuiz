@@ -21,9 +21,10 @@ namespace appFBLA2019
 
         private void ButtonLogout_Clicked(object sender, EventArgs e)
         {
+            this.ButtonLogout.IsEnabled = false;
             CredentialManager.Logout();
             OnSignedOut();
-            this.Navigation.PopModalAsync();
+            this.Navigation.PopAsync();
         }
 
         protected virtual void OnSignedOut()
@@ -31,9 +32,41 @@ namespace appFBLA2019
             this.SignedOut?.Invoke(this, EventArgs.Empty);
         }
 
+        private void ButtonChangeEmail_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        #region Image Button Event Handlers
+        private void ImageButtonCloseChangeEmail_Clicked(object sender, EventArgs e)
+        {
+            this.ImageButtonCloseChangeEmail.RelRotateTo(180);
+            this.StackLayoutChangeEmailContent.IsVisible = !this.StackLayoutChangeEmailContent.IsVisible;
+        }
+
+        private void ImageButtonCloseChangePassword_Clicked(object sender, EventArgs e)
+        {
+            this.ImageButtonCloseChangePassword.RelRotateTo(180);
+            this.StackLayoutChangePasswordContent.IsVisible = !this.StackLayoutChangePasswordContent.IsVisible;
+        }
+
+        private void ImageButtonCloseConfirmEmail_Clicked(object sender, EventArgs e)
+        {
+            this.ImageButtonCloseConfirmEmail.RelRotateTo(180);
+            this.StackLayoutConfirmEmailContent.IsVisible = !this.StackLayoutConfirmEmailContent.IsVisible;
+        }
+
+        private void ImageButtonDeleteAccount_Clicked(object sender, EventArgs e)
+        {
+            this.ImageButtonDeleteAccount.RelRotateTo(180);
+            this.StackLayoutDeleteAccountContent.IsVisible = !this.StackLayoutDeleteAccountContent.IsVisible;
+        }
+        #endregion
+
         // To do:
         // Change email
         // Change password
+        // Confirm Email (IsVisible only if user needs to confirm email)
         // Delete account permanently
     }
 }

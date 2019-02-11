@@ -11,6 +11,9 @@ namespace appFBLA2019
     {
         public delegate void AccountCreatedEventHandler(object source, AccountCreatedEventArgs eventArgs);
         public event AccountCreatedEventHandler AccountCreated;
+
+        private string username;
+        private string password;
         public CreateAccountPage()
         {
             InitializeComponent();
@@ -46,7 +49,8 @@ namespace appFBLA2019
                     Device.BeginInvokeOnMainThread(async () =>
                     {
                         this.LabelMessage.Text = "Account successfully created.";
-                        CredentialManager.SaveCredential(username, password);
+                        this.username = username;
+                        this.password = password;
 
                         var confirmationPage = new EmailConfirmationPage(username);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
@@ -85,6 +89,7 @@ namespace appFBLA2019
 
         protected void OnAccountCreated(bool emailConfirmed)
         {
+            CredentialManager.SaveCredential(this.username, this.password, emailConfirmed);
             this.AccountCreated?.Invoke(this,
                 new AccountCreatedEventArgs
                 {
