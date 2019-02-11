@@ -44,16 +44,16 @@
 
                             <StackLayout x:Name="StackLayoutChangeEmailContent"
                                  IsVisible="False">
-                                
-                                <Entry Placeholder="Enter password"/>
-                                <Entry Placeholder="Enter new Email"/>
+
+                                <Entry x:Name="EntryEnterPasswordChangeEmail" Placeholder="Enter password"/>
+                                <Entry x:Name="EntryEnterNewEmailChangeEmail" Placeholder="Enter new Email"/>
                                 <Label x:Name="LabelChangeEmailMessage" Font="Bold,20"/>
                                 <Button x:Name="ButtonChangeEmail" 
                                         Text="Change Email"
                                         Clicked="ButtonChangeEmail_Clicked"/>
-                                
+
                             </StackLayout>
-                            
+
                         </StackLayout>
                     </Frame>
 
@@ -162,12 +162,8 @@
 
                         </StackLayout>
                     </Frame>
-                </StackLayout>
-            </ScrollView>
-
-
-
-            <Button x:Name="ButtonLogout" 
+                    
+                    <Button x:Name="ButtonLogout" 
                         Text="Log Out of Account"
                         Clicked="ButtonLogout_Clicked"
                         BackgroundColor="Accent"
@@ -175,6 +171,8 @@
                         VerticalOptions="End"
                         Grid.Column="0"
                         Grid.Row="1"/>
+                </StackLayout>
+            </ScrollView>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

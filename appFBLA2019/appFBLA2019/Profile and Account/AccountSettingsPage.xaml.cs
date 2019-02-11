@@ -32,9 +32,38 @@ namespace appFBLA2019
             this.SignedOut?.Invoke(this, EventArgs.Empty);
         }
 
-        private void ButtonChangeEmail_Clicked(object sender, EventArgs e)
+        private async void ButtonChangeEmail_Clicked(object sender, EventArgs e)
         {
+            this.ButtonChangeEmail.IsEnabled = false;
+            this.EntryEnterPasswordChangeEmail.IsEnabled = false;
+            this.EntryEnterNewEmailChangeEmail.IsEnabled = false;
+            OperationReturnMessage message = await Task.Run(() => ChangeEmail());
+            
+            if (message == OperationReturnMessage.TrueConfirmEmail)
+            {
 
+            }
+            else if (message == OperationReturnMessage.FalseInvalidCredentials)
+            {
+                this.LabelChangeEmailMessage.Text = "Incorrect password.";
+            }
+            else if (message == OperationReturnMessage.FalseInvalidEmail)
+            {
+                this.LabelChangeEmailMessage.Text = "Invalid email. Please check the email and try again.";
+            }
+
+
+            this.ButtonChangeEmail.IsEnabled = true;
+            this.EntryEnterPasswordChangeEmail.IsEnabled = true;
+            this.EntryEnterNewEmailChangeEmail.IsEnabled = true;
+        }
+
+        private OperationReturnMessage ChangeEmail()
+        {
+            ServerConnector.SendData(ServerRequestTypes.ChangeEmail,
+                    $"{CredentialManager.Username}/{this.EntryEnterPasswordChangeEmail.Text.Trim()}/{this.EntryEnterNewEmailChangeEmail.Text.Trim()}/-");
+            Device.BeginInvokeOnMainThread(() => this.LabelChangeEmailMessage.Text = "Waiting...");
+            return ServerConnector.ReceiveFromServerORM();
         }
 
         private void ButtonChangePassword_Clicked(object sender, EventArgs e)
