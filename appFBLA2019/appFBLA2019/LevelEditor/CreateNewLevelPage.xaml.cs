@@ -115,18 +115,11 @@ namespace appFBLA2019
             {
                 // Set previousQuestions to the correct previous questions
                 List<Question> previousQuestions = new List<Question>(); ; // A list of questions already in the database
-                if (this.originalAuthor != CredentialManager.Username)
-                {
-                    DBHandler.SelectDatabase(this.originalName, this.originalAuthor);                 
-                }                   
-                else
-                {
-                    DBHandler.SelectDatabase(this.originalName, CredentialManager.Username);                   
-                }
+
+                DBHandler.SelectDatabase(this.originalName, this.originalAuthor);
+                
                 previousQuestions = DBHandler.Database.GetQuestions();
                 
-                // Now open the database the user just made, might be the same as the one already open
-                DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), CredentialManager.Username);
 
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
                 
@@ -205,6 +198,11 @@ namespace appFBLA2019
                 // update the ones that need to be updated, 
                 // and do nothing to the others
 
+                // Now open the database the user just made, might be the same as the one already open
+                DBHandler.SelectDatabase(this.EntryLevelName.Text.Trim(), CredentialManager.Username);
+
+                string test = DBHandler.Database.fileName;
+
                 // Work in progress, algorithm might be off.
                 if (previousQuestions.Count() == 0) // if the user created this for the first time
                     DBHandler.Database.AddQuestions(NewQuestions);
@@ -245,7 +243,9 @@ namespace appFBLA2019
                 {
                     Directory.Delete(App.Path + "/" + this.originalName + "`" + this.originalAuthor, true);
                 }
-                    
+
+                
+
                 // Returns user to front page of LevelEditor and refreshed database
                 this.Navigation.PopAsync(true);
                 

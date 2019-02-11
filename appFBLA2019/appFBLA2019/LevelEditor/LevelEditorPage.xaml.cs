@@ -15,28 +15,27 @@ namespace appFBLA2019
         public LevelEditorPage()
         {
             this.InitializeComponent();
-            this.FindDatabase();
         }
-
+        
         // Get the list of Quizes the user can edit
-        public void FindDatabase()
+        private List<string> FindDatabase()
         {
-            List<string> databaseList = new List<string>();
-
             // get a list of all databases the user has on the device
-
+            List<string> databaseList = new List<string>();
             string[] subFolderNames = Directory.GetDirectories(App.Path);
             foreach (string levelName in subFolderNames)
             {
                 if (levelName.Contains('`'))
                 {
                     // Might have to change this up when it comes to release as Levels will be stored somewhere else!
-                    databaseList.Add(levelName.Remove(levelName.IndexOf('`'),
-                        levelName.Count() - levelName.IndexOf('`')).Substring(30));
+                    string level = levelName.Remove(levelName.IndexOf('`'),
+                        levelName.Count() - levelName.IndexOf('`')).Substring(30);
+                    string username = (levelName.Substring(30)).Remove(0, level.Count() + 1);
+                    databaseList.Add(level + " By " + username);
                 }
             }
 
-            this.PickerLevelSelect.ItemsSource = databaseList;
+            return databaseList;
         }
 
         private void ButtonCreate_Clicked(object sender, EventArgs e)
@@ -59,13 +58,16 @@ namespace appFBLA2019
             {
                 if (selectedIndex != -1) // If the user has selected something then open the page
                 {
-                    DBHandler.SelectDatabase((string)this.PickerLevelSelect.SelectedItem, CredentialManager.Username);
-                    CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
+                    string levelPicked = (string)this.PickerLevelSelect.SelectedItem;
+                    string levelTitle = levelPicked.Remove(levelPicked.IndexOf(" By "));
+                    string levelAuthor = levelPicked.Substring(levelPicked.IndexOf(" By ") + 4);
+                    DBHandler.SelectDatabase(levelTitle, levelAuthor);
+                    CreateNewLevelPage levelPage = new CreateNewLevelPage(levelTitle, levelAuthor); //Create the levelPage
                                                                              // Add the questions from the database to the page to edit
                     List<Question> test = DBHandler.Database.GetQuestions();
                     foreach (Question question in DBHandler.Database.GetQuestions())
                     {
-                        levelPage.SetLevelName((string)this.PickerLevelSelect.SelectedItem);
+                        levelPage.SetLevelName(levelTitle);
                         levelPage.AddNewQuestion(question);
                     }
                     this.Navigation.PushAsync(levelPage);
@@ -82,7 +84,7 @@ namespace appFBLA2019
         // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
         private void PickerLevelSelect_Focused(object sender, FocusEventArgs e)
         {
-            this.FindDatabase();
+            this.PickerLevelSelect.ItemsSource = this.FindDatabase();
         }
     }
 }
