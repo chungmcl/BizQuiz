@@ -52,16 +52,21 @@ namespace appFBLA2019
                         this.username = username;
                         this.password = password;
 
-                        var confirmationPage = new EmailConfirmationPage(username);
+                        var confirmationPage = new EmailConfirmationPage(username, password);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         confirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;
                         await this.Navigation.PushModalAsync(confirmationPage);
                     });
                 }
-                else
+                else if (databaseReturnInfo == OperationReturnMessage.FalseUsernameAlreadyExists)
                 {
                     Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Account could not be created.");
+                    this.LabelMessage.Text = $"Account could not be created - Username already exists.");
+                }
+                else if (databaseReturnInfo == OperationReturnMessage.FalseInvalidEmail)
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = $"Account could not be created - Invalid Email.");
                 }
             }
             else

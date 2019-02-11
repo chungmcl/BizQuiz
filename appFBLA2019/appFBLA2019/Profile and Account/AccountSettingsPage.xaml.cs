@@ -37,6 +37,21 @@ namespace appFBLA2019
 
         }
 
+        private void ButtonChangePassword_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ButtonDeleteAccount_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
         #region Image Button Event Handlers
         private void ImageButtonCloseChangeEmail_Clicked(object sender, EventArgs e)
         {

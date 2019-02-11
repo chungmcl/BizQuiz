@@ -48,7 +48,7 @@ namespace appFBLA2019
                 {
                     Device.BeginInvokeOnMainThread(async() =>
                     {
-                        var confirmationPage = new EmailConfirmationPage(username);
+                        var confirmationPage = new EmailConfirmationPage(username, password);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         await this.Navigation.PushModalAsync(confirmationPage);
                     });
