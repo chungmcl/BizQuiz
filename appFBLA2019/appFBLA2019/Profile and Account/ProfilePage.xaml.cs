@@ -30,15 +30,15 @@ namespace appFBLA2019
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                // Initialize profile content to avoid wonky UI behavior during async loading
+                this.StackLayoutProfilePageContent.IsVisible = false;
                 this.ActivityIndicator.IsVisible = true;
                 this.ActivityIndicator.IsRunning = true;
                 this.IsLoading = true;
             });
 
             if (updateLoginStatus)
-            {
-                await Task.Run(() => CredentialManager.CheckLoginStatus());
-            }
+                await CredentialManager.CheckLoginStatus();
 
             Device.BeginInvokeOnMainThread(() =>
             {
@@ -46,20 +46,22 @@ namespace appFBLA2019
                 this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
                 if (this.StackLayoutProfilePageContent.IsVisible)
                 {
-                    ToolbarItem accountSettingsButton = new ToolbarItem();
-                    accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
-                    accountSettingsButton.Icon = FileImageSource.FromFile("ic_settings_black_48dp.png") as FileImageSource;
+                    if (this.ToolbarItems.Count <= 0)
+                    {
+                        ToolbarItem accountSettingsButton = new ToolbarItem();
+                        accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
+                        accountSettingsButton.Icon = FileImageSource.FromFile("ic_settings_black_48dp.png") as FileImageSource;
 
-                    this.ToolbarItems.Add(accountSettingsButton);
+                        this.ToolbarItems.Add(accountSettingsButton);
+                    }
 
                     this.LabelUsername.Text = CredentialManager.Username;
                 }
                 else
                 {
                     if (this.ToolbarItems.Count > 0)
-                    {
                         this.ToolbarItems.Clear();
-                    }
+
                     this.IsOnLoginPage = true;
                     this.LocalLoginPage.LoggedIn += OnLoggedIn;
                 }
