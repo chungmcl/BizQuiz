@@ -18,20 +18,23 @@ namespace appFBLA2019
         public LevelEndPage(int score, int totalQuestions)
         {
             this.InitializeComponent();
-            DBHandler.Database.AddScore(score);
-            this.LabelScore.Text = $"{score.Score}/{totalQuestions * 2}";
+            this.LabelScore.Text = $"{score}/{totalQuestions * 2}";
         }
 
         public delegate void FinishedEventHandler(object source, EventArgs eventArgs);
 
         public event FinishedEventHandler Finished;
 
+        protected override async void OnAppearing()
+        {
+            this.LabelScore.Scale = 0.00001;
+            await this.LabelScore.ScaleTo(1, 1000, Easing.BounceIn);
+        }
+
         protected virtual void OnFinished()
         {
             this.Finished?.Invoke(this, EventArgs.Empty);
         }
-
-        private ScoreRecord score;
 
         private async void ButtonDone_Clicked(object sender, EventArgs e)
         {

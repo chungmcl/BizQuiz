@@ -20,10 +20,12 @@ namespace appFBLA2019
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
 
-            this.MainPage = new NavigationPage(new MainPage());
+            this.MainPage = App.rootPage = new NavigationPage(new MainPage());
         }
 
         public static string Path;
+
+        public static Page rootPage;
 
         protected override void OnResume()
         {

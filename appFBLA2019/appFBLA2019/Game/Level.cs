@@ -56,7 +56,7 @@ namespace appFBLA2019
         public static double GetLevelAvgScore(string level, string author)
         {
             DBHandler.SelectDatabase(level, author);
-            return DBHandler.Database.GetAvgScore();
+            return 0;
         }
 
         public Question GetQuestion()

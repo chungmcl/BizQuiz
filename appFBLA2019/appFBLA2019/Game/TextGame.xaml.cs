@@ -20,6 +20,7 @@ namespace appFBLA2019
             this.score = 0;
             this.random = new Random();
 
+            this.LayoutRefresh();
             this.CycleQuestion();
         }
 
@@ -29,15 +30,39 @@ namespace appFBLA2019
             await this.Navigation.PopAsync();
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
-            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
+            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 200);
+            this.LayoutRefresh();
+        }
 
+
+        private void LayoutRefresh()
+        {
             this.StackLayoutMain.WidthRequest = this.RelativeLayout.Width;
             this.StackLayoutMain.HeightRequest = this.RelativeLayout.Height;
 
-            this.ButtonGrid.WidthRequest = this.StackLayoutMain.Width;
-            this.ButtonGrid.HeightRequest = this.StackLayoutMain.Height;
+            this.QuestionImage.Aspect = Aspect.AspectFit;
+            if (!this.QuestionImage.IsEnabled)
+            {
+                this.LayoutGrid.RowDefinitions = new RowDefinitionCollection
+                {
+                    new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
+                };
+            }
+            else
+            {
+                //this.QuestionImage.HeightRequest = this.StackLayoutMain.Height * 1 / 3;
+                this.LayoutGrid.RowDefinitions = new RowDefinitionCollection
+                {
+                    new RowDefinition() { Height = Xamarin.Forms.GridLength.Auto },
+                    new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
+                };
+            }
+            this.LayoutGrid.HeightRequest = this.StackLayoutMain.Height;
+
+            this.UpdateChildrenLayout();
+            this.ForceLayout();
         }
 
         private string correct;
@@ -58,7 +83,7 @@ namespace appFBLA2019
 
         private async void CheckButtonAnswer(string answer)
         {
-            foreach (Button button in this.ButtonGrid.Children)
+            foreach (Button button in this.InputGrid.Children)
             {
                 button.IsEnabled = false;
                 if (button.Text != answer)
@@ -68,20 +93,21 @@ namespace appFBLA2019
             }
             if (answer == this.currentQuestion.CorrectAnswer)
             {
-                ((Button)this.ButtonGrid.Children.Where(x => (x as Button).Text == this.currentQuestion.CorrectAnswer).First()).BackgroundColor = Color.Green;
+                ((Button)this.InputGrid.Children.Where(x => (x as Button).Text == this.currentQuestion.CorrectAnswer).First()).BackgroundColor = Color.Green;
 
-                await this.CorrectAnswer(true);
+                await this.CorrectAnswer();
             }
             else
             {
-                ((Button)this.ButtonGrid.Children.Where(x => (x as Button).Text == answer).First()).BackgroundColor = Color.Red;
+                ((Button)this.InputGrid.Children.Where(x => (x as Button).Text == answer).First()).BackgroundColor = Color.Red;
 
-                await this.IncorrectAnswer(true);
+                await this.IncorrectAnswer();
             }
         }
 
         private void CheckTextAnswer(string answer, bool checkCase)
         {
+            ((Button)this.InputGrid.Children.Where(x => x.GetType() == typeof(Button)).First()).IsEnabled = false;
             answer = answer.Trim();
             string correctAnswer = this.currentQuestion.CorrectAnswer;
             if (!checkCase)
@@ -92,15 +118,15 @@ namespace appFBLA2019
 
             if (answer == correctAnswer)
             {
-                this.CorrectAnswer(false);
+                this.CorrectAnswer();
             }
             else
             {
-                this.IncorrectAnswer(false);
+                this.IncorrectAnswer();
             }
         }
 
-        private async Task CorrectAnswer(bool isMultipleChoice)
+        private async Task CorrectAnswer()
         {
             this.LabelFeedback.Text = "Correct!";
             this.NextBanner.BackgroundColor = Color.Green;
@@ -140,7 +166,7 @@ namespace appFBLA2019
             }
         }
 
-        private async Task IncorrectAnswer(bool isMultipleChoice)
+        private async Task IncorrectAnswer()
         {
             this.LabelFeedback.Text = "Incorrect!";
             this.LabelFeedback.TextColor = Color.White;
@@ -170,8 +196,8 @@ namespace appFBLA2019
             this.correct = question.CorrectAnswer;
             List<string> answers = question.Answers;
 
-            this.ButtonGrid.Children.Clear();
-            this.ButtonGrid.RowDefinitions = new RowDefinitionCollection
+            this.InputGrid.Children.Clear();
+            this.InputGrid.RowDefinitions = new RowDefinitionCollection
             {
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star },
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
@@ -190,8 +216,7 @@ namespace appFBLA2019
                 //if there are only 2 answers there are only two rows
                 if (answers.Count() < 3)
                 {
-                    this.ButtonGrid.HeightRequest = 160;
-                    this.ButtonGrid.RowDefinitions =
+                    this.InputGrid.RowDefinitions =
                         new RowDefinitionCollection
                         {
                                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
@@ -207,8 +232,10 @@ namespace appFBLA2019
                         Text = answer,
                         FontSize = 45,
                         CornerRadius = 25,
+                        Padding = 10,
                         BackgroundColor = Color.Accent,
-                        TextColor = Color.White
+                        TextColor = Color.White,
+                        VerticalOptions = LayoutOptions.FillAndExpand
                     };
 
                     button.Clicked += (object sender, EventArgs e) =>
@@ -216,7 +243,7 @@ namespace appFBLA2019
                         this.CheckButtonAnswer(((Button)sender).Text);
                     };
 
-                    this.ButtonGrid.Children.Add(button, 0, i);
+                    this.InputGrid.Children.Add(button, 0, i);
                     //this is gross and messy, need to find a better way to place buttons correctly with math and stuff
                     switch (i)
                     {
@@ -241,7 +268,7 @@ namespace appFBLA2019
                             break;
                     }
 
-                    this.ButtonGrid.Children.Add(button, currentColumn, currentRow);
+                    this.InputGrid.Children.Add(button, currentColumn, currentRow);
                     if (i == 2 && answers.Count() == 3)
                     {
                         Grid.SetColumnSpan(button, 2);
@@ -250,34 +277,51 @@ namespace appFBLA2019
             }
             else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
             {
-                Entry entry = new Entry();
+                this.InputGrid.RowDefinitions = new RowDefinitionCollection
+            {
+                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star},
+                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
+            };
+                Entry entry = new Entry()
+                {
+                    FontSize = 35,
+                    FontAttributes = FontAttributes.Italic,
+                    TextColor = Color.Gray,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    VerticalOptions = LayoutOptions.End,
+                    HorizontalOptions = LayoutOptions.CenterAndExpand,
+                    Placeholder = "Answer Here",
+                    PlaceholderColor = Color.LightGray
+                }
+                ;
                 Button buttonCheckAnswer = new Button
                 {
                     Text = "Check Answer",
                     FontSize = 45,
                     CornerRadius = 25,
+                    Padding = 10,
                     BackgroundColor = Color.Accent,
-                    TextColor = Color.White
+                    TextColor = Color.White,
+                    HeightRequest = 100
                 };
                 buttonCheckAnswer.Clicked += (object sender, EventArgs e) =>
                 {
                     // Can we do this with null-conditional operators? yes we can
                     this.CheckTextAnswer(entry.Text ?? "", (question.QuestionType == 2));
                 };
-                this.ButtonGrid.Children.Add(entry, 0, 0);
-                this.ButtonGrid.Children.Add(buttonCheckAnswer, 0, 1);
+                this.InputGrid.Children.Add(entry, 0, 0);
+                this.InputGrid.Children.Add(buttonCheckAnswer, 0, 1);
 
                 Grid.SetColumnSpan(entry, 2);
                 Grid.SetColumnSpan(buttonCheckAnswer, 2);
             }
 
-            this.QuestionImage.IsEnabled = question.NeedsPicture;
-            // The image will ALWAYS be named after the DBId
             this.QuestionImage.Source = ImageSource.FromFile(question.ImagePath); // Add cases for all JPG file extensions(for example, ".jpeg")
-            this.QuestionImage.Aspect = Aspect.AspectFit;
+            this.QuestionImage.IsEnabled = question.NeedsPicture;
 
-            this.OnAppearing();
-            this.StackLayoutMain.ForceLayout();
+            // The image will ALWAYS be named after the DBId
+
+            this.LayoutRefresh();
         }
 
         private void Shuffle(List<String> answers)
