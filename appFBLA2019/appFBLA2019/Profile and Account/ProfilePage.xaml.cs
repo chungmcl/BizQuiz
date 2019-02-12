@@ -55,6 +55,7 @@ namespace appFBLA2019
                         this.ToolbarItems.Add(accountSettingsButton);
                     }
 
+                    this.IsOnLoginPage = false;
                     this.LabelUsername.Text = CredentialManager.Username;
                 }
                 else
@@ -76,7 +77,7 @@ namespace appFBLA2019
         {
             AccountSettingsPage accountSettingsPage = new AccountSettingsPage();
             accountSettingsPage.SignedOut += OnSignedOut;
-            await this.Navigation.PushModalAsync(accountSettingsPage);
+            await this.Navigation.PushAsync(accountSettingsPage);
         }
 
         public async void OnLoggedIn(object source, EventArgs eventArgs)

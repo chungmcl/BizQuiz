@@ -16,7 +16,7 @@ using Android.Graphics;
 [assembly: Dependency(typeof(MainActivity))]
 namespace appFBLA2019.Droid
 {
-    [Activity(Label = "appFBLA2019", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "appFBLA2019", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage
     {
 
@@ -28,7 +28,7 @@ namespace appFBLA2019.Droid
             base.OnCreate(bundle);
             FacebookClientManager.Initialize(this);
 
-            Window.SetSoftInputMode(Android.Views.SoftInput.AdjustPan);
+            this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustPan);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             this.LoadApplication(new App());

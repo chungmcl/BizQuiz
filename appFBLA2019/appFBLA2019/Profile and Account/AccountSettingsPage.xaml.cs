@@ -21,9 +21,10 @@ namespace appFBLA2019
 
         private void ButtonLogout_Clicked(object sender, EventArgs e)
         {
+            this.ButtonLogout.IsEnabled = false;
             CredentialManager.Logout();
             OnSignedOut();
-            this.Navigation.PopModalAsync();
+            this.Navigation.PopAsync();
         }
 
         protected virtual void OnSignedOut()
@@ -31,9 +32,85 @@ namespace appFBLA2019
             this.SignedOut?.Invoke(this, EventArgs.Empty);
         }
 
+        private async void ButtonChangeEmail_Clicked(object sender, EventArgs e)
+        {
+            this.ButtonChangeEmail.IsEnabled = false;
+            this.EntryEnterPasswordChangeEmail.IsEnabled = false;
+            this.EntryEnterNewEmailChangeEmail.IsEnabled = false;
+            OperationReturnMessage message = await Task.Run(() => ChangeEmail());
+            
+            if (message == OperationReturnMessage.TrueConfirmEmail)
+            {
+
+            }
+            else if (message == OperationReturnMessage.FalseInvalidCredentials)
+            {
+                this.LabelChangeEmailMessage.Text = "Incorrect password.";
+            }
+            else if (message == OperationReturnMessage.FalseInvalidEmail)
+            {
+                this.LabelChangeEmailMessage.Text = "Invalid email. Please check the email and try again.";
+            }
+
+
+            this.ButtonChangeEmail.IsEnabled = true;
+            this.EntryEnterPasswordChangeEmail.IsEnabled = true;
+            this.EntryEnterNewEmailChangeEmail.IsEnabled = true;
+        }
+
+        private OperationReturnMessage ChangeEmail()
+        {
+            ServerConnector.SendData(ServerRequestTypes.ChangeEmail,
+                    $"{CredentialManager.Username}/{this.EntryEnterPasswordChangeEmail.Text.Trim()}/{this.EntryEnterNewEmailChangeEmail.Text.Trim()}/-");
+            Device.BeginInvokeOnMainThread(() => this.LabelChangeEmailMessage.Text = "Waiting...");
+            return ServerConnector.ReceiveFromServerORM();
+        }
+
+        private void ButtonChangePassword_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ButtonDeleteAccount_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        #region Image Button Event Handlers
+        private void ImageButtonCloseChangeEmail_Clicked(object sender, EventArgs e)
+        {
+            this.ImageButtonCloseChangeEmail.RelRotateTo(180);
+            this.StackLayoutChangeEmailContent.IsVisible = !this.StackLayoutChangeEmailContent.IsVisible;
+        }
+
+        private void ImageButtonCloseChangePassword_Clicked(object sender, EventArgs e)
+        {
+            this.ImageButtonCloseChangePassword.RelRotateTo(180);
+            this.StackLayoutChangePasswordContent.IsVisible = !this.StackLayoutChangePasswordContent.IsVisible;
+        }
+
+        private void ImageButtonCloseConfirmEmail_Clicked(object sender, EventArgs e)
+        {
+            this.ImageButtonCloseConfirmEmail.RelRotateTo(180);
+            this.StackLayoutConfirmEmailContent.IsVisible = !this.StackLayoutConfirmEmailContent.IsVisible;
+        }
+
+        private void ImageButtonDeleteAccount_Clicked(object sender, EventArgs e)
+        {
+            this.ImageButtonDeleteAccount.RelRotateTo(180);
+            this.StackLayoutDeleteAccountContent.IsVisible = !this.StackLayoutDeleteAccountContent.IsVisible;
+        }
+        #endregion
+
         // To do:
         // Change email
         // Change password
+        // Confirm Email (IsVisible only if user needs to confirm email)
         // Delete account permanently
     }
 }

@@ -10,7 +10,7 @@
 
 
             <ActivityIndicator x:Name="ActivityIndicator" 
-                               Color="Red" 
+                               Color="Accent" 
                                VerticalOptions="CenterAndExpand"
                                IsVisible="False"/>
 
