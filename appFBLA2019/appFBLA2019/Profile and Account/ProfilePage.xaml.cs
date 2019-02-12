@@ -78,6 +78,7 @@ namespace appFBLA2019
             {
                 this.accountSettingsPage = new AccountSettingsPage();
                 this.accountSettingsPage.SignedOut += OnSignedOut;
+                this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             }
             await this.Navigation.PushAsync(this.accountSettingsPage);
         }
@@ -86,6 +87,7 @@ namespace appFBLA2019
         {
             this.accountSettingsPage = new AccountSettingsPage();
             this.accountSettingsPage.SignedOut += OnSignedOut;
+            this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             await Task.Run(() => UpdateProfilePage(false));
         }
 

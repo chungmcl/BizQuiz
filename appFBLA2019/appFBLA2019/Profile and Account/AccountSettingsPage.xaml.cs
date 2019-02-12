@@ -19,6 +19,12 @@ namespace appFBLA2019
 			InitializeComponent ();
 		}
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            this.FrameConfirmEmail.IsVisible = !CredentialManager.EmailConfirmed;
+        }
+
         private void ButtonLogout_Clicked(object sender, EventArgs e)
         {
             this.ButtonLogout.IsEnabled = false;
@@ -45,14 +51,18 @@ namespace appFBLA2019
             }
             else
             {
-                OperationReturnMessage message = await Task.Run(() => ChangeEmail(CredentialManager.Username,
+                OperationReturnMessage message = await Task.Run(() => ChangeEmail(
                     this.EntryEnterPasswordChangeEmail.Text,
                     this.EntryEnterNewEmailChangeEmail.Text));
 
                 if (message == OperationReturnMessage.TrueConfirmEmail)
                 {
                     this.LabelChangeEmailMessage.Text = "Email Changed. Please Confirm Email.";
-                    // Open EmailConfirmationPage
+                    EmailConfirmationPage emailConfirmationPage = new EmailConfirmationPage(
+                        CredentialManager.Username, this.EntryEnterPasswordChangeEmail.Text);
+                    emailConfirmationPage.EmailConfirmed += OnEmailConfirmed;
+                    emailConfirmationPage.ConfirmLaterSelected += OnConfirmLaterSelected;
+                    await this.Navigation.PushModalAsync(emailConfirmationPage, true);
                 }
                 else if (message == OperationReturnMessage.FalseInvalidCredentials)
                 {
@@ -69,10 +79,20 @@ namespace appFBLA2019
             this.EntryEnterNewEmailChangeEmail.IsEnabled = true;
         }
 
-        private OperationReturnMessage ChangeEmail(string username, string password, string newEmail)
+        private void OnEmailConfirmed(object sender, EventArgs eventArgs)
+        {
+            this.FrameConfirmEmail.IsVisible = false;
+        }
+
+        private void OnConfirmLaterSelected(object sender, EventArgs eventArgs)
+        {
+            this.FrameConfirmEmail.IsVisible = true;
+        }
+
+        private OperationReturnMessage ChangeEmail(string password, string newEmail)
         {
             ServerConnector.SendData(ServerRequestTypes.ChangeEmail,
-                    $"{CredentialManager.Username}/{this.EntryEnterPasswordChangeEmail.Text.Trim()}/{this.EntryEnterNewEmailChangeEmail.Text.Trim()}/-");
+                    $"{CredentialManager.Username}/{password.Trim()}/{newEmail.Trim()}/-");
             Device.BeginInvokeOnMainThread(() => this.LabelChangeEmailMessage.Text = "Waiting...");
             return ServerConnector.ReceiveFromServerORM();
         }
@@ -81,7 +101,7 @@ namespace appFBLA2019
         {
 
         }
-
+        
         private void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
         {
 

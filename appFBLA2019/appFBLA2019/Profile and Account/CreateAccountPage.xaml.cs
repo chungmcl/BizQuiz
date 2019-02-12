@@ -76,6 +76,11 @@ namespace appFBLA2019
             }
             Device.BeginInvokeOnMainThread(() =>
             {
+                this.ButtonCreateAccount.IsEnabled = true;
+                this.EntryEmail.IsEnabled = true;
+                this.EntryPassword.IsEnabled = true;
+                this.EntryUsername.IsEnabled = true;
+                this.ActivityIndicator.IsVisible = false;
                 this.ActivityIndicator.IsRunning = false;
             });
         }

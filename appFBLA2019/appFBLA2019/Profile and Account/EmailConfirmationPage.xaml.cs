@@ -10,6 +10,7 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EmailConfirmationPage : ContentPage
     {
+        private bool emailConfirmed;
         public EmailConfirmationPage(string username, string password)
         {
             this.InitializeComponent();
@@ -17,6 +18,13 @@ namespace appFBLA2019
             this.password = password;
             this.LabelTitle.Text = "Loading...";
             Task getEmail = Task.Run(() => this.GetEmail());
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            if (!this.emailConfirmed)
+                OnConfirmLaterSelected();
         }
 
         public delegate void ConfirmLaterSelectedEventHandler(object source, EventArgs eventArgs);
@@ -34,6 +42,7 @@ namespace appFBLA2019
 
         protected virtual void OnEmailConfirmed()
         {
+            this.emailConfirmed = true;
             this.EmailConfirmed?.Invoke(this, EventArgs.Empty);
         }
 

@@ -96,7 +96,7 @@
                         </StackLayout>
                     </Frame>
                     
-                    <Frame x:Name="ConfirmEmail"
+                    <Frame x:Name="FrameConfirmEmail"
                    CornerRadius="10"
                    HorizontalOptions="FillAndExpand"
                    VerticalOptions="Fill">
