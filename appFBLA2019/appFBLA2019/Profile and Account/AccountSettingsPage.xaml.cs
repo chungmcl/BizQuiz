@@ -13,6 +13,7 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AccountSettingsPage : ContentPage
 	{
+        private Frame currentlyOpenFrame;
         public delegate void SignOutEventHandler(object source, EventArgs eventArgs);
         public event SignOutEventHandler SignedOut;
         public AccountSettingsPage ()
@@ -44,7 +45,6 @@ namespace appFBLA2019
             this.ButtonChangeEmail.IsEnabled = false;
             this.EntryEnterPasswordChangeEmail.IsEnabled = false;
             this.EntryEnterNewEmailChangeEmail.IsEnabled = false;
-            DisableChildrenExcept(this.FrameChangeEmail);
 
             if ((this.EntryEnterPasswordChangeEmail.Text == null || this.EntryEnterNewEmailChangeEmail.Text == null) || 
                 (this.EntryEnterPasswordChangeEmail.Text == "" || this.EntryEnterNewEmailChangeEmail.Text == ""))
@@ -79,7 +79,6 @@ namespace appFBLA2019
             this.ButtonChangeEmail.IsEnabled = true;
             this.EntryEnterPasswordChangeEmail.IsEnabled = true;
             this.EntryEnterNewEmailChangeEmail.IsEnabled = true;
-            EnableChildren();
         }
         
         private OperationReturnMessage ChangeEmail(string password, string newEmail)
@@ -119,17 +118,17 @@ namespace appFBLA2019
 
         }
 
-        private void DisableChildrenExcept(View except)
+        private async Task CloseCurrentlyOpenFrame()
         {
-            for (int i = 0; i < this.StackLayoutMain.Children.Count; i++)
-                if (this.StackLayoutMain.Children[i] != except)
-                    this.StackLayoutMain.Children[i].IsEnabled = false;
-        }
+            if (this.currentlyOpenFrame != null)
+            {
+                ImageButton imageButton = ((this.currentlyOpenFrame.Content as StackLayout).Children[0] as StackLayout).Children[1] as ImageButton;
+                StackLayout contentStackLayout = (this.currentlyOpenFrame.Content as StackLayout).Children[1] as StackLayout;
 
-        private void EnableChildren()
-        {
-            for (int i = 0; i < this.StackLayoutMain.Children.Count; i++)
-                this.StackLayoutMain.Children[i].IsEnabled = true;
+                await CloseFrame(((this.currentlyOpenFrame.Content as StackLayout).Children[0] as StackLayout).Children[1] as ImageButton,
+                    contentStackLayout,
+                    this.currentlyOpenFrame);
+            }
         }
 
         #region Image Button Event Handlers
@@ -159,29 +158,42 @@ namespace appFBLA2019
             
             if (contentStack.IsVisible) // close
             {
-                contentStack.FadeTo(0, 175, Easing.CubicInOut);
-                imageButton.RelRotateTo(180);
-                await frame.LayoutTo(new Rectangle(frame.X,
-                    frame.Y,
-                    frame.Width,
-                    frame.Height - contentStack.Height), 200, Easing.CubicInOut);
-
-                contentStack.IsVisible = false;
+                this.currentlyOpenFrame = null;
+                await CloseFrame(imageButton, contentStack, frame);
             }
             else // open
             {
-                contentStack.FadeTo(1, 250, Easing.CubicInOut);
-                
-                contentStack.IsVisible = true;
-
-                await imageButton.RelRotateTo(180);
-                await frame.LayoutTo(new Rectangle(frame.X,
-                    frame.Y,
-                    frame.Width,
-                    frame.Height + contentStack.HeightRequest), 100, Easing.CubicInOut);
+                await CloseCurrentlyOpenFrame();
+                this.currentlyOpenFrame = frame;
+                await OpenFrame(imageButton, contentStack, frame);
             }
 
             imageButton.IsEnabled = true;
+        }
+
+        private async Task OpenFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
+        {
+            contentStack.FadeTo(1, 250, Easing.CubicInOut);
+
+            contentStack.IsVisible = true;
+
+            await imageButton.RelRotateTo(180);
+            await frame.LayoutTo(new Rectangle(frame.X,
+                frame.Y,
+                frame.Width,
+                frame.Height + contentStack.HeightRequest), 100, Easing.CubicInOut);
+        }
+
+        private async Task CloseFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
+        {
+            contentStack.FadeTo(0, 175, Easing.CubicInOut);
+            imageButton.RelRotateTo(180);
+            await frame.LayoutTo(new Rectangle(frame.X,
+                frame.Y,
+                frame.Width,
+                frame.Height - contentStack.Height), 200, Easing.CubicInOut);
+
+            contentStack.IsVisible = false;
         }
         #endregion
 
