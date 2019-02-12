@@ -46,21 +46,20 @@ namespace appFBLA2019
             }
             else
             {
-                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own accout.", "Ok");
+                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
             }
         }
 
-        private void OnPickerSelectedIndexChanged(Object sender, EventArgs e)
+        async private void ButtonLevelSelect_Clicked(object sender, EventArgs e)
         {
-            var picker = (Picker)sender;
-            int selectedIndex = picker.SelectedIndex;
             if (CredentialManager.IsLoggedIn)
             {
-                if (selectedIndex != -1) // If the user has selected something then open the page
+                string level = await this.DisplayActionSheet("Select a quiz to edit", "Cancel", null, this.FindDatabase().ToArray());
+
+                if (!string.IsNullOrWhiteSpace(level) && level != "Cancel") // If the user has selected something then open the page
                 {
-                    string levelPicked = (string)this.PickerLevelSelect.SelectedItem;
-                    string levelTitle = levelPicked.Remove(levelPicked.IndexOf(" By "));
-                    string levelAuthor = levelPicked.Substring(levelPicked.IndexOf(" By ") + 4);
+                    string levelTitle = level.Remove(level.IndexOf(" By "));
+                    string levelAuthor = level.Substring(level.IndexOf(" By ") + 4);
                     DBHandler.SelectDatabase(levelTitle, levelAuthor);
                     CreateNewLevelPage levelPage = new CreateNewLevelPage(levelTitle, levelAuthor); //Create the levelPage
                                                                                                     // Add the questions from the database to the page to edit
@@ -70,21 +69,13 @@ namespace appFBLA2019
                         levelPage.SetLevelName(levelTitle);
                         levelPage.AddNewQuestion(question);
                     }
-                    this.Navigation.PushAsync(levelPage);
+                    await this.Navigation.PushAsync(levelPage);
                 }
             }
             else
             {
-                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own accout.", "Ok");
+                await this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
             }
-            // Reset the picker value
-            picker.SelectedIndex = -1;
-        }
-
-        // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
-        private void PickerLevelSelect_Focused(object sender, FocusEventArgs e)
-        {
-            this.PickerLevelSelect.ItemsSource = this.FindDatabase();
         }
     }
 }
