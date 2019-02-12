@@ -77,7 +77,7 @@ namespace appFBLA2019
                 MemoryStream memoryStream = new MemoryStream();
                 file.GetStream().CopyTo(memoryStream);    
 
-                if (memoryStream.Length < 5000000)
+                if (memoryStream.Length < 3000000)
                 {
                     ImageButton currentImage;
 
@@ -93,7 +93,7 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    await DisplayAlert("Couldn't use Picture", "Pictures must be under 5 MB", "Back");
+                    await DisplayAlert("Couldn't use Picture", "Pictures must be under 3 MB", "Back");
                 }
                 file.Dispose();
             }
