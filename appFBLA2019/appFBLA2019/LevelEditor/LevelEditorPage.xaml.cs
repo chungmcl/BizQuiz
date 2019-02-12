@@ -16,7 +16,7 @@ namespace appFBLA2019
         {
             this.InitializeComponent();
         }
-        
+
         // Get the list of Quizes the user can edit
         private List<string> FindDatabase()
         {
@@ -63,7 +63,7 @@ namespace appFBLA2019
                     string levelAuthor = levelPicked.Substring(levelPicked.IndexOf(" By ") + 4);
                     DBHandler.SelectDatabase(levelTitle, levelAuthor);
                     CreateNewLevelPage levelPage = new CreateNewLevelPage(levelTitle, levelAuthor); //Create the levelPage
-                                                                             // Add the questions from the database to the page to edit
+                                                                                                    // Add the questions from the database to the page to edit
                     List<Question> test = DBHandler.Database.GetQuestions();
                     foreach (Question question in DBHandler.Database.GetQuestions())
                     {

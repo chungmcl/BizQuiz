@@ -70,6 +70,32 @@ namespace appFBLA2019
             }
         }
 
+        public void SetCatagory(LevelInfo levelInfo)
+        {
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(levelInfo, update: true);
+            });
+        }
+
+        public string GetCatagory()
+        {
+            List<LevelInfo> catagory = new List<LevelInfo>(this.realmDB.All<LevelInfo>());
+            if (catagory.Count == 1)
+                return catagory[0].Category;
+            else
+                return null;
+        }
+
+        public string GetDateEdited()
+        {
+            List<LevelInfo> dateEdited = new List<LevelInfo>(this.realmDB.All<LevelInfo>());
+            if (dateEdited.Count == 1)
+                return dateEdited[0].DateEdited;
+            else
+                return null;
+        }
+
         public void EditQuestion(Question updatedQuestion)
         {
             this.realmDB.Write(() =>

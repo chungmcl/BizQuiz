@@ -13,8 +13,8 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class CreateNewLevelPage : ContentPage
-	{
+    public partial class CreateNewLevelPage : ContentPage
+    {
         private string originalAuthor;
         private string originalName;
 
@@ -24,18 +24,20 @@ namespace appFBLA2019
         /// <param name="originalName"></param>
         /// <param name="originalAuthor"></param>
 		public CreateNewLevelPage(string originalName, string originalAuthor)
-		{           
-			this.InitializeComponent();
+        {
+            this.InitializeComponent();
             this.originalAuthor = originalAuthor;
             this.originalName = originalName;
         }
-        
+
         /// <summary>
         /// Constructing a brand new level
         /// </summary>
         public CreateNewLevelPage()
         {
             this.InitializeComponent();
+            AddNewQuestion();
+            AddNewQuestion();
         }
 
         private bool canClose = true;
@@ -81,7 +83,7 @@ namespace appFBLA2019
                 ImageButton currentImage;
 
                 currentImage = ((ImageButton)((StackLayout)((View)sender).Parent).Children[6]);
- 
+
 
                 currentImage.Source = file.Path;
 
@@ -130,7 +132,7 @@ namespace appFBLA2019
                 IList<View> children = ((StackLayout)frame.Children[0]).Children;
                 uint i = 0;
                 foreach (View child in children)
-                {                                                       
+                {
                     await child.LayoutTo(new Rectangle(child.X, child.Y, child.Width, 0), 20 - i, Easing.CubicInOut);
                     child.IsVisible = false;
                     i += 2;
@@ -160,13 +162,14 @@ namespace appFBLA2019
                 // Set previousQuestions to the correct previous questions
                 List<Question> previousQuestions = new List<Question>(); ; // A list of questions already in the database
 
-                DBHandler.SelectDatabase(this.originalName, this.originalAuthor);
-                
-                previousQuestions = DBHandler.Database.GetQuestions();
-                
+                if (!string.IsNullOrWhiteSpace(this.originalName))
+                {
+                    DBHandler.SelectDatabase(this.originalName, this.originalAuthor);
+                    previousQuestions = DBHandler.Database.GetQuestions();
+                }
 
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
-                
+
 
                 // Loops through each question frame on the screen 
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
@@ -174,7 +177,7 @@ namespace appFBLA2019
                     // A list of all the children of the current frame  
                     IList<View> children = ((StackLayout)frame.Content).Children;
 
-                    Question addThis;        
+                    Question addThis;
                     //The answers to the question
                     string[] answers = {((Entry)children[2]).Text, //Correct answer
                                 ((Entry)children[3]).Text, // Incorect answer
@@ -194,7 +197,8 @@ namespace appFBLA2019
                         addThis = new Question(
                                 ((Entry)children[1]).Text, // The Question
                                 ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
-                                answers) { NeedsPicture = true } ;
+                                answers)
+                        { NeedsPicture = true };
                     }
                     else // if not needs picture
                     {
@@ -206,7 +210,7 @@ namespace appFBLA2019
                     string questionType = ((Button)((StackLayout)children[0]).Children[0]).Text;
 
                     // Sets the question type
-                    
+
                     if (questionType == "Question Type: Multiple choice")
                     {
                         int size = 0;
@@ -220,10 +224,10 @@ namespace appFBLA2019
                             await this.DisplayAlert("Couldn't Create Level", "Mulitple choice questions must have a correct answer and at least one wrong answer", "OK");
                             goto exit;
                         }
-                            
+
                         addThis.QuestionType = 0;
                     }
-                    else 
+                    else
                     {
                         if (string.IsNullOrWhiteSpace(answers[0]))
                         {
@@ -232,7 +236,7 @@ namespace appFBLA2019
                         }
 
                         if (questionType == "Question Type: Text answer")
-                                addThis.QuestionType = 1;
+                            addThis.QuestionType = 1;
                         else
                             addThis.QuestionType = 2;
                     }
@@ -263,7 +267,7 @@ namespace appFBLA2019
                         // test each old question with each new question
                         foreach (Question newQuestion in NewQuestions)
                         {
-                            
+
                             if (previousQuestions[i].DBId == newQuestion.DBId)
                             {
                                 DBIdSame = true;
@@ -294,17 +298,26 @@ namespace appFBLA2019
                 }
 
                 // Ask what catagory to set the level as.
-                var action = await this.DisplayActionSheet("What catagory is this level?", "Keep Editing", null, "Tech Events", "Finance Events", "Business Events", "FBLA General", "Officers", "Parlimentary Procedure");
-                
-                if (action == "Keep Editing")
+                string action = await this.DisplayActionSheet("What catagory is this level?", "Keep Editing", null,
+                    "Tech Events",
+                    "Finance Events",
+                    "Business Events",
+                    "FBLA General",
+                    "Officers",
+                    "Parliamentary Procedure");
+
+
+                if (action == "Keep Editing" || action == null)
                     goto exit;
+
+                DBHandler.Database.SetCatagory(new LevelInfo(action));
 
                 // Returns user to front page of LevelEditor and refreshed database
                 await this.Navigation.PopAsync(true);
-                
+
             }
         exit:;
-                
+
         }
 
         /// <summary>
@@ -331,7 +344,7 @@ namespace appFBLA2019
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
-                CornerRadius = 10,              
+                CornerRadius = 10,
             };
             if (question != null)
                 frame.StyleId = question.DBId;
@@ -389,12 +402,12 @@ namespace appFBLA2019
             {
                 Placeholder = "Enter question",
                 FontSize = 20
-                
+
             };
-            if (question != null) 
+            if (question != null)
                 entryQuestion.Text = question.QuestionText;
             frameStack.Children.Add(entryQuestion);
-
+            entryQuestion.TextChanged += this.OnTextChanged;
 
             // 2
             Entry entryAnswerCorrect = new Entry // The correct answer
@@ -403,8 +416,7 @@ namespace appFBLA2019
             };
             if (question != null)
                 entryAnswerCorrect.Text = question.CorrectAnswer;
-
-
+            entryAnswerCorrect.TextChanged += this.OnTextChanged;
             frameStack.Children.Add(entryAnswerCorrect);
 
             // 3
@@ -414,7 +426,7 @@ namespace appFBLA2019
             };
             if (question != null)
                 entryAnswerWrongOne.Text = question.AnswerOne;
-
+            entryAnswerWrongOne.TextChanged += this.OnTextChanged;
             frameStack.Children.Add(entryAnswerWrongOne);
 
             // 4
@@ -424,6 +436,7 @@ namespace appFBLA2019
             };
             if (question != null)
                 entryAnswerWrongTwo.Text = question.AnswerTwo;
+            entryAnswerWrongTwo.TextChanged += this.OnTextChanged;
             frameStack.Children.Add(entryAnswerWrongTwo);
 
             // 5
@@ -434,6 +447,7 @@ namespace appFBLA2019
             };
             if (question != null)
                 entryAnswerWrongThree.Text = question.AnswerThree;
+            entryAnswerWrongThree.TextChanged += this.OnTextChanged;
             frameStack.Children.Add(entryAnswerWrongThree);
 
             // 6
@@ -444,7 +458,7 @@ namespace appFBLA2019
                 AddImage.CornerRadius = 25;
                 AddImage.IsVisible = false;
                 AddImage.HeightRequest = 50;
-                AddImage.BackgroundColor = Color.FromHex("#AE213A");
+                AddImage.BackgroundColor = Color.Accent;
                 AddImage.TextColor = Color.White;
                 AddImage.VerticalOptions = LayoutOptions.End;
             }
@@ -473,7 +487,7 @@ namespace appFBLA2019
 
 
             entryQuestion.ReturnCommand = new Command(() => entryAnswerCorrect.Focus());
-            if(isMultipleChoice)
+            if (isMultipleChoice)
             {
                 entryAnswerCorrect.ReturnCommand = new Command(() => entryAnswerWrongOne.Focus());
                 entryAnswerWrongOne.ReturnCommand = new Command(() => entryAnswerWrongTwo.Focus());
@@ -496,11 +510,15 @@ namespace appFBLA2019
             this.StackLayoutQuestionStack.Children.Add(frame);
 
             return frame;
-           
+
 
         }
 
-
+        /// <summary>
+        /// When the user clicks the button to change question type: changes to the next question type
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         async void OnButtonQuestionTypeClicked(object sender, EventArgs e)
         {
             if (((Button)sender).Text == "Question Type: Multiple choice")
@@ -511,7 +529,7 @@ namespace appFBLA2019
                 stack.Children[4].FadeTo(0, 150, Easing.CubicInOut);
                 stack.Children[5].FadeTo(0, 150, Easing.CubicInOut);
 
-                await frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width, 
+                await frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width,
                     frame.Height - (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut);
 
                 stack.Children[3].IsVisible = false;
@@ -538,12 +556,30 @@ namespace appFBLA2019
                 stack.Children[5].IsVisible = true;
 
                 Frame frame = ((Frame)stack.Parent);
-                await frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width, 
+                await frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width,
                     frame.Height + (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut);
 
 
                 ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Focus());
                 ((Button)sender).Text = "Question Type: Multiple choice";
+            }
+        }
+
+        private int restrictCount = 64;
+        /// <summary>
+        /// Sets a limit to how much the user can put in an entry
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTextChanged(object sender, EventArgs e)
+        {
+            Entry entry = sender as Entry;
+            string val = entry.Text; //Get Current Text
+
+            if (val.Length > this.restrictCount)//If it is more than your character restriction
+            {
+                val = val.Remove(this.restrictCount);// Remove Everything past the restriction length
+                entry.Text = val; //Set the Old value
             }
         }
 

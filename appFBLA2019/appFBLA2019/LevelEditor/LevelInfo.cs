@@ -2,14 +2,29 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Globalization;
 
-namespace appFBLA2019.LevelEditor
+namespace appFBLA2019
 {
-    internal class LevelInfo : Realms.RealmObject
+    /// <summary>
+    /// Holds onto information needed for a level, like Catagory
+    /// </summary>
+    public class LevelInfo : Realms.RealmObject
     {
-        public string Author { get; set; }
         public string Category { get; set; }
         public string DateEdited { get; set; }
-        public string LevelID { get; set; }
+
+        public LevelInfo()
+        {
+            this.Category = "No catagory";
+            this.DateEdited = DateTime.Now.ToShortDateString();
+        }
+
+        public LevelInfo(string category)
+        {
+            this.Category = category;
+            this.DateEdited = DateTime.Now.ToShortDateString();
+        }
     }
 }
