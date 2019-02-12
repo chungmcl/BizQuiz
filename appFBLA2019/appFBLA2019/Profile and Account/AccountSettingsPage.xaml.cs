@@ -132,22 +132,22 @@ namespace appFBLA2019
         }
 
         #region Image Button Event Handlers
-        private async void ImageButtonCloseChangeEmail_Clicked(object sender, EventArgs e)
+        private async void ChangeEmailTab_Clicked(object sender, EventArgs e)
         {
             await AnimateFrame(this.ImageButtonCloseChangeEmail, this.StackLayoutChangeEmailContent, this.FrameChangeEmail);
         }
 
-        private async void ImageButtonCloseChangePassword_Clicked(object sender, EventArgs e)
+        private async void ChangePasswordTab_Clicked(object sender, EventArgs e)
         {
             await AnimateFrame(this.ImageButtonCloseChangePassword, this.StackLayoutChangePasswordContent, this.FrameChangePassword);
         }
 
-        private async void ImageButtonCloseConfirmEmail_Clicked(object sender, EventArgs e)
+        private async void ConfirmEmailTab_Clicked(object sender, EventArgs e)
         {
             await AnimateFrame(this.ImageButtonCloseConfirmEmail, this.StackLayoutConfirmEmailContent, this.FrameConfirmEmail);
         }
 
-        private async void ImageButtonDeleteAccount_Clicked(object sender, EventArgs e)
+        private async void DeleteAccountTab_Clicked(object sender, EventArgs e)
         {
             await AnimateFrame(this.ImageButtonDeleteAccount, this.StackLayoutDeleteAccountContent, this.FrameDeleteAccount);
         }

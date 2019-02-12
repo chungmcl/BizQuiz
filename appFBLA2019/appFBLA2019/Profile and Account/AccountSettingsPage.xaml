@@ -19,14 +19,20 @@
                 Grid.Column="0"
                 Grid.Row="0">
                 <StackLayout x:Name="StackLayoutMain">
-                   
-                   <Frame x:Name="FrameChangePassword"
+
+                    <Frame x:Name="FrameChangePassword"
                    CornerRadius="10"
                    HorizontalOptions="FillAndExpand"
                    VerticalOptions="Fill">
+
                         <StackLayout x:Name="StackLayoutChangePassword">
                             <StackLayout
-                        Orientation="Horizontal">
+                            Orientation="Horizontal">
+                                
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ChangePasswordTab_Clicked"/>
+                                </StackLayout.GestureRecognizers>
+                                
                                 <Label Text="Change Password" 
                                Font="Bold,20" 
                                HorizontalOptions="StartAndExpand"/>
@@ -37,7 +43,7 @@
                                      VerticalOptions="Start"
                                      WidthRequest="40"
                                      HeightRequest="40"
-                                     Clicked="ImageButtonCloseChangePassword_Clicked"/>
+                                     Clicked="ChangePasswordTab_Clicked"/>
                             </StackLayout>
 
                             <StackLayout x:Name="StackLayoutChangePasswordContent"
@@ -54,17 +60,21 @@
 
                         </StackLayout>
                     </Frame>
-                    
+
                     <Frame x:Name="FrameChangeEmail"
                    CornerRadius="10"
                    HorizontalOptions="FillAndExpand"
                    VerticalOptions="Fill">
-                        <StackLayout x:Name="StackLayoutChangeEmail">
 
+                        <StackLayout x:Name="StackLayoutChangeEmail">
 
                             <StackLayout
                             Orientation="Horizontal"
                             HorizontalOptions="FillAndExpand">
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ChangeEmailTab_Clicked"/>
+                                </StackLayout.GestureRecognizers>
+                                
                                 <Label Text="Change Email" 
                                             Font="Bold,20" 
                                             HorizontalOptions="StartAndExpand"
@@ -77,7 +87,7 @@
                                              WidthRequest="40"
                                              HeightRequest="40"
                                              Grid.Column="1" Grid.Row="0"
-                                             Clicked="ImageButtonCloseChangeEmail_Clicked"/>
+                                             Clicked="ChangeEmailTab_Clicked"/>
 
                             </StackLayout>
 
@@ -95,16 +105,19 @@
 
                         </StackLayout>
                     </Frame>
-                    
+
                     <Frame x:Name="FrameConfirmEmail"
                    CornerRadius="10"
                    HorizontalOptions="FillAndExpand"
                    VerticalOptions="Fill">
+
                         <StackLayout x:Name="StackLayoutConfirmEmail">
 
-
                             <StackLayout
-                        Orientation="Horizontal">
+                            Orientation="Horizontal">
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ConfirmEmailTab_Clicked"/>
+                                </StackLayout.GestureRecognizers>
                                 <Label Text="Confirm Email" 
                                Font="Bold,20" 
                                HorizontalOptions="StartAndExpand"/>
@@ -115,7 +128,7 @@
                                      VerticalOptions="Start"
                                      WidthRequest="40"
                                      HeightRequest="40"
-                                     Clicked="ImageButtonCloseConfirmEmail_Clicked"/>
+                                     Clicked="ConfirmEmailTab_Clicked"/>
                             </StackLayout>
 
                             <StackLayout x:Name="StackLayoutConfirmEmailContent"
@@ -135,14 +148,20 @@
                    CornerRadius="10"
                    HorizontalOptions="FillAndExpand"
                    VerticalOptions="Fill">
+
                         <StackLayout x:Name="StackLayoutDeleteAccount">
 
-
                             <StackLayout
-                        Orientation="Horizontal">
+                            Orientation="Horizontal">
+
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="DeleteAccountTab_Clicked"/>
+                                </StackLayout.GestureRecognizers>
+                                
                                 <Label Text="Delete Account" 
                                Font="Bold,20" 
                                HorizontalOptions="StartAndExpand"/>
+                                
                                 <ImageButton x:Name="ImageButtonDeleteAccount" 
                                      Source="ic_arrow_drop_down_black_48dp.png"
                                      BackgroundColor="Transparent"
@@ -150,7 +169,7 @@
                                      VerticalOptions="Start"
                                      WidthRequest="40"
                                      HeightRequest="40"
-                                     Clicked="ImageButtonDeleteAccount_Clicked"/>
+                                     Clicked="DeleteAccountTab_Clicked"/>
                             </StackLayout>
 
                             <StackLayout x:Name="StackLayoutDeleteAccountContent"
