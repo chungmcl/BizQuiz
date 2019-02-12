@@ -360,7 +360,7 @@ namespace appFBLA2019
                 if (action == "Keep Editing" || action == null)
                     goto exit;
 
-                DBHandler.Database.SetCatagory(new LevelInfo(action));
+                DBHandler.Database.SetCategory(new LevelInfo(action));
 
                 // Returns user to front page of LevelEditor and refreshed database
                 await this.Navigation.PopAsync(true);
@@ -523,7 +523,9 @@ namespace appFBLA2019
                 image.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
                 image.BackgroundColor = Color.Transparent;
                 image.VerticalOptions = LayoutOptions.End;
+                //image.HeightRequest = frameStack.Height / 2;
                 image.Aspect = Aspect.AspectFit;
+                image.HorizontalOptions = LayoutOptions.CenterAndExpand;
             }
 
             frameStack.Children.Add(image);
