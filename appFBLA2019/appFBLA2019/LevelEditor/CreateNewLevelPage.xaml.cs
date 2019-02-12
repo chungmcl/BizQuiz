@@ -67,6 +67,38 @@ namespace appFBLA2019
             }
         }
 
+        async private Task PickImage(object sender)
+        {
+            await CrossMedia.Current.Initialize();
+            Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
+
+            if (file != null) // if the user actually picked an image
+            {
+                MemoryStream memoryStream = new MemoryStream();
+                file.GetStream().CopyTo(memoryStream);    
+
+                if (memoryStream.Length < 50000000)
+                {
+                    ImageButton currentImage;
+
+                    currentImage = ((ImageButton)((StackLayout)((View)sender).Parent).Children[6]);
+
+
+                    currentImage.Source = file.Path;
+
+                    // Enables the image
+                    currentImage.IsVisible = true;
+                    if (sender is Button)
+                        ((Button)sender).IsVisible = false;
+                }
+                else
+                {
+                    await DisplayAlert("Couldn't use Picture", "Pictures must be under 50 MB", "Back");
+                }
+                file.Dispose();
+            }
+        }
+        private object x;
         /// <summary>
         /// Called when the user presses the Add Image button on a question eiditor
         /// </summary>
@@ -74,26 +106,44 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ButtonAddImage_Clicked(object sender, EventArgs e)
         {
-
-            await CrossMedia.Current.Initialize();
-            Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
-
-            if (file != null) // if the user actually picked an image
+            if (sender is Button)
+                await PickImage(sender);
+            else
             {
-                ImageButton currentImage;
+                await this.Navigation.PushAsync(new LevelEditor.PhotoPage(((ImageButton)sender)));
+                x = sender;
 
-                currentImage = ((ImageButton)((StackLayout)((View)sender).Parent).Children[6]);
-
-
-                currentImage.Source = file.Path;
-
-                // Enables the image
-                currentImage.IsEnabled = true;
-                if (sender is Button)
-                    ((Button)sender).IsVisible = false;
             }
 
         }
+        
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            ButtonAddQuestion.Scale = 0;
+            ButtonAddDrop.Scale = 0;
+            ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
+            ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
+            if (x is ImageButton)
+            {
+                if (((ImageButton)x).StyleId == "change")
+                    PickImage(x);
+                else if (((ImageButton)x).StyleId == "delete")
+                {
+                    ((ImageButton)x).IsVisible = false;
+                    ((StackLayout)((ImageButton)x).Parent).Children[7].IsVisible = true;
+                }
+
+            }
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            ButtonAddQuestion.ScaleTo(0, 250, Easing.CubicInOut);
+            ButtonAddDrop.ScaleTo(0, 250, Easing.CubicInOut);
+        }
+
 
         /// <summary>
         /// Called when the add question button is clicked and adds a new question
@@ -192,7 +242,7 @@ namespace appFBLA2019
                     }
 
 
-                    if (((ImageButton)children[6]).IsEnabled) // if needs image
+                    if (((ImageButton)children[6]).IsVisible) // if needs image
                     {
                         addThis = new Question(
                                 ((Entry)children[1]).Text, // The Question
@@ -450,7 +500,7 @@ namespace appFBLA2019
             entryAnswerWrongThree.TextChanged += this.OnTextChanged;
             frameStack.Children.Add(entryAnswerWrongThree);
 
-            // 6
+            // 7
             Button AddImage = new Button(); // The add Image button
             {
                 AddImage.Text = "Add Image";
@@ -466,19 +516,20 @@ namespace appFBLA2019
             bool needsPicture = false;
             if (question != null)
                 needsPicture = question.NeedsPicture;
-            // 7
+            // 6
             ImageButton image = new ImageButton(); // The image itself
             {
-                image.IsEnabled = needsPicture;
+                image.IsVisible = needsPicture;
                 image.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
                 image.BackgroundColor = Color.Transparent;
                 image.VerticalOptions = LayoutOptions.End;
+                image.Aspect = Aspect.AspectFit;
             }
 
             frameStack.Children.Add(image);
             frameStack.Children.Add(AddImage);
             //Gets the image from the imagePath
-            if (image.IsEnabled)
+            if (image.IsVisible)
             {
                 image.Source = question.ImagePath;
             }
@@ -525,12 +576,12 @@ namespace appFBLA2019
             {
                 StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
                 Frame frame = ((Frame)stack.Parent);
-                stack.Children[3].FadeTo(0, 150, Easing.CubicInOut);
-                stack.Children[4].FadeTo(0, 150, Easing.CubicInOut);
-                stack.Children[5].FadeTo(0, 150, Easing.CubicInOut);
-
-                await frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width,
-                    frame.Height - (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut);
+                await Task.WhenAll(
+                    stack.Children[3].FadeTo(0, 150, Easing.CubicInOut),
+                    stack.Children[4].FadeTo(0, 150, Easing.CubicInOut),
+                    stack.Children[5].FadeTo(0, 150, Easing.CubicInOut),
+                    frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width, frame.Height - (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
+                    );
 
                 stack.Children[3].IsVisible = false;
                 stack.Children[4].IsVisible = false;
@@ -546,20 +597,18 @@ namespace appFBLA2019
             else
             {
                 StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
-
-                stack.Children[3].FadeTo(1, 250, Easing.CubicInOut);
-                stack.Children[4].FadeTo(1, 250, Easing.CubicInOut);
-                stack.Children[5].FadeTo(1, 250, Easing.CubicInOut);
-
+                Frame frame = ((Frame)stack.Parent);
                 stack.Children[3].IsVisible = true;
                 stack.Children[4].IsVisible = true;
                 stack.Children[5].IsVisible = true;
-
-                Frame frame = ((Frame)stack.Parent);
-                await frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width,
-                    frame.Height + (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut);
-
-
+                await Task.WhenAll(
+                    stack.Children[3].FadeTo(1, 250, Easing.CubicInOut),
+                    stack.Children[4].FadeTo(1, 250, Easing.CubicInOut),
+                    stack.Children[5].FadeTo(1, 250, Easing.CubicInOut),
+                    frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width,
+                    frame.Height + (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
+                );
+               
                 ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Focus());
                 ((Button)sender).Text = "Question Type: Multiple choice";
             }
