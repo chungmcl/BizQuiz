@@ -18,7 +18,7 @@
             <ScrollView
                 Grid.Column="0"
                 Grid.Row="0">
-                <StackLayout>
+                <StackLayout x:Name="StackLayoutMain">
                    
                    <Frame x:Name="FrameChangePassword"
                    CornerRadius="10"

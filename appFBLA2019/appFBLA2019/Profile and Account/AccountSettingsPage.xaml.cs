@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -43,6 +44,7 @@ namespace appFBLA2019
             this.ButtonChangeEmail.IsEnabled = false;
             this.EntryEnterPasswordChangeEmail.IsEnabled = false;
             this.EntryEnterNewEmailChangeEmail.IsEnabled = false;
+            DisableChildrenExcept(this.FrameChangeEmail);
 
             if ((this.EntryEnterPasswordChangeEmail.Text == null || this.EntryEnterNewEmailChangeEmail.Text == null) || 
                 (this.EntryEnterPasswordChangeEmail.Text == "" || this.EntryEnterNewEmailChangeEmail.Text == ""))
@@ -77,24 +79,29 @@ namespace appFBLA2019
             this.ButtonChangeEmail.IsEnabled = true;
             this.EntryEnterPasswordChangeEmail.IsEnabled = true;
             this.EntryEnterNewEmailChangeEmail.IsEnabled = true;
+            EnableChildren();
         }
+        
+        private OperationReturnMessage ChangeEmail(string password, string newEmail)
+        {
+            Device.BeginInvokeOnMainThread(() => this.LabelChangeEmailMessage.Text = "Waiting...");
+            Thread.Sleep(5000);
+            ServerConnector.SendData(ServerRequestTypes.ChangeEmail,
+                    $"{CredentialManager.Username}/{password.Trim()}/{newEmail.Trim()}/-");
+            return ServerConnector.ReceiveFromServerORM();
+        }
+
 
         private void OnEmailConfirmed(object sender, EventArgs eventArgs)
         {
             this.FrameConfirmEmail.IsVisible = false;
+            this.LabelChangeEmailMessage.Text = "";
+            this.StackLayoutChangeEmailContent.IsVisible = false;
         }
 
         private void OnConfirmLaterSelected(object sender, EventArgs eventArgs)
         {
             this.FrameConfirmEmail.IsVisible = true;
-        }
-
-        private OperationReturnMessage ChangeEmail(string password, string newEmail)
-        {
-            ServerConnector.SendData(ServerRequestTypes.ChangeEmail,
-                    $"{CredentialManager.Username}/{password.Trim()}/{newEmail.Trim()}/-");
-            Device.BeginInvokeOnMainThread(() => this.LabelChangeEmailMessage.Text = "Waiting...");
-            return ServerConnector.ReceiveFromServerORM();
         }
 
         private void ButtonChangePassword_Clicked(object sender, EventArgs e)
@@ -112,29 +119,69 @@ namespace appFBLA2019
 
         }
 
+        private void DisableChildrenExcept(View except)
+        {
+            for (int i = 0; i < this.StackLayoutMain.Children.Count; i++)
+                if (this.StackLayoutMain.Children[i] != except)
+                    this.StackLayoutMain.Children[i].IsEnabled = false;
+        }
+
+        private void EnableChildren()
+        {
+            for (int i = 0; i < this.StackLayoutMain.Children.Count; i++)
+                this.StackLayoutMain.Children[i].IsEnabled = true;
+        }
+
         #region Image Button Event Handlers
-        private void ImageButtonCloseChangeEmail_Clicked(object sender, EventArgs e)
+        private async void ImageButtonCloseChangeEmail_Clicked(object sender, EventArgs e)
         {
-            this.ImageButtonCloseChangeEmail.RelRotateTo(180);
-            this.StackLayoutChangeEmailContent.IsVisible = !this.StackLayoutChangeEmailContent.IsVisible;
+            await AnimateFrame(this.ImageButtonCloseChangeEmail, this.StackLayoutChangeEmailContent, this.FrameChangeEmail);
         }
 
-        private void ImageButtonCloseChangePassword_Clicked(object sender, EventArgs e)
+        private async void ImageButtonCloseChangePassword_Clicked(object sender, EventArgs e)
         {
-            this.ImageButtonCloseChangePassword.RelRotateTo(180);
-            this.StackLayoutChangePasswordContent.IsVisible = !this.StackLayoutChangePasswordContent.IsVisible;
+            await AnimateFrame(this.ImageButtonCloseChangePassword, this.StackLayoutChangePasswordContent, this.FrameChangePassword);
         }
 
-        private void ImageButtonCloseConfirmEmail_Clicked(object sender, EventArgs e)
+        private async void ImageButtonCloseConfirmEmail_Clicked(object sender, EventArgs e)
         {
-            this.ImageButtonCloseConfirmEmail.RelRotateTo(180);
-            this.StackLayoutConfirmEmailContent.IsVisible = !this.StackLayoutConfirmEmailContent.IsVisible;
+            await AnimateFrame(this.ImageButtonCloseConfirmEmail, this.StackLayoutConfirmEmailContent, this.FrameConfirmEmail);
         }
 
-        private void ImageButtonDeleteAccount_Clicked(object sender, EventArgs e)
+        private async void ImageButtonDeleteAccount_Clicked(object sender, EventArgs e)
         {
-            this.ImageButtonDeleteAccount.RelRotateTo(180);
-            this.StackLayoutDeleteAccountContent.IsVisible = !this.StackLayoutDeleteAccountContent.IsVisible;
+            await AnimateFrame(this.ImageButtonDeleteAccount, this.StackLayoutDeleteAccountContent, this.FrameDeleteAccount);
+        }
+
+        private async Task AnimateFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
+        {
+            imageButton.IsEnabled = false;
+            
+            if (contentStack.IsVisible) // close
+            {
+                contentStack.FadeTo(0, 175, Easing.CubicInOut);
+                imageButton.RelRotateTo(180);
+                await frame.LayoutTo(new Rectangle(frame.X,
+                    frame.Y,
+                    frame.Width,
+                    frame.Height - contentStack.Height), 200, Easing.CubicInOut);
+
+                contentStack.IsVisible = false;
+            }
+            else // open
+            {
+                contentStack.FadeTo(1, 250, Easing.CubicInOut);
+                
+                contentStack.IsVisible = true;
+
+                await imageButton.RelRotateTo(180);
+                await frame.LayoutTo(new Rectangle(frame.X,
+                    frame.Y,
+                    frame.Width,
+                    frame.Height + contentStack.HeightRequest), 100, Easing.CubicInOut);
+            }
+
+            imageButton.IsEnabled = true;
         }
         #endregion
 
