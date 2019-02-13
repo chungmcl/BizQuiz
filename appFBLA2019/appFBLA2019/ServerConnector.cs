@@ -109,6 +109,7 @@ namespace appFBLA2019
                     case (ServerRequestTypes.GetEmail):
                     case (ServerRequestTypes.ConfirmEmail):
                     case (ServerRequestTypes.ChangeEmail):
+                    case (ServerRequestTypes.DeleteAccount):
                     case (ServerRequestTypes.StringData):
                         SendStringData((string)data, dataType);
                         return true;
