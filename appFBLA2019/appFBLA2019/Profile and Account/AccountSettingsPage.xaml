@@ -48,9 +48,9 @@
 
                             <StackLayout x:Name="StackLayoutChangePasswordContent"
                                  IsVisible="False">
-                                <Entry Placeholder="Enter current password"/>
-                                <Entry Placeholder="Enter new password"/>
-                                <Entry Placeholder="Reenter new password"/>
+                                <Entry x:Name="EntryCurrentPasswordChangePassword" Placeholder="Enter current password"/>
+                                <Entry x:Name="EntryNewPasswordChangePassword" Placeholder="Enter new password"/>
+                                <Entry x:Name="EntryReenterNewPasswordChangePassword" Placeholder="Reenter new password"/>
                                 <Label x:Name="LabelChangePasswordMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangePassword" 
                                         Text="Change Password"
@@ -133,7 +133,7 @@
 
                             <StackLayout x:Name="StackLayoutConfirmEmailContent"
                                  IsVisible="False">
-                                <Entry Placeholder="Enter confirmation code"/>
+                                <Entry x:Name="EntryEnterConfirmationCodeConfirmEmail" Placeholder="Enter confirmation code"/>
                                 <Label x:Name="LabelConfirmEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonConfirmEmail" 
                                         Text="Confirm Email"
@@ -174,7 +174,7 @@
 
                             <StackLayout x:Name="StackLayoutDeleteAccountContent"
                                  IsVisible="False">
-                                <Entry Placeholder="Enter password"/>
+                                <Entry x:Name="EntryEnterPasswordDeleteAccount" Placeholder="Enter password"/>
                                 <Label x:Name="LabelDeleteAccountMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonDeleteAccount" 
                                         Text="Delete Account"
