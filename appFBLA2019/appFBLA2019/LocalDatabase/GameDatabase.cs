@@ -52,7 +52,7 @@ namespace appFBLA2019
             {
                 if (question.NeedsPicture)
                 {
-                    File.Delete(this.dbFolderPath + "/" + question.DBId + ".jpg");
+                    File.Delete(this.dbFolderPath + "/" + question.QuestionId + ".jpg");
                 }
 
                 this.realmDB.Write(() =>
@@ -72,7 +72,7 @@ namespace appFBLA2019
             if (updatedQuestion.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
-                File.WriteAllBytes(this.dbFolderPath + "/" + updatedQuestion.DBId + ".jpg", imageByteArray);
+                File.WriteAllBytes(this.dbFolderPath + "/" + updatedQuestion.QuestionId + ".jpg", imageByteArray);
             }
         }
 
@@ -84,7 +84,7 @@ namespace appFBLA2019
             {
                 if (questions[i].NeedsPicture)
                 {
-                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].DBId + ".jpg";
+                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].QuestionId + ".jpg";
                 }
             }
             return questions;
@@ -97,7 +97,7 @@ namespace appFBLA2019
         private void SaveQuestion(Question question)
         {
             string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
-            question.DBId = dbPrimaryKey;
+            question.QuestionId = dbPrimaryKey;
 
             if (question.NeedsPicture)
             {

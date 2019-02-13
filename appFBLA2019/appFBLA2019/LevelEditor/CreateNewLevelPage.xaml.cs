@@ -298,7 +298,7 @@ namespace appFBLA2019
 							addThis.QuestionType = 2;
 					}
 
-					addThis.DBId = frame.StyleId; // Set the dbid
+					addThis.QuestionId = frame.StyleId; // Set the dbid
 
 					NewQuestions.Add(addThis);
 				}
@@ -319,7 +319,7 @@ namespace appFBLA2019
 						foreach (Question newQuestion in NewQuestions)
 						{
 
-							if (previousQuestions[i].DBId == newQuestion.DBId)
+							if (previousQuestions[i].QuestionId == newQuestion.QuestionId)
 							{
 								DBIdSame = true;
 								// the same question, but changed, so update
@@ -383,7 +383,7 @@ namespace appFBLA2019
 				CornerRadius = 10,
 			};
 			if (question != null)
-				frame.StyleId = question.DBId;
+				frame.StyleId = question.QuestionId;
 
 			StackLayout frameStack = new StackLayout //the stack that holds all the info in the frame
 			{
