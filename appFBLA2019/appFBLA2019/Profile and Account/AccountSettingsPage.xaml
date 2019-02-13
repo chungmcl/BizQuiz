@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.AccountSettingsPage"
+             Title="Account Settings">
+    <ContentPage.Content>
+        <Grid
+            Padding="10">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ScrollView
+                Grid.Column="0"
+                Grid.Row="0">
+                <StackLayout>
+                    <Frame x:Name="FrameChangeEmail"
+                   CornerRadius="10"
+                   HorizontalOptions="FillAndExpand"
+                   VerticalOptions="Fill">
+                        <StackLayout x:Name="StackLayoutChangeEmail">
+
+                            <StackLayout
+                            Orientation="Horizontal"
+                            HorizontalOptions="FillAndExpand">
+                                <Label Text="Change Email"
+                               Font="Bold,20"
+                               HorizontalOptions="StartAndExpand" />
+                                <ImageButton x:Name="ImageButtonCloseChangeEmail"
+                                     Source="ic_arrow_drop_down_black_48dp.png"
+                                     BackgroundColor="Transparent"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="Start"
+                                     WidthRequest="40"
+                                     HeightRequest="40"
+                                     Clicked="ImageButtonCloseChangeEmail_Clicked" />
+                            </StackLayout>
+
+                            <StackLayout x:Name="StackLayoutChangeEmailContent"
+                                 IsVisible="False">
+
+                                <Entry x:Name="EntryEnterPasswordChangeEmail" Placeholder="Enter password" />
+                                <Entry x:Name="EntryEnterNewEmailChangeEmail" Placeholder="Enter new Email" />
+                                <Label x:Name="LabelChangeEmailMessage" Font="Bold,20" />
+                                <Button x:Name="ButtonChangeEmail"
+                                        Text="Change Email"
+                                        Clicked="ButtonChangeEmail_Clicked" />
+                            </StackLayout>
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame x:Name="FrameChangePassword"
+                   CornerRadius="10"
+                   HorizontalOptions="FillAndExpand"
+                   VerticalOptions="Fill">
+                        <StackLayout x:Name="StackLayoutChangePassword">
+                            <StackLayout
+                        Orientation="Horizontal">
+                                <Label Text="Change Password"
+                               Font="Bold,20"
+                               HorizontalOptions="StartAndExpand" />
+                                <ImageButton x:Name="ImageButtonCloseChangePassword"
+                                     Source="ic_arrow_drop_down_black_48dp.png"
+                                     BackgroundColor="Transparent"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="Start"
+                                     WidthRequest="40"
+                                     HeightRequest="40"
+                                     Clicked="ImageButtonCloseChangePassword_Clicked" />
+                            </StackLayout>
+
+                            <StackLayout x:Name="StackLayoutChangePasswordContent"
+                                 IsVisible="False">
+                                <Entry Placeholder="Enter current password" />
+                                <Entry Placeholder="Enter new password" />
+                                <Entry Placeholder="Reenter new password" />
+                                <Label x:Name="LabelChangePasswordMessage" Font="Bold,20" />
+                                <Button x:Name="ButtonChangePassword"
+                                        Text="Change Password"
+                                        Clicked="ButtonChangePassword_Clicked" />
+                            </StackLayout>
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame x:Name="ConfirmEmail"
+                   CornerRadius="10"
+                   HorizontalOptions="FillAndExpand"
+                   VerticalOptions="Fill">
+                        <StackLayout x:Name="StackLayoutConfirmEmail">
+
+                            <StackLayout
+                        Orientation="Horizontal">
+                                <Label Text="Confirm Email"
+                               Font="Bold,20"
+                               HorizontalOptions="StartAndExpand" />
+                                <ImageButton x:Name="ImageButtonCloseConfirmEmail"
+                                     Source="ic_arrow_drop_down_black_48dp.png"
+                                     BackgroundColor="Transparent"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="Start"
+                                     WidthRequest="40"
+                                     HeightRequest="40"
+                                     Clicked="ImageButtonCloseConfirmEmail_Clicked" />
+                            </StackLayout>
+
+                            <StackLayout x:Name="StackLayoutConfirmEmailContent"
+                                 IsVisible="False">
+                                <Entry Placeholder="Enter confirmation code" />
+                                <Label x:Name="LabelConfirmEmailMessage" Font="Bold,20" />
+                                <Button x:Name="ButtonConfirmEmail"
+                                        Text="Confirm Email"
+                                        Clicked="ButtonConfirmEmail_Clicked" />
+                            </StackLayout>
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame x:Name="FrameDeleteAccount"
+                   CornerRadius="10"
+                   HorizontalOptions="FillAndExpand"
+                   VerticalOptions="Fill">
+                        <StackLayout x:Name="StackLayoutDeleteAccount">
+
+                            <StackLayout
+                        Orientation="Horizontal">
+                                <Label Text="Delete Account"
+                               Font="Bold,20"
+                               HorizontalOptions="StartAndExpand" />
+                                <ImageButton x:Name="ImageButtonDeleteAccount"
+                                     Source="ic_arrow_drop_down_black_48dp.png"
+                                     BackgroundColor="Transparent"
+                                     HorizontalOptions="End"
+                                     VerticalOptions="Start"
+                                     WidthRequest="40"
+                                     HeightRequest="40"
+                                     Clicked="ImageButtonDeleteAccount_Clicked" />
+                            </StackLayout>
+
+                            <StackLayout x:Name="StackLayoutDeleteAccountContent"
+                                 IsVisible="False">
+                                <Entry Placeholder="Enter password" />
+                                <Label x:Name="LabelDeleteAccountMessage" Font="Bold,20" />
+                                <Button x:Name="ButtonDeleteAccount"
+                                        Text="Delete Account"
+                                        BackgroundColor="Accent"
+                                        Clicked="ButtonDeleteAccount_Clicked" />
+                            </StackLayout>
+                        </StackLayout>
+                    </Frame>
+
+                    <Button x:Name="ButtonLogout"
+                        Text="Log Out of Account"
+                        Clicked="ButtonLogout_Clicked"
+                        BackgroundColor="Accent"
+                        BorderRadius="25"
+                        VerticalOptions="End"
+                        Grid.Column="0"
+                        Grid.Row="1" />
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

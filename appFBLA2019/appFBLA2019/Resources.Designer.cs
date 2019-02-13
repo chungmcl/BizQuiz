@@ -63,6 +63,16 @@ namespace appFBLA2019 {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] ic_close_black_48dp {
+            get {
+                object obj = ResourceManager.GetObject("ic_close_black_48dp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] ic_done_white_48dp {
             get {
                 object obj = ResourceManager.GetObject("ic_done_white_48dp", resourceCulture);
@@ -106,6 +116,16 @@ namespace appFBLA2019 {
         internal static byte[] ic_person_black_48dp {
             get {
                 object obj = ResourceManager.GetObject("ic_person_black_48dp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ic_settings_black_48dp {
+            get {
+                object obj = ResourceManager.GetObject("ic_settings_black_48dp", resourceCulture);
                 return ((byte[])(obj));
             }
         }

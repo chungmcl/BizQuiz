@@ -15,11 +15,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ic_close_black_48dp.png" />
     <None Remove="Resources\ic_done_white_48dp.png" />
+    <None Remove="Resources\ic_edit_black_48dp.png" />
+    <None Remove="Resources\ic_group_black_48dp.png" />
+    <None Remove="Resources\ic_landscape_black_48dp.png" />
+    <None Remove="Resources\ic_person_black_48dp.png" />
+    <None Remove="Resources\ic_settings_black_48dp.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\ic_close_black_48dp.png" />
     <EmbeddedResource Include="Resources\ic_done_white_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_edit_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_group_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_landscape_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_person_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_settings_black_48dp.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,7 +43,7 @@
     <PackageReference Include="Xam.Plugin.Connectivity" Version="3.2.0" />
     <PackageReference Include="Xam.Plugin.Media" Version="4.0.1.5" />
     <PackageReference Include="Xamarin.Essentials" Version="1.0.1" />
-    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1029999" />
+    <PackageReference Include="Xamarin.Forms" Version="3.5.0.129452" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +74,12 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="LevelEditor\LevelEditorPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="LevelEditor\PhotoPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Profile and Account\AccountSettingsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Profile and Account\CreateAccountPage.xaml">

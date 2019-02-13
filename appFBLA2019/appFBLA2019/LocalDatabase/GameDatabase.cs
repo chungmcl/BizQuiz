@@ -46,21 +46,13 @@ namespace appFBLA2019
             this.SaveQuestion(question);
         }
 
-        public void AddScore(ScoreRecord score)
-        {
-            this.realmDB.Write(() =>
-            {
-                this.realmDB.Add(score);
-            });
-        }
-
         public void DeleteQuestions(params Question[] questions)
         {
             foreach (Question question in questions)
             {
                 if (question.NeedsPicture)
                 {
-                    File.Delete(this.dbFolderPath + "/" + question.DBId + ".jpg");
+                    File.Delete(this.dbFolderPath + "/" + question.QuestionId + ".jpg");
                 }
 
                 this.realmDB.Write(() =>
@@ -80,33 +72,7 @@ namespace appFBLA2019
             if (updatedQuestion.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
-                File.WriteAllBytes(this.dbFolderPath + "/" + updatedQuestion.DBId + ".jpg", imageByteArray);
-            }
-        }
-
-        public double GetAvgScore()
-        {
-            if (this.realmDB != null)
-            {
-                IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
-                List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
-                if (scores.Count <= 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    double runningTotal = 0;
-                    foreach (ScoreRecord score in scores)
-                    {
-                        runningTotal += score.Score;
-                    }
-                    return runningTotal / scores.Count;
-                }
-            }
-            else
-            {
-                return 0.0;
+                File.WriteAllBytes(this.dbFolderPath + "/" + updatedQuestion.QuestionId + ".jpg", imageByteArray);
             }
         }
 
@@ -118,7 +84,7 @@ namespace appFBLA2019
             {
                 if (questions[i].NeedsPicture)
                 {
-                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].DBId + ".jpg";
+                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].QuestionId + ".jpg";
                 }
             }
             return questions;
@@ -131,12 +97,31 @@ namespace appFBLA2019
         private void SaveQuestion(Question question)
         {
             string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
-            question.DBId = dbPrimaryKey;
+            question.QuestionId = dbPrimaryKey;
 
             if (question.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
+
+                if (!question.ImagePath.Contains(".jpg")
+                    || !question.ImagePath.Contains(".jpeg")
+                    || !question.ImagePath.Contains(".jpe")
+                    || !question.ImagePath.Contains(".jif")
+                    || !question.ImagePath.Contains(".jfif")
+                    || !question.ImagePath.Contains(".jfi"))
+                {
+                    Stream imageStream = DependencyService.Get<IGetImage>().GetJPGStreamFromByteArray(imageByteArray);
+                    MemoryStream imageMemoryStream = new MemoryStream();
+
+                    imageStream.Position = 0;
+                    imageStream.CopyTo(imageMemoryStream);
+
+                    imageMemoryStream.Position = 0;
+                    imageByteArray = new byte[imageMemoryStream.Length];
+                    imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
+                }
                 File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+                File.Create(this.dbFolderPath + ".nomedia");
             }
 
             this.realmDB.Write(() =>
