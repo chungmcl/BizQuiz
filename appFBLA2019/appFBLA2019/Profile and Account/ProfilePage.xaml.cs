@@ -17,14 +17,13 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ProfilePage : ContentPage
     {
-
+        public bool IsLoading { get; private set; }
+        public bool IsOnLoginPage { get; private set; }
+        private AccountSettingsPage accountSettingsPage;
         public ProfilePage()
         {
             this.InitializeComponent();
         }
-
-        public bool IsLoading { get; private set; }
-        public bool IsOnLoginPage { get; private set; }
 
         public async Task UpdateProfilePage(bool updateLoginStatus)
         {
@@ -50,7 +49,7 @@ namespace appFBLA2019
                     {
                         ToolbarItem accountSettingsButton = new ToolbarItem();
                         accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
-                        accountSettingsButton.Icon = FileImageSource.FromFile("ic_settings_black_48dp.png") as FileImageSource;
+                        accountSettingsButton.Icon = ImageSource.FromFile("ic_settings_black_48dp.png") as FileImageSource;
 
                         this.ToolbarItems.Add(accountSettingsButton);
                     }
@@ -75,18 +74,26 @@ namespace appFBLA2019
 
         private async void ToolbarItemAccountSettings_Clicked(object sender, EventArgs e)
         {
-            AccountSettingsPage accountSettingsPage = new AccountSettingsPage();
-            accountSettingsPage.SignedOut += OnSignedOut;
-            await this.Navigation.PushAsync(accountSettingsPage);
+            if (this.accountSettingsPage == null)
+            {
+                this.accountSettingsPage = new AccountSettingsPage();
+                this.accountSettingsPage.SignedOut += OnSignedOut;
+                this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
+            }
+            await this.Navigation.PushAsync(this.accountSettingsPage);
         }
 
         public async void OnLoggedIn(object source, EventArgs eventArgs)
         {
+            this.accountSettingsPage = new AccountSettingsPage();
+            this.accountSettingsPage.SignedOut += OnSignedOut;
+            this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             await Task.Run(() => UpdateProfilePage(false));
         }
 
         public async void OnSignedOut(object source, EventArgs eventArgs)
         {
+            this.accountSettingsPage = null;
             await Task.Run(() => UpdateProfilePage(false));
         }
     }

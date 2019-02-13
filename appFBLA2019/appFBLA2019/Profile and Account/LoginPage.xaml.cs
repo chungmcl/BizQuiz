@@ -104,5 +104,10 @@ namespace appFBLA2019
 
             OnLoggedIn();
         }
+
+        public void OnSignout(object source, EventArgs eventArgs)
+        {
+            this.LabelMessage.Text = "";
+        }
     }
 }

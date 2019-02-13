@@ -22,6 +22,7 @@ namespace appFBLA2019
             Task.Run(async() => await SecureStorage.SetAsync("password", password));
 
             IsLoggedIn = true;
+            EmailConfirmed = emailConfirmed;
         }
 
         public static void Logout()
