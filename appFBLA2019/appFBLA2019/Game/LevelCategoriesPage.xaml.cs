@@ -1,7 +1,5 @@
 ﻿//BizQuiz App 2019
 
-
-
 using System;
 using System.Collections.Generic;
 using Xamarin.Forms;
@@ -20,7 +18,14 @@ namespace appFBLA2019
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.White);
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.DarkBlue);
 #endif
-            this.BarTextColor = Color.White;
+        }
+
+        public void RefreshChildren()
+        {
+            foreach (Page page in this.Children)
+            {
+                (page as LevelSelectionPage).Setup();
+            }
         }
     }
 }

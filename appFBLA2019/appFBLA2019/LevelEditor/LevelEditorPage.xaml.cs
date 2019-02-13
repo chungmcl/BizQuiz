@@ -15,28 +15,40 @@ namespace appFBLA2019
         public LevelEditorPage()
         {
             this.InitializeComponent();
-            this.FindDatabase();
+            this.categoryPaths = Directory.GetDirectories(App.Path);
+
+            this.categories = new string[this.categoryPaths.Count()];
+            for (int i = 0; i < this.categories.Length; i++)
+            {
+                this.categories[i] = this.categoryPaths[i].Split('/').Last();
+            }
         }
 
+        private string[] categoryPaths;
+        private string[] categories;
         // Get the list of Quizes the user can edit
-        public void FindDatabase()
+        private List<string> FindDatabase()
         {
-            List<string> databaseList = new List<string>();
-
             // get a list of all databases the user has on the device
-
-            string[] subFolderNames = Directory.GetDirectories(App.Path);
-            foreach (string levelName in subFolderNames)
+            List<string> databaseList = new List<string>();
+            foreach (string category in this.categoryPaths)
             {
-                if (levelName.Contains('`'))
+                databaseList.Add(category.Split('/').Last() + ":");
+                string[] subFolderNames = Directory.GetDirectories(category);
+                foreach (string levelPath in subFolderNames)
                 {
-                    // Might have to change this up when it comes to release as Levels will be stored somewhere else!
-                    databaseList.Add(levelName.Remove(levelName.IndexOf('`'),
-                        levelName.Count() - levelName.IndexOf('`')).Substring(30));
+                    if (levelPath.Contains('`'))
+                    {
+                        string levelName = levelPath.Split('/').Last();
+                        // Might have to change this up when it comes to release as Levels will be stored somewhere else!
+                        string level = levelName.Split('`').First();
+                        string username = levelName.Split('`').Last();
+                        databaseList.Add(level + " by " + username);
+                    }
                 }
             }
 
-            this.PickerLevelSelect.ItemsSource = databaseList;
+            return databaseList;
         }
 
         private void ButtonCreate_Clicked(object sender, EventArgs e)
@@ -47,42 +59,54 @@ namespace appFBLA2019
             }
             else
             {
-                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own accout.", "Ok");
+                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
             }
         }
 
-        private void OnPickerSelectedIndexChanged(Object sender, EventArgs e)
+        async private void ButtonLevelSelect_Clicked(object sender, EventArgs e)
         {
-            var picker = (Picker)sender;
-            int selectedIndex = picker.SelectedIndex;
             if (CredentialManager.IsLoggedIn)
             {
-                if (selectedIndex != -1) // If the user has selected something then open the page
+                string level;
+
+                string[] selections = this.FindDatabase().ToArray();
+                level = await this.DisplayActionSheet("Select a quiz to edit", "Cancel", null, selections);
+                if (!string.IsNullOrWhiteSpace(level) && level != "Cancel" && !this.categories.Contains(level.Split(':').First())) // If the user has selected something then open the page
                 {
-                    DBHandler.SelectDatabase((string)this.PickerLevelSelect.SelectedItem, CredentialManager.Username);
-                    CreateNewLevelPage levelPage = new CreateNewLevelPage(); //Create the levelPage
-                                                                             // Add the questions from the database to the page to edit
-                    List<Question> test = DBHandler.Database.GetQuestions();
+                    string levelTitle = level.Remove(level.IndexOf(" by "));
+                    string levelAuthor = level.Substring(level.IndexOf(" by ") + 4);
+                    string category = GetCategory(selections.ToList(), level);
+                    DBHandler.SelectDatabase(category, levelTitle, levelAuthor);
+                    CreateNewLevelPage levelPage = new CreateNewLevelPage(category, levelTitle, levelAuthor); //Create the levelPage
+
+                    levelPage.SetLevelName(levelTitle);
                     foreach (Question question in DBHandler.Database.GetQuestions())
                     {
-                        levelPage.SetLevelName((string)this.PickerLevelSelect.SelectedItem);
                         levelPage.AddNewQuestion(question);
                     }
-                    this.Navigation.PushAsync(levelPage);
+                    await this.Navigation.PushAsync(levelPage);
                 }
+                
+                
             }
             else
             {
-                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own accout.", "Ok");
+                await this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
             }
-            // Reset the picker value
-            picker.SelectedIndex = -1;
         }
 
-        // Now the user can edit the questions, essentially the same as create new level but with everything filled out already.
-        private void PickerLevelSelect_Focused(object sender, FocusEventArgs e)
+        private string GetCategory(List<String> selections, string choice)
         {
-            this.FindDatabase();
+            int choiceIndex = selections.FindIndex(x => x == choice);
+            for (int i = choiceIndex; i > 0; i--)
+            {
+                string selection = selections[i].Split(':').First();
+                if (this.categoryPaths.Contains(App.Path + "/" + selection))
+                {
+                    return selection;
+                }
+            }
+            return "FBLA General";
         }
     }
 }

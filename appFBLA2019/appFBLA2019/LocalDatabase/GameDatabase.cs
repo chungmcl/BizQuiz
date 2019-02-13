@@ -46,14 +46,6 @@ namespace appFBLA2019
             this.SaveQuestion(question);
         }
 
-        public void AddScore(ScoreRecord score)
-        {
-            this.realmDB.Write(() =>
-            {
-                this.realmDB.Add(score);
-            });
-        }
-
         public void DeleteQuestions(params Question[] questions)
         {
             foreach (Question question in questions)
@@ -84,32 +76,6 @@ namespace appFBLA2019
             }
         }
 
-        public double GetAvgScore()
-        {
-            if (this.realmDB != null)
-            {
-                IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
-                List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
-                if (scores.Count <= 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    double runningTotal = 0;
-                    foreach (ScoreRecord score in scores)
-                    {
-                        runningTotal += score.Score;
-                    }
-                    return runningTotal / scores.Count;
-                }
-            }
-            else
-            {
-                return 0.0;
-            }
-        }
-
         public List<Question> GetQuestions()
         {
             IQueryable<Question> queryable = this.realmDB.All<Question>();
@@ -136,7 +102,25 @@ namespace appFBLA2019
             if (question.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
-                File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+
+                if (!question.ImagePath.Contains(".jpg")
+                    || !question.ImagePath.Contains(".jpeg")
+                    || !question.ImagePath.Contains(".jpe")
+                    || !question.ImagePath.Contains(".jif")
+                    || !question.ImagePath.Contains(".jfif")
+                    || !question.ImagePath.Contains(".jfi"))
+                {
+                    Stream imageStream = DependencyService.Get<IGetImage>().GetJPGStreamFromByteArray(imageByteArray);
+                    MemoryStream imageMemoryStream = new MemoryStream();
+
+                    imageStream.Position = 0;
+                    imageStream.CopyTo(imageMemoryStream);
+
+                    imageMemoryStream.Position = 0;
+                    imageByteArray = new byte[imageMemoryStream.Length];
+                    imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
+                }
+                File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
             }
 
             this.realmDB.Write(() =>
