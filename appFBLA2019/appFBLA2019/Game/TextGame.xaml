@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="appFBLA2019.TextGame"
+             x:Class="appFBLA2019.Game"
              xmlns:local="clr-namespace:appFBLA2019"
              NavigationPage.BackButtonTitle="true">
     <ContentPage.Content>
@@ -9,7 +9,7 @@
             <Frame x:Name="NextBanner" Padding="10" CornerRadius="10">
                 <StackLayout>
                     <Label x:Name="LabelFeedback" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="Italic" FontSize="40" />
-                    <Button x:Name="NextButton" Text="Next question" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" Clicked="Button_Clicked" FontSize="30" />
+                    <Button x:Name="NextButton" Text="Next question" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" Clicked="NextButton_Clicked" FontSize="30" />
                 </StackLayout>
             </Frame>
             <StackLayout x:Name="StackLayoutMain" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">

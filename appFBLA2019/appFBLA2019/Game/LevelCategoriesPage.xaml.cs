@@ -1,16 +1,22 @@
 ﻿//BizQuiz App 2019
 
-using System;
 using System.Collections.Generic;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// A simple tabbed page that contains all of the levelselection pages
+    /// </summary>
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LevelCategoriesPage : Xamarin.Forms.TabbedPage
     {
+        /// <summary>
+        /// Initializes and sets colors
+        /// </summary>
         public LevelCategoriesPage()
         {
             this.InitializeComponent();
@@ -20,6 +26,9 @@ namespace appFBLA2019
 #endif
         }
 
+        /// <summary>
+        /// Triggered when MainPage changes tab, refreshes all the pages within
+        /// </summary>
         public void RefreshChildren()
         {
             foreach (Page page in this.Children)

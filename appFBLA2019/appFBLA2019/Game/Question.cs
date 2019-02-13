@@ -14,8 +14,12 @@ namespace appFBLA2019
         /// <summary>
         /// Creates a question object given the question and answers
         /// </summary>
-        /// <param name="question">  What to ask the user </param>
-        /// <param name="answersIn"> The potential answers to the question. The correct answer will be prefixed with "c/". The rest will be prefixed with "x/". </param>
+        /// <param name="question">
+        /// What to ask the user
+        /// </param>
+        /// <param name="answersIn">
+        /// The potential answers to the question. The correct answer is in the first slot.
+        /// </param>
         public Question(string question, string imagePath, params string[] answers)
         {
             this.QuestionText = question;
@@ -26,17 +30,28 @@ namespace appFBLA2019
             this.ImagePath = imagePath;
         }
 
+        /// <summary>
+        /// Creates a question that doesn't need a question
+        /// </summary>
+        /// <param name="question">
+        /// </param>
+        /// <param name="answers">
+        /// </param>
         public Question(string question, params string[] answers) : this(question, null, answers)
         {
             this.NeedsPicture = false;
         }
 
-        public Question() : this("This question is empty!", null, new string[0])
+        /// <summary>
+        /// Default constructor, creates an empty question
+        /// </summary>
+        public Question() : this("This question is empty!", "", new string[0])
         {
         }
 
-        public string AnswerOne { get; set; }
-
+        /// <summary>
+        /// Stores and returns the answers with some logic to keep them stable
+        /// </summary>
         [Ignored]
         public List<string> Answers
         {
@@ -64,33 +79,66 @@ namespace appFBLA2019
             }
         }
 
-        public string AnswerThree { get; set; }
-
-        public string AnswerTwo { get; set; }
-
+        /// <summary>
+        /// the right answer
+        /// </summary>
         public string CorrectAnswer { get; set; }
 
-        // Primary key ID for database Once set, IT CAN NEVER BE CHANGED.
-        [PrimaryKey]
-        public string DBId { get; set; }
+        /// <summary>
+        /// The first of the wrong answers
+        /// </summary>
+        public string AnswerOne { get; set; }
 
-        // SQLITE WILL IGNORE ALL PROPERTIES THAT ARE NOT DEFINED BY public { get; set; }
+        /// <summary>
+        /// The second of the wrong answers
+        /// </summary>
+        public string AnswerTwo { get; set; }
 
+        /// <summary>
+        /// The 3rd of the wrong answers
+        /// </summary>
+        public string AnswerThree { get; set; }
+
+        /// <summary>
+        /// Path to the image for this question
+        /// </summary>
         [Ignored]
         public string ImagePath { get; set; }
 
+        /// <summary>
+        /// if the question needs a picture
+        /// </summary>
         public bool NeedsPicture { get; set; }
 
+        /// <summary>
+        /// Primary key ID for database Once set, IT CAN NEVER BE CHANGED.
+        /// </summary>
+        [PrimaryKey]
+        public string QuestionId { get; set; }
+
+        /// <summary>
+        /// the question itself
+        /// </summary>
         public string QuestionText { get; set; }
 
+        /// <summary>
+        /// The type of the question
+        /// </summary>
         // 0 = Multiple choice, 1 = Text answer w/o upper/lower case, 2 = Text answer with upper/lower case
         public int QuestionType { get; set; }
 
-        //declare enum (to use this type other places, say Question.QuestionStatus)
-        //public enum QuestionStatus { Unanswered, Failed, Correct }
+        /// <summary>
+        /// if the question has been attempted, answered, or neither 0 = unattemped, 1 = answered wrong, 2 = answered correctly
+        /// </summary>
         public int Status { get; set; }
 
-        //used to sort questions by status
+        /// <summary>
+        /// For sorting questions by status
+        /// </summary>
+        /// <param name="obj">
+        /// </param>
+        /// <returns>
+        /// </returns>
         public int CompareTo(object obj)
         {
             return this.Status.CompareTo(((Question)obj).Status);

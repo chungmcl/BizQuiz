@@ -11,9 +11,17 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// A page that shows a selection of levels from the specified category
+    /// </summary>
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LevelSelectionPage : ContentPage
     {
+        /// <summary>
+        /// Constructor that creates a levelselectionpage, connects to the database for the category, and sets up the cards
+        /// </summary>
+        /// <param name="category">
+        /// </param>
         public LevelSelectionPage(string category)
         {
             this.InitializeComponent();
@@ -23,8 +31,17 @@ namespace appFBLA2019
             Task.Run(() => this.Setup());
         }
 
-        private readonly string category;
-        // TO DO: Display author name of level
+        /// <summary>
+        /// Default constructor that specifies "other" as the category
+        /// </summary>
+        public LevelSelectionPage() : this("Other") { }
+
+        /// <summary>
+        /// Loads all questions from the current category and displays them as cards with some options
+        /// </summary>
+        /// <returns>
+        /// an awaitable task to setup the page
+        /// </returns>
         internal async Task Setup()
         {
             this.ButtonStack.Children.Clear();
@@ -64,12 +81,19 @@ namespace appFBLA2019
                 };
                 frameStack.Children.Add(title);
 
+                frameStack.Children.Add(new Label
+                {
+                    HorizontalOptions = LayoutOptions.End
+                });
+
+                DBHandler.SelectDatabase(this.category, level.First(), level.Last());
+
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
-                    Level newLevel = new Level(category, level.First(), level.Last());
+                    Level newLevel = new Level(this.category, level.First(), level.Last());
                     newLevel.LoadQuestions();
-                    await this.Navigation.PushAsync(new TextGame(newLevel));
+                    await this.Navigation.PushAsync(new Game(newLevel));
                 };
 
                 frame.GestureRecognizers.Add(recognizer);
@@ -77,5 +101,10 @@ namespace appFBLA2019
                 this.ButtonStack.Children.Add(frame);
             }
         }
+
+        /// <summary>
+        /// The category of the page
+        /// </summary>
+        private readonly string category;
     }
 }

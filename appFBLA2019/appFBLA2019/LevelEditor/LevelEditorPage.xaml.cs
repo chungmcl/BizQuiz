@@ -26,6 +26,7 @@ namespace appFBLA2019
 
         private string[] categoryPaths;
         private string[] categories;
+
         // Get the list of Quizes the user can edit
         private List<string> FindDatabase()
         {
@@ -63,19 +64,18 @@ namespace appFBLA2019
             }
         }
 
-        async private void ButtonLevelSelect_Clicked(object sender, EventArgs e)
+        private async void ButtonLevelSelect_Clicked(object sender, EventArgs e)
         {
             if (CredentialManager.IsLoggedIn)
             {
-                string level;
-
                 string[] selections = this.FindDatabase().ToArray();
-                level = await this.DisplayActionSheet("Select a quiz to edit", "Cancel", null, selections);
+                string level = await this.DisplayActionSheet("Select a quiz to edit", "Cancel", null, selections);
+
                 if (!string.IsNullOrWhiteSpace(level) && level != "Cancel" && !this.categories.Contains(level.Split(':').First())) // If the user has selected something then open the page
                 {
                     string levelTitle = level.Remove(level.IndexOf(" by "));
                     string levelAuthor = level.Substring(level.IndexOf(" by ") + 4);
-                    string category = GetCategory(selections.ToList(), level);
+                    string category = this.GetCategory(selections.ToList(), level);
                     DBHandler.SelectDatabase(category, levelTitle, levelAuthor);
                     CreateNewLevelPage levelPage = new CreateNewLevelPage(category, levelTitle, levelAuthor); //Create the levelPage
 
@@ -86,8 +86,6 @@ namespace appFBLA2019
                     }
                     await this.Navigation.PushAsync(levelPage);
                 }
-                
-                
             }
             else
             {
@@ -98,12 +96,11 @@ namespace appFBLA2019
         private string GetCategory(List<String> selections, string choice)
         {
             int choiceIndex = selections.FindIndex(x => x == choice);
-            for (int i = choiceIndex; i > 0; i--)
+            for (int i = choiceIndex; i < 0; i--)
             {
-                string selection = selections[i].Split(':').First();
-                if (this.categoryPaths.Contains(App.Path + "/" + selection))
+                if (this.categoryPaths.Contains(selections[i]))
                 {
-                    return selection;
+                    return selections[i];
                 }
             }
             return "FBLA General";
