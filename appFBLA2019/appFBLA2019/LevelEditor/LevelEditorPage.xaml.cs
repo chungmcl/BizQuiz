@@ -70,11 +70,11 @@ namespace appFBLA2019
                 string[] selections = this.FindDatabase().ToArray();
                 string level = await this.DisplayActionSheet("Select a quiz to edit", "Cancel", null, selections);
 
-                if (!string.IsNullOrWhiteSpace(level) && level != "Cancel" && !this.categories.Contains(level + ":")) // If the user has selected something then open the page
+                if (!string.IsNullOrWhiteSpace(level) && level != "Cancel" && !this.categories.Contains(level.Split(':').First())) // If the user has selected something then open the page
                 {
                     string levelTitle = level.Remove(level.IndexOf(" by "));
                     string levelAuthor = level.Substring(level.IndexOf(" by ") + 4);
-                    string category = GetCategory(selections.ToList(), level);
+                    string category = this.GetCategory(selections.ToList(), level);
                     DBHandler.SelectDatabase(category, levelTitle, levelAuthor);
                     CreateNewLevelPage levelPage = new CreateNewLevelPage(category,levelTitle, levelAuthor); //Create the levelPage
 

@@ -120,7 +120,8 @@ namespace appFBLA2019
                     imageByteArray = new byte[imageMemoryStream.Length];
                     imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
                 }
-                File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+                File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+                File.Create(this.dbFolderPath + ".nomedia");
             }
 
             this.realmDB.Write(() =>

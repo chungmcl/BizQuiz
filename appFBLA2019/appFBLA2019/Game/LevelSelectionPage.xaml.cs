@@ -69,12 +69,12 @@ namespace appFBLA2019
                     HorizontalOptions = LayoutOptions.End
                 });
 
-                DBHandler.SelectDatabase(category, level.First(), level.Last());
+                DBHandler.SelectDatabase(this.category, level.First(), level.Last());
 
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
-                    Level newLevel = new Level(category, level.First(), level.Last());
+                    Level newLevel = new Level(this.category, level.First(), level.Last());
                     newLevel.LoadQuestions();
                     await this.Navigation.PushAsync(new TextGame(newLevel));
                 };
