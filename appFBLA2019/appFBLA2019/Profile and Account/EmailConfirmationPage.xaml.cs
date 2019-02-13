@@ -17,10 +17,15 @@ namespace appFBLA2019
             this.username = username;
             this.password = password;
             this.LabelTitle.Text = "Loading...";
-            Task getEmail = Task.Run(() => this.GetEmail());
         }
 
-        protected override void OnDisappearing()
+        protected async override void OnAppearing()
+        {
+            base.OnAppearing();
+            await Task.Run(() => this.GetEmail());
+        }
+
+        protected async override void OnDisappearing()
         {
             base.OnDisappearing();
             if (!this.emailConfirmed)
