@@ -14,7 +14,7 @@ using appFBLA2019.Droid;
 
 namespace appFBLA2019.Droid
 {
-    [Activity(Label = "Mobile App Name", Icon = "@drawable/icon", Theme = "@style/splashscreen", MainLauncher = true, NoHistory = true)]
+    [Activity(Label = "BizQuiz", Icon = "@drawable/icon", Theme = "@style/splashscreen", MainLauncher = true, NoHistory = true)]
     public class SplashActivity : AppCompatActivity
     {
 
