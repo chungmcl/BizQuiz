@@ -54,7 +54,8 @@
                                 <Label x:Name="LabelChangePasswordMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangePassword" 
                                         Text="Change Password"
-                                        Clicked="ButtonChangePassword_Clicked"/>
+                                        Clicked="ButtonChangePassword_Clicked"
+                                        BorderRadius="25"/>
                             </StackLayout>
 
 
@@ -99,6 +100,7 @@
                                 <Label x:Name="LabelChangeEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangeEmail" 
                                         Text="Change Email"
+                                        BorderRadius="25"
                                         Clicked="ButtonChangeEmail_Clicked"/>
 
                             </StackLayout>
@@ -137,6 +139,7 @@
                                 <Label x:Name="LabelConfirmEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonConfirmEmail" 
                                         Text="Confirm Email"
+                                        BorderRadius="25"
                                         Clicked="ButtonConfirmEmail_Clicked"/>
                             </StackLayout>
 
@@ -179,6 +182,7 @@
                                 <Button x:Name="ButtonDeleteAccount" 
                                         Text="Delete Account"
                                         BackgroundColor="Accent"
+                                        BorderRadius="25"
                                         Clicked="ButtonDeleteAccount_Clicked"/>
                             </StackLayout>
 

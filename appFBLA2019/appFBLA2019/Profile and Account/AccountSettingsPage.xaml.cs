@@ -139,14 +139,14 @@ namespace appFBLA2019
                 OperationReturnMessage message = await Task.Run(() => ConfirmEmail(token));
                 if (message == OperationReturnMessage.True)
                 {
-                    this.LabelChangeEmailMessage.Text = "Email was confirmed.";
+                    this.LabelConfirmEmailMessage.Text = "Email was confirmed.";
                     CredentialManager.EmailConfirmed = true;
                     this.FrameConfirmEmail.IsVisible = false;
                     await DisplayAlert("Email Confirmation", "Email was confirmed", "OK");
                 }
                 else
                 {
-                    this.LabelChangeEmailMessage.Text = "Email confirmation code was incorrect.";
+                    this.LabelConfirmEmailMessage.Text = "Email confirmation code was incorrect.";
                 }
             }
             SetupFrameEnd(this.StackLayoutConfirmEmailContent);
@@ -164,18 +164,24 @@ namespace appFBLA2019
         {
             if (SetupFrameBegin(this.FrameDeleteAccount, this.StackLayoutDeleteAccountContent))
             {
-                string password = this.EntryEnterPasswordDeleteAccount.Text.Trim();
-                OperationReturnMessage message = await Task.Run(() => DeleteAccount(password));
-                if (message == OperationReturnMessage.True)
+                bool confirmed = await DisplayAlert("Confirm Delete", "" +
+                        "Are you sure you want to delete your account? Your account cannot be recovered, and all created levels will be deleted.",
+                        "Yes", "No");
+                if (confirmed)
                 {
-                    CredentialManager.Logout(true);
-                    await DisplayAlert("Account Deletion", "Account successfully deleted", "OK");
-                    OnSignedOut();
-                    await this.Navigation.PopAsync();
-                }
-                else
-                {
-                    this.LabelDeleteAccountMessage.Text = "Incorrect password. Please try again.";
+                    string password = this.EntryEnterPasswordDeleteAccount.Text.Trim();
+                    OperationReturnMessage message = await Task.Run(() => DeleteAccount(password));
+                    if (message == OperationReturnMessage.True)
+                    {
+                        CredentialManager.Logout(true);
+                        await DisplayAlert("Account Deletion", "Account successfully deleted", "OK");
+                        OnSignedOut();
+                        await this.Navigation.PopAsync();
+                    }
+                    else
+                    {
+                        this.LabelDeleteAccountMessage.Text = "Incorrect password. Please try again.";
+                    }
                 }
             }
             SetupFrameEnd(this.StackLayoutDeleteAccountContent);
