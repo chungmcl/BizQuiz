@@ -68,6 +68,11 @@ namespace appFBLA2019
                     Device.BeginInvokeOnMainThread(() =>
                     this.LabelMessage.Text = $"Account could not be created - Invalid Email.");
                 }
+                else
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.LabelMessage.Text = $"Account could not be created.");
+                }
             }
             else
             {
