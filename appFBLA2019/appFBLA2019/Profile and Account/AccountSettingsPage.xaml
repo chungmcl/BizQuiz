@@ -48,9 +48,9 @@
 
                             <StackLayout x:Name="StackLayoutChangePasswordContent"
                                  IsVisible="False">
-                                <Entry Placeholder="Enter current password"/>
-                                <Entry Placeholder="Enter new password"/>
-                                <Entry Placeholder="Reenter new password"/>
+                                <Entry x:Name="EntryCurrentPasswordChangePassword" Placeholder="Enter current password"/>
+                                <Entry x:Name="EntryNewPasswordChangePassword" Placeholder="Enter new password"/>
+                                <Entry x:Name="EntryReenterNewPasswordChangePassword" Placeholder="Reenter new password"/>
                                 <Label x:Name="LabelChangePasswordMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangePassword" 
                                         Text="Change Password"
