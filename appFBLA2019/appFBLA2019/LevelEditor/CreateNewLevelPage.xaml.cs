@@ -564,6 +564,7 @@ namespace appFBLA2019
 		{
 			if (((Button)sender).Text == "Question Type: Multiple choice")
 			{
+                // Do animation stuff - doesn't look the greatest, but the best I can do without downloading customs or doing something too time intesive
 				StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
 				Frame frame = ((Frame)stack.Parent);
 				await Task.WhenAll(
@@ -577,6 +578,7 @@ namespace appFBLA2019
 				stack.Children[4].IsVisible = false;
 				stack.Children[5].IsVisible = false;
 
+                // Change the button to the next question type and change the return command so users can't access the other entries
 				((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Unfocus());
 				((Button)sender).Text = "Question Type: Text answer";
 			}

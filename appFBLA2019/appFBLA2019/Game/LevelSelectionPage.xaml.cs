@@ -64,13 +64,6 @@ namespace appFBLA2019
                 };
                 frameStack.Children.Add(title);
 
-                frameStack.Children.Add(new Label
-                {
-                    HorizontalOptions = LayoutOptions.End
-                });
-
-                DBHandler.SelectDatabase(category, level.First(), level.Last());
-
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
