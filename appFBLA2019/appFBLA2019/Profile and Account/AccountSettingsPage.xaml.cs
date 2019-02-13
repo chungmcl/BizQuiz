@@ -32,7 +32,7 @@ namespace appFBLA2019
         private void ButtonLogout_Clicked(object sender, EventArgs e)
         {
             this.ButtonLogout.IsEnabled = false;
-            CredentialManager.Logout();
+            CredentialManager.Logout(false);
             OnSignedOut();
             this.Navigation.PopAsync();
         }
@@ -42,7 +42,7 @@ namespace appFBLA2019
             this.SignedOut?.Invoke(this, EventArgs.Empty);
         }
 
-        private void ButtonChangePassword_Clicked(object sender, EventArgs e)
+        private async void ButtonChangePassword_Clicked(object sender, EventArgs e)
         {
             if (SetupFrameBegin(this.FrameChangePassword, this.StackLayoutChangePasswordContent))
             {
@@ -53,7 +53,28 @@ namespace appFBLA2019
                 {
                     if (!(newPassword.Length < 8 || newPassword.Length > 16))
                     {
-
+                        if (!(newPassword.Contains(" ") || newPassword.Contains(".") || newPassword.Contains("/") || newPassword.Contains("`")))
+                        {
+                            OperationReturnMessage message = await Task.Run(() => ChangePassword(oldPassword, newPassword));
+                            if (message == OperationReturnMessage.True)
+                            {
+                                this.LabelChangePasswordMessage.Text = "Password changed successfully.";
+                                CredentialManager.SaveCredential(CredentialManager.Username, newPassword, CredentialManager.EmailConfirmed);
+                            }
+                            else if (message == OperationReturnMessage.FalseInvalidCredentials)
+                            {
+                                this.LabelChangePasswordMessage.Text = "Incorrect current password.";
+                            }
+                            else
+                            {
+                                this.LabelChangePasswordMessage.Text = "Password change failed - Please try again.";
+                            }
+                        }
+                        else
+                        {
+                            this.LabelChangePasswordMessage.Text =
+                            "New password must not contain empty space, \'.\', \'/\', or \'`\'";
+                        }
                     }
                     else
                     {
@@ -66,6 +87,7 @@ namespace appFBLA2019
                     this.LabelChangePasswordMessage.Text = "New passwords do not match.";
                 }
             }
+            SetupFrameEnd(this.StackLayoutChangePasswordContent);
         }
 
         private OperationReturnMessage ChangePassword(string password, string newPassword)
@@ -109,18 +131,65 @@ namespace appFBLA2019
             return ServerConnector.ReceiveFromServerORM();
         }
 
-        private void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
+        private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
         {
-
+            if (SetupFrameBegin(this.FrameConfirmEmail, this.StackLayoutConfirmEmailContent))
+            {
+                string token = this.EntryEnterConfirmationCodeConfirmEmail.Text.Trim();
+                OperationReturnMessage message = await Task.Run(() => ConfirmEmail(token));
+                if (message == OperationReturnMessage.True)
+                {
+                    this.LabelChangeEmailMessage.Text = "Email was confirmed.";
+                    CredentialManager.EmailConfirmed = true;
+                    this.FrameConfirmEmail.IsVisible = false;
+                    await DisplayAlert("Email Confirmation", "Email was confirmed", "OK");
+                }
+                else
+                {
+                    this.LabelChangeEmailMessage.Text = "Email confirmation code was incorrect.";
+                }
+            }
+            SetupFrameEnd(this.StackLayoutConfirmEmailContent);
         }
 
-        private void ButtonDeleteAccount_Clicked(object sender, EventArgs e)
+        private OperationReturnMessage ConfirmEmail(string token)
         {
-
+            Device.BeginInvokeOnMainThread(() => this.LabelConfirmEmailMessage.Text = "Waiting...");
+            ServerConnector.SendData(ServerRequestTypes.ConfirmEmail,
+                    $"{CredentialManager.Username}/{token.Trim()}/-");
+            return ServerConnector.ReceiveFromServerORM();
         }
 
+        private async void ButtonDeleteAccount_Clicked(object sender, EventArgs e)
+        {
+            if (SetupFrameBegin(this.FrameDeleteAccount, this.StackLayoutDeleteAccountContent))
+            {
+                string password = this.EntryEnterPasswordDeleteAccount.Text.Trim();
+                OperationReturnMessage message = await Task.Run(() => DeleteAccount(password));
+                if (message == OperationReturnMessage.True)
+                {
+                    CredentialManager.Logout(true);
+                    await DisplayAlert("Account Deletion", "Account successfully deleted", "OK");
+                    OnSignedOut();
+                    await this.Navigation.PopAsync();
+                }
+                else
+                {
+                    this.LabelDeleteAccountMessage.Text = "Incorrect password. Please try again.";
+                }
+            }
+            SetupFrameEnd(this.StackLayoutDeleteAccountContent);
+        }
 
+        private OperationReturnMessage DeleteAccount(string password)
+        {
+            Device.BeginInvokeOnMainThread(() => this.LabelDeleteAccountMessage.Text = "Waiting...");
+            ServerConnector.SendData(ServerRequestTypes.DeleteAccount,
+                    $"{CredentialManager.Username}/{password.Trim()}/-");
+            return ServerConnector.ReceiveFromServerORM();
+        }
 
+        
         private void OnEmailConfirmed(object sender, EventArgs eventArgs)
         {
             this.FrameConfirmEmail.IsVisible = false;

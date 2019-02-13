@@ -12,7 +12,7 @@ namespace appFBLA2019
     {
         public static string Username { get; private set; }
         public static bool IsLoggedIn { get; private set; }
-        public static bool EmailConfirmed { get; private set; }
+        public static bool EmailConfirmed { get; set; }
      
         public static void SaveCredential(string username, string password, bool emailConfirmed)
         {
@@ -25,9 +25,12 @@ namespace appFBLA2019
             EmailConfirmed = emailConfirmed;
         }
 
-        public static void Logout()
+        public static void Logout(bool clearUsername)
         {
             Task.Run(async () => await SecureStorage.SetAsync("password", ""));
+
+            if (clearUsername)
+                Task.Run(async () => await SecureStorage.SetAsync("username", ""));
 
             IsLoggedIn = false;
             EmailConfirmed = false;

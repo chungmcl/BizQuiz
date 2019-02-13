@@ -33,6 +33,7 @@ namespace appFBLA2019
         DeleteAccount,
         ConfirmEmail,
         ChangeEmail,
+        ChangePassword,
 
         // "Get" Requests
         GetEmail,
@@ -104,10 +105,11 @@ namespace appFBLA2019
 
                     case (ServerRequestTypes.LoginAccount):
                     case (ServerRequestTypes.RegisterAccount):
+                    case (ServerRequestTypes.ChangePassword):
                     case (ServerRequestTypes.GetEmail):
                     case (ServerRequestTypes.ConfirmEmail):
-                    case (ServerRequestTypes.StringData):
                     case (ServerRequestTypes.ChangeEmail):
+                    case (ServerRequestTypes.StringData):
                         SendStringData((string)data, dataType);
                         return true;
 

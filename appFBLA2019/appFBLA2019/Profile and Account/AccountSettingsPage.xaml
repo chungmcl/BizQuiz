@@ -133,7 +133,7 @@
 
                             <StackLayout x:Name="StackLayoutConfirmEmailContent"
                                  IsVisible="False">
-                                <Entry Placeholder="Enter confirmation code"/>
+                                <Entry x:Name="EntryEnterConfirmationCodeConfirmEmail" Placeholder="Enter confirmation code"/>
                                 <Label x:Name="LabelConfirmEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonConfirmEmail" 
                                         Text="Confirm Email"
@@ -174,7 +174,7 @@
 
                             <StackLayout x:Name="StackLayoutDeleteAccountContent"
                                  IsVisible="False">
-                                <Entry Placeholder="Enter password"/>
+                                <Entry x:Name="EntryEnterPasswordDeleteAccount" Placeholder="Enter password"/>
                                 <Label x:Name="LabelDeleteAccountMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonDeleteAccount" 
                                         Text="Delete Account"
