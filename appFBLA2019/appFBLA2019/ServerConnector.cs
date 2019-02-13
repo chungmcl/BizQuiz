@@ -36,11 +36,13 @@ namespace appFBLA2019
 
         // "Get" Requests
         GetEmail,
+
         GetJPEGImage,
         GetRealmFile,
 
         // Returns
         SavedJPEGImage,
+
         SavedRealmFile,
         GotEmail,
         True,
@@ -85,9 +87,15 @@ namespace appFBLA2019
         /// <summary>
         /// Send a request or data to the server.
         /// </summary>
-        /// <param name="dataType"> The type of request/data to be sent </param>
-        /// <param name="data">     The data/string query to send </param>
-        /// <returns> If the data successfully sent or not </returns>
+        /// <param name="dataType">
+        /// The type of request/data to be sent
+        /// </param>
+        /// <param name="data">
+        /// The data/string query to send
+        /// </param>
+        /// <returns>
+        /// If the data successfully sent or not
+        /// </returns>
         public static bool SendData(ServerRequestTypes dataType, object data)
         {
             if (SetupConnection())
@@ -165,17 +173,24 @@ namespace appFBLA2019
                 {
                     int toRead = 0;
                     if ((size - bytesRead) > buffer.Length)
+                    {
                         toRead = buffer.Length - (size - bytesRead);
+                    }
                     else
+                    {
                         toRead = size - bytesRead;
+                    }
 
                     bytes = ssl.Read(buffer, 0, toRead);
                     bytesRead += bytes;
 
                     if (bytes > 0)
+                    {
                         for (int i = 0; i < bytes; i++)
+                        {
                             data.Add(buffer[i]);
-
+                        }
+                    }
                 } while (data.Count < size);
                 data.RemoveRange(size, data.Count - size);
                 return data.ToArray();

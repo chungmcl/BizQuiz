@@ -1,22 +1,22 @@
-﻿using System;
+﻿//BizQuiz App 2019
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019.LevelEditor
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class PhotoPage : ContentPage
-	{
-        ImageButton imageButton;
-        int currentAction = 0;
-		public PhotoPage (ImageButton image)
-		{
-			InitializeComponent ();
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class PhotoPage : ContentPage
+    {
+        private ImageButton imageButton;
+        private int currentAction = 0;
+
+        public PhotoPage(ImageButton image)
+        {
+            InitializeComponent();
             this.imageButton = image;
             this.pictureToEdit.Source = image.Source;
             this.pictureToEdit.Aspect = Aspect.AspectFit;

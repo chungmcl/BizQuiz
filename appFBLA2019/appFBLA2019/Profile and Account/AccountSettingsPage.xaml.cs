@@ -1,7 +1,7 @@
-﻿using System;
+﻿//BizQuiz App 2019
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -9,21 +9,23 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class AccountSettingsPage : ContentPage
-	{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class AccountSettingsPage : ContentPage
+    {
         public delegate void SignOutEventHandler(object source, EventArgs eventArgs);
+
         public event SignOutEventHandler SignedOut;
-        public AccountSettingsPage ()
-		{
-			InitializeComponent ();
-		}
+
+        public AccountSettingsPage()
+        {
+            this.InitializeComponent();
+        }
 
         private void ButtonLogout_Clicked(object sender, EventArgs e)
         {
             this.ButtonLogout.IsEnabled = false;
             CredentialManager.Logout();
-            OnSignedOut();
+            this.OnSignedOut();
             this.Navigation.PopAsync();
         }
 
@@ -37,11 +39,10 @@ namespace appFBLA2019
             this.ButtonChangeEmail.IsEnabled = false;
             this.EntryEnterPasswordChangeEmail.IsEnabled = false;
             this.EntryEnterNewEmailChangeEmail.IsEnabled = false;
-            OperationReturnMessage message = await Task.Run(() => ChangeEmail());
-            
+            OperationReturnMessage message = await Task.Run(() => this.ChangeEmail());
+
             if (message == OperationReturnMessage.TrueConfirmEmail)
             {
-
             }
             else if (message == OperationReturnMessage.FalseInvalidCredentials)
             {
@@ -51,7 +52,6 @@ namespace appFBLA2019
             {
                 this.LabelChangeEmailMessage.Text = "Invalid email. Please check the email and try again.";
             }
-
 
             this.ButtonChangeEmail.IsEnabled = true;
             this.EntryEnterPasswordChangeEmail.IsEnabled = true;
@@ -68,20 +68,16 @@ namespace appFBLA2019
 
         private void ButtonChangePassword_Clicked(object sender, EventArgs e)
         {
-
         }
 
         private void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
         {
-
         }
 
         private void ButtonDeleteAccount_Clicked(object sender, EventArgs e)
         {
-
         }
 
-        #region Image Button Event Handlers
         private void ImageButtonCloseChangeEmail_Clicked(object sender, EventArgs e)
         {
             this.ImageButtonCloseChangeEmail.RelRotateTo(180);
@@ -105,12 +101,7 @@ namespace appFBLA2019
             this.ImageButtonDeleteAccount.RelRotateTo(180);
             this.StackLayoutDeleteAccountContent.IsVisible = !this.StackLayoutDeleteAccountContent.IsVisible;
         }
-        #endregion
 
-        // To do:
-        // Change email
-        // Change password
-        // Confirm Email (IsVisible only if user needs to confirm email)
-        // Delete account permanently
+        // To do: Change email Change password Confirm Email (IsVisible only if user needs to confirm email) Delete account permanently
     }
 }

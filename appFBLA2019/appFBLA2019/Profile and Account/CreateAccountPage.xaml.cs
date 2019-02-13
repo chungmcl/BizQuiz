@@ -1,8 +1,9 @@
-﻿using System;
+﻿//BizQuiz App 2019
 
+using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using System.Threading.Tasks;
 
 namespace appFBLA2019
 {
@@ -10,13 +11,15 @@ namespace appFBLA2019
     public partial class CreateAccountPage : ContentPage
     {
         public delegate void AccountCreatedEventHandler(object source, AccountCreatedEventArgs eventArgs);
+
         public event AccountCreatedEventHandler AccountCreated;
 
         private string username;
         private string password;
+
         public CreateAccountPage()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void ButtonCreateAccount_Clicked(object sender, EventArgs e)
@@ -28,7 +31,7 @@ namespace appFBLA2019
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
 
-            Task createAccount = Task.Run(() => CreateAccount(
+            Task createAccount = Task.Run(() => this.CreateAccount(
                 this.EntryUsername.Text.Trim(),
                 this.EntryPassword.Text.Trim(),
                 this.EntryEmail.Text.Trim()));
@@ -36,7 +39,7 @@ namespace appFBLA2019
 
         private async Task CreateAccount(string username, string password, string email)
         {
-            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.RegisterAccount, 
+            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.RegisterAccount,
                 $"{username}/{password}" +
                 $"/{email}/-"));
 
@@ -82,13 +85,13 @@ namespace appFBLA2019
 
         private async void OnEmailConfirmed(object source, EventArgs eventArgs)
         {
-            OnAccountCreated(true);
+            this.OnAccountCreated(true);
             await this.Navigation.PopAsync();
         }
 
         private async void OnConfirmLaterSelected(object source, EventArgs eventArgs)
         {
-            OnAccountCreated(false);
+            this.OnAccountCreated(false);
             await this.Navigation.PopAsync();
         }
 
@@ -108,6 +111,5 @@ namespace appFBLA2019
             public bool EmailConfirmed { get; set; }
             public string Username { get; set; }
         }
-
     }
 }

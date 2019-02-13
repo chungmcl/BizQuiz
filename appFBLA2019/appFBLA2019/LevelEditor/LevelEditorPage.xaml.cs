@@ -26,6 +26,7 @@ namespace appFBLA2019
 
         private string[] categoryPaths;
         private string[] categories;
+
         // Get the list of Quizes the user can edit
         private List<string> FindDatabase()
         {
@@ -63,7 +64,7 @@ namespace appFBLA2019
             }
         }
 
-        async private void ButtonLevelSelect_Clicked(object sender, EventArgs e)
+        private async void ButtonLevelSelect_Clicked(object sender, EventArgs e)
         {
             if (CredentialManager.IsLoggedIn)
             {
@@ -76,14 +77,13 @@ namespace appFBLA2019
                     string levelAuthor = level.Substring(level.IndexOf(" by ") + 4);
                     string category = this.GetCategory(selections.ToList(), level);
                     DBHandler.SelectDatabase(category, levelTitle, levelAuthor);
-                    CreateNewLevelPage levelPage = new CreateNewLevelPage(category,levelTitle, levelAuthor); //Create the levelPage
+                    CreateNewLevelPage levelPage = new CreateNewLevelPage(category, levelTitle, levelAuthor); //Create the levelPage
 
                     levelPage.SetLevelName(levelTitle);
                     foreach (Question question in DBHandler.Database.GetQuestions())
                     {
-                        
                         levelPage.AddNewQuestion(question);
-                    } 
+                    }
                     await this.Navigation.PushAsync(levelPage);
                 }
             }
@@ -98,7 +98,7 @@ namespace appFBLA2019
             int choiceIndex = selections.FindIndex(x => x == choice);
             for (int i = choiceIndex; i < 0; i--)
             {
-                if(this.categoryPaths.Contains(selections[i]))
+                if (this.categoryPaths.Contains(selections[i]))
                 {
                     return selections[i];
                 }

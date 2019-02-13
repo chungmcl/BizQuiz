@@ -1,12 +1,7 @@
 ﻿//BizQuiz App 2019
 
-using Plugin.FacebookClient;
-using Plugin.FacebookClient.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -17,7 +12,6 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ProfilePage : ContentPage
     {
-
         public ProfilePage()
         {
             this.InitializeComponent();
@@ -38,7 +32,9 @@ namespace appFBLA2019
             });
 
             if (updateLoginStatus)
+            {
                 await CredentialManager.CheckLoginStatus();
+            }
 
             Device.BeginInvokeOnMainThread(() =>
             {
@@ -61,7 +57,9 @@ namespace appFBLA2019
                 else
                 {
                     if (this.ToolbarItems.Count > 0)
+                    {
                         this.ToolbarItems.Clear();
+                    }
 
                     this.IsOnLoginPage = true;
                     this.LocalLoginPage.LoggedIn += OnLoggedIn;

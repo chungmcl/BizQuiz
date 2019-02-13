@@ -1,6 +1,7 @@
-﻿using System;
+﻿//BizQuiz App 2019
+
+using System;
 using System.Threading.Tasks;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using static appFBLA2019.CreateAccountPage;
@@ -11,7 +12,9 @@ namespace appFBLA2019
     public partial class LoginPage : ContentView
     {
         public delegate void LoggedinEventHandler(object source, EventArgs eventArgs);
+
         public event LoggedinEventHandler LoggedIn;
+
         public LoginPage()
         {
             this.InitializeComponent();
@@ -34,7 +37,7 @@ namespace appFBLA2019
                 this.ActivityIndicator.IsRunning = true;
             });
             bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.LoginAccount, $"{username}/{password}/-"));
-            
+
             if (completedRequest)
             {
                 OperationReturnMessage response = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
@@ -42,18 +45,18 @@ namespace appFBLA2019
                 if (response == OperationReturnMessage.True)
                 {
                     CredentialManager.SaveCredential(username, password, true);
-                    OnLoggedIn();
+                    this.OnLoggedIn();
                 }
                 else if (response == OperationReturnMessage.TrueConfirmEmail)
                 {
-                    Device.BeginInvokeOnMainThread(async() =>
+                    Device.BeginInvokeOnMainThread(async () =>
                     {
                         var confirmationPage = new EmailConfirmationPage(username, password);
                         confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                         await this.Navigation.PushModalAsync(confirmationPage);
                     });
                     CredentialManager.SaveCredential(username, password, false);
-                    OnLoggedIn();
+                    this.OnLoggedIn();
                 }
                 else if (response == OperationReturnMessage.FalseInvalidCredentials)
                 {
@@ -78,7 +81,6 @@ namespace appFBLA2019
                 this.ActivityIndicator.IsRunning = false;
                 this.ActivityIndicator.IsVisible = false;
             });
-            
         }
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)
@@ -102,7 +104,7 @@ namespace appFBLA2019
         {
             this.EntryUsername.Text = accountArgs.Username;
 
-            OnLoggedIn();
+            this.OnLoggedIn();
         }
     }
 }
