@@ -12,7 +12,7 @@
         <AbsoluteLayout>
 
             <StackLayout BackgroundColor="White" AbsoluteLayout.LayoutBounds="0, 0, 1.0, 1.0" AbsoluteLayout.LayoutFlags="All">
-                <BoxView AbsoluteLayout.LayoutBounds="0, 0, 1.0, .1" AbsoluteLayout.LayoutFlags="All" HeightRequest="55"/>
+                <Image Source="DropShadowTop.png"  AbsoluteLayout.LayoutBounds="0, 0, 1.0, .1" AbsoluteLayout.LayoutFlags="All" HeightRequest="55"/>
                 <Picker x:Name="PickerCategory" Title="Category" FontSize="17" FontAttributes="Italic" TextColor="Accent">
                     <Picker.Items>
                         <x:String>Tech Events</x:String>

@@ -26,7 +26,7 @@ namespace appFBLA2019
                 // If the current database is null, or the name of the current database does not match the name of the database being requested to be selected, connect to the database specified in the parameter fileName
 
                 // Backtick ( ` ) character used to seperate level name from author name
-                if (Database == null || Database.fileName != $"{category}/{levelTitle}`{author}")
+                if (Database == null || Database.fileName != $"/{category}/{levelTitle}`{author}")
                 {
                     // This path should be used when app is finished This will hide the application database and prevent it from unwanted user manipulation
 

@@ -30,8 +30,9 @@ namespace appFBLA2019
 			this.originalCategory = originalCategory;
 			this.originalAuthor = originalAuthor;
 			this.originalName = originalName;
-			
-		}
+            PickerCategory.SelectedItem = originalCategory;
+
+        }
 
 		/// <summary>
 		/// Constructing a brand new level
