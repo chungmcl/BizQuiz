@@ -67,7 +67,7 @@ namespace appFBLA2019
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
-                    Level newLevel = new Level(category, level.First(), level.Last());
+                    Level newLevel = new Level(this.category, level.First(), level.Last());
                     newLevel.LoadQuestions();
                     await this.Navigation.PushAsync(new TextGame(newLevel));
                 };

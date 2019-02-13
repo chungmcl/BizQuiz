@@ -53,8 +53,10 @@ namespace appFBLA2019.Droid
 
         public Stream GetJPGStreamFromByteArray(byte[] image)
         {
-            BitmapFactory.Options bitopt = new BitmapFactory.Options();
-            bitopt.InMutable = true;
+            BitmapFactory.Options bitopt = new BitmapFactory.Options
+            {
+                InMutable = true
+            };
             Bitmap resultBitmap = BitmapFactory.DecodeByteArray(image, 0, image.Length, bitopt);
             //int width = resultBitmap.Width;
             //int height = resultBitmap.Height;
