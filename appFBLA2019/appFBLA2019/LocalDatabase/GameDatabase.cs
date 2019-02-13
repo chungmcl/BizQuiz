@@ -46,14 +46,6 @@ namespace appFBLA2019
             this.SaveQuestion(question);
         }
 
-        public void AddScore(ScoreRecord score)
-        {
-            this.realmDB.Write(() =>
-            {
-                this.realmDB.Add(score);
-            });
-        }
-
         public void DeleteQuestions(params Question[] questions)
         {
             foreach (Question question in questions)
@@ -70,32 +62,6 @@ namespace appFBLA2019
             }
         }
 
-        public void SetCatagory(LevelInfo levelInfo)
-        {
-            this.realmDB.Write(() =>
-            {
-                this.realmDB.Add(levelInfo, update: true);
-            });
-        }
-
-        public string GetCatagory()
-        {
-            List<LevelInfo> catagory = new List<LevelInfo>(this.realmDB.All<LevelInfo>());
-            if (catagory.Count == 1)
-                return catagory[0].Category;
-            else
-                return null;
-        }
-
-        public string GetDateEdited()
-        {
-            List<LevelInfo> dateEdited = new List<LevelInfo>(this.realmDB.All<LevelInfo>());
-            if (dateEdited.Count == 1)
-                return dateEdited[0].DateEdited;
-            else
-                return null;
-        }
-
         public void EditQuestion(Question updatedQuestion)
         {
             this.realmDB.Write(() =>
@@ -107,32 +73,6 @@ namespace appFBLA2019
             {
                 byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
                 File.WriteAllBytes(this.dbFolderPath + "/" + updatedQuestion.DBId + ".jpg", imageByteArray);
-            }
-        }
-
-        public double GetAvgScore()
-        {
-            if (this.realmDB != null)
-            {
-                IQueryable<ScoreRecord> queryable = this.realmDB.All<ScoreRecord>();
-                List<ScoreRecord> scores = new List<ScoreRecord>(queryable);
-                if (scores.Count <= 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    double runningTotal = 0;
-                    foreach (ScoreRecord score in scores)
-                    {
-                        runningTotal += score.Score;
-                    }
-                    return runningTotal / scores.Count;
-                }
-            }
-            else
-            {
-                return 0.0;
             }
         }
 

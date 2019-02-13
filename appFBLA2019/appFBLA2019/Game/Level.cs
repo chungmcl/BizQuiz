@@ -17,9 +17,9 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="levelTitle"> The name of the database file - if one does not yet exist, it will create one based on the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME. </param>
         /// <param name="author">     The username of the author of the level </param>
-        public Level(string levelTitle, string author)
+        public Level(string category, string levelTitle, string author)
         {
-            DBHandler.SelectDatabase(levelTitle, author);
+            DBHandler.SelectDatabase(category, levelTitle, author);
         }
 
         public List<Question> Questions { get; set; }
@@ -53,10 +53,10 @@ namespace appFBLA2019
         }
 
         //returns the avg score that the player gets on this level
-        public static double GetLevelAvgScore(string level, string author)
+        public static double GetLevelAvgScore(string category,string level, string author)
         {
-            DBHandler.SelectDatabase(level, author);
-            return DBHandler.Database.GetAvgScore();
+            DBHandler.SelectDatabase(category,level, author);
+            return 0;
         }
 
         public Question GetQuestion()

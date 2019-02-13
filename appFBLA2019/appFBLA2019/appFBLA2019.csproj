@@ -67,7 +67,7 @@
     <EmbeddedResource Update="Game\LevelEndPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="LevelEditor\TextGame.xaml">
+    <EmbeddedResource Update="Game\TextGame.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="LevelEditor\CreateNewLevelPage.xaml">
