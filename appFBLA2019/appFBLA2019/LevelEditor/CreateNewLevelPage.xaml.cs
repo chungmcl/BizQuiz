@@ -510,7 +510,7 @@ namespace appFBLA2019
                 image.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
                 image.BackgroundColor = Color.Transparent;
                 image.VerticalOptions = LayoutOptions.End;
-                //image.HeightRequest = frameStack.Height / 2;
+                image.HeightRequest = Application.Current.MainPage.Height / 5;
                 image.Aspect = Aspect.AspectFit;
                 image.HorizontalOptions = LayoutOptions.CenterAndExpand;
             }
@@ -546,10 +546,11 @@ namespace appFBLA2019
 			entryAnswerWrongThree.IsVisible = isMultipleChoice;
 
 			frame.Content = frameStack;
-			// and add the frame to the the other stacklaout.
-			this.StackLayoutQuestionStack.Children.Add(frame);
+            // and add the frame to the the other stacklaout.
+            this.StackLayoutQuestionStack.Children.Add(frame);
 
-			return frame;
+
+            return frame;
 
 
 		}

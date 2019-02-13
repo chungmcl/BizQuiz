@@ -39,7 +39,7 @@
             <Button AbsoluteLayout.LayoutBounds="1, 1, .8, .9" AbsoluteLayout.LayoutFlags="All"
                     x:Name="ButtonAddQuestion" FontSize="24" TextColor="White" Text="+" HorizontalOptions="End" 
                     VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" HeightRequest="50" WidthRequest="50" 
-                    CornerRadius="25" BackgroundColor="#AE213A" Margin="20" />
+                    CornerRadius="25" BackgroundColor="#004F96" Margin="20" />
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>
