@@ -102,7 +102,25 @@ namespace appFBLA2019
             if (question.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(question.ImagePath);
-                File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
+
+                if (!question.ImagePath.Contains(".jpg")
+                    || !question.ImagePath.Contains(".jpeg")
+                    || !question.ImagePath.Contains(".jpe")
+                    || !question.ImagePath.Contains(".jif")
+                    || !question.ImagePath.Contains(".jfif")
+                    || !question.ImagePath.Contains(".jfi"))
+                {
+                    Stream imageStream = DependencyService.Get<IGetImage>().GetJPGStreamFromByteArray(imageByteArray);
+                    MemoryStream imageMemoryStream = new MemoryStream();
+
+                    imageStream.Position = 0;
+                    imageStream.CopyTo(imageMemoryStream);
+
+                    imageMemoryStream.Position = 0;
+                    imageByteArray = new byte[imageMemoryStream.Length];
+                    imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
+                }
+                File.WriteAllBytes(dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
             }
 
             this.realmDB.Write(() =>

@@ -499,18 +499,20 @@ namespace appFBLA2019
 				AddImage.VerticalOptions = LayoutOptions.End;
 			}
 
-			bool needsPicture = false;
-			if (question != null)
-				needsPicture = question.NeedsPicture;
-			// 6
-			ImageButton image = new ImageButton(); // The image itself
-			{
-				image.IsVisible = needsPicture;
-				image.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
-				image.BackgroundColor = Color.Transparent;
-				image.VerticalOptions = LayoutOptions.End;
-				image.Aspect = Aspect.AspectFit;
-			}
+            bool needsPicture = false;
+            if (question != null)
+                needsPicture = question.NeedsPicture;
+            // 6
+            ImageButton image = new ImageButton(); // The image itself
+            {
+                image.IsVisible = needsPicture;
+                image.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
+                image.BackgroundColor = Color.Transparent;
+                image.VerticalOptions = LayoutOptions.End;
+                //image.HeightRequest = frameStack.Height / 2;
+                image.Aspect = Aspect.AspectFit;
+                image.HorizontalOptions = LayoutOptions.CenterAndExpand;
+            }
 
 			frameStack.Children.Add(image);
 			frameStack.Children.Add(AddImage);
