@@ -142,7 +142,7 @@ namespace appFBLA2019
                     ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
                     ButtonDelete.BackgroundColor = Color.White;
                     ButtonDelete.CornerRadius = 0;
-                    ButtonDelete.StyleId = App.Path + "/" + category + "/" + level.First() + "`" + level.Last();
+                    ButtonDelete.StyleId = "/" + category + "/" + level.First() + "`" + level.Last();
                 }
                 menuStack.Children.Add(ButtonDelete);
 
@@ -239,9 +239,11 @@ namespace appFBLA2019
             bool answer = await DisplayAlert(question, message, "Yes", "No");
             if (answer)
             {
-                if (System.IO.Directory.Exists(((Button)sender).StyleId))
+                string path = App.Path + ((Button)sender).StyleId;
+
+                if (System.IO.Directory.Exists(path))
                 {
-                    System.IO.Directory.Delete((((Button)sender).StyleId), true);
+                    System.IO.Directory.Delete(path, true);
                     if (unsubscribe)
                     {
                         // code to delete from server
