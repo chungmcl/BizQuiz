@@ -15,7 +15,7 @@ namespace appFBLA2019
 	public partial class MainPage : Xamarin.Forms.TabbedPage
 	{
 		private const int levelCategoriesPage = 0;
-		//private const int levelStorePage = 1;
+		private const int levelStorePage = 1;
 		private const int profilePageIndex = 2;
 
 		public MainPage ()
@@ -24,10 +24,11 @@ namespace appFBLA2019
 			// Default tabs on Android are on top - Set to bottom on Android (to serve as Navigation)
 #if __ANDROID__
 			this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
-			this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.White);
-			this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.FromHex("#003463"));
+			this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.Accent);
+			this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.Gray); //Color.FromHex("#003463")
+            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(false);
 #endif
-			this.BarTextColor = Color.White;            
+            this.BarTextColor = Color.Gray;
 		}
 
 		private void TabbedPage_CurrentPageChanged(object sender, EventArgs e)

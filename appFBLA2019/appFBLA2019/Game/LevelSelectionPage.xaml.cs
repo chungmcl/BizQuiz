@@ -87,7 +87,8 @@ namespace appFBLA2019
                     WidthRequest = 25,
                     BackgroundColor = Color.White,
                     VerticalOptions = LayoutOptions.StartAndExpand,
-                    HorizontalOptions = LayoutOptions.End
+                    HorizontalOptions = LayoutOptions.End,
+                    StyleId = "/" + category + "/" + level.First() + "`" + level.Last()
                 };
                 
                 Sync.Clicked += this.Sync_Clicked;
@@ -222,7 +223,7 @@ namespace appFBLA2019
 
         private void Sync_Clicked(object sender, EventArgs e)
         {
-            string levelPath = (((sender as ImageButton).Parent as StackLayout).Children[2] as ImageButton).StyleId;
+            string levelPath = (sender as ImageButton).StyleId;
         }
 
         async private void ButtonDelete_Clicked(object sender, EventArgs e)
@@ -299,7 +300,7 @@ namespace appFBLA2019
             }
             else
             {
-                await this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
+                await this.DisplayAlert("Hold on!", "Before you can create your own custom quiz, you must log in.", "Ok");
             }
         }
 
@@ -312,7 +313,7 @@ namespace appFBLA2019
             }
             else
             {
-                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
+                this.DisplayAlert("Hold on!", "Before you can create your own custom quiz, you must log in.", "Ok");
             }
         }
     }
