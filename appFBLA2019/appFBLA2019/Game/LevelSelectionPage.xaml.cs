@@ -222,8 +222,7 @@ namespace appFBLA2019
 
         private void Sync_Clicked(object sender, EventArgs e)
         {
-            string levelName = ((Label)((StackLayout)((ImageButton)sender).Parent).Children[0]).Text;
-            string author = ((Label)((StackLayout)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Children[2]).Children[0]).Text.Split(':')[1];
+            string levelPath = (((sender as ImageButton).Parent as StackLayout).Children[2] as ImageButton).StyleId;
         }
 
         async private void ButtonDelete_Clicked(object sender, EventArgs e)
