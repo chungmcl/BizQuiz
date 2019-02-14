@@ -467,7 +467,8 @@ namespace appFBLA2019
 			Entry entryQuestion = new Entry // The question
 			{
 				Placeholder = "Enter question",
-				FontSize = 20
+				FontSize = 20,
+                ReturnType=ReturnType.Next
 			};
 			if (question != null)
 			{

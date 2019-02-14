@@ -54,5 +54,7 @@ namespace appFBLA2019
                 break;
             }
         }
+
+        private void AddMenu() { };
     }
 }

@@ -64,6 +64,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Bug Reports\BugReportPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Game\LevelEndPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
