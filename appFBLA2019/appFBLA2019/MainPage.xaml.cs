@@ -55,6 +55,9 @@ namespace appFBLA2019
             }
         }
 
-        private void AddMenu() { };
+        private void BugReportToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushAsync(new BugReportPage());
+        }
     }
 }

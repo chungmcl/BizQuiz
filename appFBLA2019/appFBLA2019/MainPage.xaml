@@ -13,4 +13,7 @@
     <local:LevelEditorPage Title="Level Editor" Icon="ic_edit_black_48dp.png" />
     <ContentPage Title="Leaderboards" Icon="ic_group_black_48dp.png" />
     <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png" />
+    <TabbedPage.ToolbarItems>
+        <ToolbarItem x:Name="BugReportToolbarItem" Text="Report a problem" Clicked="BugReportToolbarItem_Clicked" Order="Secondary"/>
+    </TabbedPage.ToolbarItems>
 </TabbedPage>
