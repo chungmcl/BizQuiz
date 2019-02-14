@@ -12,6 +12,7 @@ namespace appFBLA2019
     public static class LevelRosterDatabase
     {
         private static Realm realmDB;
+        public static List<LevelInfo> LevelInfos { get; set; }
         public static void Initialize()
         {
             try
@@ -40,69 +41,84 @@ namespace appFBLA2019
             });
         }
 
-        public static LevelInfo GetLevelInfo(string DBId)
+        /// <summary>
+        /// Load LevelInfos property before entering task.
+        /// </summary>
+        public static void LoadLevelInfos()
         {
-            IQueryable<LevelInfo> levelInfos = realmDB.All<LevelInfo>();
-            return levelInfos.Where(levelInfo => levelInfo.DBId == DBId).First();
-        }
-
-        public static LevelInfo GetLevelInfo(string author, string levelName)
-        {
-            IQueryable<LevelInfo> levelInfos = realmDB.All<LevelInfo>();
-            return levelInfos.Where(levelInfo => levelInfo.AuthorName == author && levelInfo.LevelName == levelName).First();
+            IQueryable<LevelInfo> levelInfosQueryable = realmDB.All<LevelInfo>();
+            LevelInfos = new List<LevelInfo>(levelInfosQueryable);
         }
 
         private static async Task UpdateLocalDatabase()
         {
-            IQueryable<LevelInfo> levelInfosQueryable = realmDB.All<LevelInfo>();
-            List<LevelInfo> levelInfos = new List<LevelInfo>(levelInfosQueryable);
-            levelInfosQueryable = null;
-            for (int i = 0; i < levelInfos.Count(); i++)
+            for (int i = 0; i < LevelInfos.Count(); i++)
             {
                 if (CrossConnectivity.Current.IsConnected)
                 {
-                    await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.GetLastModifiedDate, levelInfos[i].DBId));
+                    await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.GetLastModifiedDate, LevelInfos[i].DBId));
                     string serverData = await Task.Run(() => ServerConnector.ReceiveFromServerStringData());
                     if (serverData == "" || serverData == null)
                     {
-                        using (var trans = realmDB.BeginWrite())
+                        Device.BeginInvokeOnMainThread(() =>
                         {
-                            levelInfos[i].SyncStatus = 1; // 1 represents need upload
-                            trans.Commit();
-                        }
+                            using (var trans = realmDB.BeginWrite())
+                            {
+                                LevelInfos[i].SyncStatus = 1; // 1 represents need upload
+                                trans.Commit();
+                            }
+                        });
                     }
                     else
                     {
-                        DateTime localModifiedDateTime = Convert.ToDateTime(levelInfos[i].LastModifiedDate);
+                        DateTime localModifiedDateTime = Convert.ToDateTime(LevelInfos[i].LastModifiedDate);
                         DateTime serverModifiedDateTime = Convert.ToDateTime(serverData);
                         if (localModifiedDateTime > serverModifiedDateTime)
                         {
-                            using (var trans = realmDB.BeginWrite())
+                            Device.BeginInvokeOnMainThread(() =>
                             {
-                                levelInfos[i].SyncStatus = 1; // 1 represents need upload
-                                trans.Commit();
-                            }
+                                using (var trans = realmDB.BeginWrite())
+                                {
+                                    LevelInfos[i].SyncStatus = 1; // 1 represents need upload
+                                    trans.Commit();
+                                }
+                            });
                         }
                         else if (localModifiedDateTime < serverModifiedDateTime)
                         {
-                            using (var trans = realmDB.BeginWrite())
+                            Device.BeginInvokeOnMainThread(() =>
                             {
-                                levelInfos[i].SyncStatus = 0; // 0 represents needs download
-                                trans.Commit();
-                            }
+                                using (var trans = realmDB.BeginWrite())
+                                {
+                                    LevelInfos[i].SyncStatus = 0; // 0 represents needs download
+                                    trans.Commit();
+                                }
+                            });
                         }
                         else if (localModifiedDateTime == serverModifiedDateTime)
                         {
-                            using (var trans = realmDB.BeginWrite())
+                            Device.BeginInvokeOnMainThread(() =>
                             {
-                                levelInfos[i].SyncStatus = 2; // 2 represents in sync
-                                trans.Commit();
-                            }
+                                using (var trans = realmDB.BeginWrite())
+                                {
+                                    LevelInfos[i].SyncStatus = 2; // 2 represents in sync
+                                    trans.Commit();
+                                }
+                            });
                         }
                     }
                 }
                 else
-                    levelInfos[i].SyncStatus = 3; // 3 represents offline
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        using (var trans = realmDB.BeginWrite())
+                        {
+                            LevelInfos[i].SyncStatus = 3; // 3 represents offline
+                            trans.Commit();
+                        }
+                    });
+                }
             }
         }
 
@@ -111,6 +127,7 @@ namespace appFBLA2019
             var minutes = TimeSpan.FromMinutes(2.0);
             Device.StartTimer(minutes, () =>
             {
+                LoadLevelInfos();
                 Task.Run(async () =>
                 {
                     await UpdateLocalDatabase();

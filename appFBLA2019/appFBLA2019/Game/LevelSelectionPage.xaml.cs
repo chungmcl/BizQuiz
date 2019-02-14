@@ -26,12 +26,17 @@ namespace appFBLA2019
         protected async override void OnAppearing()
         {
             base.OnAppearing();
-            await Task.Run(() => this.Setup());
+            LevelRosterDatabase.LoadLevelInfos();
+
+            (this.Parent as LevelCategoriesPage).IsLoading = true;
+            //await Task.Run(() => this.Setup());
+            this.Setup();
+            (this.Parent as LevelCategoriesPage).IsLoading = false;
         }
 
         private readonly string category;
         // TO DO: Display author name of level
-        internal async Task Setup()
+        internal void Setup()
         {
             this.ButtonStack.Children.Clear();
 
@@ -93,9 +98,14 @@ namespace appFBLA2019
                     WidthRequest = 25,
                     BackgroundColor = Color.White,
                     VerticalOptions = LayoutOptions.StartAndExpand,
-                    HorizontalOptions = LayoutOptions.End
+                    HorizontalOptions = LayoutOptions.End,
+                    StyleId = "/" + category + "/" + level.First() + "`" + level.Last()
                 };
-                LevelInfo info = LevelRosterDatabase.GetLevelInfo(level[1], level[0]);
+
+
+                LevelInfo info = LevelRosterDatabase.LevelInfos.Where
+                    (levelInfo => levelInfo.AuthorName == level[1] && levelInfo.LevelName == level[0]).First();
+
                 if (info.SyncStatus == 3)
                 {
                     Sync.Source = "ic_cloud_off_black_48dp.png";
@@ -126,7 +136,7 @@ namespace appFBLA2019
                     WidthRequest = 25,
                     BackgroundColor = Color.White,
                     VerticalOptions = LayoutOptions.StartAndExpand,
-                    HorizontalOptions = LayoutOptions.End
+                    HorizontalOptions = LayoutOptions.End,
                 };
 
                 imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
@@ -172,7 +182,7 @@ namespace appFBLA2019
                 }
                 menuStack.Children.Add(ButtonDelete);
 
-                if(CredentialManager.Username == level.Last())
+                if (CredentialManager.Username == level.Last())
                 {
                     ButtonDelete.Text = "Delete";
                 }
@@ -248,7 +258,7 @@ namespace appFBLA2019
 
         private void SyncUpload_Clicked(object sender, EventArgs e)
         {
-            string levelPath = (((sender as ImageButton).Parent as StackLayout).Children[2] as ImageButton).StyleId;
+            string levelPath = (sender as ImageButton).StyleId;
 
         }
 
@@ -290,6 +300,7 @@ namespace appFBLA2019
                     {
                         // code to delete from server
                     }
+                    LevelRosterDatabase.LoadLevelInfos();
                     await Task.Run(() => this.Setup());
                 }
             }

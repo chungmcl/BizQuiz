@@ -30,7 +30,7 @@ namespace appFBLA2019
 			this.BarTextColor = Color.White;            
 		}
 
-		private void TabbedPage_CurrentPageChanged(object sender, EventArgs e)
+		private async void TabbedPage_CurrentPageChanged(object sender, EventArgs e)
 		{
 			var index = this.Children.IndexOf(this.CurrentPage);
 
@@ -41,13 +41,15 @@ namespace appFBLA2019
 					{
 						ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[profilePageIndex];
 						if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
-							Task.Run(() => profilePage.UpdateProfilePage(true));
+							await Task.Run(() => profilePage.UpdateProfilePage(true));
 					}
 					break;
-				case levelCategoriesPage:
-				{
-					this.levelsPage.RefreshChildren();
-				}
+				    case levelCategoriesPage:
+				    {
+                        // NullReferenceException on start up
+                        //if (!this.levelsPage.IsLoading)
+                        //    this.levelsPage.RefreshChildren();
+                    }
 					break;
 			}
 		}

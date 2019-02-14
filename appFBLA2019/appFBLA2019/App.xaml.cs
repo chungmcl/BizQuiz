@@ -21,8 +21,6 @@ namespace appFBLA2019
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
 
-            LevelRosterDatabase.Initialize();
-
             this.MainPage = new NavigationPage(new MainPage());
         }
 
@@ -47,6 +45,10 @@ namespace appFBLA2019
 
             await CredentialManager.CheckLoginStatus();
             CredentialManager.StartTimedCheckLoginStatus();
+
+
+            LevelRosterDatabase.Initialize();
+            LevelRosterDatabase.StartTimedUpdate();
         }
     }
 }
