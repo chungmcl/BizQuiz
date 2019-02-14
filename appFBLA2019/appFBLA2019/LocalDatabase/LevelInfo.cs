@@ -10,9 +10,11 @@ namespace appFBLA2019
         public string LevelName { get; set; }
         public string Category { get; set; }
         public string LastModifiedDate { get; set; }
-        public bool NeedUploadSync { get; set; }
-        public bool NeedDownloadSync { get; set; }
-        public bool IsDeleted { get; set; }
+
+        // 0 = Need Download, 1 = Need Upload, 2 = Synced, 3 = Offline
+        public int SyncStatus { get; set; }
+        public bool IsDeletedLocally { get; set; }
+        public bool IsDeletedOnServer { get; set; }
         
         public LevelInfo() { }
 
@@ -24,9 +26,9 @@ namespace appFBLA2019
             this.Category = category;
 
             this.LastModifiedDate = DateTime.Now.ToString();
-            this.NeedUploadSync = true;
-            this.NeedDownloadSync = false;
-            this.IsDeleted = false;
+            this.SyncStatus = 1;
+            this.IsDeletedLocally = false;
+            this.IsDeletedOnServer = false;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿//BizQuiz App 2019
 
+using Plugin.Connectivity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +21,12 @@ namespace appFBLA2019
             this.category = category;
             Directory.CreateDirectory(App.Path + $"/{category}");
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
-            Task.Run(() => this.Setup());
+        }
+
+        protected async override void OnAppearing()
+        {
+            base.OnAppearing();
+            await Task.Run(() => this.Setup());
         }
 
         private readonly string category;
@@ -80,17 +86,37 @@ namespace appFBLA2019
                 };
                 topStack.Children.Add(title);
 
+                // check status
                 ImageButton Sync = new ImageButton
                 {
-                    Source = "ic_cloud_done_black_48dp",
                     HeightRequest = 25,
                     WidthRequest = 25,
                     BackgroundColor = Color.White,
                     VerticalOptions = LayoutOptions.StartAndExpand,
                     HorizontalOptions = LayoutOptions.End
                 };
-                
-                Sync.Clicked += this.Sync_Clicked;
+                LevelInfo info = LevelRosterDatabase.GetLevelInfo(level[1], level[0]);
+                if (info.SyncStatus == 3)
+                {
+                    Sync.Source = "ic_cloud_off_black_48dp.png";
+                    Sync.Clicked += SyncOffline_Clicked;
+                }
+                else if (info.SyncStatus == 2)
+                {
+                    Sync.Source = "ic_cloud_done_black_48dp.png";
+                    Sync.Clicked += SyncNoChange_Clicked;
+                }
+                else if (info.SyncStatus == 1)
+                {
+                    Sync.Source = "ic_cloud_upload_black_48dp.png";
+                    Sync.Clicked += SyncUpload_Clicked;
+                }
+                else if (info.SyncStatus == 0)
+                {
+                    Sync.Source = "ic_cloud_download_black_48dp.png";
+                    Sync.Clicked += SyncDownload_Clicked;
+                }
+
                 topStack.Children.Add(Sync);
 
                 ImageButton imageButtonMenu = new ImageButton
@@ -220,9 +246,25 @@ namespace appFBLA2019
             }
         }
 
-        private void Sync_Clicked(object sender, EventArgs e)
+        private void SyncUpload_Clicked(object sender, EventArgs e)
         {
             string levelPath = (((sender as ImageButton).Parent as StackLayout).Children[2] as ImageButton).StyleId;
+
+        }
+
+        private void SyncDownload_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SyncNoChange_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SyncOffline_Clicked(object sender, EventArgs e)
+        {
+
         }
 
         async private void ButtonDelete_Clicked(object sender, EventArgs e)

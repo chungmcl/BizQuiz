@@ -233,13 +233,13 @@ namespace appFBLA2019
 			else
 			{
 				// Set previousQuestions to the correct previous questions
-				List<Question> previousQuestions = new List<Question>(); ; // A list of questions already in the database
+				List<Question> previousQuestions = new List<Question>(); // A list of questions already in the database
 
-				if (!string.IsNullOrWhiteSpace(this.originalName))
-				{
-					DBHandler.SelectDatabase(this.originalCategory, this.originalName, this.originalAuthor);
-					previousQuestions = DBHandler.Database.GetQuestions();
-				}
+                if (!string.IsNullOrWhiteSpace(this.originalName)) // Edit
+                {
+                    DBHandler.SelectDatabase(this.originalCategory, this.originalName, this.originalAuthor);
+                    previousQuestions = DBHandler.Database.GetQuestions();
+                }
 
 				List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
 
@@ -365,9 +365,13 @@ namespace appFBLA2019
 				{
 					Directory.Delete(App.Path + "/" + this.originalName + "`" + this.originalAuthor, true);
 				}
+                
+                LevelRosterDatabase.NewLevelInfo(CredentialManager.Username,
+                    this.EntryLevelName.Text.Trim(),
+                    this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
 
-				// Returns user to front page of LevelEditor and refreshed database
-				await this.Navigation.PopAsync(true);
+                // Returns user to front page of LevelEditor and refreshed database
+                await this.Navigation.PopAsync(true);
                 
             }
         exit:;
