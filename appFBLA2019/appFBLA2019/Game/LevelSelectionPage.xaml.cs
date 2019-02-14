@@ -200,7 +200,7 @@ namespace appFBLA2019
                     Level newLevel = new Level(this.category, level.First(), level.Last());
                     newLevel.LoadQuestions();
                     await this.RemoveMenu(frameMenu);
-                    await this.Navigation.PushAsync(new TextGame(newLevel));
+                    await this.Navigation.PushAsync(new Game(newLevel));
                     frame.BackgroundColor = Color.Default;
                     Seperator.Color = Color.LightGray;
                     imageButtonMenu.BackgroundColor = Color.White;
