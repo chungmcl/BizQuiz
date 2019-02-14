@@ -19,6 +19,13 @@ namespace appFBLA2019
 		private string originalName;
 		private string originalCategory;
 
+        ToolbarItem Done = new ToolbarItem
+        {
+            Icon = "ic_done_white_48dp.png",
+            Text = "Done",
+        };
+        
+
 		/// <summary>
 		/// Constructing from an already existing level
 		/// </summary>
@@ -27,7 +34,8 @@ namespace appFBLA2019
 		public CreateNewLevelPage(string originalCategory, string originalName, string originalAuthor)
 		{
 			this.InitializeComponent();
-			this.originalCategory = originalCategory;
+            setUpBar();
+            this.originalCategory = originalCategory;
 			this.originalAuthor = originalAuthor;
 			this.originalName = originalName;
             PickerCategory.SelectedItem = originalCategory;
@@ -40,10 +48,17 @@ namespace appFBLA2019
 		public CreateNewLevelPage(string Category)
 		{
 			this.InitializeComponent();
+            setUpBar();
             PickerCategory.SelectedItem = Category;
             AddNewQuestion();
 			AddNewQuestion();
 		}
+
+        private void setUpBar()
+        {
+            this.ToolbarItems.Add(this.Done);
+            Done.Clicked += ButtonCreateLevel_Clicked;
+        }
 
 		private bool canClose = true;
 
@@ -204,6 +219,7 @@ namespace appFBLA2019
 		/// <param name="e"></param>
 		private async void ButtonCreateLevel_Clicked(object sender, EventArgs e)
 		{
+            Done.IsEnabled = false;
 			if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
 			{
 				await this.DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
@@ -352,11 +368,12 @@ namespace appFBLA2019
 
 				// Returns user to front page of LevelEditor and refreshed database
 				await this.Navigation.PopAsync(true);
+                
+            }
+        exit:;
+        Done.IsEnabled = true;
 
-			}
-		exit:;
-
-		}
+        }
 
 		/// <summary>
 		/// a private AddNewQuestions for when the user creates a brand new question

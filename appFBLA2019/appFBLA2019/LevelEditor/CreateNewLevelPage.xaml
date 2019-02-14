@@ -5,7 +5,7 @@
              Title="Create Your Own Quiz">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Icon="ic_done_white_48dp.png" Text="Save"  Priority="0" Name="Done" Order="Primary"  Activated="ButtonCreateLevel_Clicked"/>
+        <!--<ToolbarItem  Icon="ic_done_white_48dp.png" Text="Save"  Priority="0" Name="Done" Order="Primary"  Activated="ButtonCreateLevel_Clicked"/>-->
     </ContentPage.ToolbarItems>
 
     <ContentPage.Content>
