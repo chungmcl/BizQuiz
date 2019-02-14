@@ -326,6 +326,7 @@ namespace appFBLA2019
 				if (previousQuestions.Count() == 0) // if the user created this for the first time
 				{
 					DBHandler.Database.AddQuestions(NewQuestions);
+                    
 				}
 				else
 				{

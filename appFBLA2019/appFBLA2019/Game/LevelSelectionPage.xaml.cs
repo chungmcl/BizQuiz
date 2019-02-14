@@ -28,7 +28,12 @@ namespace appFBLA2019
             this.category = category;
             Directory.CreateDirectory(App.Path + $"/{category}");
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
-            Task.Run(() => this.Setup());
+        }
+
+        protected async override void OnAppearing()
+        {
+            base.OnAppearing();
+            await Task.Run(() => this.Setup());
         }
 
         /// <summary>
@@ -42,7 +47,7 @@ namespace appFBLA2019
         /// <returns>
         /// an awaitable task to setup the page
         /// </returns>
-        internal async Task Setup()
+        internal void Setup()
         {
             this.ButtonStack.Children.Clear();
 
@@ -85,8 +90,6 @@ namespace appFBLA2019
                 {
                     HorizontalOptions = LayoutOptions.End
                 });
-
-                DBHandler.SelectDatabase(this.category, level.First(), level.Last());
 
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>

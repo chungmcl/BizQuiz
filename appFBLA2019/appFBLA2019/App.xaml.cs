@@ -16,9 +16,12 @@ namespace appFBLA2019
         {
             this.InitializeComponent();
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
+            Xamarin.Forms.DependencyService.Register<IGetImage>();
 
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
+
+            LevelRosterDatabase.Initialize();
 
             this.MainPage = new NavigationPage(new MainPage());
         }

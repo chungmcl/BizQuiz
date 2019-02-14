@@ -21,19 +21,19 @@ namespace appFBLA2019
             }
         }
 
-        public static void NewLevelInfo(LevelInfo levelInfo)
+        public static void NewLevelInfo(string authorName, string levelName, string category)
         {
             realmDB.Write(() =>
             {
-                realmDB.Add(levelInfo);
+                realmDB.Add(new LevelInfo(authorName, levelName, category));
             });
         }
 
-        public static void EditLevelInfo(LevelInfo levelInfo)
+        public static void EditLevelInfo(LevelInfo editedLevelInfo)
         {
             realmDB.Write(() =>
             {
-                realmDB.Add(levelInfo, update: true);
+                realmDB.Add(editedLevelInfo, update : true);
             });
         }
 
@@ -41,6 +41,12 @@ namespace appFBLA2019
         {
             IQueryable<LevelInfo> levelInfos = realmDB.All<LevelInfo>();
             return levelInfos.Where(levelInfo => levelInfo.DBId == DBId).First();
+        }
+
+        public static LevelInfo GetLevelInfo(string author, string levelName)
+        {
+            IQueryable<LevelInfo> levelInfos = realmDB.All<LevelInfo>();
+            return levelInfos.Where(levelInfo => levelInfo.AuthorName == author && levelInfo.LevelName == levelName).First();
         }
     }
 }
