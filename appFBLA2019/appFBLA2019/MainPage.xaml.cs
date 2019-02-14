@@ -15,9 +15,8 @@ namespace appFBLA2019
 	public partial class MainPage : Xamarin.Forms.TabbedPage
 	{
 		private const int levelCategoriesPage = 0;
-		private const int levelEditorPage = 1;
-		//private const int levelStorePage = 2;
-		private const int profilePageIndex = 3;
+		//private const int levelStorePage = 1;
+		private const int profilePageIndex = 2;
 
 		public MainPage ()
 		{

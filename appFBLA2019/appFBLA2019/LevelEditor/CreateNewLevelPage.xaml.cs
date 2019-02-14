@@ -37,10 +37,11 @@ namespace appFBLA2019
 		/// <summary>
 		/// Constructing a brand new level
 		/// </summary>
-		public CreateNewLevelPage()
+		public CreateNewLevelPage(string Category)
 		{
 			this.InitializeComponent();
-			AddNewQuestion();
+            PickerCategory.SelectedItem = Category;
+            AddNewQuestion();
 			AddNewQuestion();
 		}
 

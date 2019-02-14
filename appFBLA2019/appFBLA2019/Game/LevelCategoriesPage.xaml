@@ -6,7 +6,7 @@
                         xmlns:sys="clr-namespace:System;assembly=netstandard"
                         BarTextColor="White"
                         BarBackgroundColor="#004f96">
-  <local:LevelSelectionPage Title="Tech Events">
+    <local:LevelSelectionPage Title="Tech Events">
     <x:Arguments>
       <x:String>Tech Events</x:String>
     </x:Arguments>
