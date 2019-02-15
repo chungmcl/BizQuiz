@@ -15,8 +15,9 @@
                 <ScrollView>
                     <StackLayout Padding="20">
                         <Label x:Name="LabelUsername" HorizontalOptions="CenterAndExpand" VerticalOptions="StartAndExpand" FontSize="28" FontAttributes="Bold" Opacity="0"/>
+                        <Label x:Name="QuizNumber" HorizontalOptions="CenterAndExpand" FontSize="18" />
                         <StackLayout x:Name="LevelStack">
-                            <Label x:Name="QuizNumber" HorizontalOptions="CenterAndExpand" FontSize="18" />
+                            <!--Levels user created goes here!-->
                         </StackLayout>
                     </StackLayout>
                 </ScrollView>

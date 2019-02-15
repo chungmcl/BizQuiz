@@ -20,6 +20,8 @@ namespace appFBLA2019
         public bool IsLoading { get; private set; }
         public bool IsOnLoginPage { get; private set; }
         private AccountSettingsPage accountSettingsPage;
+        private bool isSetup;
+
         public ProfilePage()
         {
             this.InitializeComponent();
@@ -54,9 +56,13 @@ namespace appFBLA2019
                     }
 
                     // Get number of quizes from server.
-                    this.QuizNumber.Text = "You have created a total of " + SearchByUser(CredentialManager.Username).Count + " quizes!";
                     this.IsOnLoginPage = false;
+                                      
                     this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
+                    if (!isSetup)
+                    {
+                        this.SetupUserQuizes();
+                    }
                 }
                 else
                 {
@@ -80,6 +86,7 @@ namespace appFBLA2019
             {
                 this.LabelUsername.Opacity = 0;
                 this.LevelStack.Children.Clear();
+                this.isSetup = false;
             }
         }
 
@@ -88,8 +95,7 @@ namespace appFBLA2019
             base.OnAppearing();
             if (this.StackLayoutProfilePageContent.IsVisible)
             {
-                this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-                this.SetUpUserQuizes();
+                this.SetupUserQuizes();
             }
         }
 
@@ -101,8 +107,10 @@ namespace appFBLA2019
             return testInfo;
         }
 
-        private void SetUpUserQuizes()
+        private void SetupUserQuizes()
         {
+            this.QuizNumber.Text = "You have created a total of " + SearchByUser(CredentialManager.Username).Count + " quizes!";
+            this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             foreach (LevelInfo level in SearchByUser(CredentialManager.Username))
             {
                 Frame frame = new Frame()
@@ -143,8 +151,7 @@ namespace appFBLA2019
                 frame.Content = frameStack;
                 LevelStack.Children.Add(frame);
             }
-            
-
+            this.isSetup = true;
         }
 
         private async void ToolbarItemAccountSettings_Clicked(object sender, EventArgs e)
@@ -163,6 +170,8 @@ namespace appFBLA2019
             this.accountSettingsPage = new AccountSettingsPage();
             this.accountSettingsPage.SignedOut += OnSignedOut;
             this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
+            await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
+            this.SetupUserQuizes();
             await Task.Run(() => UpdateProfilePage(false));
         }
 
