@@ -10,28 +10,33 @@ namespace appFBLA2019
 {
     public class BugReport : RealmObject
     {
+        public BugReport(string title, string category, string body, string imagePath) : this(title, category, body)
+        {
+            this.ImagePath = imagePath;
+        }
+
         public BugReport(string title, string category, string body)
         {
-            this.title = title;
-            this.category = category;
-            this.body = body;
+            this.Title = title;
+            this.Category = category;
+            this.Body = body;
         }
 
         public BugReport()
         {
         }
 
-        private readonly string title;
-        private readonly string category;
-        private readonly string body;
-        public Image image;
+        private string Title { get; set; }
+        private string Category { get; set; }
+        private string Body { get; set; }
+        public string ImagePath { get; set; }
 
         [PrimaryKey]
-        private int ReportID { get; set; } = Guid.NewGuid().GetHashCode();
+        public int ReportID { get; private set; } = Guid.NewGuid().GetHashCode();
 
         public override string ToString()
         {
-            return $"{this.title}`{this.category}`{this.body}`{this.ReportID}";
+            return $"{this.Title}`{this.Category}`{this.Body}`{this.ReportID}";
         }
 
         public int Length

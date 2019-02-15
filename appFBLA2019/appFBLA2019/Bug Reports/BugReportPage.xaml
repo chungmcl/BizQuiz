@@ -27,9 +27,14 @@
                         <Editor x:Name="BugBodyEntry" Placeholder="Describe what the issue is: what were you doing when it happened, and what unexpected behavior did you see? (Max 200 characters)"
                         MaxLength="200" FontAttributes="Italic" SizeChanged="InputSizeChanged" AutoSize="TextChanges" BackgroundColor="Transparent" />
                     </Frame>
+                    <Frame x:Name="BugImageFrame" IsClippedToBounds="True" CornerRadius="10" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="False" IsVisible="False">
+                        <Image x:Name="BugImage" HorizontalOptions="FillAndExpand" Aspect="AspectFit" IsEnabled="False"></Image>
+                    </Frame>
                 </StackLayout>
             </ScrollView>
-            <Button x:Name="Submit" HeightRequest="50" HorizontalOptions="FillAndExpand" Clicked="Submit_Clicked" Text="Submit" BackgroundColor="Accent" VerticalOptions="End"
+            <Button x:Name="AddImage" HeightRequest="50" HorizontalOptions="FillAndExpand" Clicked="AddImage_Clicked" Text="Add Image / Screenshot" TextColor="White" BackgroundColor="Accent"
+                    VerticalOptions="End" CornerRadius="25" />
+            <Button x:Name="Submit" HeightRequest="50" HorizontalOptions="FillAndExpand" Clicked="Submit_Clicked" Text="Submit"  BackgroundColor="Accent" VerticalOptions="End"
                     TextColor="White" CornerRadius="25" />
         </StackLayout>
     </ContentPage.Content>

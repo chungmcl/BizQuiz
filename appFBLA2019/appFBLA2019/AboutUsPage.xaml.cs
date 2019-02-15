@@ -40,5 +40,10 @@ namespace appFBLA2019
         {
             Device.OpenUri(new Uri("https://www.facebook.com/appdev.bhs.1"));
         }
+
+        private void BugReportButton_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushAsync(new BugReportPage());
+        }
     }
 }
