@@ -28,6 +28,7 @@ namespace appFBLA2019
 
         AddJPEGImage,
         AddRealmFile,
+        DeleteLevel,
         LoginAccount,
         RegisterAccount,
         DeleteAccount,
@@ -175,6 +176,7 @@ namespace appFBLA2019
         {
             byte[] headerData = new byte[realmHeaderSize];
             // header should contain DBId and user password
+            throw new NotImplementedException();
             
         }
 

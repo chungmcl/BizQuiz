@@ -9,9 +9,10 @@ namespace appFBLA2019
 {
     public static class ThreadTimer
     {
-        public static void RunServerChecks()
+        public static async Task RunServerChecks()
         {
-            LevelRosterDatabase.UpdateLocalDatabase();
+            await CredentialManager.CheckLoginStatus();
+            await Task.Run(() => LevelRosterDatabase.UpdateLocalDatabase());
             var minutes = TimeSpan.FromMinutes(2);
             Device.StartTimer(minutes, () =>
             {
@@ -21,8 +22,7 @@ namespace appFBLA2019
                     {
                         await CredentialManager.CheckLoginStatus();
                     }
-
-
+                    
                     LevelRosterDatabase.UpdateLocalDatabase();
                 });
                 // Return true to continue the timer
