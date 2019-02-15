@@ -11,24 +11,31 @@ namespace appFBLA2019
 {
     public static class LevelRosterDatabase
     {
-        private static Realm realmDB;
-        public static List<LevelInfo> LevelInfos { get; set; }
-        public static void Initialize()
-        {
-            RealmConfiguration rC = new RealmConfiguration(App.Path + "/" + "roster.realm");
-            realmDB = Realm.GetInstance(rC);
-        }
-
+        private static string rosterPath = App.Path + "/" + "roster.realm";
         public static void NewLevelInfo(string authorName, string levelName, string category)
         {
+            RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+            Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
                 realmDB.Add(new LevelInfo(authorName, levelName, category));
             });
         }
 
+        public static void NewLevelInfo(LevelInfo levelInfo)
+        {
+            RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+            Realm realmDB = Realm.GetInstance(threadConfig);
+            realmDB.Write(() =>
+            {
+                realmDB.Add(levelInfo);
+            });
+        }
+
         public static void EditLevelInfo(LevelInfo editedLevelInfo)
         {
+            RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+            Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
                 realmDB.Add(editedLevelInfo, update : true);
@@ -38,61 +45,84 @@ namespace appFBLA2019
         /// <summary>
         /// Load LevelInfos property before entering task.
         /// </summary>
-        public static void LoadLevelInfos()
+        public static LevelInfo GetLevelInfo(string levelName, string authorName)
         {
-            IQueryable<LevelInfo> levelInfosQueryable = realmDB.All<LevelInfo>();
-            LevelInfos = new List<LevelInfo>(levelInfosQueryable);
+            try
+            {
+                RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+                Realm realmDB = Realm.GetInstance(threadConfig);
+                return realmDB.All<LevelInfo>().Where
+                                 (levelInfo => levelInfo.AuthorName == authorName && levelInfo.LevelName == levelName).First();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static void EditLevelInfo(Realm threadedRealm, LevelInfo editedLevelInfo)
+        {
+            threadedRealm.Write(() =>
+            {
+                threadedRealm.Add(editedLevelInfo, update: true);
+            });
         }
 
         public static void UpdateLocalDatabase()
         {
-            if (LevelInfos != null)
+            RealmConfiguration threadConfig = new RealmConfiguration(App.Path + "/" + "roster.realm");
+            Realm threadInstance = Realm.GetInstance(threadConfig);
+
+            List<LevelInfo> LevelInfos = new List<LevelInfo>(threadInstance.All<LevelInfo>());
+            for (int i = 0; i < LevelInfos.Count(); i++)
             {
-                lock (LevelInfos)
+                if (CrossConnectivity.Current.IsConnected)
                 {
-                    for (int i = 0; i < LevelInfos.Count(); i++)
+                    if (ServerConnector.SendData(ServerRequestTypes.GetLastModifiedDate, LevelInfos[i].DBId))
                     {
-                        if (CrossConnectivity.Current.IsConnected)
+                        string serverData = ServerConnector.ReceiveFromServerStringData();
+                        if (serverData == "" || serverData == null)
                         {
-                            ServerConnector.SendData(ServerRequestTypes.GetLastModifiedDate, LevelInfos[i].DBId);
-                            string serverData = ServerConnector.ReceiveFromServerStringData();
-                            if (serverData == "" || serverData == null)
-                            {
-                                LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                copy.SyncStatus = 1; // 1 represents need upload
-                                EditLevelInfo(copy);
-                            }
-                            else
-                            {
-                                DateTime localModifiedDateTime = Convert.ToDateTime(LevelInfos[i].LastModifiedDate);
-                                DateTime serverModifiedDateTime = Convert.ToDateTime(serverData);
-                                if (localModifiedDateTime > serverModifiedDateTime)
-                                {
-                                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                    copy.SyncStatus = 1; // 1 represents need upload
-                                    EditLevelInfo(copy);
-                                }
-                                else if (localModifiedDateTime < serverModifiedDateTime)
-                                {
-                                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                    copy.SyncStatus = 0; // 0 represents needs download
-                                    EditLevelInfo(copy);
-                                }
-                                else if (localModifiedDateTime == serverModifiedDateTime)
-                                {
-                                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                    copy.SyncStatus = 2; // 2 represents in sync
-                                    EditLevelInfo(copy);
-                                }
-                            }
+                            LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                            copy.SyncStatus = 1; // 1 represents need upload
+                            EditLevelInfo(threadInstance, copy);
                         }
                         else
                         {
-                            LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                            copy.SyncStatus = 3; // 3 represents offline
-                            EditLevelInfo(copy);
+                            DateTime localModifiedDateTime = Convert.ToDateTime(LevelInfos[i].LastModifiedDate);
+                            DateTime serverModifiedDateTime = Convert.ToDateTime(serverData);
+                            if (localModifiedDateTime > serverModifiedDateTime)
+                            {
+                                LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                copy.SyncStatus = 1; // 1 represents need upload
+                                EditLevelInfo(threadInstance, copy);
+                            }
+                            else if (localModifiedDateTime < serverModifiedDateTime)
+                            {
+                                LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                copy.SyncStatus = 0; // 0 represents needs download
+                                EditLevelInfo(threadInstance, copy);
+                            }
+                            else if (localModifiedDateTime == serverModifiedDateTime)
+                            {
+                                LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                copy.SyncStatus = 2; // 2 represents in sync
+                                EditLevelInfo(threadInstance, copy);
+                            }
                         }
                     }
+                    else
+                    {
+                        LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                        copy.SyncStatus = 3; // 3 represents offline
+                        EditLevelInfo(threadInstance, copy);
+                    }
+                }
+                else
+                {
+                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                    copy.SyncStatus = 3; // 3 represents offline
+                    EditLevelInfo(threadInstance, copy);
                 }
             }
         }

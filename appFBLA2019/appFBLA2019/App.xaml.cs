@@ -22,9 +22,7 @@ namespace appFBLA2019
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
 
             ServerConnector.Server = "50.106.17.86";
-            LevelRosterDatabase.Initialize();
             ThreadTimer.RunServerChecks();
-
 
             this.MainPage = new NavigationPage(new MainPage());
         }
@@ -33,7 +31,7 @@ namespace appFBLA2019
 
         protected override void OnResume()
         {
-            // Handle when your app resumes
+
         }
 
         protected override void OnSleep()
@@ -44,11 +42,8 @@ namespace appFBLA2019
         protected override async void OnStart()
         {
             // Handle when your app starts
-
             /*REMOVE DURING RELEASE*/
             ServerConnector.Server = "50.106.17.86";
-
-            await CredentialManager.CheckLoginStatus();
         }
     }
 }

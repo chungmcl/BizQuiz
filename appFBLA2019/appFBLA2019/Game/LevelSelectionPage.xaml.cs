@@ -30,16 +30,6 @@ namespace appFBLA2019
             this.Setup();
         }
 
-        protected override async void OnAppearing()
-        {          
-            base.OnAppearing();
-            LevelRosterDatabase.LoadLevelInfos();
-            //await Task.Run(() => this.Setup());
-            //if (Application.Current.MainPage.Width != -1)
-            double tes = this.Width;
-            
-        }
-
         private readonly string category;
         // TO DO: Display author name of level
         internal void Setup()
@@ -110,19 +100,7 @@ namespace appFBLA2019
                     StyleId = "/" + category + "/" + level.First() + "`" + level.Last()
                 };
 
-                LevelInfo info = new LevelInfo();
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    try
-                    {
-                        info = LevelRosterDatabase.LevelInfos.Where
-                             (levelInfo => levelInfo.AuthorName == level[1] && levelInfo.LevelName == level[0]).First();
-                    }
-                    catch
-                    {
-                        
-                    }
-                });
+                LevelInfo info = LevelRosterDatabase.GetLevelInfo(level[0], level[1]);
 
                 if (info.SyncStatus == 3)
                 {
@@ -287,12 +265,12 @@ namespace appFBLA2019
 
         private void SyncNoChange_Clicked(object sender, EventArgs e)
         {
-
+            DisplayAlert("Already Synchronized", "This level is already up to date with the server version!", "OK");
         }
 
         private void SyncOffline_Clicked(object sender, EventArgs e)
         {
-
+            DisplayAlert("Offline", "This level cannot be synced because you are offline.", "OK");
         }
 
         async private void ButtonDelete_Clicked(object sender, EventArgs e)
@@ -318,8 +296,7 @@ namespace appFBLA2019
                     {
                         // code to delete from server
                     }
-                    LevelRosterDatabase.LoadLevelInfos();
-                    await Task.Run(() => this.Setup());
+                    this.Setup();
                 }
             }
             else

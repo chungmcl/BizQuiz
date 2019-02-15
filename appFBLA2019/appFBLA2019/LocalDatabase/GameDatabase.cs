@@ -24,9 +24,26 @@ namespace appFBLA2019
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = $"/{levelTitle}{realmExtension}";
             }
-            catch (Exception ex)
+            catch
             {
-                string test = ex.Message.ToString();
+
+            }
+        }
+
+        /// <summary>
+        /// Access the full database with the full path to the file.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        public GameDatabase(string fullPath)
+        {
+            try
+            {
+                RealmConfiguration rC = new RealmConfiguration(fullPath);
+                this.realmDB = Realm.GetInstance(rC);
+            }
+            catch
+            {
+
             }
         }
 
@@ -128,6 +145,39 @@ namespace appFBLA2019
             {
                 this.realmDB.Add(question);
             });
+        }
+
+        public LevelInfo GetLevelInfo()
+        {
+            return realmDB.All<LevelInfo>().First();
+        }
+
+        public void NewLevelInfo(string authorName, string levelName, string category)
+        {
+            LevelInfo newLevelInfo = new LevelInfo(authorName, levelName, category);
+            // Sync status is irrelevant in a Level Database's copy of the LevelInfo
+            newLevelInfo.SyncStatus = -1;
+
+            this.realmDB.Write(() =>
+            {
+                realmDB.Add(newLevelInfo);
+            });
+
+            LevelInfo rosterCopy = new LevelInfo(newLevelInfo);
+            rosterCopy.SyncStatus = 1; // Default to 1, meaning "needs upload" in roster
+            LevelRosterDatabase.NewLevelInfo(rosterCopy);
+        }
+
+        public void EditLevelInfo(LevelInfo editedLevelInfo)
+        {
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(editedLevelInfo, update: true);
+            });
+
+            LevelInfo rosterCopy = new LevelInfo(editedLevelInfo);
+            rosterCopy.SyncStatus = 1; // Default to 1, meaning "needs upload" in roster
+            LevelRosterDatabase.EditLevelInfo(rosterCopy);
         }
     }
 }

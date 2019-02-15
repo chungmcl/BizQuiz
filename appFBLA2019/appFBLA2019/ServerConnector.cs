@@ -52,6 +52,8 @@ namespace appFBLA2019
 
     public static class ServerConnector
     {
+        private const int stringHeaderSize = 5;
+        private const int realmHeaderSize = 36 + stringHeaderSize;
         // Server Release Build: 7777 Server Debug Build: 7778
         public static int Port { get { return 7778; } }
 
@@ -77,6 +79,9 @@ namespace appFBLA2019
 
         public static string ReceiveFromServerStringData()
         {
+            if (ssl == null)
+                return "";
+
             int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
             string data = Encoding.Unicode.GetString(ReadByteArray(size));
             data = data.Trim();
@@ -107,7 +112,7 @@ namespace appFBLA2019
                         break;
 
                     case (ServerRequestTypes.AddRealmFile):
-
+                        SendRealmFile((string)data);
                         break;
 
                     case (ServerRequestTypes.LoginAccount):
@@ -159,11 +164,18 @@ namespace appFBLA2019
 
         private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
         {
-            byte[] headerData = new byte[5];
+            byte[] headerData = new byte[stringHeaderSize];
             headerData[0] = (byte)type;
             byte[] dataSize = BitConverter.GetBytes(size);
             dataSize.CopyTo(headerData, 1);
             return headerData;
+        }
+
+        private static byte[] GenerateRealmHeader(string DBId)
+        {
+            byte[] headerData = new byte[realmHeaderSize];
+            // header should contain DBId and user password
+            
         }
 
         private static byte[] ReadByteArray(int size)
@@ -237,6 +249,14 @@ namespace appFBLA2019
             dataAsBytes.CopyTo(toSend, headerData.Length);
             SendByteArray(toSend);
         }
+        
+
+        private static void SendRealmFile(string data)
+        {
+            GameDatabase gameDatabase = new GameDatabase(data);
+            LevelInfo info = gameDatabase.GetLevelInfo();
+            GenerateRealmHeader(info.DBId);
+        }
 
         private static bool SetupConnection()
         {
@@ -265,8 +285,9 @@ namespace appFBLA2019
 
                             lock (ssl)
                             {
-                                ssl.WriteTimeout = 5000;
-                                ssl.ReadTimeout = 10000;
+                                // UNCOMMENT DURING RELEASE
+                                //ssl.WriteTimeout = 5000;
+                                //ssl.ReadTimeout = 10000;
 
                                 ssl.AuthenticateAsClient("BizQuizServer");
                                 return true;
@@ -279,7 +300,7 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }

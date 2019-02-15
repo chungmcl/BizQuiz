@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -10,21 +11,20 @@ namespace appFBLA2019
     {
         public static void RunServerChecks()
         {
-            LevelRosterDatabase.LoadLevelInfos();
             LevelRosterDatabase.UpdateLocalDatabase();
-
-            var minutes = TimeSpan.FromMinutes(2.0);
+            var minutes = TimeSpan.FromMinutes(2);
             Device.StartTimer(minutes, () =>
             {
-                Task.Run(async () =>
+                Task task = Task.Run(async() =>
                 {
                     if (CredentialManager.IsLoggedIn)
+                    {
                         await CredentialManager.CheckLoginStatus();
+                    }
 
-                    //LevelRosterDatabase.LoadLevelInfos();
-                    //LevelRosterDatabase.UpdateLocalDatabase();
+
+                    LevelRosterDatabase.UpdateLocalDatabase();
                 });
-
                 // Return true to continue the timer
                 return true;
             });

@@ -321,16 +321,29 @@ namespace appFBLA2019
 					NewQuestions.Add(addThis);
 				}
 
-				// Add if it doesn't already exist,
-				// delete if it doesn't exist anymore, 
-				// update the ones that need to be updated, 
-				// and do nothing to the others
-				// Work in progress, algorithm might be off.
-				if (previousQuestions.Count() == 0) // if the user created this for the first time
-					DBHandler.Database.AddQuestions(NewQuestions);
+                // Add if it doesn't already exist,
+                // delete if it doesn't exist anymore, 
+                // update the ones that need to be updated, 
+                // and do nothing to the others
+                // Work in progress, algorithm might be off.
+                if (previousQuestions.Count() == 0)
+                {
+                    // if the user created this for the first time
+                    
+                    // Save a new LevelInfo into the level database, which also adds this LevelInfo to the device level roster
+                    DBHandler.Database.NewLevelInfo(CredentialManager.Username,
+                        this.EntryLevelName.Text.Trim(),
+                        this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
+                    DBHandler.Database.AddQuestions(NewQuestions);
+                }
 				else
 				{
-					for (int i = 0; i <= previousQuestions.Count() - 1; i++)
+                    LevelInfo updatedLevelInfo = DBHandler.Database.GetLevelInfo();
+                    updatedLevelInfo.LevelName = this.EntryLevelName.Text.Trim();
+                    updatedLevelInfo.LastModifiedDate = DateTime.Now.ToString();
+                    DBHandler.Database.EditLevelInfo(updatedLevelInfo);
+
+                    for (int i = 0; i <= previousQuestions.Count() - 1; i++)
 					{
 						bool DBIdSame = true;
 						// test each old question with each new question
@@ -365,10 +378,6 @@ namespace appFBLA2019
 				{
 					Directory.Delete(App.Path + "/" + this.originalName + "`" + this.originalAuthor, true);
 				}
-                
-                LevelRosterDatabase.NewLevelInfo(CredentialManager.Username,
-                    this.EntryLevelName.Text.Trim(),
-                    this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
 
                 // Returns user to front page of LevelEditor and refreshed database
                 await this.Navigation.PopAsync(true);
