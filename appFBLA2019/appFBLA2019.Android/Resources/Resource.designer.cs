@@ -5192,7 +5192,7 @@ namespace appFBLA2019.Droid
 			public const int ic_search_white_48dp = 2130837813;
 			
 			// aapt resource value: 0x7f020136
-			public const int ic_settings_black_48dp = 2130837814;
+			public const int ic_settings_white_48dp = 2130837814;
 			
 			// aapt resource value: 0x7f020137
 			public const int ic_vol_type_speaker_dark = 2130837815;

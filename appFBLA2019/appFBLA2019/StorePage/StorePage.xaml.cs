@@ -152,6 +152,7 @@ namespace appFBLA2019
     /// </summary>
     internal class LevelInfo
     {
+        public int Subscribers { get; set; }
         public string DBId { get; set; }
         public string AuthorName { get; set; }
         public string LevelName { get; set; }
