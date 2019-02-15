@@ -14,6 +14,7 @@
     <ContentPage Title="Leaderboards" Icon="ic_group_black_48dp.png" />
     <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png" />
     <TabbedPage.ToolbarItems>
-        <ToolbarItem x:Name="BugReportToolbarItem" Text="Report a problem" Clicked="BugReportToolbarItem_Clicked" Order="Secondary"/>
+        <ToolbarItem x:Name="AboutPageToolbarItem" Text="About Bizquiz" Clicked="AboutPageToolbarItem_Clicked" Order="Secondary" />
+        <ToolbarItem x:Name="BugReportToolbarItem" Text="Report a problem" Clicked="BugReportToolbarItem_Clicked" Order="Secondary" />
     </TabbedPage.ToolbarItems>
 </TabbedPage>

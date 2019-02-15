@@ -4,6 +4,7 @@ using Realms;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Xamarin.Forms;
 
 namespace appFBLA2019
 {
@@ -23,6 +24,7 @@ namespace appFBLA2019
         private readonly string title;
         private readonly string category;
         private readonly string body;
+        public Image image;
 
         [PrimaryKey]
         private int ReportID { get; set; } = Guid.NewGuid().GetHashCode();

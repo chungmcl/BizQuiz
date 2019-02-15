@@ -19,7 +19,7 @@ namespace appFBLA2019
 
         public static bool SubmitReport(BugReport report)
         {
-            if (ServerConnector.SendData(ServerRequestTypes.StringData, report.ToString()))
+            if (SendReport(report.ToString(), report.image))
             {
                 return true;
             }
@@ -63,6 +63,14 @@ namespace appFBLA2019
                     }
                 }
             }
+        }
+
+        //micheal write in this one
+        private static bool SendReport(string report, Image reportimage)
+        {
+            //sends the report to the server (and the image, provided it's not null)
+            //returns if the send was successful or not
+            throw new NotImplementedException();
         }
     }
 }
