@@ -5,6 +5,7 @@ namespace appFBLA2019
 {
     public class LevelInfo : RealmObject
     {
+        [PrimaryKey]
         public string DBId { get; set; }
         public string AuthorName { get; set; }
         public string LevelName { get; set; }
@@ -29,6 +30,19 @@ namespace appFBLA2019
             this.SyncStatus = 1;
             this.IsDeletedLocally = false;
             this.IsDeletedOnServer = false;
+        }
+
+        public LevelInfo(LevelInfo levelInfoToCopy)
+        {
+            this.DBId = levelInfoToCopy.DBId;
+            this.AuthorName = levelInfoToCopy.AuthorName;
+            this.LevelName = levelInfoToCopy.LevelName;
+            this.Category = levelInfoToCopy.Category;
+
+            this.LastModifiedDate = levelInfoToCopy.LastModifiedDate;
+            this.SyncStatus = levelInfoToCopy.SyncStatus;
+            this.IsDeletedLocally = levelInfoToCopy.IsDeletedLocally;
+            this.IsDeletedOnServer = levelInfoToCopy.IsDeletedOnServer;
         }
     }
 }

@@ -168,46 +168,51 @@ namespace appFBLA2019
 
         private static byte[] ReadByteArray(int size)
         {
-            lock (ssl)
+            if (ssl != null)
             {
-                if (CrossConnectivity.Current.IsConnected)
+                lock (ssl)
                 {
-                    byte[] buffer = new byte[1024];
-
-                    List<byte> data = new List<byte>();
-                    int bytes = -1;
-                    int bytesRead = 0;
-                    do
+                    if (CrossConnectivity.Current.IsConnected)
                     {
-                        int toRead = 0;
-                        if ((size - bytesRead) > buffer.Length)
-                        {
-                            toRead = buffer.Length - (size - bytesRead);
-                        }
-                        else
-                        {
-                            toRead = size - bytesRead;
-                        }
+                        byte[] buffer = new byte[1024];
 
-                        bytes = ssl.Read(buffer, 0, toRead);
-                        bytesRead += bytes;
-
-                        if (bytes > 0)
+                        List<byte> data = new List<byte>();
+                        int bytes = -1;
+                        int bytesRead = 0;
+                        do
                         {
-                            for (int i = 0; i < bytes; i++)
+                            int toRead = 0;
+                            if ((size - bytesRead) > buffer.Length)
                             {
-                                data.Add(buffer[i]);
+                                toRead = buffer.Length - (size - bytesRead);
                             }
-                        }
-                    } while (data.Count < size);
-                    data.RemoveRange(size, data.Count - size);
-                    return data.ToArray();
-                }
-                else
-                {
-                    return null;
+                            else
+                            {
+                                toRead = size - bytesRead;
+                            }
+
+                            bytes = ssl.Read(buffer, 0, toRead);
+                            bytesRead += bytes;
+
+                            if (bytes > 0)
+                            {
+                                for (int i = 0; i < bytes; i++)
+                                {
+                                    data.Add(buffer[i]);
+                                }
+                            }
+                        } while (data.Count < size);
+                        data.RemoveRange(size, data.Count - size);
+                        return data.ToArray();
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
+            else
+                return null;
         }
 
         private static void SendByteArray(byte[] data)
@@ -274,7 +279,7 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
             }

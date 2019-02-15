@@ -15,14 +15,8 @@ namespace appFBLA2019
         public static List<LevelInfo> LevelInfos { get; set; }
         public static void Initialize()
         {
-            try
-            {
-                RealmConfiguration rC = new RealmConfiguration(App.Path + "/" + "roster.realm");
-                realmDB = Realm.GetInstance(rC);
-            }
-            catch
-            {
-            }
+            RealmConfiguration rC = new RealmConfiguration(App.Path + "/" + "roster.realm");
+            realmDB = Realm.GetInstance(rC);
         }
 
         public static void NewLevelInfo(string authorName, string levelName, string category)
@@ -50,92 +44,57 @@ namespace appFBLA2019
             LevelInfos = new List<LevelInfo>(levelInfosQueryable);
         }
 
-        private static async Task UpdateLocalDatabase()
+        public static void UpdateLocalDatabase()
         {
-            for (int i = 0; i < LevelInfos.Count(); i++)
+            if (LevelInfos != null)
             {
-                if (CrossConnectivity.Current.IsConnected)
+                lock (LevelInfos)
                 {
-                    await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.GetLastModifiedDate, LevelInfos[i].DBId));
-                    string serverData = await Task.Run(() => ServerConnector.ReceiveFromServerStringData());
-                    if (serverData == "" || serverData == null)
+                    for (int i = 0; i < LevelInfos.Count(); i++)
                     {
-                        Device.BeginInvokeOnMainThread(() =>
+                        if (CrossConnectivity.Current.IsConnected)
                         {
-                            using (var trans = realmDB.BeginWrite())
+                            ServerConnector.SendData(ServerRequestTypes.GetLastModifiedDate, LevelInfos[i].DBId);
+                            string serverData = ServerConnector.ReceiveFromServerStringData();
+                            if (serverData == "" || serverData == null)
                             {
-                                LevelInfos[i].SyncStatus = 1; // 1 represents need upload
-                                trans.Commit();
+                                LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                copy.SyncStatus = 1; // 1 represents need upload
+                                EditLevelInfo(copy);
                             }
-                        });
-                    }
-                    else
-                    {
-                        DateTime localModifiedDateTime = Convert.ToDateTime(LevelInfos[i].LastModifiedDate);
-                        DateTime serverModifiedDateTime = Convert.ToDateTime(serverData);
-                        if (localModifiedDateTime > serverModifiedDateTime)
-                        {
-                            Device.BeginInvokeOnMainThread(() =>
+                            else
                             {
-                                using (var trans = realmDB.BeginWrite())
+                                DateTime localModifiedDateTime = Convert.ToDateTime(LevelInfos[i].LastModifiedDate);
+                                DateTime serverModifiedDateTime = Convert.ToDateTime(serverData);
+                                if (localModifiedDateTime > serverModifiedDateTime)
                                 {
-                                    LevelInfos[i].SyncStatus = 1; // 1 represents need upload
-                                    trans.Commit();
+                                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                    copy.SyncStatus = 1; // 1 represents need upload
+                                    EditLevelInfo(copy);
                                 }
-                            });
+                                else if (localModifiedDateTime < serverModifiedDateTime)
+                                {
+                                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                    copy.SyncStatus = 0; // 0 represents needs download
+                                    EditLevelInfo(copy);
+                                }
+                                else if (localModifiedDateTime == serverModifiedDateTime)
+                                {
+                                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                    copy.SyncStatus = 2; // 2 represents in sync
+                                    EditLevelInfo(copy);
+                                }
+                            }
                         }
-                        else if (localModifiedDateTime < serverModifiedDateTime)
+                        else
                         {
-                            Device.BeginInvokeOnMainThread(() =>
-                            {
-                                using (var trans = realmDB.BeginWrite())
-                                {
-                                    LevelInfos[i].SyncStatus = 0; // 0 represents needs download
-                                    trans.Commit();
-                                }
-                            });
-                        }
-                        else if (localModifiedDateTime == serverModifiedDateTime)
-                        {
-                            Device.BeginInvokeOnMainThread(() =>
-                            {
-                                using (var trans = realmDB.BeginWrite())
-                                {
-                                    LevelInfos[i].SyncStatus = 2; // 2 represents in sync
-                                    trans.Commit();
-                                }
-                            });
+                            LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                            copy.SyncStatus = 3; // 3 represents offline
+                            EditLevelInfo(copy);
                         }
                     }
-                }
-                else
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        using (var trans = realmDB.BeginWrite())
-                        {
-                            LevelInfos[i].SyncStatus = 3; // 3 represents offline
-                            trans.Commit();
-                        }
-                    });
                 }
             }
-        }
-
-        public static void StartTimedUpdate()
-        {
-            var minutes = TimeSpan.FromMinutes(2.0);
-            Device.StartTimer(minutes, () =>
-            {
-                LoadLevelInfos();
-                Task.Run(async () =>
-                {
-                    await UpdateLocalDatabase();
-                });
-
-                // Return true to continue the timer
-                return true;
-            });
         }
     }
 }

@@ -21,17 +21,23 @@ namespace appFBLA2019
             this.category = category;
             Directory.CreateDirectory(App.Path + $"/{category}");
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
+            //this.Setup();
         }
 
-        protected async override void OnAppearing()
+        protected override void OnSizeAllocated(double width, double height)
         {
+            base.OnSizeAllocated(width, height);
+            this.Setup();
+        }
+
+        protected override async void OnAppearing()
+        {          
             base.OnAppearing();
             LevelRosterDatabase.LoadLevelInfos();
-
-            (this.Parent as LevelCategoriesPage).IsLoading = true;
             //await Task.Run(() => this.Setup());
-            this.Setup();
-            (this.Parent as LevelCategoriesPage).IsLoading = false;
+            //if (Application.Current.MainPage.Width != -1)
+            double tes = this.Width;
+            
         }
 
         private readonly string category;
@@ -76,7 +82,9 @@ namespace appFBLA2019
                 {
                     FlowDirection = FlowDirection.LeftToRight,
                     Orientation = StackOrientation.Horizontal,
-                    VerticalOptions = LayoutOptions.StartAndExpand
+                    VerticalOptions = LayoutOptions.StartAndExpand,
+                    HorizontalOptions = LayoutOptions.FillAndExpand
+
                 };
 
 
@@ -86,7 +94,7 @@ namespace appFBLA2019
                     FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                     FontAttributes = FontAttributes.Bold,
                     VerticalOptions = LayoutOptions.StartAndExpand,
-                    HorizontalOptions = LayoutOptions.StartAndExpand,
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
                     HeightRequest = 45
                 };
                 topStack.Children.Add(title);
@@ -102,9 +110,19 @@ namespace appFBLA2019
                     StyleId = "/" + category + "/" + level.First() + "`" + level.Last()
                 };
 
-
-                LevelInfo info = LevelRosterDatabase.LevelInfos.Where
-                    (levelInfo => levelInfo.AuthorName == level[1] && levelInfo.LevelName == level[0]).First();
+                LevelInfo info = new LevelInfo();
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    try
+                    {
+                        info = LevelRosterDatabase.LevelInfos.Where
+                             (levelInfo => levelInfo.AuthorName == level[1] && levelInfo.LevelName == level[0]).First();
+                    }
+                    catch
+                    {
+                        
+                    }
+                });
 
                 if (info.SyncStatus == 3)
                 {

@@ -90,26 +90,5 @@ namespace appFBLA2019
                 }
             }
         }
-
-        /// <summary>
-        /// Check if the current saved login credentials match with the server - Is the user logged in?
-        /// Checks every two minutes.
-        /// Sets the IsLoggedIn property of CredentialManager.
-        /// </summary>
-        public static void StartTimedCheckLoginStatus()
-        {
-            var minutes = TimeSpan.FromMinutes(2.0);
-            Device.StartTimer(minutes, () =>
-            {
-                Task.Run(async() =>
-                {
-                    if (IsLoggedIn)
-                        await CheckLoginStatus();
-                });
-                
-                // Return true to continue the timer
-                return true;
-            });
-        }
     }
 }

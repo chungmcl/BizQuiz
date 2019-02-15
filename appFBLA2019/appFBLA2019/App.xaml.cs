@@ -21,6 +21,11 @@ namespace appFBLA2019
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
 
+            ServerConnector.Server = "50.106.17.86";
+            LevelRosterDatabase.Initialize();
+            ThreadTimer.RunServerChecks();
+
+
             this.MainPage = new NavigationPage(new MainPage());
         }
 
@@ -44,11 +49,6 @@ namespace appFBLA2019
             ServerConnector.Server = "50.106.17.86";
 
             await CredentialManager.CheckLoginStatus();
-            CredentialManager.StartTimedCheckLoginStatus();
-
-
-            LevelRosterDatabase.Initialize();
-            LevelRosterDatabase.StartTimedUpdate();
         }
     }
 }

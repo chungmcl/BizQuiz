@@ -7,33 +7,33 @@
                         BarTextColor="White"
                         BarBackgroundColor="#004f96">
     <local:LevelSelectionPage Title="Tech Events">
-    <x:Arguments>
-      <x:String>Tech Events</x:String>
-    </x:Arguments>
-  </local:LevelSelectionPage>
-  <local:LevelSelectionPage Title="Finance Events">
-    <x:Arguments>
-      <x:String>Finance Events</x:String>
-    </x:Arguments>
-  </local:LevelSelectionPage>
-  <local:LevelSelectionPage Title="Business Events">
-    <x:Arguments>
-      <x:String>Business Events</x:String>
-    </x:Arguments>
-  </local:LevelSelectionPage>
-  <local:LevelSelectionPage Title="FBLA General">
-    <x:Arguments>
-      <x:String>FBLA General</x:String>
-    </x:Arguments>
-  </local:LevelSelectionPage>
-  <local:LevelSelectionPage Title="Officers">
-    <x:Arguments>
-      <x:String>Officers</x:String>
-    </x:Arguments>
-  </local:LevelSelectionPage>
-  <local:LevelSelectionPage Title="Parliamentary Procedure">
-    <x:Arguments>
-      <x:String>Parliamentary Procedure</x:String>
-    </x:Arguments>
-  </local:LevelSelectionPage>
+        <x:Arguments>
+            <x:String>Tech Events</x:String>
+        </x:Arguments>
+    </local:LevelSelectionPage>
+    <local:LevelSelectionPage Title="Finance Events">
+        <x:Arguments>
+            <x:String>Finance Events</x:String>
+        </x:Arguments>
+    </local:LevelSelectionPage>
+    <local:LevelSelectionPage Title="Business Events">
+        <x:Arguments>
+            <x:String>Business Events</x:String>
+        </x:Arguments>
+    </local:LevelSelectionPage>
+    <local:LevelSelectionPage Title="FBLA General">
+        <x:Arguments>
+            <x:String>FBLA General</x:String>
+        </x:Arguments>
+    </local:LevelSelectionPage>
+    <local:LevelSelectionPage Title="Officers">
+        <x:Arguments>
+            <x:String>Officers</x:String>
+        </x:Arguments>
+    </local:LevelSelectionPage>
+    <local:LevelSelectionPage Title="Parliamentary Procedure">
+        <x:Arguments>
+            <x:String>Parliamentary Procedure</x:String>
+        </x:Arguments>
+    </local:LevelSelectionPage>
 </TabbedPage>
