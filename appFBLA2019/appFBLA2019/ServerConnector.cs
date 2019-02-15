@@ -40,15 +40,7 @@ namespace appFBLA2019
         GetEmail,
         GetJPEGImage,
         GetRealmFile,
-        GetLastModifiedDate,
-
-        // Returns
-        SavedJPEGImage,
-        SavedRealmFile,
-        GotEmail,
-        True,
-        False,
-        TrueConfirmEmail
+        GetLastModifiedDate
     }
 
     public static class ServerConnector

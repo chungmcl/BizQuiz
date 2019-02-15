@@ -31,7 +31,7 @@ namespace appFBLA2019
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                // Initialize profile content to avoid wonky UI behavior during async loading
+                // Initialize profile content to be hidden to avoid wonky UI behavior during async loading
                 this.StackLayoutProfilePageContent.IsVisible = false;
                 this.ActivityIndicator.IsVisible = true;
                 this.ActivityIndicator.IsRunning = true;
@@ -102,8 +102,8 @@ namespace appFBLA2019
         private List<LevelInfo> SearchByUser(string username)
         {
             List<LevelInfo> testInfo = new List<LevelInfo>();
-            testInfo.Add(new LevelInfo { DBId = "TestDBID", AuthorName = "TestAuthor", LevelName = "TestLevel", Category = "FBLA General", Subscribers = 12 });
-            testInfo.Add(new LevelInfo { DBId = "TestDBID2", AuthorName = "TestAuthor2", LevelName = "TestLevel2", Category = "FBLA General", Subscribers = 3 });
+            //testInfo.Add(new LevelInfo { DBId = "TestDBID", AuthorName = "TestAuthor", LevelName = "TestLevel", Category = "FBLA General", Subscribers = 12 });
+            //testInfo.Add(new LevelInfo { DBId = "TestDBID2", AuthorName = "TestAuthor2", LevelName = "TestLevel2", Category = "FBLA General", Subscribers = 3 });
             return testInfo;
         }
 
@@ -144,7 +144,7 @@ namespace appFBLA2019
 
                 Label Subscribers = new Label
                 {
-                    Text = "Subscribers: " + level.Subscribers
+                    Text = "Subscribers: " /*+ level.Subscribers*/
                 };
                 frameStack.Children.Add(Subscribers);
 

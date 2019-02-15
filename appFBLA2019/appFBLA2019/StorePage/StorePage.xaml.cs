@@ -145,21 +145,4 @@ namespace appFBLA2019
             this.SearchedStack.Children.Clear();
         }
     }
-
-
-    /// <summary>
-    /// Temporary
-    /// </summary>
-    internal class LevelInfo
-    {
-        public int Subscribers { get; set; }
-        public string DBId { get; set; }
-        public string AuthorName { get; set; }
-        public string LevelName { get; set; }
-        public string Category { get; set; }
-        public string LastModifiedDate { get; set; }
-        public bool NeedUploadSync { get; set; }
-        public bool NeedDownloadSync { get; set; }
-        public bool IsDeleted { get; set; }
-    }
 }

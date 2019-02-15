@@ -8,6 +8,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using System.IO;
+using Plugin.Connectivity;
 
 namespace appFBLA2019
 {
@@ -31,7 +32,7 @@ namespace appFBLA2019
             this.BarTextColor = Color.Gray;
 		}
 
-		private void TabbedPage_CurrentPageChanged(object sender, EventArgs e)
+		private async void TabbedPage_CurrentPageChanged(object sender, EventArgs e)
 		{
 			var index = this.Children.IndexOf(this.CurrentPage);
 
@@ -42,13 +43,13 @@ namespace appFBLA2019
 					{
 						ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[profilePageIndex];
 						if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
-							Task.Run(() => profilePage.UpdateProfilePage(true));
+							await Task.Run(() => profilePage.UpdateProfilePage(CrossConnectivity.Current.IsConnected));
 					}
 					break;
-				case levelCategoriesPage:
-				{
-					this.levelsPage.RefreshChildren();
-				}
+				    case levelCategoriesPage:
+				    {
+					    //this.levelsPage.RefreshChildren();
+				    }
 					break;
 			}
 		}
