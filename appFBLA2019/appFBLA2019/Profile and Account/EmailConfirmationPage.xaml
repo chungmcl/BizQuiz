@@ -19,7 +19,7 @@
 
             <Label Text="Wrong Email? Change it Here:" XAlign="Center" />
             <Entry x:Name="EntryChangeEmail"
-                       HorizontalOptions="FillAndExpand" />
+                       HorizontalOptions="FillAndExpand" Placeholder="Email" />
 
             <Button x:Name="ButtonFixEmail"
                     Text="Change Email"
