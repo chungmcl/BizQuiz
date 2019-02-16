@@ -15,7 +15,7 @@
 
             <Button x:Name="ButtonConfirmEmail"
                     Text="Confirm Email with Code"
-                    Clicked="ButtonConfirmEmail_Clicked" />
+                    Clicked="ButtonConfirmEmail_Clicked" CornerRadius="25" />
 
             <Label Text="Wrong Email? Change it Here:" XAlign="Center" />
             <Entry x:Name="EntryChangeEmail"
@@ -23,12 +23,12 @@
 
             <Button x:Name="ButtonFixEmail"
                     Text="Change Email"
-                    Clicked="ButtonFixEmail_Clicked" />
+                    Clicked="ButtonFixEmail_Clicked" CornerRadius="25"/>
 
             <Label x:Name="LabelMessage" Text="" Font="Bold" HorizontalOptions="Center" />
 
             <Button x:Name="ButtonClose" Text="Confirm Later"
-                    Clicked="ButtonClose_Clicked" />
+                    Clicked="ButtonClose_Clicked" CornerRadius="25"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -6,22 +6,25 @@
     <ContentView.Content>
         <StackLayout Spacing="20" Padding="20" VerticalOptions="Center">
             <StackLayout Spacing="5" VerticalOptions="Start">
+                <!--<ContentView>
+                    <Image Source="BizQuizLogo.png" Aspect="AspectFit" HeightRequest="50" HorizontalOptions="Start"/>
+                </ContentView>-->
 
-                <Entry x:Name="EntryUsername" Grid.Column="1" Grid.Row="0"
-                       HorizontalOptions="FillAndExpand" Placeholder="Username"/>
-                <Entry x:Name="EntryPassword" Grid.Column="1" Grid.Row="1"
-                       IsPassword="True"
-                       HorizontalOptions="FillAndExpand" Placeholder="Password"/>
-                
+                    <Entry x:Name="EntryUsername" Grid.Column="0" Grid.Row="0"
+                            HorizontalOptions="FillAndExpand" Placeholder="Username" TextChanged="EntryUsername_TextChanged"/>
+                <Entry x:Name="EntryPassword" Grid.Column="0" Grid.Row="1"
+                            IsPassword="True"
+                            HorizontalOptions="FillAndExpand" Placeholder="Password" TextChanged="EntryPassword_TextChanged"/>
+
                 <Button HorizontalOptions="CenterAndExpand" Text="Forgot your password?" 
                         x:Name="forgotPassword" TextColor="DodgerBlue" Clicked="ForgotPassword_Tapped" 
                         Released="ForgotPassword_Released" BackgroundColor="Transparent"
                         Pressed="ForgotPassword_Pressed"/>
-                
+
                 <Button x:Name="ButtonLogin"
                     Text="Log in"
                     Clicked="ButtonLogin_Clicked"
-                    CornerRadius="25"/>
+                    CornerRadius="25" IsEnabled="False"/>
                 <Label Text="Or" HorizontalOptions="CenterAndExpand"/>
                 <Button x:Name="ButtonToCreateAccountPage"
                     Text="Create a free account"
@@ -31,9 +34,6 @@
                        HorizontalOptions="Center"/>
                 <ActivityIndicator x:Name="ActivityIndicator" IsVisible="False"/>
             </StackLayout>
-            <ContentView>
-                <Image Source="BizQuizLogo.png" Aspect="AspectFit"/>
-            </ContentView>
         </StackLayout>
     </ContentView.Content>
 </ContentView>

@@ -624,7 +624,7 @@ namespace appFBLA2019
 			}
 		}
 
-		private int restrictCount = 64;
+		private const int restrictCount = 64;
 		/// <summary>
 		/// Sets a limit to how much the user can put in an entry
 		/// </summary>
@@ -635,9 +635,9 @@ namespace appFBLA2019
 			Entry entry = sender as Entry;
 			string val = entry.Text; //Get Current Text
 
-			if (val.Length > this.restrictCount)//If it is more than your character restriction
+			if (val.Length > restrictCount)//If it is more than your character restriction
 			{
-				val = val.Remove(this.restrictCount);// Remove Everything past the restriction length
+				val = val.Remove(restrictCount);// Remove Everything past the restriction length
 				entry.Text = val; //Set the Old value
 			}
 		}
