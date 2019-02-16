@@ -18,9 +18,9 @@ namespace appFBLA2019
             
 		}
 
-        private void Button_Clicked(object sender, EventArgs e)
+        private void ButtonContinue_Clicked(object sender, EventArgs e)
         {
-
+            throw new NotImplementedException();
         }
     }
 }
