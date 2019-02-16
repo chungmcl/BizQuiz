@@ -11,15 +11,17 @@ namespace appFBLA2019
     public static class CredentialManager
     {
         public static string Username { get; private set; }
+        public static string Password { get; private set; }
         public static bool IsLoggedIn { get; private set; }
         public static bool EmailConfirmed { get; set; }
      
         public static void SaveCredential(string username, string password, bool emailConfirmed)
         {
-            Username = username;
-
             Task.Run(async() => await SecureStorage.SetAsync("username", username));
             Task.Run(async() => await SecureStorage.SetAsync("password", password));
+            
+            Username = username;
+            Password = password;
 
             IsLoggedIn = true;
             EmailConfirmed = emailConfirmed;
@@ -41,6 +43,7 @@ namespace appFBLA2019
             string username = await SecureStorage.GetAsync("username");
             Username = username;
             string password = await SecureStorage.GetAsync("password");
+            Password = password;
 
             if (CrossConnectivity.Current.IsConnected)
             {

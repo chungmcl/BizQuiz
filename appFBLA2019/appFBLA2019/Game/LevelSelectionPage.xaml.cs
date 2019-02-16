@@ -1,6 +1,7 @@
 ﻿//BizQuiz App 2019
 
 using Plugin.Connectivity;
+using Realms;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -255,7 +256,34 @@ namespace appFBLA2019
         private void SyncUpload_Clicked(object sender, EventArgs e)
         {
             string levelPath = (sender as ImageButton).StyleId;
+            UploadLevel(levelPath);
+        }
 
+        private bool UploadLevel(string path)
+        {
+            string realmFilePath = Directory.GetFiles(App.Path + path, "*.realm").First();
+            Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+            LevelInfo info = realm.All<LevelInfo>().First();
+
+            string[] imageFilePaths = Directory.GetFiles(App.Path + path, "*.jpg");
+            ServerConnector.SendData(ServerRequestTypes.AddRealmFile, realmFilePath);
+            if (ServerConnector.ReceiveFromServerORM()== OperationReturnMessage.False)
+                return false;
+
+            for (int i = 0; i < imageFilePaths.Length; i++)
+            {
+                //[0] = path, [1] = fileName, [2] = dBId
+                string fileName = imageFilePaths[i].Split('/').Last().Split('.').First();
+                string dbID = info.DBId;
+                ServerConnector.SendData(ServerRequestTypes.AddJPEGImage,
+                    new string[] { imageFilePaths[i], imageFilePaths[i].Split('/').Last().Split('.').First(), dbID } );
+
+                OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
+                if (ServerConnector.ReceiveFromServerORM() == OperationReturnMessage.False)
+                    return false;
+            }
+
+            return true;
         }
 
         private void SyncDownload_Clicked(object sender, EventArgs e)

@@ -74,7 +74,7 @@ namespace appFBLA2019
             RealmConfiguration threadConfig = new RealmConfiguration(App.Path + "/" + "roster.realm");
             Realm threadInstance = Realm.GetInstance(threadConfig);
 
-            List<LevelInfo> LevelInfos = new List<LevelInfo>(threadInstance.All<LevelInfo>());
+            List <LevelInfo> LevelInfos = new List<LevelInfo>(threadInstance.All<LevelInfo>());
             for (int i = 0; i < LevelInfos.Count(); i++)
             {
                 if (CrossConnectivity.Current.IsConnected)

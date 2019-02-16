@@ -19,7 +19,7 @@ namespace appFBLA2019
             Xamarin.Forms.DependencyService.Register<IGetImage>();
 
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
-            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
+            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug" + "/";
 
             ServerConnector.Server = "50.106.17.86";
 
