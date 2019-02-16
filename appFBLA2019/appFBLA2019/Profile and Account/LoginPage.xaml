@@ -4,48 +4,36 @@
              x:Class="appFBLA2019.LoginPage"
              xmlns:local="clr-namespace:appFBLA2019">
     <ContentView.Content>
-        <StackLayout
-            Spacing="20"
-            Padding="20">
-
-            <Label x:Name="Title" Text="BizQuiz" Font="Bold"
-                   HorizontalOptions="Center"/>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="3*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Label Text="Username" Grid.Column="0" Grid.Row="0"/>
-                <Label Text="Password" Grid.Column="0" Grid.Row="1"/>
+        <StackLayout Spacing="20" Padding="20" VerticalOptions="Center">
+            <StackLayout Spacing="5" VerticalOptions="Start">
 
                 <Entry x:Name="EntryUsername" Grid.Column="1" Grid.Row="0"
-                       HorizontalOptions="FillAndExpand"/>
+                       HorizontalOptions="FillAndExpand" Placeholder="Username"/>
                 <Entry x:Name="EntryPassword" Grid.Column="1" Grid.Row="1"
                        IsPassword="True"
-                       HorizontalOptions="FillAndExpand"/>
-            </Grid>
-
-            <StackLayout
-                Spacing="5">
+                       HorizontalOptions="FillAndExpand" Placeholder="Password"/>
+                
+                <Button HorizontalOptions="CenterAndExpand" Text="Forgot your password?" 
+                        x:Name="forgotPassword" TextColor="DodgerBlue" Clicked="ForgotPassword_Tapped" 
+                        Released="ForgotPassword_Released" BackgroundColor="Transparent"
+                        Pressed="ForgotPassword_Pressed"/>
+                
                 <Button x:Name="ButtonLogin"
-                    Text="Login"
-                    Clicked="ButtonLogin_Clicked"/>
-
+                    Text="Log in"
+                    Clicked="ButtonLogin_Clicked"
+                    CornerRadius="25"/>
+                <Label Text="Or" HorizontalOptions="CenterAndExpand"/>
                 <Button x:Name="ButtonToCreateAccountPage"
-                    Text="Create New Account"
+                    Text="Create a free account"
                     Clicked="ButtonToCreateAccountPage_Clicked"
-                    />
-
+                    CornerRadius="25"/>
                 <Label x:Name="LabelMessage" Font="Bold"
                        HorizontalOptions="Center"/>
                 <ActivityIndicator x:Name="ActivityIndicator" IsVisible="False"/>
             </StackLayout>
-
+            <ContentView>
+                <Image Source="BizQuizLogo.png" Aspect="AspectFit"/>
+            </ContentView>
         </StackLayout>
     </ContentView.Content>
 </ContentView>

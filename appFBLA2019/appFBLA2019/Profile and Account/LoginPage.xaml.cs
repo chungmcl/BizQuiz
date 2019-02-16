@@ -15,6 +15,7 @@ namespace appFBLA2019
         public LoginPage()
         {
             this.InitializeComponent();
+            
         }
 
         private void ButtonLogin_Clicked(object sender, EventArgs e)
@@ -108,6 +109,21 @@ namespace appFBLA2019
         public void OnSignout(object source, EventArgs eventArgs)
         {
             this.LabelMessage.Text = "";
+        }
+
+        private void ForgotPassword_Tapped(object sender, EventArgs e)
+        {
+            this.Navigation.PushModalAsync(new ForgotPasswordPage());
+        }
+
+        private void ForgotPassword_Released(object sender, EventArgs e)
+        {
+            this.forgotPassword.TextColor = Color.DodgerBlue;
+        }
+
+        private void ForgotPassword_Pressed(object sender, EventArgs e)
+        {
+            this.forgotPassword.TextColor = Color.Blue;
         }
     }
 }
