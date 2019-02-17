@@ -369,9 +369,9 @@ namespace appFBLA2019
 
 					// Add all the questions that aren't eddited
 					DBHandler.Database.AddQuestions(NewQuestions);
-
-
 				}
+
+                File.Create(DBHandler.Database.DBFolderPath + ".nomedia");
 
 				// If they renamed the level, delete the old one
 				if (this.originalName != this.EntryLevelName.Text.Trim() && this.originalAuthor == CredentialManager.Username)

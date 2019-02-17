@@ -16,11 +16,13 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LevelSelectionPage : ContentPage
     {
+        public bool IsLoading { get; set; }
         public LevelSelectionPage(string category)
         {
             this.InitializeComponent();
             this.category = category;
             Directory.CreateDirectory(App.Path + $"/{category}");
+            this.IsLoading = false;
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
             //this.Setup();
         }
@@ -31,10 +33,20 @@ namespace appFBLA2019
             this.Setup();
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            // If size has not been allocated
+            if (Application.Current.MainPage.Width <= 0)
+                this.Setup();
+        }
+
         private readonly string category;
         // TO DO: Display author name of level
         internal void Setup()
         {
+            this.IsLoading = true;
             this.ButtonStack.Children.Clear();
 
             string[] levelPaths = Directory.GetDirectories(App.Path + $"/{this.category}");
@@ -251,6 +263,7 @@ namespace appFBLA2019
                 frame.Content = frameLayout;
                 this.ButtonStack.Children.Add(frame);
             }
+            this.IsLoading = false;
         }
 
         private void SyncUpload_Clicked(object sender, EventArgs e)
@@ -279,7 +292,7 @@ namespace appFBLA2019
                     new string[] { imageFilePaths[i], imageFilePaths[i].Split('/').Last().Split('.').First(), dbID } );
 
                 OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
-                if (ServerConnector.ReceiveFromServerORM() == OperationReturnMessage.False)
+                if (message == OperationReturnMessage.False)
                     return false;
             }
 
@@ -310,6 +323,7 @@ namespace appFBLA2019
             {
                 question = "Are you sure you want to unsubscribe?";
                 message = "This will remove the copy from your device";
+                // Decrement subscriber count on server
             }
 
             bool answer = await DisplayAlert(question, message, "Yes", "No");
@@ -320,9 +334,12 @@ namespace appFBLA2019
                 if (System.IO.Directory.Exists(path))
                 {
                     System.IO.Directory.Delete(path, true);
-                    if (unsubscribe)
+                    if (!unsubscribe) // If delete (user owns this level)
                     {
-                        // code to delete from server
+                        string realmFilePath = Directory.GetFiles(App.Path + path, "*.realm").First();
+                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                        LevelInfo info = realm.All<LevelInfo>().First();
+                        ServerConnector.SendData(ServerRequestTypes.DeleteLevel, info.DBId + "/-");
                     }
                     this.Setup();
                 }

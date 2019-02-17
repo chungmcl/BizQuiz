@@ -19,7 +19,7 @@ namespace appFBLA2019
             try
             {
                 this.dbPath = dbFolderPath + $"/{levelTitle}{realmExtension}";
-                this.dbFolderPath = dbFolderPath;
+                this.DBFolderPath = dbFolderPath + "/";
                 RealmConfiguration rC = new RealmConfiguration(this.dbPath);
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = $"/{levelTitle}{realmExtension}";
@@ -69,7 +69,7 @@ namespace appFBLA2019
             {
                 if (question.NeedsPicture)
                 {
-                    File.Delete(this.dbFolderPath + "/" + question.QuestionId + ".jpg");
+                    File.Delete(this.DBFolderPath + "/" + question.QuestionId + ".jpg");
                 }
 
                 this.realmDB.Write(() =>
@@ -89,7 +89,7 @@ namespace appFBLA2019
             if (updatedQuestion.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
-                File.WriteAllBytes(this.dbFolderPath + "/" + updatedQuestion.QuestionId + ".jpg", imageByteArray);
+                File.WriteAllBytes(this.DBFolderPath + "/" + updatedQuestion.QuestionId + ".jpg", imageByteArray);
             }
         }
 
@@ -101,14 +101,14 @@ namespace appFBLA2019
             {
                 if (questions[i].NeedsPicture)
                 {
-                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].QuestionId + ".jpg";
+                    questions[i].ImagePath = this.DBFolderPath + "/" + questions[i].QuestionId + ".jpg";
                 }
             }
             return questions;
         }
 
         private const string realmExtension = ".realm";
-        private readonly string dbFolderPath;
+        public readonly string DBFolderPath;
         private readonly string dbPath;
 
         private void SaveQuestion(Question question)
@@ -137,8 +137,7 @@ namespace appFBLA2019
                     imageByteArray = new byte[imageMemoryStream.Length];
                     imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
                 }
-                File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
-                File.Create(this.dbFolderPath + ".nomedia");
+                File.WriteAllBytes(this.DBFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
             }
 
             this.realmDB.Write(() =>

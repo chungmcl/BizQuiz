@@ -51,7 +51,8 @@ namespace appFBLA2019
             if (CrossConnectivity.Current.IsConnected)
             {
                 int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
-                return (OperationReturnMessage)(ReadByteArray(size)[0]);
+                OperationReturnMessage message = (OperationReturnMessage)(ReadByteArray(size)[0]);
+                return message;
             }
             else
             {
@@ -104,6 +105,7 @@ namespace appFBLA2019
                     case (ServerRequestTypes.ConfirmEmail):
                     case (ServerRequestTypes.ChangeEmail):
                     case (ServerRequestTypes.DeleteAccount):
+                    case (ServerRequestTypes.DeleteLevel):
 
                     case (ServerRequestTypes.GetLastModifiedDate):
 
