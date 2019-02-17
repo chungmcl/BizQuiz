@@ -46,224 +46,227 @@ namespace appFBLA2019
         // TO DO: Display author name of level
         internal void Setup()
         {
-            this.IsLoading = true;
-            this.ButtonStack.Children.Clear();
-
-            string[] levelPaths = Directory.GetDirectories(App.Path + $"/{this.category}");
-            List<string[]> levels = new List<string[]>();
-            foreach (string levelName in levelPaths)
+            if (!this.IsLoading)
             {
-                if (levelName.Contains('`'))
-                {
-                    levels.Add(new string[] { levelName.Split('/').Last().Split('`').First(), levelName.Split('/').Last().Split('`').Last() });
-                }
-            }
+                this.IsLoading = true;
+                this.ButtonStack.Children.Clear();
 
-            foreach (string[] level in levels)
-            {
-                Frame frame = new Frame()
+                string[] levelPaths = Directory.GetDirectories(App.Path + $"/{this.category}");
+                List<string[]> levels = new List<string[]>();
+                foreach (string levelName in levelPaths)
                 {
-                    HeightRequest = 100,
-                    VerticalOptions = LayoutOptions.Start,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    CornerRadius = 10
-                };
-
-                RelativeLayout frameLayout = new RelativeLayout // Child of frame
-                {
-                    HeightRequest = 100
-                };
-
-                StackLayout frameStack = new StackLayout // 1st Child of frameLayout
-                {
-                    FlowDirection = FlowDirection.LeftToRight,
-                    Orientation = StackOrientation.Vertical,
-                    Padding = 10
-                };
-
-                StackLayout topStack = new StackLayout
-                {
-                    FlowDirection = FlowDirection.LeftToRight,
-                    Orientation = StackOrientation.Horizontal,
-                    VerticalOptions = LayoutOptions.StartAndExpand,
-                    HorizontalOptions = LayoutOptions.FillAndExpand
-
-                };
-
-
-                Label title = new Label // 0
-                {
-                    Text = level.First(),
-                    FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-                    FontAttributes = FontAttributes.Bold,
-                    VerticalOptions = LayoutOptions.StartAndExpand,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    HeightRequest = 45
-                };
-                topStack.Children.Add(title);
-
-                // check status
-                ImageButton Sync = new ImageButton
-                {
-                    HeightRequest = 25,
-                    WidthRequest = 25,
-                    BackgroundColor = Color.White,
-                    VerticalOptions = LayoutOptions.StartAndExpand,
-                    HorizontalOptions = LayoutOptions.End,
-                    StyleId = "/" + category + "/" + level.First() + "`" + level.Last()
-                };
-
-                LevelInfo info = LevelRosterDatabase.GetLevelInfo(level[0], level[1]);
-
-                if (info.SyncStatus == 3)
-                {
-                    Sync.Source = "ic_cloud_off_black_48dp.png";
-                    Sync.Clicked += SyncOffline_Clicked;
-                }
-                else if (info.SyncStatus == 2)
-                {
-                    Sync.Source = "ic_cloud_done_black_48dp.png";
-                    Sync.Clicked += SyncNoChange_Clicked;
-                }
-                else if (info.SyncStatus == 1)
-                {
-                    Sync.Source = "ic_cloud_upload_black_48dp.png";
-                    Sync.Clicked += SyncUpload_Clicked;
-                }
-                else if (info.SyncStatus == 0)
-                {
-                    Sync.Source = "ic_cloud_download_black_48dp.png";
-                    Sync.Clicked += SyncDownload_Clicked;
+                    if (levelName.Contains('`'))
+                    {
+                        levels.Add(new string[] { levelName.Split('/').Last().Split('`').First(), levelName.Split('/').Last().Split('`').Last() });
+                    }
                 }
 
-                topStack.Children.Add(Sync);
-
-                ImageButton imageButtonMenu = new ImageButton
+                foreach (string[] level in levels)
                 {
-                    Source = "ic_more_vert_black_48dp.png",
-                    HeightRequest = 25,
-                    WidthRequest = 25,
-                    BackgroundColor = Color.White,
-                    VerticalOptions = LayoutOptions.StartAndExpand,
-                    HorizontalOptions = LayoutOptions.End,
-                };
+                    Frame frame = new Frame()
+                    {
+                        HeightRequest = 100,
+                        VerticalOptions = LayoutOptions.Start,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        CornerRadius = 10
+                    };
 
-                imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
+                    RelativeLayout frameLayout = new RelativeLayout // Child of frame
+                    {
+                        HeightRequest = 100
+                    };
 
-                topStack.Children.Add(imageButtonMenu);
+                    StackLayout frameStack = new StackLayout // 1st Child of frameLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Vertical,
+                        Padding = 10
+                    };
 
-                Frame frameMenu = new Frame // Child of frameLayout
-                {
-                    Padding = 0,
-                    IsVisible = false
-                };
-                StackLayout menuStack = new StackLayout
-                {
-                    FlowDirection = FlowDirection.LeftToRight,
-                    Orientation = StackOrientation.Vertical,
-                    Padding = 0
-                };
+                    StackLayout topStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Horizontal,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.FillAndExpand
 
-                Button ButtonEdit = new Button(); // 3
-                {
-                    ButtonEdit.Clicked += this.ButtonEdit_Clicked;
-                    ButtonEdit.Text = "Edit";
-                    ButtonEdit.HeightRequest = 35;
-                    ButtonEdit.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                    ButtonEdit.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                    ButtonEdit.VerticalOptions = LayoutOptions.StartAndExpand;
-                    ButtonEdit.BackgroundColor = Color.White;
-                    ButtonEdit.CornerRadius = 0;
-                }
-                menuStack.Children.Add(ButtonEdit);
-
-                Button ButtonDelete = new Button();
-                {
-                    ButtonDelete.Clicked += this.ButtonDelete_Clicked;                   
-                    ButtonDelete.HeightRequest = 35;
-                    ButtonDelete.TextColor = Color.Red;
-                    ButtonDelete.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                    ButtonDelete.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                    ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
-                    ButtonDelete.BackgroundColor = Color.White;
-                    ButtonDelete.CornerRadius = 0;
-                    ButtonDelete.StyleId = "/" + category + "/" + level.First() + "`" + level.Last();
-                }
-                menuStack.Children.Add(ButtonDelete);
-
-                if (CredentialManager.Username == level.Last())
-                {
-                    ButtonDelete.Text = "Delete";
-                }
-                else
-                {
-                    ButtonDelete.Text = "Unsubscribe";
-                }
-
-                frameMenu.Content = menuStack;
-
-                frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) => {
-                    return parent.Width - 100;
-                }), Constraint.RelativeToParent((parent) => {
-                    return parent.Y + 20;
-                }), Constraint.Constant(83), Constraint.Constant(76));
-
-                frameStack.Children.Add(topStack);
-
-                BoxView Seperator = new BoxView // 1
-                {
-                    Color = Color.LightGray,
-                    CornerRadius = 1,
-                    HeightRequest = 2,
-                    WidthRequest = Application.Current.MainPage.Width - 75,
-                    HorizontalOptions = LayoutOptions.CenterAndExpand,
-                    VerticalOptions = LayoutOptions.CenterAndExpand
-                };
-                frameStack.Children.Add(Seperator);
+                    };
 
 
-                Label Author = new Label // 2
-                {
-                    Text = "Created by: " + level.Last(),
-                    FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
-                    HeightRequest = 60,
-                    VerticalOptions = LayoutOptions.End,
-                    HorizontalOptions = LayoutOptions.StartAndExpand
-                };
-                frameStack.Children.Add(Author);
+                    Label title = new Label // 0
+                    {
+                        Text = level.First(),
+                        FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
+                        FontAttributes = FontAttributes.Bold,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        HeightRequest = 45
+                    };
+                    topStack.Children.Add(title);
+
+                    // check status
+                    ImageButton Sync = new ImageButton
+                    {
+                        HeightRequest = 25,
+                        WidthRequest = 25,
+                        BackgroundColor = Color.White,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.End,
+                        StyleId = "/" + category + "/" + level.First() + "`" + level.Last()
+                    };
+
+                    LevelInfo info = LevelRosterDatabase.GetLevelInfo(level[0], level[1]);
+
+                    if (info.SyncStatus == 3)
+                    {
+                        Sync.Source = "ic_cloud_off_black_48dp.png";
+                        Sync.Clicked += SyncOffline_Clicked;
+                    }
+                    else if (info.SyncStatus == 2)
+                    {
+                        Sync.Source = "ic_cloud_done_black_48dp.png";
+                        Sync.Clicked += SyncNoChange_Clicked;
+                    }
+                    else if (info.SyncStatus == 1)
+                    {
+                        Sync.Source = "ic_cloud_upload_black_48dp.png";
+                        Sync.Clicked += SyncUpload_Clicked;
+                    }
+                    else if (info.SyncStatus == 0)
+                    {
+                        Sync.Source = "ic_cloud_download_black_48dp.png";
+                        Sync.Clicked += SyncDownload_Clicked;
+                    }
+
+                    topStack.Children.Add(Sync);
+
+                    ImageButton imageButtonMenu = new ImageButton
+                    {
+                        Source = "ic_more_vert_black_48dp.png",
+                        HeightRequest = 25,
+                        WidthRequest = 25,
+                        BackgroundColor = Color.White,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.End,
+                    };
+
+                    imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
+
+                    topStack.Children.Add(imageButtonMenu);
+
+                    Frame frameMenu = new Frame // Child of frameLayout
+                    {
+                        Padding = 0,
+                        IsVisible = false
+                    };
+                    StackLayout menuStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Vertical,
+                        Padding = 0
+                    };
+
+                    Button ButtonEdit = new Button(); // 3
+                    {
+                        ButtonEdit.Clicked += this.ButtonEdit_Clicked;
+                        ButtonEdit.Text = "Edit";
+                        ButtonEdit.HeightRequest = 35;
+                        ButtonEdit.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
+                        ButtonEdit.HorizontalOptions = LayoutOptions.CenterAndExpand;
+                        ButtonEdit.VerticalOptions = LayoutOptions.StartAndExpand;
+                        ButtonEdit.BackgroundColor = Color.White;
+                        ButtonEdit.CornerRadius = 0;
+                    }
+                    menuStack.Children.Add(ButtonEdit);
+
+                    Button ButtonDelete = new Button();
+                    {
+                        ButtonDelete.Clicked += this.ButtonDelete_Clicked;
+                        ButtonDelete.HeightRequest = 35;
+                        ButtonDelete.TextColor = Color.Red;
+                        ButtonDelete.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
+                        ButtonDelete.HorizontalOptions = LayoutOptions.CenterAndExpand;
+                        ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
+                        ButtonDelete.BackgroundColor = Color.White;
+                        ButtonDelete.CornerRadius = 0;
+                        ButtonDelete.StyleId = "/" + category + "/" + level.First() + "`" + level.Last();
+                    }
+                    menuStack.Children.Add(ButtonDelete);
+
+                    if (CredentialManager.Username == level.Last())
+                    {
+                        ButtonDelete.Text = "Delete";
+                    }
+                    else
+                    {
+                        ButtonDelete.Text = "Unsubscribe";
+                    }
+
+                    frameMenu.Content = menuStack;
+
+                    frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) => {
+                        return parent.Width - 100;
+                    }), Constraint.RelativeToParent((parent) => {
+                        return parent.Y + 20;
+                    }), Constraint.Constant(83), Constraint.Constant(76));
+
+                    frameStack.Children.Add(topStack);
+
+                    BoxView Seperator = new BoxView // 1
+                    {
+                        Color = Color.LightGray,
+                        CornerRadius = 1,
+                        HeightRequest = 2,
+                        WidthRequest = Application.Current.MainPage.Width - 75,
+                        HorizontalOptions = LayoutOptions.CenterAndExpand,
+                        VerticalOptions = LayoutOptions.CenterAndExpand
+                    };
+                    frameStack.Children.Add(Seperator);
+
+
+                    Label Author = new Label // 2
+                    {
+                        Text = "Created by: " + level.Last(),
+                        FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
+                        HeightRequest = 60,
+                        VerticalOptions = LayoutOptions.End,
+                        HorizontalOptions = LayoutOptions.StartAndExpand
+                    };
+                    frameStack.Children.Add(Author);
 
 
 
-                TapGestureRecognizer recognizer = new TapGestureRecognizer();
-                recognizer.Tapped += async (object sender, EventArgs e) =>
-                {
-                    frame.GestureRecognizers.Remove(recognizer);
-                    frame.BackgroundColor = Color.LightGray;
-                    Seperator.Color = Color.Gray;
-                    imageButtonMenu.BackgroundColor = Color.LightGray;
-                    Sync.BackgroundColor = Color.LightGray;
-                    Level newLevel = new Level(this.category, level.First(), level.Last());
-                    newLevel.LoadQuestions();
-                    await this.RemoveMenu(frameMenu);
-                    await this.Navigation.PushAsync(new Game(newLevel));
-                    frame.BackgroundColor = Color.Default;
-                    Seperator.Color = Color.LightGray;
-                    imageButtonMenu.BackgroundColor = Color.White;
-                    Sync.BackgroundColor = Color.White;
+                    TapGestureRecognizer recognizer = new TapGestureRecognizer();
+                    recognizer.Tapped += async (object sender, EventArgs e) =>
+                    {
+                        frame.GestureRecognizers.Remove(recognizer);
+                        frame.BackgroundColor = Color.LightGray;
+                        Seperator.Color = Color.Gray;
+                        imageButtonMenu.BackgroundColor = Color.LightGray;
+                        Sync.BackgroundColor = Color.LightGray;
+                        Level newLevel = new Level(this.category, level.First(), level.Last());
+                        newLevel.LoadQuestions();
+                        await this.RemoveMenu(frameMenu);
+                        await this.Navigation.PushAsync(new Game(newLevel));
+                        frame.BackgroundColor = Color.Default;
+                        Seperator.Color = Color.LightGray;
+                        imageButtonMenu.BackgroundColor = Color.White;
+                        Sync.BackgroundColor = Color.White;
+                        frame.GestureRecognizers.Add(recognizer);
+                    };
+
                     frame.GestureRecognizers.Add(recognizer);
-                };
 
-                frame.GestureRecognizers.Add(recognizer);
-               
 
-                frameLayout.Children.Add(frameStack, Constraint.RelativeToParent((parent) => {
-                    return 0;
-                }));
+                    frameLayout.Children.Add(frameStack, Constraint.RelativeToParent((parent) => {
+                        return 0;
+                    }));
 
-                frame.Content = frameLayout;
-                this.ButtonStack.Children.Add(frame);
+                    frame.Content = frameLayout;
+                    this.ButtonStack.Children.Add(frame);
+                }
+                this.IsLoading = false;
             }
-            this.IsLoading = false;
         }
 
         private void SyncUpload_Clicked(object sender, EventArgs e)
@@ -314,7 +317,7 @@ namespace appFBLA2019
             DisplayAlert("Offline", "This level cannot be synced because you are offline.", "OK");
         }
 
-        async private void ButtonDelete_Clicked(object sender, EventArgs e)
+        private async void ButtonDelete_Clicked(object sender, EventArgs e)
         {
             bool unsubscribe = ((Button)sender).Text == "Unsubscribe";
             string question = "Are you sure you want to delete this level?";
@@ -329,17 +332,27 @@ namespace appFBLA2019
             bool answer = await DisplayAlert(question, message, "Yes", "No");
             if (answer)
             {
-                string path = App.Path + ((Button)sender).StyleId;
+                string path = ((Button)sender).StyleId;
 
                 if (System.IO.Directory.Exists(path))
                 {
                     System.IO.Directory.Delete(path, true);
                     if (!unsubscribe) // If delete (user owns this level)
                     {
-                        string realmFilePath = Directory.GetFiles(App.Path + path, "*.realm").First();
+                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
                         Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                         LevelInfo info = realm.All<LevelInfo>().First();
-                        ServerConnector.SendData(ServerRequestTypes.DeleteLevel, info.DBId + "/-");
+                        string dbId = info.DBId;
+
+                        ServerConnector.SendData(ServerRequestTypes.DeleteLevel, dbId + "/-");
+                        Directory.Delete(path, true);
+
+                        LevelInfo rosterInfo = LevelRosterDatabase.GetLevelInfo(dbId);
+                        LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo);
+                        rosterInfoUpdated.IsDeletedLocally = true;
+                        rosterInfoUpdated.LastModifiedDate = DateTime.Now.ToString();
+                        LevelRosterDatabase.EditLevelInfo(rosterInfoUpdated);
+                        if (CrossConnectivity.Current.IsConnected)
                     }
                     this.Setup();
                 }

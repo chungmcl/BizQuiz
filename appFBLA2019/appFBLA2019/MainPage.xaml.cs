@@ -48,8 +48,8 @@ namespace appFBLA2019
 					break;
 				    case levelCategoriesPage:
 				    {
-					    //this.levelsPage.RefreshChildren();
-				    }
+                        this.levelsPage.RefreshChildren();
+                    }
 					break;
 			}
 		}

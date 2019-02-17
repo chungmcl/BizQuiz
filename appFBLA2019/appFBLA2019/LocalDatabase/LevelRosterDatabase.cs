@@ -42,6 +42,14 @@ namespace appFBLA2019
                 realmDB.Add(editedLevelInfo, update : true);
             });
         }
+        
+        private static void EditLevelInfo(Realm threadedRealm, LevelInfo editedLevelInfo)
+        {
+            threadedRealm.Write(() =>
+            {
+                threadedRealm.Add(editedLevelInfo, update: true);
+            });
+        }
 
         /// <summary>
         /// Load LevelInfos property before entering task.
@@ -61,12 +69,19 @@ namespace appFBLA2019
             }
         }
 
-        private static void EditLevelInfo(Realm threadedRealm, LevelInfo editedLevelInfo)
+        public static LevelInfo GetLevelInfo(string dbId)
         {
-            threadedRealm.Write(() =>
+            try
             {
-                threadedRealm.Add(editedLevelInfo, update: true);
-            });
+                RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+                Realm realmDB = Realm.GetInstance(threadConfig);
+                return realmDB.All<LevelInfo>().Where
+                                 (levelInfo => levelInfo.DBId == dbId).First();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static void UpdateLocalDatabase()

@@ -15,20 +15,6 @@ namespace appFBLA2019
 {
     public static class ServerConnector
     {
-        private const int stringHeaderSize = 5;
-        private const int imageHeaderSize = maxUsernameSize + maxPasswordSize + maxImageNameSize + maxDBIdSize;
-        private const int maxImageNameSize = 72; // 36 char GUID (without file extension)
-        private const int maxDBIdSize = 72; // 36 char GUID
-        private const string jpegFileExtension = ".jpg";
-
-        private const int realmHeaderSize = maxUsernameSize + maxPasswordSize;
-
-        private const int maxUsernameSize = 64;
-        private const int maxPasswordSize = 64;
-        private const string realmFileExtension = ".realm";
-
-        private const int headerSize = 5;
-        private const int maxFileSize = 2147483591;
         // Server Release Build: 7777 Server Debug Build: 7778
         public static int Port { get { return 7778; } }
 
@@ -45,183 +31,8 @@ namespace appFBLA2019
         {
             return true; // Allow untrusted certificates.
         }
-
-        public static OperationReturnMessage ReceiveFromServerORM()
-        {
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
-                OperationReturnMessage message = (OperationReturnMessage)(ReadByteArray(size)[0]);
-                return message;
-            }
-            else
-            {
-                return OperationReturnMessage.FalseNoConnection;
-            }
-        }
-
-        public static string ReceiveFromServerStringData()
-        {
-            if (ssl == null)
-                return "";
-
-            int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
-            string data = Encoding.Unicode.GetString(ReadByteArray(size));
-            data = data.Trim();
-            return data;
-        }
-
-        // Encrypts connection using SSL.
-        /// <summary>
-        /// Send a request or data to the server.
-        /// </summary>
-        /// <param name="dataType">
-        /// The type of request/data to be sent
-        /// </param>
-        /// <param name="data">
-        /// The data/string query to send
-        /// </param>
-        /// <returns>
-        /// If the data successfully sent or not
-        /// </returns>
-        public static bool SendData(ServerRequestTypes dataType, object data)
-        {
-            if (SetupConnection())
-            {
-                switch (dataType)
-                {
-                    case (ServerRequestTypes.AddJPEGImage):
-                        SendImageFile((string[])data);
-                        break;
-
-                    case (ServerRequestTypes.AddRealmFile):
-                        SendRealmFile((string)data);
-                        break;
-
-                    case (ServerRequestTypes.LoginAccount):
-                    case (ServerRequestTypes.RegisterAccount):
-                    case (ServerRequestTypes.ChangePassword):
-                    case (ServerRequestTypes.GetEmail):
-                    case (ServerRequestTypes.ConfirmEmail):
-                    case (ServerRequestTypes.ChangeEmail):
-                    case (ServerRequestTypes.DeleteAccount):
-                    case (ServerRequestTypes.DeleteLevel):
-
-                    case (ServerRequestTypes.GetLastModifiedDate):
-
-                    case (ServerRequestTypes.StringData):
-                        SendStringData((string)data, dataType);
-                        return true;
-
-                    case (ServerRequestTypes.GetJPEGImage):
-
-                        break;
-
-                    case (ServerRequestTypes.GetRealmFile):
-
-                        break;
-                }
-                return false;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        // Max byte size for arrays in C#, slightly under int.MaxValue - Can't process anything over this
-        private static void CloseConn() // Close connection.
-        {
-            ssl.Close();
-            netStream.Close();
-            client.Close();
-        }
-
-        private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
-        {
-            byte[] headerData = new byte[stringHeaderSize];
-            headerData[0] = (byte)type;
-            byte[] dataSize = BitConverter.GetBytes(size);
-            dataSize.CopyTo(headerData, 1);
-            return headerData;
-        }
-
-        private static byte[] GenerateRealmHeader()
-        {
-            byte[] headerData = new byte[realmHeaderSize];
-
-            byte[] username = Encoding.Unicode.GetBytes(CredentialManager.Username);
-            Array.Copy(username, headerData, username.Length);
-
-            byte[] password = Encoding.Unicode.GetBytes(CredentialManager.Password);
-            Array.Copy(password, 0, headerData, maxUsernameSize, password.Length);
-            return headerData;
-        }
-
-        private static byte[] GenerateImageHeader(string fileName, string dBId)
-        {
-            byte[] headerData = new byte[imageHeaderSize];
-
-            byte[] username = Encoding.Unicode.GetBytes(CredentialManager.Username);
-            Array.Copy(username, headerData, username.Length);
-
-            byte[] password = Encoding.Unicode.GetBytes(CredentialManager.Password);
-            Array.Copy(password, 0, headerData, maxUsernameSize, password.Length);
-
-            byte[] fileNameBytes = Encoding.Unicode.GetBytes(fileName);
-            Array.Copy(fileNameBytes, 0, headerData, maxUsernameSize + maxPasswordSize, fileNameBytes.Length);
-
-            byte[] dBIdBytes = Encoding.Unicode.GetBytes(dBId);
-            Array.Copy(dBIdBytes, 0, headerData, maxUsernameSize + maxPasswordSize + maxImageNameSize, dBIdBytes.Length);
-            return headerData;
-        }
-
-        private static void SendStringData(string data, ServerRequestTypes dataType)
-        {
-            string dataAsString = data;
-            byte[] dataAsBytes = Encoding.Unicode.GetBytes(dataAsString);
-            byte[] headerData = GenerateHeaderData(dataType, (uint)dataAsBytes.Length);
-            byte[] toSend = new byte[headerData.Length + dataAsBytes.Length];
-            headerData.CopyTo(toSend, 0);
-            dataAsBytes.CopyTo(toSend, headerData.Length);
-            SendByteArray(toSend);
-        }
         
-        /// <summary>
-        /// Send realm file to the server given the path to the realm file on current device.
-        /// </summary>
-        /// <param name="data"></param>
-        private static void SendRealmFile(string data)
-        {
-            byte[] realmBytes = File.ReadAllBytes(data);
-            byte[] realmHeader = GenerateRealmHeader();
-            byte[] header = GenerateHeaderData(ServerRequestTypes.AddRealmFile, (uint)realmBytes.Length + (uint)realmHeader.Length);
-
-            byte[] toSend = new byte[header.Length + realmHeader.Length + realmBytes.Length];
-            header.CopyTo(toSend, 0);
-            realmHeader.CopyTo(toSend, header.Length);
-            realmBytes.CopyTo(toSend, header.Length + realmHeader.Length);
-            SendByteArray(toSend);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="data">[0] = path, [1] = fileName, [2] = dBId</param>
-        private static void SendImageFile(string[] data)
-        {
-            byte[] imageBytes = File.ReadAllBytes(data[0]);
-            byte[] imageHeader = GenerateImageHeader(data[1], data[2]);
-            byte[] header = GenerateHeaderData(ServerRequestTypes.AddJPEGImage, (uint)imageBytes.Length + (uint)imageHeader.Length);
-
-            byte[] toSend = new byte[header.Length + imageHeader.Length + imageBytes.Length];
-            header.CopyTo(toSend, 0);
-            imageHeader.CopyTo(toSend, header.Length);
-            imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
-            SendByteArray(toSend);
-        }
-        
-        private static void SendByteArray(byte[] data)
+        public static void SendByteArray(byte[] data)
         {
             lock (ssl)
             {
@@ -233,7 +44,7 @@ namespace appFBLA2019
             }
         }
 
-        private static byte[] ReadByteArray(int size)
+        public  static byte[] ReadByteArray(int size)
         {
             if (ssl != null)
             {
@@ -282,7 +93,7 @@ namespace appFBLA2019
                 return null;
         }
 
-        private static bool SetupConnection()
+        public  static bool SetupConnection()
         {
             try
             {
@@ -329,38 +140,12 @@ namespace appFBLA2019
                 return false;
             }
         }
-    }
-    
-    public enum OperationReturnMessage : byte
-    {
-        True,
-        False,
-        TrueConfirmEmail,
-        FalseInvalidCredentials,
-        FalseInvalidEmail,
-        FalseUsernameAlreadyExists,
-        FalseNoConnection
-    }
-
-    public enum ServerRequestTypes : byte
-    {
-        // "Command" Requests
-        StringData,
-
-        AddJPEGImage,
-        AddRealmFile,
-        DeleteLevel,
-        LoginAccount,
-        RegisterAccount,
-        DeleteAccount,
-        ConfirmEmail,
-        ChangeEmail,
-        ChangePassword,
-
-        // "Get" Requests
-        GetEmail,
-        GetJPEGImage,
-        GetRealmFile,
-        GetLastModifiedDate
+        
+        public static void CloseConn() // Close connection.
+        {
+            ssl.Close();
+            netStream.Close();
+            client.Close();
+        }
     }
 }
