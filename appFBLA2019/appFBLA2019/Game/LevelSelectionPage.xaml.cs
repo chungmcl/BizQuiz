@@ -12,8 +12,12 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
+
+
     public partial class LevelSelectionPage : ContentPage
     {
+        TapGestureRecognizer recognizer = new TapGestureRecognizer();
+
         public LevelSelectionPage(string category)
         {
             this.InitializeComponent();
@@ -51,7 +55,8 @@ namespace appFBLA2019
 
                 RelativeLayout frameLayout = new RelativeLayout // Child of frame
                 {
-                    HeightRequest = 100
+                    HeightRequest = 100,
+
                 };
 
                 StackLayout frameStack = new StackLayout // 1st Child of frameLayout
@@ -97,8 +102,8 @@ namespace appFBLA2019
                 ImageButton imageButtonMenu = new ImageButton
                 {
                     Source = "ic_more_vert_black_48dp.png",
-                    HeightRequest = 25,
-                    WidthRequest = 25,
+                    HeightRequest = 30,
+                    WidthRequest = 30,
                     BackgroundColor = Color.White,
                     VerticalOptions = LayoutOptions.StartAndExpand,
                     HorizontalOptions = LayoutOptions.End
@@ -111,20 +116,21 @@ namespace appFBLA2019
                 Frame frameMenu = new Frame // Child of frameLayout
                 {
                     Padding = 0,
-                    IsVisible = false
+                    IsVisible = false,
                 };
                 StackLayout menuStack = new StackLayout
                 {
                     FlowDirection = FlowDirection.LeftToRight,
                     Orientation = StackOrientation.Vertical,
-                    Padding = 0
+                    Padding = 0,
+                    Spacing = 0
                 };
 
                 Button ButtonEdit = new Button(); // 3
                 {
                     ButtonEdit.Clicked += this.ButtonEdit_Clicked;
                     ButtonEdit.Text = "Edit";
-                    ButtonEdit.HeightRequest = 35;
+                    ButtonEdit.HeightRequest = 45;
                     ButtonEdit.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
                     ButtonEdit.HorizontalOptions = LayoutOptions.CenterAndExpand;
                     ButtonEdit.VerticalOptions = LayoutOptions.StartAndExpand;
@@ -136,7 +142,7 @@ namespace appFBLA2019
                 Button ButtonDelete = new Button();
                 {
                     ButtonDelete.Clicked += this.ButtonDelete_Clicked;                   
-                    ButtonDelete.HeightRequest = 35;
+                    ButtonDelete.HeightRequest = 45;
                     ButtonDelete.TextColor = Color.Red;
                     ButtonDelete.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
                     ButtonDelete.HorizontalOptions = LayoutOptions.CenterAndExpand;
@@ -161,8 +167,8 @@ namespace appFBLA2019
                 frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) => {
                     return parent.Width - 100;
                 }), Constraint.RelativeToParent((parent) => {
-                    return parent.Y + 20;
-                }), Constraint.Constant(83), Constraint.Constant(76));
+                    return parent.Y;
+                }), Constraint.Constant(90), Constraint.Constant(90));
 
                 frameStack.Children.Add(topStack);
 
@@ -189,8 +195,6 @@ namespace appFBLA2019
                 frameStack.Children.Add(Author);
 
 
-
-                TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
                     frame.GestureRecognizers.Remove(recognizer);
@@ -260,15 +264,19 @@ namespace appFBLA2019
 
         async private void ImageButtonMenu_Clicked(object sender, EventArgs e)
         {
-            Frame frame = ((Frame)((RelativeLayout)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent).Children[0]);
-            frame.Opacity = 0;
-            frame.IsVisible = true;
-            await frame.FadeTo(1, 200, Easing.CubicInOut);
+            Frame menu = ((Frame)((RelativeLayout)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent).Children[0]);
+            Frame frame = ((Frame)((RelativeLayout)menu.Parent).Parent);
+
+            frame.GestureRecognizers.Remove(recognizer);
+            menu.Opacity = 0;
+            menu.IsVisible = true;
+            await menu.FadeTo(1, 200, Easing.CubicInOut);
 
             TapGestureRecognizer globalRecognizer = new TapGestureRecognizer();
             globalRecognizer.Tapped += async (s, a) => {
-                await this.RemoveMenu(frame);
+                await this.RemoveMenu(menu);
                 this.ButtonStack.GestureRecognizers.Remove(globalRecognizer);
+                frame.GestureRecognizers.Add(recognizer);
             };
             this.ButtonStack.GestureRecognizers.Add(globalRecognizer);
 
