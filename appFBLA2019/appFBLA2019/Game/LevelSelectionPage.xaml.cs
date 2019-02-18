@@ -14,9 +14,12 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
+
+
     public partial class LevelSelectionPage : ContentPage
     {
-        public bool IsLoading { get; set; }
+        TapGestureRecognizer recognizer = new TapGestureRecognizer();
+
         public LevelSelectionPage(string category)
         {
             this.InitializeComponent();
@@ -138,58 +141,59 @@ namespace appFBLA2019
 
                     topStack.Children.Add(Sync);
 
-                    ImageButton imageButtonMenu = new ImageButton
-                    {
-                        Source = "ic_more_vert_black_48dp.png",
-                        HeightRequest = 25,
-                        WidthRequest = 25,
-                        BackgroundColor = Color.White,
-                        VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.End,
-                    };
+                ImageButton imageButtonMenu = new ImageButton
+                {
+                    Source = "ic_more_vert_black_48dp.png",
+                    HeightRequest = 35,
+                    WidthRequest = 35,
+                    BackgroundColor = Color.White,
+                    VerticalOptions = LayoutOptions.StartAndExpand,
+                    HorizontalOptions = LayoutOptions.End
+                };
 
                     imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
 
                     topStack.Children.Add(imageButtonMenu);
 
-                    Frame frameMenu = new Frame // Child of frameLayout
-                    {
-                        Padding = 0,
-                        IsVisible = false
-                    };
-                    StackLayout menuStack = new StackLayout
-                    {
-                        FlowDirection = FlowDirection.LeftToRight,
-                        Orientation = StackOrientation.Vertical,
-                        Padding = 0
-                    };
+                Frame frameMenu = new Frame // Child of frameLayout
+                {
+                    Padding = 0,
+                    IsVisible = false,
+                };
+                StackLayout menuStack = new StackLayout
+                {
+                    FlowDirection = FlowDirection.LeftToRight,
+                    Orientation = StackOrientation.Vertical,
+                    Padding = 0,
+                    Spacing = 0
+                };
 
-                    Button ButtonEdit = new Button(); // 3
-                    {
-                        ButtonEdit.Clicked += this.ButtonEdit_Clicked;
-                        ButtonEdit.Text = "Edit";
-                        ButtonEdit.HeightRequest = 35;
-                        ButtonEdit.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                        ButtonEdit.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                        ButtonEdit.VerticalOptions = LayoutOptions.StartAndExpand;
-                        ButtonEdit.BackgroundColor = Color.White;
-                        ButtonEdit.CornerRadius = 0;
-                    }
-                    menuStack.Children.Add(ButtonEdit);
+                Button ButtonEdit = new Button(); // 3
+                {
+                    ButtonEdit.Clicked += this.ButtonEdit_Clicked;
+                    ButtonEdit.Text = "Edit";
+                    ButtonEdit.HeightRequest = 45;
+                    ButtonEdit.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
+                    ButtonEdit.HorizontalOptions = LayoutOptions.CenterAndExpand;
+                    ButtonEdit.VerticalOptions = LayoutOptions.StartAndExpand;
+                    ButtonEdit.BackgroundColor = Color.White;
+                    ButtonEdit.CornerRadius = 0;
+                }
+                menuStack.Children.Add(ButtonEdit);
 
-                    Button ButtonDelete = new Button();
-                    {
-                        ButtonDelete.Clicked += this.ButtonDelete_Clicked;
-                        ButtonDelete.HeightRequest = 35;
-                        ButtonDelete.TextColor = Color.Red;
-                        ButtonDelete.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                        ButtonDelete.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                        ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
-                        ButtonDelete.BackgroundColor = Color.White;
-                        ButtonDelete.CornerRadius = 0;
-                        ButtonDelete.StyleId = "/" + category + "/" + level.First() + "`" + level.Last();
-                    }
-                    menuStack.Children.Add(ButtonDelete);
+                Button ButtonDelete = new Button();
+                {
+                    ButtonDelete.Clicked += this.ButtonDelete_Clicked;                   
+                    ButtonDelete.HeightRequest = 45;
+                    ButtonDelete.TextColor = Color.Red;
+                    ButtonDelete.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
+                    ButtonDelete.HorizontalOptions = LayoutOptions.CenterAndExpand;
+                    ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
+                    ButtonDelete.BackgroundColor = Color.White;
+                    ButtonDelete.CornerRadius = 0;
+                    ButtonDelete.StyleId = "/" + category + "/" + level.First() + "`" + level.Last();
+                }
+                menuStack.Children.Add(ButtonDelete);
 
                     if (CredentialManager.Username == level.Last())
                     {
@@ -202,11 +206,11 @@ namespace appFBLA2019
 
                     frameMenu.Content = menuStack;
 
-                    frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) => {
-                        return parent.Width - 100;
-                    }), Constraint.RelativeToParent((parent) => {
-                        return parent.Y + 20;
-                    }), Constraint.Constant(83), Constraint.Constant(76));
+                frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) => {
+                    return parent.Width - 100;
+                }), Constraint.RelativeToParent((parent) => {
+                    return parent.Y;
+                }), Constraint.Constant(90), Constraint.Constant(90));
 
                     frameStack.Children.Add(topStack);
 
@@ -233,25 +237,23 @@ namespace appFBLA2019
                     frameStack.Children.Add(Author);
 
 
-
-                    TapGestureRecognizer recognizer = new TapGestureRecognizer();
-                    recognizer.Tapped += async (object sender, EventArgs e) =>
-                    {
-                        frame.GestureRecognizers.Remove(recognizer);
-                        frame.BackgroundColor = Color.LightGray;
-                        Seperator.Color = Color.Gray;
-                        imageButtonMenu.BackgroundColor = Color.LightGray;
-                        Sync.BackgroundColor = Color.LightGray;
-                        Level newLevel = new Level(this.category, level.First(), level.Last());
-                        newLevel.LoadQuestions();
-                        await this.RemoveMenu(frameMenu);
-                        await this.Navigation.PushAsync(new Game(newLevel));
-                        frame.BackgroundColor = Color.Default;
-                        Seperator.Color = Color.LightGray;
-                        imageButtonMenu.BackgroundColor = Color.White;
-                        Sync.BackgroundColor = Color.White;
-                        frame.GestureRecognizers.Add(recognizer);
-                    };
+                recognizer.Tapped += async (object sender, EventArgs e) =>
+                {
+                    frame.GestureRecognizers.Remove(recognizer);
+                    frame.BackgroundColor = Color.LightGray;
+                    Seperator.Color = Color.Gray;
+                    imageButtonMenu.BackgroundColor = Color.LightGray;
+                    Sync.BackgroundColor = Color.LightGray;
+                    Level newLevel = new Level(this.category, level.First(), level.Last());
+                    newLevel.LoadQuestions();
+                    await this.RemoveMenu(frameMenu);
+                    await this.Navigation.PushAsync(new TextGame(newLevel));
+                    frame.BackgroundColor = Color.Default;
+                    Seperator.Color = Color.LightGray;
+                    imageButtonMenu.BackgroundColor = Color.White;
+                    Sync.BackgroundColor = Color.White;
+                    frame.GestureRecognizers.Add(recognizer);
+                };
 
                     frame.GestureRecognizers.Add(recognizer);
 
@@ -339,15 +341,19 @@ namespace appFBLA2019
 
         async private void ImageButtonMenu_Clicked(object sender, EventArgs e)
         {
-            Frame frame = ((Frame)((RelativeLayout)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent).Children[0]);
-            frame.Opacity = 0;
-            frame.IsVisible = true;
-            await frame.FadeTo(1, 200, Easing.CubicInOut);
+            Frame menu = ((Frame)((RelativeLayout)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent).Children[0]);
+            Frame frame = ((Frame)((RelativeLayout)menu.Parent).Parent);
+
+            frame.GestureRecognizers.Remove(recognizer);
+            menu.Opacity = 0;
+            menu.IsVisible = true;
+            await menu.FadeTo(1, 200, Easing.CubicInOut);
 
             TapGestureRecognizer globalRecognizer = new TapGestureRecognizer();
             globalRecognizer.Tapped += async (s, a) => {
-                await this.RemoveMenu(frame);
+                await this.RemoveMenu(menu);
                 this.ButtonStack.GestureRecognizers.Remove(globalRecognizer);
+                frame.GestureRecognizers.Add(recognizer);
             };
             this.ButtonStack.GestureRecognizers.Add(globalRecognizer);
 

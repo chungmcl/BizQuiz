@@ -8,16 +8,22 @@ using static appFBLA2019.CreateAccountPage;
 
 namespace appFBLA2019
 {
+
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentView
     {
+
         public delegate void LoggedinEventHandler(object source, EventArgs eventArgs);
 
         public event LoggedinEventHandler LoggedIn;
 
+        private const int minLength = 5;
+        private const int maxLength = 32;
+
         public LoginPage()
         {
             this.InitializeComponent();
+            
         }
 
         private async void ButtonLogin_Clicked(object sender, EventArgs e)
@@ -93,6 +99,39 @@ namespace appFBLA2019
         public void OnSignout(object source, EventArgs eventArgs)
         {
             this.LabelMessage.Text = "";
+        }
+
+        private void ForgotPassword_Tapped(object sender, EventArgs e)
+        {
+            this.Navigation.PushModalAsync(new ForgotPasswordPage());
+        }
+
+        private void ForgotPassword_Released(object sender, EventArgs e)
+        {
+            this.forgotPassword.TextColor = Color.DodgerBlue;
+        }
+
+        private void ForgotPassword_Pressed(object sender, EventArgs e)
+        {
+            this.forgotPassword.TextColor = Color.Blue;
+        }
+
+        private bool usernameLength;
+        private bool passwordLength;
+
+        private void checkLength()
+        {
+            this.ButtonLogin.IsEnabled = this.usernameLength && this.passwordLength;
+        }
+
+        private void EntryUsername_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.usernameLength = this.EntryUsername.Text.Length > minLength && this.EntryUsername.Text.Length <= maxLength;
+        }
+
+        private void EntryPassword_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.passwordLength = this.EntryPassword.Text.Length > minLength && this.EntryPassword.Text.Length <= maxLength;
         }
     }
 }

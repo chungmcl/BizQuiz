@@ -1,12 +1,7 @@
 ﻿//BizQuiz App 2019
 
-using Plugin.FacebookClient;
-using Plugin.FacebookClient.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
