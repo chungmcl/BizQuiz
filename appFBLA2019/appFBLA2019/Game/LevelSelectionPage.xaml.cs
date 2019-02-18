@@ -102,8 +102,8 @@ namespace appFBLA2019
                 ImageButton imageButtonMenu = new ImageButton
                 {
                     Source = "ic_more_vert_black_48dp.png",
-                    HeightRequest = 30,
-                    WidthRequest = 30,
+                    HeightRequest = 35,
+                    WidthRequest = 35,
                     BackgroundColor = Color.White,
                     VerticalOptions = LayoutOptions.StartAndExpand,
                     HorizontalOptions = LayoutOptions.End

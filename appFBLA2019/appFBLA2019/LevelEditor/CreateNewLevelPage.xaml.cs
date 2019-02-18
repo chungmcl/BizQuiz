@@ -625,12 +625,12 @@ namespace appFBLA2019
 		}
 
 		private const int restrictCount = 64;
-		/// <summary>
-		/// Sets a limit to how much the user can put in an entry
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void OnTextChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Sets a limit to how much the user can put in an entry
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTextChanged(object sender, EventArgs e)
 		{
 			Entry entry = sender as Entry;
 			string val = entry.Text; //Get Current Text
