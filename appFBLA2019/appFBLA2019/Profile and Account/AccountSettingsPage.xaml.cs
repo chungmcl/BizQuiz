@@ -93,9 +93,7 @@ namespace appFBLA2019
         private OperationReturnMessage ChangePassword(string password, string newPassword)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelChangePasswordMessage.Text = "Waiting...");
-            ServerConnector.SendData(ServerRequestTypes.ChangePassword,
-                    $"{CredentialManager.Username}/{password.Trim()}/{newPassword.Trim()}/-");
-            return ServerConnector.ReceiveFromServerORM();
+            return ServerOperations.ChangePassword(CredentialManager.Username, password.Trim(), newPassword.Trim());
         }
         
         private async void ButtonChangeEmail_Clicked(object sender, EventArgs e)
@@ -126,9 +124,7 @@ namespace appFBLA2019
         private OperationReturnMessage ChangeEmail(string password, string newEmail)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelChangeEmailMessage.Text = "Waiting...");
-            ServerConnector.SendData(ServerRequestTypes.ChangeEmail,
-                    $"{CredentialManager.Username}/{password.Trim()}/{newEmail.Trim()}/-");
-            return ServerConnector.ReceiveFromServerORM();
+            return ServerOperations.ChangeEmail(CredentialManager.Username, password.Trim(), newEmail.Trim());
         }
 
         private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
@@ -155,9 +151,7 @@ namespace appFBLA2019
         private OperationReturnMessage ConfirmEmail(string token)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelConfirmEmailMessage.Text = "Waiting...");
-            ServerConnector.SendData(ServerRequestTypes.ConfirmEmail,
-                    $"{CredentialManager.Username}/{token.Trim()}/-");
-            return ServerConnector.ReceiveFromServerORM();
+            return ServerOperations.ConfirmEmail(CredentialManager.Username, token.Trim());
         }
 
         private async void ButtonDeleteAccount_Clicked(object sender, EventArgs e)
@@ -190,9 +184,7 @@ namespace appFBLA2019
         private OperationReturnMessage DeleteAccount(string password)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelDeleteAccountMessage.Text = "Waiting...");
-            ServerConnector.SendData(ServerRequestTypes.DeleteAccount,
-                    $"{CredentialManager.Username}/{password.Trim()}/-");
-            return ServerConnector.ReceiveFromServerORM();
+            return ServerOperations.DeleteAccount(CredentialManager.Username, password.Trim());
         }
 
         

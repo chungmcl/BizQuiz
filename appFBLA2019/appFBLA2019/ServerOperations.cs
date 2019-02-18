@@ -1,7 +1,6 @@
 ﻿using Plugin.Connectivity;
 using Realms;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,84 +23,94 @@ namespace appFBLA2019
 
         private const int headerSize = 5;
 
-        public static OperationReturnMessage ReceiveFromServerORM()
+        public static OperationReturnMessage LoginAccount(string username, string password)
         {
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                int size = BitConverter.ToInt32(ServerConnector.ReadByteArray(headerSize), 1);
-                OperationReturnMessage message = (OperationReturnMessage)(ServerConnector.ReadByteArray(size)[0]);
-                return message;
-            }
-            else
-            {
-                return OperationReturnMessage.FalseNoConnection;
-            }
+            SendStringData($"{username}/{password}/-", ServerRequestTypes.LoginAccount);
+            return ReceiveFromServerORM();
         }
 
-        public static string ReceiveFromServerStringData()
+        public static OperationReturnMessage RegisterAccount(string username, string password, string email)
         {
-            int size = BitConverter.ToInt32(ServerConnector.ReadByteArray(headerSize), 1);
-            string data = Encoding.Unicode.GetString(ServerConnector.ReadByteArray(size));
-            data = data.Trim();
-            return data;
+            SendStringData($"{username}/{password}/{email}/-", ServerRequestTypes.LoginAccount);
+            return ReceiveFromServerORM();
         }
 
-        // Encrypts connection using SSL.
-        /// <summary>
-        /// Send a request or data to the server.
-        /// </summary>
-        /// <param name="dataType">
-        /// The type of request/data to be sent
-        /// </param>
-        /// <param name="data">
-        /// The data/string query to send
-        /// </param>
-        /// <returns>
-        /// If the data successfully sent or not
-        /// </returns>
-        public static bool SendData(ServerRequestTypes dataType, object data)
+        public static OperationReturnMessage ChangePassword(string username, string currentPassword, string newPassword)
         {
-            if (ServerConnector.SetupConnection())
+            SendStringData($"{username}/{currentPassword}/{newPassword}/-", ServerRequestTypes.LoginAccount);
+            return ReceiveFromServerORM();
+        }
+
+        public static OperationReturnMessage ConfirmEmail(string username, string confirmationToken)
+        {
+            SendStringData($"{username}/{confirmationToken}/-", ServerRequestTypes.LoginAccount);
+            return ReceiveFromServerORM();
+        }
+
+        public static OperationReturnMessage ChangeEmail(string username, string password, string newEmail)
+        {
+            SendStringData($"{username}/{password}/{newEmail}/-", ServerRequestTypes.LoginAccount);
+            return ReceiveFromServerORM();
+        }
+
+        public static OperationReturnMessage DeleteAccount(string username, string password)
+        {
+            SendStringData($"{username}/{password}/-", ServerRequestTypes.LoginAccount);
+            return ReceiveFromServerORM();
+        }
+
+        public static string GetLastModifiedDate(string DBId)
+        {
+            SendStringData($"{DBId}/-", ServerRequestTypes.LoginAccount);
+            return ReceiveFromServerStringData();
+        }
+
+        public static string GetEmail(string username, string password)
+        {
+            SendStringData($"{username}/{password}/-", ServerRequestTypes.LoginAccount);
+            return ReceiveFromServerStringData();
+        }
+
+        public static OperationReturnMessage DeleteLevel(string DBId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool SendLevel(string relativeLevelPath)
+        {
+            try
             {
-                switch (dataType)
+                string realmFilePath = Directory.GetFiles(App.Path + relativeLevelPath, "*.realm").First();
+                Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                LevelInfo info = realm.All<LevelInfo>().First();
+
+                string[] imageFilePaths = Directory.GetFiles(App.Path + relativeLevelPath, "*.jpg");
+                SendRealmFile(realmFilePath);
+                if (ReceiveFromServerORM() != OperationReturnMessage.True)
+                    throw new Exception();
+
+                for (int i = 0; i < imageFilePaths.Length; i++)
                 {
-                    case (ServerRequestTypes.AddJPEGImage):
-                        SendImageFile((string[])data);
-                        break;
+                    //[0] = path, [1] = fileName, [2] = dBId
+                    string fileName = imageFilePaths[i].Split('/').Last().Split('.').First();
+                    string dbID = info.DBId;
+                    SendImageFile(imageFilePaths[i], imageFilePaths[i].Split('/').Last().Split('.').First(), dbID);
 
-                    case (ServerRequestTypes.AddRealmFile):
-                        SendRealmFile((string)data);
-                        break;
-
-                    case (ServerRequestTypes.LoginAccount):
-                    case (ServerRequestTypes.RegisterAccount):
-                    case (ServerRequestTypes.ChangePassword):
-                    case (ServerRequestTypes.GetEmail):
-                    case (ServerRequestTypes.ConfirmEmail):
-                    case (ServerRequestTypes.ChangeEmail):
-                    case (ServerRequestTypes.DeleteAccount):
-                    case (ServerRequestTypes.DeleteLevel):
-
-                    case (ServerRequestTypes.GetLastModifiedDate):
-
-                    case (ServerRequestTypes.StringData):
-                        SendStringData((string)data, dataType);
-                        return true;
-
-                    case (ServerRequestTypes.GetJPEGImage):
-
-                        break;
-
-                    case (ServerRequestTypes.GetRealmFile):
-
-                        break;
+                    OperationReturnMessage message = ReceiveFromServerORM();
+                    if (message == OperationReturnMessage.False)
+                        return false;
                 }
-                return false;
+
+                // When finished, confirm with server that level send has completed
+                return true;
             }
-            else
+            catch
             {
+                // Alert server that level send failed
+                // Delete records 
                 return false;
             }
+
         }
 
         #region Header Generators
@@ -145,6 +154,43 @@ namespace appFBLA2019
         }
         #endregion
 
+
+        #region Receive Data from Server
+        public static OperationReturnMessage ReceiveFromServerORM()
+        {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                int size = BitConverter.ToInt32(ServerConnector.ReadByteArray(headerSize), 1);
+                OperationReturnMessage message = (OperationReturnMessage)(ServerConnector.ReadByteArray(size)[0]);
+                ServerConnector.CloseConn();
+                return message;
+            }
+            else
+                return OperationReturnMessage.FalseNoConnection;
+        }
+
+        public static string ReceiveFromServerStringData()
+        {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                int size = BitConverter.ToInt32(ServerConnector.ReadByteArray(headerSize), 1);
+                string data = Encoding.Unicode.GetString(ServerConnector.ReadByteArray(size));
+                ServerConnector.CloseConn();
+                data = data.Trim();
+                return data;
+            }
+            else
+                return null;
+        }
+        #endregion
+
+
+        #region Data send helper methods
+        /// <summary>
+        /// Send a string (Unicode) based data request or send to the server.
+        /// </summary>
+        /// <param name="data">The string data in Unicode to send.</param>
+        /// <param name="dataType">The type of request to send to the server.</param>
         private static void SendStringData(string data, ServerRequestTypes dataType)
         {
             string dataAsString = data;
@@ -157,12 +203,12 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Send realm file to the server given the path to the realm file on current device.
+        /// Send realm file to the server.
         /// </summary>
-        /// <param name="data"></param>
-        private static void SendRealmFile(string data)
+        /// <param name="path">Path to the realm file on local device.</param>
+        private static void SendRealmFile(string path)
         {
-            byte[] realmBytes = File.ReadAllBytes(data);
+            byte[] realmBytes = File.ReadAllBytes(path);
             byte[] realmHeader = GenerateRealmHeader();
             byte[] header = GenerateHeaderData(ServerRequestTypes.AddRealmFile, (uint)realmBytes.Length + (uint)realmHeader.Length);
 
@@ -173,7 +219,12 @@ namespace appFBLA2019
             ServerConnector.SendByteArray(toSend);
         }
 
-        
+        /// <summary>
+        /// Send JPEG image to server given the local path, filename, and DBId the image is related to
+        /// </summary>
+        /// <param name="path">Path to JPEG image file on local device.</param>
+        /// <param name="fileName">Name of the JPEG image file.</param>
+        /// <param name="dbId">DBId of the database image is contained in.</param>
         private static void SendImageFile(string path, string fileName, string dbId)
         {
             byte[] imageBytes = File.ReadAllBytes(path);
@@ -186,48 +237,9 @@ namespace appFBLA2019
             imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
             ServerConnector.SendByteArray(toSend);
         }
-
-        public static bool SendLevel(string relativeLevelPath)
-        {
-            try
-            {
-                string realmFilePath = Directory.GetFiles(App.Path + relativeLevelPath, "*.realm").First();
-                Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                LevelInfo info = realm.All<LevelInfo>().First();
-
-                string[] imageFilePaths = Directory.GetFiles(App.Path + relativeLevelPath, "*.jpg");
-                SendRealmFile(realmFilePath);
-                if (ReceiveFromServerORM() != OperationReturnMessage.True)
-                    throw new Exception();
-
-                for (int i = 0; i < imageFilePaths.Length; i++)
-                {
-                    //[0] = path, [1] = fileName, [2] = dBId
-                    string fileName = imageFilePaths[i].Split('/').Last().Split('.').First();
-                    string dbID = info.DBId;
-                    ServerConnector.SendData(ServerRequestTypes.AddJPEGImage,
-                        new string[] { imageFilePaths[i], imageFilePaths[i].Split('/').Last().Split('.').First(), dbID });
-
-                    OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
-                    if (message == OperationReturnMessage.False)
-                        return false;
-                }
-
-                // When finished, confirm with server that level send has completed
-                return true;
-            }
-            catch
-            {
-                // Alert server that level send failed
-                // Delete records 
-                return false;
-            }
-            
-        }
+        #endregion
     }
-
-
-
+    
     public enum OperationReturnMessage : byte
     {
         True,
@@ -236,7 +248,8 @@ namespace appFBLA2019
         FalseInvalidCredentials,
         FalseInvalidEmail,
         FalseUsernameAlreadyExists,
-        FalseNoConnection
+        FalseNoConnection,
+        FalseFailedConnection
     }
 
     public enum ServerRequestTypes : byte

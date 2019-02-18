@@ -272,34 +272,7 @@ namespace appFBLA2019
         private void SyncUpload_Clicked(object sender, EventArgs e)
         {
             string levelPath = (sender as ImageButton).StyleId;
-            UploadLevel(levelPath);
-        }
-
-        private bool UploadLevel(string path)
-        {
-            string realmFilePath = Directory.GetFiles(App.Path + path, "*.realm").First();
-            Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-            LevelInfo info = realm.All<LevelInfo>().First();
-
-            string[] imageFilePaths = Directory.GetFiles(App.Path + path, "*.jpg");
-            ServerConnector.SendData(ServerRequestTypes.AddRealmFile, realmFilePath);
-            if (ServerConnector.ReceiveFromServerORM()== OperationReturnMessage.False)
-                return false;
-
-            for (int i = 0; i < imageFilePaths.Length; i++)
-            {
-                //[0] = path, [1] = fileName, [2] = dBId
-                string fileName = imageFilePaths[i].Split('/').Last().Split('.').First();
-                string dbID = info.DBId;
-                ServerConnector.SendData(ServerRequestTypes.AddJPEGImage,
-                    new string[] { imageFilePaths[i], imageFilePaths[i].Split('/').Last().Split('.').First(), dbID } );
-
-                OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
-                if (message == OperationReturnMessage.False)
-                    return false;
-            }
-
-            return true;
+            ServerOperations.SendLevel(levelPath);
         }
 
         private void SyncDownload_Clicked(object sender, EventArgs e)
@@ -344,7 +317,7 @@ namespace appFBLA2019
                         LevelInfo info = realm.All<LevelInfo>().First();
                         string dbId = info.DBId;
 
-                        ServerConnector.SendData(ServerRequestTypes.DeleteLevel, dbId + "/-");
+                        ServerOperations.DeleteLevel(dbId + "/-");
                         Directory.Delete(path, true);
 
                         LevelInfo rosterInfo = LevelRosterDatabase.GetLevelInfo(dbId);
@@ -352,7 +325,7 @@ namespace appFBLA2019
                         rosterInfoUpdated.IsDeletedLocally = true;
                         rosterInfoUpdated.LastModifiedDate = DateTime.Now.ToString();
                         LevelRosterDatabase.EditLevelInfo(rosterInfoUpdated);
-                        if (CrossConnectivity.Current.IsConnected)
+                        if (CrossConnectivity.Current.IsConnected) ;
                     }
                     this.Setup();
                 }

@@ -20,28 +20,19 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
-        private void ButtonLogin_Clicked(object sender, EventArgs e)
+        private async void ButtonLogin_Clicked(object sender, EventArgs e)
         {
             this.LabelMessage.Text = "";
             this.ButtonLogin.IsEnabled = false;
             this.ButtonToCreateAccountPage.IsEnabled = false;
-            Task login = Task.Run(() => this.Login(this.EntryUsername.Text,
-                this.EntryPassword.Text));
-        }
 
-        private async void Login(string username, string password)
-        {
-            Device.BeginInvokeOnMainThread(() =>
+            string username = this.EntryUsername.Text.Trim();
+            string password = this.EntryPassword.Text;
+            this.ActivityIndicator.IsVisible = true;
+            this.ActivityIndicator.IsRunning = true;
+            OperationReturnMessage response = await Task.Run(() => ServerOperations.LoginAccount(username, password));
+            if (response != OperationReturnMessage.FalseFailedConnection)
             {
-                this.ActivityIndicator.IsVisible = true;
-                this.ActivityIndicator.IsRunning = true;
-            });
-            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.LoginAccount, $"{username}/{password}/-"));
-
-            if (completedRequest)
-            {
-                OperationReturnMessage response = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
-
                 if (response == OperationReturnMessage.True)
                 {
                     CredentialManager.SaveCredential(username, password, true);
@@ -49,38 +40,30 @@ namespace appFBLA2019
                 }
                 else if (response == OperationReturnMessage.TrueConfirmEmail)
                 {
-                    Device.BeginInvokeOnMainThread(async () =>
-                    {
-                        var confirmationPage = new EmailConfirmationPage(username, password);
-                        confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
-                        await this.Navigation.PushModalAsync(confirmationPage);
-                    });
+                    var confirmationPage = new EmailConfirmationPage(username, password);
+                    confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
+                    await this.Navigation.PushModalAsync(confirmationPage);
                     CredentialManager.SaveCredential(username, password, false);
                     this.OnLoggedIn();
                 }
                 else if (response == OperationReturnMessage.FalseInvalidCredentials)
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Login Failed - Username and/or Password are Incorrect.");
+                    this.LabelMessage.Text = "Login Failed - Username and/or Password are Incorrect.";
                 }
                 else
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Login Failed.");
+                    this.LabelMessage.Text = "Login Failed.";
                 }
             }
             else
             {
-                Device.BeginInvokeOnMainThread(() => this.LabelMessage.Text = "Connection failed: Please try again.");
+                this.LabelMessage.Text = "Connection failed: Please try again.";
             }
 
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                this.ButtonLogin.IsEnabled = true;
-                this.ButtonToCreateAccountPage.IsEnabled = true;
-                this.ActivityIndicator.IsRunning = false;
-                this.ActivityIndicator.IsVisible = false;
-            });
+            this.ButtonLogin.IsEnabled = true;
+            this.ButtonToCreateAccountPage.IsEnabled = true;
+            this.ActivityIndicator.IsRunning = false;
+            this.ActivityIndicator.IsVisible = false;
         }
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)

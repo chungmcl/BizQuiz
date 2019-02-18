@@ -22,29 +22,50 @@ namespace appFBLA2019
         public static TcpClient client;
         public static NetworkStream netStream;
 
-        // Raw-data stream of connection.
+        // Raw-data stream of connection encrypted with TLS.
         public static SslStream ssl;
-
-
+        
         public static bool ValidateCert(object sender, X509Certificate certificate,
               X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             return true; // Allow untrusted certificates.
         }
         
-        public static void SendByteArray(byte[] data)
+        public static bool SendByteArray(byte[] data)
         {
-            lock (ssl)
+            if (SetupConnection())
             {
-                if (CrossConnectivity.Current.IsConnected)
+                try
                 {
-                    ssl.Write(data, 0, data.Length);
-                    ssl.Flush();
+                    if (ssl != null)
+                    {
+                        lock (ssl)
+                        {
+                            if (CrossConnectivity.Current.IsConnected)
+                            {
+                                ssl.Write(data, 0, data.Length);
+                                ssl.Flush();
+                                return false;
+                            }
+                            else
+                                return false;
+                        }
+                    }
+                    else
+                        return false;
                 }
+                catch
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
 
-        public  static byte[] ReadByteArray(int size)
+        public static byte[] ReadByteArray(int size)
         {
             if (ssl != null)
             {
@@ -93,7 +114,7 @@ namespace appFBLA2019
                 return null;
         }
 
-        public  static bool SetupConnection()
+        public static bool SetupConnection()
         {
             try
             {

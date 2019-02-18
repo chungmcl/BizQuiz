@@ -98,46 +98,49 @@ namespace appFBLA2019
                     {
                         if (LevelInfos[i].IsDeletedLocally)
                         {
-                            ServerConnector.SendData(ServerRequestTypes.DeleteLevel, $"{CredentialManager.Username}/{SecureStorage.GetAsync("password")}/{LevelInfos[i].DBId}");
+                            ServerOperations.DeleteLevel("{LevelInfos[i].DBId}");
                         }
-                        else if (ServerConnector.SendData(ServerRequestTypes.GetLastModifiedDate, LevelInfos[i].DBId))
+                        else
                         {
-                            string serverData = ServerConnector.ReceiveFromServerStringData();
-                            if (serverData == "" || serverData == null)
+                            string lastModifiedDate = ServerOperations.GetLastModifiedDate(LevelInfos[i].DBId);
+                            if (lastModifiedDate != null) // returns null if could not reach server
                             {
-                                LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                copy.SyncStatus = 1; // 1 represents need upload
-                                EditLevelInfo(threadInstance, copy);
-                            }
-                            else
-                            {
-                                DateTime localModifiedDateTime = Convert.ToDateTime(LevelInfos[i].LastModifiedDate);
-                                DateTime serverModifiedDateTime = Convert.ToDateTime(serverData);
-                                if (localModifiedDateTime > serverModifiedDateTime)
+                                if (lastModifiedDate == "" || lastModifiedDate == null)
                                 {
                                     LevelInfo copy = new LevelInfo(LevelInfos[i]);
                                     copy.SyncStatus = 1; // 1 represents need upload
                                     EditLevelInfo(threadInstance, copy);
                                 }
-                                else if (localModifiedDateTime < serverModifiedDateTime)
+                                else
                                 {
-                                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                    copy.SyncStatus = 0; // 0 represents needs download
-                                    EditLevelInfo(threadInstance, copy);
-                                }
-                                else if (localModifiedDateTime == serverModifiedDateTime)
-                                {
-                                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                    copy.SyncStatus = 2; // 2 represents in sync
-                                    EditLevelInfo(threadInstance, copy);
+                                    DateTime localModifiedDateTime = Convert.ToDateTime(LevelInfos[i].LastModifiedDate);
+                                    DateTime serverModifiedDateTime = Convert.ToDateTime(lastModifiedDate);
+                                    if (localModifiedDateTime > serverModifiedDateTime)
+                                    {
+                                        LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                        copy.SyncStatus = 1; // 1 represents need upload
+                                        EditLevelInfo(threadInstance, copy);
+                                    }
+                                    else if (localModifiedDateTime < serverModifiedDateTime)
+                                    {
+                                        LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                        copy.SyncStatus = 0; // 0 represents needs download
+                                        EditLevelInfo(threadInstance, copy);
+                                    }
+                                    else if (localModifiedDateTime == serverModifiedDateTime)
+                                    {
+                                        LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                        copy.SyncStatus = 2; // 2 represents in sync
+                                        EditLevelInfo(threadInstance, copy);
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                            copy.SyncStatus = 3; // 3 represents offline
-                            EditLevelInfo(threadInstance, copy);
+                            else
+                            {
+                                LevelInfo copy = new LevelInfo(LevelInfos[i]);
+                                copy.SyncStatus = 3; // 3 represents offline
+                                EditLevelInfo(threadInstance, copy);
+                            }
                         }
                     }
                 }

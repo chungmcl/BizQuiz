@@ -22,7 +22,7 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
-        private void ButtonCreateAccount_Clicked(object sender, EventArgs e)
+        private async void ButtonCreateAccount_Clicked(object sender, EventArgs e)
         {
             this.ButtonCreateAccount.IsEnabled = false;
             this.EntryEmail.IsEnabled = false;
@@ -31,66 +31,49 @@ namespace appFBLA2019
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
 
-            Task createAccount = Task.Run(() => this.CreateAccount(
-                this.EntryUsername.Text.Trim(),
-                this.EntryPassword.Text.Trim(),
-                this.EntryEmail.Text.Trim()));
-        }
+            string username = this.EntryUsername.Text.Trim();
+            string password = this.EntryPassword.Text.Trim();
+            string email = this.EntryEmail.Text.Trim();
 
-        private async Task CreateAccount(string username, string password, string email)
-        {
-            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.RegisterAccount,
-                $"{username}/{password}" +
-                $"/{email}/-"));
+            OperationReturnMessage response = await Task.Run(() => ServerOperations.RegisterAccount(username, password, email));
 
-            if (completedRequest)
+            if (response == OperationReturnMessage.FalseFailedConnection)
             {
-                OperationReturnMessage databaseReturnInfo = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
+                if (response == OperationReturnMessage.TrueConfirmEmail)
+                {
+                    this.LabelMessage.Text = "Account successfully created.";
+                    this.username = username;
+                    this.password = password;
 
-                if (databaseReturnInfo == OperationReturnMessage.TrueConfirmEmail)
-                {
-                    Device.BeginInvokeOnMainThread(async () =>
-                    {
-                        this.LabelMessage.Text = "Account successfully created.";
-                        this.username = username;
-                        this.password = password;
-
-                        var confirmationPage = new EmailConfirmationPage(username, password);
-                        confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
-                        confirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;
-                        await this.Navigation.PushModalAsync(confirmationPage);
-                    });
+                    var confirmationPage = new EmailConfirmationPage(username, password);
+                    confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
+                    confirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;
+                    await this.Navigation.PushModalAsync(confirmationPage);
                 }
-                else if (databaseReturnInfo == OperationReturnMessage.FalseUsernameAlreadyExists)
+                else if (response == OperationReturnMessage.FalseUsernameAlreadyExists)
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Account could not be created - Username already exists.");
+                    this.LabelMessage.Text = $"Account could not be created - Username already exists.";
                 }
-                else if (databaseReturnInfo == OperationReturnMessage.FalseInvalidEmail)
+                else if (response == OperationReturnMessage.FalseInvalidEmail)
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Account could not be created - Invalid Email.");
+                    this.LabelMessage.Text = $"Account could not be created - Invalid Email.";
                 }
                 else
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Account could not be created.");
+                    this.LabelMessage.Text = $"Account could not be created.";
                 }
             }
             else
             {
-                Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Connection failed: Please try again.");
+                this.LabelMessage.Text = "Connection failed: Please try again.";
             }
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                this.ButtonCreateAccount.IsEnabled = true;
-                this.EntryEmail.IsEnabled = true;
-                this.EntryPassword.IsEnabled = true;
-                this.EntryUsername.IsEnabled = true;
-                this.ActivityIndicator.IsVisible = false;
-                this.ActivityIndicator.IsRunning = false;
-            });
+
+            this.ButtonCreateAccount.IsEnabled = true;
+            this.EntryEmail.IsEnabled = true;
+            this.EntryPassword.IsEnabled = true;
+            this.EntryUsername.IsEnabled = true;
+            this.ActivityIndicator.IsVisible = false;
+            this.ActivityIndicator.IsRunning = false;
         }
 
         private async void OnEmailConfirmed(object source, EventArgs eventArgs)

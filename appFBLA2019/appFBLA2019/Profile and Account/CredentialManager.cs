@@ -49,9 +49,9 @@ namespace appFBLA2019
             {
                 if (((username != null) && (password != null)) && ((username != "") && (password != "")))
                 {
-                    if (ServerConnector.SendData(ServerRequestTypes.LoginAccount, username + "/" + password + "/-"))
+                    OperationReturnMessage message = ServerOperations.LoginAccount(username, password);
+                    if (message != OperationReturnMessage.FalseFailedConnection)
                     {
-                        OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
                         if (message == OperationReturnMessage.True)
                         {
                             IsLoggedIn = true;
