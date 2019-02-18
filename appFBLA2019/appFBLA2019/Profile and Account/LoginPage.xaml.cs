@@ -127,11 +127,13 @@ namespace appFBLA2019
         private void EntryUsername_TextChanged(object sender, TextChangedEventArgs e)
         {
             this.usernameLength = this.EntryUsername.Text.Length > minLength && this.EntryUsername.Text.Length <= maxLength;
+            this.checkLength();
         }
 
         private void EntryPassword_TextChanged(object sender, TextChangedEventArgs e)
         {
             this.passwordLength = this.EntryPassword.Text.Length > minLength && this.EntryPassword.Text.Length <= maxLength;
+            this.checkLength();
         }
     }
 }
