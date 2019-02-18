@@ -87,15 +87,9 @@ namespace appFBLA2019
         /// <summary>
         /// Send a request or data to the server.
         /// </summary>
-        /// <param name="dataType">
-        /// The type of request/data to be sent
-        /// </param>
-        /// <param name="data">
-        /// The data/string query to send
-        /// </param>
-        /// <returns>
-        /// If the data successfully sent or not
-        /// </returns>
+        /// <param name="dataType"> The type of request/data to be sent </param>
+        /// <param name="data">     The data/string query to send </param>
+        /// <returns> If the data successfully sent or not </returns>
         public static bool SendData(ServerRequestTypes dataType, object data)
         {
             if (SetupConnection())
@@ -262,8 +256,13 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                if (ex.Message != "Failed to connect - Timeout exception.")
+                {
+                    BugReportHandler.SubmitReport(ex, nameof(ServerConnector));
+                }
+
                 return false;
             }
         }

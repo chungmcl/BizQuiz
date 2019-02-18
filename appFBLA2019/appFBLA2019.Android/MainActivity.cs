@@ -9,6 +9,7 @@ using appFBLA2019.Droid;
 using Plugin.FacebookClient;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(MainActivity))]
@@ -26,10 +27,68 @@ namespace appFBLA2019.Droid
             base.OnCreate(bundle);
             FacebookClientManager.Initialize(this);
 
-            this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustPan);
+            this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustResize);
+
+            AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
+            TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             this.LoadApplication(new App());
+        }
+
+        private static void HandleUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
+        {
+            var newExc = new Exception("UnobservedTaskException", unobservedTaskExceptionEventArgs.Exception);
+            LogUnhandledException(newExc);
+        }
+
+        private static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        {
+            var newExc = new Exception("UnhandledException", unhandledExceptionEventArgs.ExceptionObject as Exception);
+            LogUnhandledException(newExc);
+        }
+
+        internal static void LogUnhandledException(Exception exception)
+        {
+            try
+            {
+                string errorFilePath = System.IO.Path.Combine(App.Path, "/CrashReport.log");
+                var errorMessage = String.Format($"Error (Unhandled Exception): {exception.ToString()}");
+                File.WriteAllText(errorFilePath, errorMessage);
+
+                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorMessage));
+
+                // Log to Android Device Logging.
+                Android.Util.Log.Error("Crash Report", errorMessage);
+            }
+            catch
+            {
+                // just suppress any error logging exceptions
+            }
+        }
+
+        private void DisplayCrashReport()
+        {
+            string logPath = System.IO.Path.Combine(App.Path, "/CrashReport.log");
+            if (File.Exists(logPath))
+            {
+                var errorText = File.ReadAllText(logPath);
+                if (!BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText)))
+                {
+                    new AlertDialog.Builder(this)
+                      .SetPositiveButton("Clear", (sender, args) =>
+                      {
+                      })
+                      .SetNegativeButton("Close", (sender, args) =>
+                      {
+                          // User pressed Close.
+                      })
+                      .SetMessage(errorText)
+                      .SetTitle("Would you like to send this crash report?")
+                      .Show();
+                }
+                File.Delete(logPath);
+            }
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent intent)

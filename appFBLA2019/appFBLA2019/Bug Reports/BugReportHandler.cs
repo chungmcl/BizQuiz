@@ -11,7 +11,7 @@ using Xamarin.Forms;
 
 namespace appFBLA2019
 {
-    internal static class BugReportHandler
+    public static class BugReportHandler
     {
         public static void Setup()
         {
@@ -21,15 +21,30 @@ namespace appFBLA2019
 
         public static bool SubmitReport(BugReport report)
         {
-            if (SendReport(report))
+            //if there are no saved reports with identical contents
+            if (bugRealm?.All<BugReport>().Where<BugReport>(x => x.ReportID == report.ReportID).ToList().First() != null)
             {
-                return true;
+                if (SendReport(report))
+                {
+                    return true;
+                }
+                else
+                {
+                    SaveBugReport(report);
+                    return false;
+                }
             }
-            else
-            {
-                SaveBugReport(report);
-                return false;
-            }
+            return false;
+        }
+
+        public static bool SubmitReport(Exception exception, string source)
+        {
+            return SubmitReport(new BugReport($"Unhandled Exception from {source}", $"{source} Exceptions", exception.ToString()));
+        }
+
+        public static bool SubmitReport(Exception exception)
+        {
+            return SubmitReport(exception, "Internal code");
         }
 
         /// <summary>
@@ -39,20 +54,13 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private static void SaveBugReport(BugReport report)
         {
-            try
-            {
-                bugRealm.Write(() =>
-               {
-                   byte[] imageByteArray = File.ReadAllBytes(report.ImagePath);
-                   File.WriteAllBytes(App.Path + $"/bugreportimages/{report.ReportID}.jpg", imageByteArray);
-                   report.ImagePath = App.Path + $"/bugreportimages/{report.ReportID}.jpg";
-                   bugRealm.Add(report, true);
-               });
-            }
-            catch (Exception ex)// If the database failed to connect
-            {
-                string test = ex.Message.ToString();
-            }
+            bugRealm.Write(() =>
+           {
+               byte[] imageByteArray = File.ReadAllBytes(report.ImagePath);
+               File.WriteAllBytes(App.Path + $"/bugreportimages/{report.ReportID}.jpg", imageByteArray);
+               report.ImagePath = App.Path + $"/bugreportimages/{report.ReportID}.jpg";
+               bugRealm.Add(report, true);
+           });
         }
 
         private static Realms.Realm bugRealm;

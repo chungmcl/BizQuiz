@@ -26,7 +26,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                string test = ex.Message.ToString();
+                BugReportHandler.SubmitReport(ex, nameof(GameDatabase));
             }
         }
 

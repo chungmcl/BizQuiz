@@ -16,15 +16,9 @@ namespace appFBLA2019
 
         /// <summary>
         /// </summary>
-        /// <param name="fileName">
-        /// Name of the database file to be selected without extension
-        /// </param>
-        /// <param name="author">
-        /// The username of the author of this level, which is unique (Two levels with the same name must have two unique authors)
-        /// </param>
-        /// <returns>
-        /// Bool representing successful database connection or not.
-        /// </returns>
+        /// <param name="fileName"> Name of the database file to be selected without extension </param>
+        /// <param name="author">   The username of the author of this level, which is unique (Two levels with the same name must have two unique authors) </param>
+        /// <returns> Bool representing successful database connection or not. </returns>
         public static bool SelectDatabase(string category, string levelTitle, string author)
         {
             try
@@ -57,7 +51,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)// If the database failed to connect
             {
-                string test = ex.Message.ToString();
+                BugReportHandler.SubmitReport(ex, nameof(DBHandler));
                 return false;
             }
         }

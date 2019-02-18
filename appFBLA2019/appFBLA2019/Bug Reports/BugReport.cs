@@ -15,15 +15,15 @@ namespace appFBLA2019
             this.ImagePath = imagePath;
         }
 
-        public BugReport(string title, string category, string body)
+        public BugReport(string title, string category, string body) : this()
         {
-            this.Title = title;
-            this.Category = category;
+            this.Title = $"Bug on {DateTime.Now.ToShortDateString()} at {DateTime.Now.ToLongTimeString()}: {title}";
             this.Body = body;
         }
 
         public BugReport()
         {
+            this.ReportID = this.ToString().GetHashCode();
         }
 
         private string Title { get; set; }
@@ -32,7 +32,7 @@ namespace appFBLA2019
         public string ImagePath { get; set; }
 
         [PrimaryKey]
-        public int ReportID { get; private set; } = Guid.NewGuid().GetHashCode();
+        public int ReportID { get; private set; }
 
         public override string ToString()
         {
