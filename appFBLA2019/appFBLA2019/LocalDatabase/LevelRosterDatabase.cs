@@ -98,7 +98,7 @@ namespace appFBLA2019
                     {
                         if (LevelInfos[i].IsDeletedLocally)
                         {
-                            ServerOperations.DeleteLevel("{LevelInfos[i].DBId}");
+                            ServerOperations.DeleteLevel(LevelInfos[i].DBId);
                         }
                         else
                         {

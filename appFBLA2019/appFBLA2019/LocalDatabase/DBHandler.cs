@@ -61,5 +61,13 @@ namespace appFBLA2019
                 return false;
             }
         }
+
+        public static void DisposeDatabase()
+        {
+            if (Database != null)
+                if (Database.realmDB != null)
+                    if (!Database.realmDB.IsClosed)
+                        Database.realmDB.Dispose();
+        }
     }
 }

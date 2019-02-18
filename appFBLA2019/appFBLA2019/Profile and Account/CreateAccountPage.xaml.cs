@@ -37,7 +37,7 @@ namespace appFBLA2019
 
             OperationReturnMessage response = await Task.Run(() => ServerOperations.RegisterAccount(username, password, email));
 
-            if (response == OperationReturnMessage.FalseFailedConnection)
+            if (response != OperationReturnMessage.FalseFailedConnection)
             {
                 if (response == OperationReturnMessage.TrueConfirmEmail)
                 {

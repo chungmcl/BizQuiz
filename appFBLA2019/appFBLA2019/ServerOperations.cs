@@ -31,49 +31,50 @@ namespace appFBLA2019
 
         public static OperationReturnMessage RegisterAccount(string username, string password, string email)
         {
-            SendStringData($"{username}/{password}/{email}/-", ServerRequestTypes.LoginAccount);
+            SendStringData($"{username}/{password}/{email}/-", ServerRequestTypes.RegisterAccount);
             return ReceiveFromServerORM();
         }
 
         public static OperationReturnMessage ChangePassword(string username, string currentPassword, string newPassword)
         {
-            SendStringData($"{username}/{currentPassword}/{newPassword}/-", ServerRequestTypes.LoginAccount);
+            SendStringData($"{username}/{currentPassword}/{newPassword}/-", ServerRequestTypes.ChangePassword);
             return ReceiveFromServerORM();
         }
 
         public static OperationReturnMessage ConfirmEmail(string username, string confirmationToken)
         {
-            SendStringData($"{username}/{confirmationToken}/-", ServerRequestTypes.LoginAccount);
+            SendStringData($"{username}/{confirmationToken}/-", ServerRequestTypes.ConfirmEmail);
             return ReceiveFromServerORM();
         }
 
         public static OperationReturnMessage ChangeEmail(string username, string password, string newEmail)
         {
-            SendStringData($"{username}/{password}/{newEmail}/-", ServerRequestTypes.LoginAccount);
+            SendStringData($"{username}/{password}/{newEmail}/-", ServerRequestTypes.ChangeEmail);
             return ReceiveFromServerORM();
         }
 
         public static OperationReturnMessage DeleteAccount(string username, string password)
         {
-            SendStringData($"{username}/{password}/-", ServerRequestTypes.LoginAccount);
+            SendStringData($"{username}/{password}/-", ServerRequestTypes.DeleteAccount);
             return ReceiveFromServerORM();
         }
 
         public static string GetLastModifiedDate(string DBId)
         {
-            SendStringData($"{DBId}/-", ServerRequestTypes.LoginAccount);
+            SendStringData($"{DBId}/-", ServerRequestTypes.GetLastModifiedDate);
             return ReceiveFromServerStringData();
         }
 
         public static string GetEmail(string username, string password)
         {
-            SendStringData($"{username}/{password}/-", ServerRequestTypes.LoginAccount);
+            SendStringData($"{username}/{password}/-", ServerRequestTypes.GetEmail);
             return ReceiveFromServerStringData();
         }
 
         public static OperationReturnMessage DeleteLevel(string DBId)
         {
-            throw new NotImplementedException();
+            SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{DBId}", ServerRequestTypes.DeleteAccount);
+            return ReceiveFromServerORM();
         }
 
         public static bool SendLevel(string relativeLevelPath)
@@ -160,10 +161,16 @@ namespace appFBLA2019
         {
             if (CrossConnectivity.Current.IsConnected)
             {
-                int size = BitConverter.ToInt32(ServerConnector.ReadByteArray(headerSize), 1);
-                OperationReturnMessage message = (OperationReturnMessage)(ServerConnector.ReadByteArray(size)[0]);
-                ServerConnector.CloseConn();
-                return message;
+                byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
+                if (!(returnedBytes == null || returnedBytes.Length < 5))
+                {
+                    int size = BitConverter.ToInt32(returnedBytes, 1);
+                    OperationReturnMessage message = (OperationReturnMessage)(ServerConnector.ReadByteArray(size)[0]);
+                    ServerConnector.CloseConn();
+                    return message;
+                }
+                else
+                    return OperationReturnMessage.FalseFailedConnection;
             }
             else
                 return OperationReturnMessage.FalseNoConnection;
@@ -173,11 +180,17 @@ namespace appFBLA2019
         {
             if (CrossConnectivity.Current.IsConnected)
             {
-                int size = BitConverter.ToInt32(ServerConnector.ReadByteArray(headerSize), 1);
-                string data = Encoding.Unicode.GetString(ServerConnector.ReadByteArray(size));
-                ServerConnector.CloseConn();
-                data = data.Trim();
-                return data;
+                byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
+                if (!(returnedBytes == null && returnedBytes.Length < 5))
+                {
+                    int size = BitConverter.ToInt32(returnedBytes, 1);
+                    string data = Encoding.Unicode.GetString(ServerConnector.ReadByteArray(size));
+                    ServerConnector.CloseConn();
+                    data = data.Trim();
+                    return data;
+                }
+                else
+                    return null;
             }
             else
                 return null;

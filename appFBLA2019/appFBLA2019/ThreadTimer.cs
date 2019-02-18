@@ -11,15 +11,8 @@ namespace appFBLA2019
     {
         public static async Task RunServerChecks()
         {
-            try
-            {
-                await CredentialManager.CheckLoginStatus();
-                await Task.Run(() => LevelRosterDatabase.UpdateLocalDatabase());
-            }
-            catch (Exception ex)
-            {
-
-            }
+            await CredentialManager.CheckLoginStatus();
+            await Task.Run(() => LevelRosterDatabase.UpdateLocalDatabase());
             var minutes = TimeSpan.FromMinutes(2);
             Device.StartTimer(minutes, () =>
             {

@@ -36,8 +36,6 @@ namespace appFBLA2019
         protected override void OnAppearing()
         {
             base.OnAppearing();
-
-            // If size has not been allocated
             if (Application.Current.MainPage.Width <= 0)
                 this.Setup();
         }
@@ -305,11 +303,10 @@ namespace appFBLA2019
             bool answer = await DisplayAlert(question, message, "Yes", "No");
             if (answer)
             {
-                string path = ((Button)sender).StyleId;
+                string path = App.Path + ((Button)sender).StyleId;
 
                 if (System.IO.Directory.Exists(path))
                 {
-                    System.IO.Directory.Delete(path, true);
                     if (!unsubscribe) // If delete (user owns this level)
                     {
                         string realmFilePath = Directory.GetFiles(path, "*.realm").First();
@@ -325,7 +322,11 @@ namespace appFBLA2019
                         rosterInfoUpdated.IsDeletedLocally = true;
                         rosterInfoUpdated.LastModifiedDate = DateTime.Now.ToString();
                         LevelRosterDatabase.EditLevelInfo(rosterInfoUpdated);
-                        if (CrossConnectivity.Current.IsConnected) ;
+                        if (CrossConnectivity.Current.IsConnected)
+                            ServerOperations.DeleteLevel(dbId);
+
+                        DBHandler.DisposeDatabase();
+                        System.IO.Directory.Delete(path, true);
                     }
                     this.Setup();
                 }
