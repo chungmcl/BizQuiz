@@ -73,7 +73,7 @@ namespace appFBLA2019
 
         public static OperationReturnMessage DeleteLevel(string DBId)
         {
-            SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{DBId}", ServerRequestTypes.DeleteAccount);
+            SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{DBId}", ServerRequestTypes.DeleteLevel);
             return ReceiveFromServerORM();
         }
 
