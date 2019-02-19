@@ -33,6 +33,7 @@ namespace appFBLA2019.Droid
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
+
             this.LoadApplication(new App());
         }
 
@@ -56,7 +57,7 @@ namespace appFBLA2019.Droid
             }
             else
             {
-                LogUnhandledException(unhandledExceptionEventArgs.ExceptionObject as Exception);
+                LogUnhandledException((unhandledExceptionEventArgs.ExceptionObject as Exception).InnerException);
             }
         }
 
@@ -76,17 +77,6 @@ namespace appFBLA2019.Droid
             catch
             {
                 // just suppress any error logging exceptions
-            }
-        }
-
-        private void SendCrashLog()
-        {
-            string logPath = App.Path + "/CrashReport.log";
-            if (File.Exists(logPath))
-            {
-                var errorText = File.ReadAllText(logPath);
-                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
-                File.Delete(logPath);
             }
         }
 

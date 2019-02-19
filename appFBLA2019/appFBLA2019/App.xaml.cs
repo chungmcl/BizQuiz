@@ -20,6 +20,7 @@ namespace appFBLA2019
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
             BugReportHandler.Setup();
+            this.SendCrashLog();
 
             this.MainPage = new NavigationPage(new MainPage());
         }
@@ -45,6 +46,17 @@ namespace appFBLA2019
 
             await CredentialManager.CheckLoginStatus();
             CredentialManager.StartTimedCheckLoginStatus();
+        }
+
+        private void SendCrashLog()
+        {
+            string logPath = App.Path + "/CrashReport.log";
+            if (File.Exists(logPath))
+            {
+                var errorText = File.ReadAllText(logPath);
+                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
+                File.Delete(logPath);
+            }
         }
     }
 }

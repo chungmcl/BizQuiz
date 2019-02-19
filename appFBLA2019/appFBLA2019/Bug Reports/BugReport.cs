@@ -16,7 +16,7 @@ namespace appFBLA2019
             this.ReportID = this.ToString().GetHashCode();
         }
 
-        public BugReport(string title, string category, string body) : this()
+        public BugReport(string title, string category, string body)
         {
             this.Title = $"Bug on {DateTime.Now.ToShortDateString()} at {DateTime.Now.ToLongTimeString()}: {title}";
             this.Body = body;
