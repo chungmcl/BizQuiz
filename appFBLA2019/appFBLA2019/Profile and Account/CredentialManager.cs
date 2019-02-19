@@ -22,6 +22,7 @@ namespace appFBLA2019
             Task.Run(async () => await SecureStorage.SetAsync("username", username));
             Task.Run(async () => await SecureStorage.SetAsync("password", password));
 
+            App.UserPath = DependencyService.Get<IGetStorage>().GetStorage() + App.debugFolder + $"{username}/";
             IsLoggedIn = true;
         }
 
@@ -29,6 +30,7 @@ namespace appFBLA2019
         {
             Task.Run(async () => await SecureStorage.SetAsync("password", ""));
 
+            App.UserPath = DependencyService.Get<IGetStorage>().GetStorage() + App.debugFolder + "dflt/";
             IsLoggedIn = false;
             EmailConfirmed = false;
         }

@@ -38,7 +38,7 @@ namespace appFBLA2019
 
                     // On Android: Set appFBLA2019.Android's storage permissions to "on"
 
-                    string folderPath = App.Path + $"/{category}/{levelTitle}`{author}";
+                    string folderPath = App.UserPath + $"{category}/{levelTitle}`{author}";
                     Directory.CreateDirectory(folderPath);
                     Database = new GameDatabase(folderPath, levelTitle);
 

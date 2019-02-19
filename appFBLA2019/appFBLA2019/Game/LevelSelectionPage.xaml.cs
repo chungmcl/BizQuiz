@@ -25,7 +25,7 @@ namespace appFBLA2019
         {
             this.InitializeComponent();
             this.category = category;
-            Directory.CreateDirectory(App.Path + $"/{category}");
+            Directory.CreateDirectory(App.UserPath + $"/{category}");
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
             Task.Run(() => this.Setup());
         }
@@ -43,7 +43,7 @@ namespace appFBLA2019
         {
             this.ButtonStack.Children.Clear();
 
-            string[] levelPaths = Directory.GetDirectories(App.Path + $"/{this.category}");
+            string[] levelPaths = Directory.GetDirectories(App.UserPath + $"{this.category}");
             List<string[]> levels = new List<string[]>();
             foreach (string levelName in levelPaths)
             {

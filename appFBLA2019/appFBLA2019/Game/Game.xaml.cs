@@ -102,7 +102,10 @@ namespace appFBLA2019
             }
             if (answer == this.currentQuestion.CorrectAnswer)
             {
-                ((Button)this.InputGrid.Children.Where(x => (x as Button).Text == this.currentQuestion.CorrectAnswer).First()).BackgroundColor = Color.Green;
+                foreach (View button in this.InputGrid.Children.Where(x => (x as Button).Text == this.currentQuestion.CorrectAnswer))
+                {
+                    (button as Button).BackgroundColor = Color.Green;
+                }
 
                 await this.CorrectAnswer();
             }

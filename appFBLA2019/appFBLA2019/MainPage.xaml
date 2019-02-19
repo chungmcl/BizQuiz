@@ -9,6 +9,10 @@
     BarTextColor="White"
     x:Name="TabbedPagePage"
     CurrentPageChanged="TabbedPage_CurrentPageChanged">
+    <TabbedPage.ToolbarItems>
+        <ToolbarItem Icon="ic_help_black_48dp.png" Order="Secondary"  Priority="0" Text="Help" Clicked="TutorialButton_Clicked" x:Name="TutorialButton" />
+    </TabbedPage.ToolbarItems>
+
     <local:LevelCategoriesPage x:Name="levelsPage" Title="Standard Levels" Icon="ic_landscape_black_48dp.png" />
     <local:LevelEditorPage Title="Level Editor" Icon="ic_edit_black_48dp.png" />
     <ContentPage Title="Leaderboards" Icon="ic_group_black_48dp.png" />

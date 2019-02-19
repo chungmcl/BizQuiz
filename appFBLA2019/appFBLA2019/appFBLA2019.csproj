@@ -19,6 +19,7 @@
     <None Remove="Resources\ic_done_white_48dp.png" />
     <None Remove="Resources\ic_edit_black_48dp.png" />
     <None Remove="Resources\ic_group_black_48dp.png" />
+    <None Remove="Resources\ic_help_black_48dp.png" />
     <None Remove="Resources\ic_landscape_black_48dp.png" />
     <None Remove="Resources\ic_person_black_48dp.png" />
     <None Remove="Resources\ic_settings_black_48dp.png" />
@@ -29,6 +30,7 @@
     <EmbeddedResource Include="Resources\ic_done_white_48dp.png" />
     <EmbeddedResource Include="Resources\ic_edit_black_48dp.png" />
     <EmbeddedResource Include="Resources\ic_group_black_48dp.png" />
+    <EmbeddedResource Include="Resources\ic_help_black_48dp.png" />
     <EmbeddedResource Include="Resources\ic_landscape_black_48dp.png" />
     <EmbeddedResource Include="Resources\ic_person_black_48dp.png" />
     <EmbeddedResource Include="Resources\ic_settings_black_48dp.png" />
@@ -56,6 +58,12 @@
     <Compile Update="Game\LevelCategoriesPage.xaml.cs">
       <DependentUpon>LevelCategoriesPage.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Game\Game.xaml.cs">
+      <DependentUpon>Game.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="HelpPage.xaml.cs">
+      <DependentUpon>HelpPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="LevelEditor\LevelEditorPage.xaml.cs">
       <DependentUpon>LevelEditorPage.xaml</DependentUpon>
     </Compile>
@@ -76,7 +84,10 @@
     <EmbeddedResource Update="Game\LevelEndPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Game\TextGame.xaml">
+    <EmbeddedResource Update="Game\Game.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="HelpPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="LevelEditor\CreateNewLevelPage.xaml">

@@ -55,6 +55,11 @@ namespace appFBLA2019
             }
         }
 
+        private async void TutorialButton_Clicked(object sender, EventArgs e)
+        {
+            await this.Navigation.PushAsync(new HelpPage());
+        }
+
         private void BugReportToolbarItem_Clicked(object sender, EventArgs e)
         {
             this.Navigation.PushAsync(new BugReportPage());

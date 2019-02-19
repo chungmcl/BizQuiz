@@ -19,8 +19,8 @@ namespace appFBLA2019
             this.InitializeComponent();
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
 
-            Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
-            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
+            Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
+            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
@@ -30,7 +30,10 @@ namespace appFBLA2019
             this.MainPage = new NavigationPage(new MainPage());
         }
 
+        public static string debugFolder = "/FBLADebug/";
+
         public static string Path;
+        public static string UserPath;
 
         protected override void OnResume()
         {
