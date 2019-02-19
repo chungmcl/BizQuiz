@@ -150,6 +150,7 @@ namespace appFBLA2019
 			this.ButtonAddDrop.Scale = 0;
 			this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
 			this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
+            this.BoxPush.HeightRequest = this.Height * .12;
 			if (this.x is ImageButton)
 			{
 				if (((ImageButton)this.x).StyleId == "change")
