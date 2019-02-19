@@ -49,17 +49,9 @@ namespace appFBLA2019
                 this.IsLoading = true;
                 this.ButtonStack.Children.Clear();
 
-                string[] levelPaths = Directory.GetDirectories(App.Path + $"/{this.category}");
-                List<string[]> levels = new List<string[]>();
-                foreach (string levelName in levelPaths)
-                {
-                    if (levelName.Contains('`'))
-                    {
-                        levels.Add(new string[] { levelName.Split('/').Last().Split('`').First(), levelName.Split('/').Last().Split('`').Last() });
-                    }
-                }
+                List<LevelInfo> levels = LevelRosterDatabase.GetRoster();
 
-                foreach (string[] level in levels)
+                foreach (LevelInfo level in levels)
                 {
                     Frame frame = new Frame()
                     {
@@ -93,7 +85,7 @@ namespace appFBLA2019
 
                     Label title = new Label // 0
                     {
-                        Text = level.First(),
+                        Text = level.LevelName,
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         FontAttributes = FontAttributes.Bold,
                         VerticalOptions = LayoutOptions.StartAndExpand,
@@ -110,27 +102,25 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + category + "/" + level.First() + "`" + level.Last()
+                        StyleId = "/" + category + "/" + level.LevelName + "`" + level.AuthorName
                     };
 
-                    LevelInfo info = LevelRosterDatabase.GetLevelInfo(level[0], level[1]);
-
-                    if (info.SyncStatus == 3)
+                    if (level.SyncStatus == 3)
                     {
                         Sync.Source = "ic_cloud_off_black_48dp.png";
                         Sync.Clicked += SyncOffline_Clicked;
                     }
-                    else if (info.SyncStatus == 2)
+                    else if (level.SyncStatus == 2)
                     {
                         Sync.Source = "ic_cloud_done_black_48dp.png";
                         Sync.Clicked += SyncNoChange_Clicked;
                     }
-                    else if (info.SyncStatus == 1)
+                    else if (level.SyncStatus == 1)
                     {
                         Sync.Source = "ic_cloud_upload_black_48dp.png";
                         Sync.Clicked += SyncUpload_Clicked;
                     }
-                    else if (info.SyncStatus == 0)
+                    else if (level.SyncStatus == 0)
                     {
                         Sync.Source = "ic_cloud_download_black_48dp.png";
                         Sync.Clicked += SyncDownload_Clicked;
@@ -187,11 +177,11 @@ namespace appFBLA2019
                         ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
                         ButtonDelete.BackgroundColor = Color.White;
                         ButtonDelete.CornerRadius = 0;
-                        ButtonDelete.StyleId = "/" + category + "/" + level.First() + "`" + level.Last();
+                        ButtonDelete.StyleId = "/" + category + "/" + level.LevelName + "`" + level.AuthorName;
                     }
                     menuStack.Children.Add(ButtonDelete);
 
-                    if (CredentialManager.Username == level.Last())
+                    if (CredentialManager.Username == level.AuthorName)
                     {
                         ButtonDelete.Text = "Delete";
                     }
@@ -224,7 +214,7 @@ namespace appFBLA2019
 
                     Label Author = new Label // 2
                     {
-                        Text = "Created by: " + level.Last(),
+                        Text = "Created by: " + level.AuthorName,
                         FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
                         HeightRequest = 60,
                         VerticalOptions = LayoutOptions.End,
@@ -242,7 +232,7 @@ namespace appFBLA2019
                         Seperator.Color = Color.Gray;
                         imageButtonMenu.BackgroundColor = Color.LightGray;
                         Sync.BackgroundColor = Color.LightGray;
-                        Level newLevel = new Level(this.category, level.First(), level.Last());
+                        Level newLevel = new Level(this.category, level.LevelName, level.AuthorName);
                         newLevel.LoadQuestions();
                         await this.RemoveMenu(frameMenu);
                         await this.Navigation.PushAsync(new Game(newLevel));
@@ -314,7 +304,6 @@ namespace appFBLA2019
                         LevelInfo info = realm.All<LevelInfo>().First();
                         string dbId = info.DBId;
 
-                        ServerOperations.DeleteLevel(dbId + "/-");
                         Directory.Delete(path, true);
 
                         LevelInfo rosterInfo = LevelRosterDatabase.GetLevelInfo(dbId);
