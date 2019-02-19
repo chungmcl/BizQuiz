@@ -38,28 +38,40 @@ namespace appFBLA2019.Droid
 
         private static void HandleUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
         {
-            var newExc = new Exception("UnobservedTaskException", unobservedTaskExceptionEventArgs.Exception);
-            LogUnhandledException(newExc);
+            if (unobservedTaskExceptionEventArgs.Exception.InnerException == null)
+            {
+                LogUnhandledException(unobservedTaskExceptionEventArgs.Exception);
+            }
+            else
+            {
+                LogUnhandledException(unobservedTaskExceptionEventArgs.Exception.InnerException);
+            }
         }
 
         private static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
         {
-            var newExc = new Exception("UnhandledException", unhandledExceptionEventArgs.ExceptionObject as Exception);
-            LogUnhandledException(newExc);
+            if ((unhandledExceptionEventArgs.ExceptionObject as Exception).InnerException == null)
+            {
+                LogUnhandledException(unhandledExceptionEventArgs.ExceptionObject as Exception);
+            }
+            else
+            {
+                LogUnhandledException(unhandledExceptionEventArgs.ExceptionObject as Exception);
+            }
         }
 
         internal static void LogUnhandledException(Exception exception)
         {
             try
             {
-                string errorFilePath = System.IO.Path.Combine(App.Path, "/CrashReport.log");
-                var errorMessage = String.Format($"Error (Unhandled Exception): {exception.ToString()}");
-                File.WriteAllText(errorFilePath, errorMessage);
+                string logPath = App.Path + "/CrashReport.log";
+                var errorText = String.Format($"Error (Unhandled Exception): {exception.ToString()}");
+                File.WriteAllText(logPath, errorText);
 
-                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorMessage));
+                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
 
                 // Log to Android Device Logging.
-                Android.Util.Log.Error("Crash Report", errorMessage);
+                Android.Util.Log.Error("Crash Report", errorText);
             }
             catch
             {
@@ -67,26 +79,13 @@ namespace appFBLA2019.Droid
             }
         }
 
-        private void DisplayCrashReport()
+        private void SendCrashLog()
         {
-            string logPath = System.IO.Path.Combine(App.Path, "/CrashReport.log");
+            string logPath = App.Path + "/CrashReport.log";
             if (File.Exists(logPath))
             {
                 var errorText = File.ReadAllText(logPath);
-                if (!BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText)))
-                {
-                    new AlertDialog.Builder(this)
-                      .SetPositiveButton("Clear", (sender, args) =>
-                      {
-                      })
-                      .SetNegativeButton("Close", (sender, args) =>
-                      {
-                          // User pressed Close.
-                      })
-                      .SetMessage(errorText)
-                      .SetTitle("Would you like to send this crash report?")
-                      .Show();
-                }
+                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
                 File.Delete(logPath);
             }
         }

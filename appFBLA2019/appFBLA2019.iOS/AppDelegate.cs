@@ -3,7 +3,10 @@
 using Foundation;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using UIKit;
+using Xamarin.Forms.Platform.iOS;
 
 namespace appFBLA2019.iOS
 {
@@ -19,7 +22,40 @@ namespace appFBLA2019.iOS
             global::Xamarin.Forms.Forms.Init();
             this.LoadApplication(new App());
 
+            AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
+            TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
+
             return base.FinishedLaunching(app, options);
+        }
+
+        private static void HandleUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
+        {
+            Exception ex = new Exception("UnobservedTaskException", unobservedTaskExceptionEventArgs.Exception);
+            LogUnhandledException(ex);
+        }
+
+        private static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        {
+            Exception ex = new Exception("UnhandledException", unhandledExceptionEventArgs.ExceptionObject as Exception);
+            LogUnhandledException(ex);
+        }
+
+        internal static void LogUnhandledException(Exception exception)
+        {
+            try
+            {
+                string logPath = System.IO.Path.Combine(App.Path, "/CrashReport.log");
+                var errorText = String.Format($"Error (Unhandled Exception): {exception.ToString()}");
+                File.WriteAllText(logPath, errorText);
+
+                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
+
+                //writing actual crash logs in IOS is difficult and we wouldn't use them anyway
+            }
+            catch
+            {
+                // just suppress any error logging exceptions
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ namespace appFBLA2019
         public static bool SubmitReport(BugReport report)
         {
             //if there are no saved reports with identical contents
-            if (bugRealm?.All<BugReport>().Where<BugReport>(x => x.ReportID == report.ReportID).ToList().First() != null)
+            if (bugRealm?.All<BugReport>().Where<BugReport>(x => x.ReportID == report.ReportID).ToList().Count == 0)
             {
                 if (SendReport(report))
                 {
@@ -56,9 +56,12 @@ namespace appFBLA2019
         {
             bugRealm.Write(() =>
            {
-               byte[] imageByteArray = File.ReadAllBytes(report.ImagePath);
-               File.WriteAllBytes(App.Path + $"/bugreportimages/{report.ReportID}.jpg", imageByteArray);
-               report.ImagePath = App.Path + $"/bugreportimages/{report.ReportID}.jpg";
+               if (report.ImagePath != null && report.ImagePath != "")
+               {
+                   byte[] imageByteArray = File.ReadAllBytes(report.ImagePath);
+                   File.WriteAllBytes(App.Path + $"/bugreportimages/{report.ReportID}.jpg", imageByteArray);
+                   report.ImagePath = App.Path + $"/bugreportimages/{report.ReportID}.jpg";
+               }
                bugRealm.Add(report, true);
            });
         }
@@ -89,7 +92,7 @@ namespace appFBLA2019
 
             //sends the report to the server (and the image, provided it's not null)
             //returns if the send was successful or not
-            throw new NotImplementedException();
+            return false;
         }
     }
 }

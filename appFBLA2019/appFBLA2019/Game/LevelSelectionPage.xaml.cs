@@ -20,8 +20,7 @@ namespace appFBLA2019
         /// <summary>
         /// Constructor that creates a levelselectionpage, connects to the database for the category, and sets up the cards
         /// </summary>
-        /// <param name="category">
-        /// </param>
+        /// <param name="category">  </param>
         public LevelSelectionPage(string category)
         {
             this.InitializeComponent();
@@ -39,9 +38,7 @@ namespace appFBLA2019
         /// <summary>
         /// Loads all questions from the current category and displays them as cards with some options
         /// </summary>
-        /// <returns>
-        /// an awaitable task to setup the page
-        /// </returns>
+        /// <returns> an awaitable task to setup the page </returns>
         internal async Task Setup()
         {
             this.ButtonStack.Children.Clear();
@@ -86,11 +83,10 @@ namespace appFBLA2019
                     HorizontalOptions = LayoutOptions.End
                 });
 
-                DBHandler.SelectDatabase(this.category, level.First(), level.Last());
-
                 TapGestureRecognizer recognizer = new TapGestureRecognizer();
                 recognizer.Tapped += async (object sender, EventArgs e) =>
                 {
+                    DBHandler.SelectDatabase(this.category, level.First(), level.Last());
                     Level newLevel = new Level(this.category, level.First(), level.Last());
                     newLevel.LoadQuestions();
                     await this.Navigation.PushAsync(new Game(newLevel));

@@ -19,6 +19,7 @@ namespace appFBLA2019
 
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
+            BugReportHandler.Setup();
 
             this.MainPage = new NavigationPage(new MainPage());
         }
@@ -44,8 +45,6 @@ namespace appFBLA2019
 
             await CredentialManager.CheckLoginStatus();
             CredentialManager.StartTimedCheckLoginStatus();
-
-            BugReportHandler.Setup();
         }
     }
 }
