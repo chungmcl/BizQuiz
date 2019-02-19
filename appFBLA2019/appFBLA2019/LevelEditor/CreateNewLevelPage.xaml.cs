@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Input;
 using Plugin.Media;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -118,40 +119,46 @@ namespace appFBLA2019
 				file.Dispose();
 			}
 		}
+
 		private object x;
-		/// <summary>
-		/// Called when the user presses the Add Image button on a question eiditor
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private async void ButtonAddImage_Clicked(object sender, EventArgs e)
+
+        /// <summary>
+        /// Called when the user presses the Add Image button on a question eiditor
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ButtonAddImage_Clicked(object sender, EventArgs e)
 		{
 			if (sender is Button)
-				await PickImage(sender);
+            {
+                ((Button)sender).IsEnabled = false;
+                await PickImage(sender);
+                ((Button)sender).IsEnabled = true;
+            }
 			else
 			{
-				await this.Navigation.PushAsync(new LevelEditor.PhotoPage(((ImageButton)sender)));
-				x = sender;
-
-			}
-
+                ((ImageButton)sender).IsEnabled = false;
+                await this.Navigation.PushAsync(new LevelEditor.PhotoPage(((ImageButton)sender)));
+				this.x = sender;
+                ((ImageButton)sender).IsEnabled = true;
+            }
 		}
 		
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
-			ButtonAddQuestion.Scale = 0;
-			ButtonAddDrop.Scale = 0;
-			ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
-			ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
-			if (x is ImageButton)
+            this.ButtonAddQuestion.Scale = 0;
+			this.ButtonAddDrop.Scale = 0;
+			this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
+			this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
+			if (this.x is ImageButton)
 			{
-				if (((ImageButton)x).StyleId == "change")
-					PickImage(x);
-				else if (((ImageButton)x).StyleId == "delete")
+				if (((ImageButton)this.x).StyleId == "change")
+                    this.PickImage(this.x);
+				else if (((ImageButton)this.x).StyleId == "delete")
 				{
-					((ImageButton)x).IsVisible = false;
-					((StackLayout)((ImageButton)x).Parent).Children[7].IsVisible = true;
+					((ImageButton)this.x).IsVisible = false;
+					((StackLayout)((ImageButton)this.x).Parent).Children[7].IsVisible = true;
 				}
 
 			}
@@ -160,8 +167,8 @@ namespace appFBLA2019
 		protected override void OnDisappearing()
 		{
 			base.OnDisappearing();
-			ButtonAddQuestion.ScaleTo(0, 250, Easing.CubicInOut);
-			ButtonAddDrop.ScaleTo(0, 250, Easing.CubicInOut);
+			this.ButtonAddQuestion.ScaleTo(0, 250, Easing.CubicInOut);
+			this.ButtonAddDrop.ScaleTo(0, 250, Easing.CubicInOut);
 		}
 
 
@@ -435,7 +442,7 @@ namespace appFBLA2019
 			// 0 - 1
 			Button buttonQuestionType = new Button();
 			{
-				buttonQuestionType.Clicked += OnButtonQuestionTypeClicked;
+				buttonQuestionType.Clicked += this.OnButtonQuestionTypeClicked;
 				buttonQuestionType.HorizontalOptions = LayoutOptions.StartAndExpand;
 				buttonQuestionType.VerticalOptions = LayoutOptions.Start;
 				buttonQuestionType.BackgroundColor = Color.LightGray;
@@ -586,56 +593,72 @@ namespace appFBLA2019
 
 		}
 
-		/// <summary>
-		/// When the user clicks the button to change question type: changes to the next question type
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		async void OnButtonQuestionTypeClicked(object sender, EventArgs e)
+        
+
+        /// <summary>
+        /// When the user clicks the button to change question type: changes to the next question type
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        async void OnButtonQuestionTypeClicked(object sender, EventArgs e)
 		{
-			if (((Button)sender).Text == "Question Type: Multiple choice")
-			{
-                // Do animation stuff - doesn't look the greatest, but the best I can do without downloading customs or doing something too time intesive
-				StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
-				Frame frame = ((Frame)stack.Parent);
-				await Task.WhenAll(
-					stack.Children[3].FadeTo(0, 150, Easing.CubicInOut),
-					stack.Children[4].FadeTo(0, 150, Easing.CubicInOut),
-					stack.Children[5].FadeTo(0, 150, Easing.CubicInOut),
-					frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width, frame.Height - (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
-					);
+            Button button = sender as Button;
+            // Disable button so user can't spam           
+            //button.IsEnabled = false;
+            await button.FadeTo(0, 150, Easing.CubicInOut);
 
-				stack.Children[3].IsVisible = false;
-				stack.Children[4].IsVisible = false;
-				stack.Children[5].IsVisible = false;
+            switch (button.Text)
+            {
+                case "Question Type: Multiple choice":
+                {
+                    // Do animation stuff - doesn't look the greatest, but the best I can do without downloading customs or doing something too time intesive
+                    StackLayout stack = ((StackLayout)((StackLayout)(button).Parent).Parent);
+                    Frame frame = ((Frame)stack.Parent);
+                    await Task.WhenAll(
+                        stack.Children[3].FadeTo(0, 150, Easing.CubicInOut),
+                        stack.Children[4].FadeTo(0, 150, Easing.CubicInOut),
+                        stack.Children[5].FadeTo(0, 150, Easing.CubicInOut),
+                        frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width, frame.Height - (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
+                        );
 
-                // Change the button to the next question type and change the return command so users can't access the other entries
-				((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Unfocus());
-				((Button)sender).Text = "Question Type: Text answer";
-			}
-			else if (((Button)sender).Text == "Question Type: Text answer")
-			{
-				((Button)sender).Text = "Question Type: Case sensitive text answer";
-			}
-			else
-			{
-				StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
-				Frame frame = ((Frame)stack.Parent);
-				stack.Children[3].IsVisible = true;
-				stack.Children[4].IsVisible = true;
-				stack.Children[5].IsVisible = true;
-				await Task.WhenAll(
-					stack.Children[3].FadeTo(1, 250, Easing.CubicInOut),
-					stack.Children[4].FadeTo(1, 250, Easing.CubicInOut),
-					stack.Children[5].FadeTo(1, 250, Easing.CubicInOut),
-					frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width,
-					frame.Height + (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
-				);
-			   
-				((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Focus());
-				((Button)sender).Text = "Question Type: Multiple choice";
-			}
-		}
+                    stack.Children[3].IsVisible = false;
+                    stack.Children[4].IsVisible = false;
+                    stack.Children[5].IsVisible = false;
+
+                    // Change the button to the next question type and change the return command so users can't access the other entries
+                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Unfocus());
+                    // change question type
+                    button.Text = "Question Type: Text answer";
+                    break;
+                }
+                case "Question Type: Text answer":
+                    button.Text = "Question Type: Case sensitive text answer";
+                    break;
+                case "Question Type: Case sensitive text answer":
+                {
+                    StackLayout stack = ((StackLayout)((StackLayout)(button).Parent).Parent);
+                    Frame frame = ((Frame)stack.Parent);
+                    stack.Children[3].IsVisible = true;
+                    stack.Children[4].IsVisible = true;
+                    stack.Children[5].IsVisible = true;
+                    await Task.WhenAll(
+                        stack.Children[3].FadeTo(1, 250, Easing.CubicInOut),
+                        stack.Children[4].FadeTo(1, 250, Easing.CubicInOut),
+                        stack.Children[5].FadeTo(1, 250, Easing.CubicInOut),
+                        frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width,
+                        frame.Height + (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
+                    );
+
+                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Focus());
+                    button.Text = "Question Type: Multiple choice";
+                    break;
+                }
+            }
+
+            // Re-enable the button and fade it into view - for  some reason this breaks it.
+            //button.IsEnabled = true;
+            await button.FadeTo(1, 150, Easing.CubicInOut);
+        }
 
 		private const int restrictCount = 64;
         /// <summary>
