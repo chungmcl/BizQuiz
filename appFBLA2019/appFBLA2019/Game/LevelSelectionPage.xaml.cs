@@ -59,17 +59,9 @@ namespace appFBLA2019
                 this.IsLoading = true;
                 this.ButtonStack.Children.Clear();
 
-                string[] levelPaths = Directory.GetDirectories(App.Path + $"/{this.category}");
-                List<string[]> levels = new List<string[]>();
-                foreach (string levelName in levelPaths)
-                {
-                    if (levelName.Contains('`'))
-                    {
-                        levels.Add(new string[] { levelName.Split('/').Last().Split('`').First(), levelName.Split('/').Last().Split('`').Last() });
-                    }
-                }
+                List<LevelInfo> levels = LevelRosterDatabase.GetRoster();
 
-                foreach (string[] level in levels)
+                foreach (LevelInfo level in levels)
                 {
                     Frame frame = new Frame()
                     {
@@ -103,7 +95,7 @@ namespace appFBLA2019
 
                     Label title = new Label // 0
                     {
-                        Text = level.First(),
+                        Text = level.LevelName,
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         FontAttributes = FontAttributes.Bold,
                         VerticalOptions = LayoutOptions.StartAndExpand,
@@ -120,27 +112,25 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + category + "/" + level.First() + "`" + level.Last()
+                        StyleId = "/" + category + "/" + level.LevelName + "`" + level.AuthorName
                     };
 
-                    LevelInfo info = LevelRosterDatabase.GetLevelInfo(level[0], level[1]);
-
-                    if (info.SyncStatus == 3)
+                    if (level.SyncStatus == 3)
                     {
                         Sync.Source = "ic_cloud_off_black_48dp.png";
                         Sync.Clicked += SyncOffline_Clicked;
                     }
-                    else if (info.SyncStatus == 2)
+                    else if (level.SyncStatus == 2)
                     {
                         Sync.Source = "ic_cloud_done_black_48dp.png";
                         Sync.Clicked += SyncNoChange_Clicked;
                     }
-                    else if (info.SyncStatus == 1)
+                    else if (level.SyncStatus == 1)
                     {
                         Sync.Source = "ic_cloud_upload_black_48dp.png";
                         Sync.Clicked += SyncUpload_Clicked;
                     }
-                    else if (info.SyncStatus == 0)
+                    else if (level.SyncStatus == 0)
                     {
                         Sync.Source = "ic_cloud_download_black_48dp.png";
                         Sync.Clicked += SyncDownload_Clicked;
@@ -188,21 +178,21 @@ namespace appFBLA2019
                 }
                 menuStack.Children.Add(ButtonEdit);
 
-                Button ButtonDelete = new Button();
-                {
-                    ButtonDelete.Clicked += this.ButtonDelete_Clicked;                   
-                    ButtonDelete.HeightRequest = 45;
-                    ButtonDelete.TextColor = Color.Red;
-                    ButtonDelete.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                    ButtonDelete.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                    ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
-                    ButtonDelete.BackgroundColor = Color.White;
-                    ButtonDelete.CornerRadius = 0;
-                    ButtonDelete.StyleId = "/" + category + "/" + level.First() + "`" + level.Last();
-                }
-                menuStack.Children.Add(ButtonDelete);
+                    Button ButtonDelete = new Button();
+                    {
+                        ButtonDelete.Clicked += this.ButtonDelete_Clicked;
+                        ButtonDelete.HeightRequest = 35;
+                        ButtonDelete.TextColor = Color.Red;
+                        ButtonDelete.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
+                        ButtonDelete.HorizontalOptions = LayoutOptions.CenterAndExpand;
+                        ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
+                        ButtonDelete.BackgroundColor = Color.White;
+                        ButtonDelete.CornerRadius = 0;
+                        ButtonDelete.StyleId = "/" + category + "/" + level.LevelName + "`" + level.AuthorName;
+                    }
+                    menuStack.Children.Add(ButtonDelete);
 
-                    if (CredentialManager.Username == level.Last())
+                    if (CredentialManager.Username == level.AuthorName)
                     {
                         ButtonDelete.Text = "Delete";
                     }
@@ -235,7 +225,7 @@ namespace appFBLA2019
 
                     Label Author = new Label // 2
                     {
-                        Text = "Created by: " + level.Last(),
+                        Text = "Created by: " + level.AuthorName,
                         FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
                         HeightRequest = 60,
                         VerticalOptions = LayoutOptions.End,
@@ -244,23 +234,25 @@ namespace appFBLA2019
                     frameStack.Children.Add(Author);
 
 
-                recognizer.Tapped += async (object sender, EventArgs e) =>
-                {
-                    frame.GestureRecognizers.Remove(recognizer);
-                    frame.BackgroundColor = Color.LightGray;
-                    Seperator.Color = Color.Gray;
-                    imageButtonMenu.BackgroundColor = Color.LightGray;
-                    Sync.BackgroundColor = Color.LightGray;
-                    Level newLevel = new Level(this.category, level.First(), level.Last());
-                    newLevel.LoadQuestions();
-                    await this.RemoveMenu(frameMenu);
-                    await this.Navigation.PushAsync(new Game(newLevel));
-                    frame.BackgroundColor = Color.Default;
-                    Seperator.Color = Color.LightGray;
-                    imageButtonMenu.BackgroundColor = Color.White;
-                    Sync.BackgroundColor = Color.White;
-                    frame.GestureRecognizers.Add(recognizer);
-                };
+
+                    TapGestureRecognizer recognizer = new TapGestureRecognizer();
+                    recognizer.Tapped += async (object sender, EventArgs e) =>
+                    {
+                        frame.GestureRecognizers.Remove(recognizer);
+                        frame.BackgroundColor = Color.LightGray;
+                        Seperator.Color = Color.Gray;
+                        imageButtonMenu.BackgroundColor = Color.LightGray;
+                        Sync.BackgroundColor = Color.LightGray;
+                        Level newLevel = new Level(this.category, level.LevelName, level.AuthorName);
+                        newLevel.LoadQuestions();
+                        await this.RemoveMenu(frameMenu);
+                        await this.Navigation.PushAsync(new Game(newLevel));
+                        frame.BackgroundColor = Color.Default;
+                        Seperator.Color = Color.LightGray;
+                        imageButtonMenu.BackgroundColor = Color.White;
+                        Sync.BackgroundColor = Color.White;
+                        frame.GestureRecognizers.Add(recognizer);
+                    };
 
                     frame.GestureRecognizers.Add(recognizer);
 
@@ -318,24 +310,32 @@ namespace appFBLA2019
                 {
                     if (!unsubscribe) // If delete (user owns this level)
                     {
+                        // Acquire DBId from the level's realm file
                         string realmFilePath = Directory.GetFiles(path, "*.realm").First();
                         Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                         LevelInfo info = realm.All<LevelInfo>().First();
                         string dbId = info.DBId;
 
-                        ServerOperations.DeleteLevel(dbId + "/-");
-                        Directory.Delete(path, true);
-
+                        // Acquire LevelInfo from roster
                         LevelInfo rosterInfo = LevelRosterDatabase.GetLevelInfo(dbId);
                         LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo);
                         rosterInfoUpdated.IsDeletedLocally = true;
+
                         rosterInfoUpdated.LastModifiedDate = DateTime.Now.ToString();
                         LevelRosterDatabase.EditLevelInfo(rosterInfoUpdated);
-                        if (CrossConnectivity.Current.IsConnected)
-                            ServerOperations.DeleteLevel(dbId);
 
+                        // If connected, tell server to delete this level
+                        // If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
+                        if (CrossConnectivity.Current.IsConnected)
+                        {
+                            OperationReturnMessage returnMessage = ServerOperations.DeleteLevel(dbId);
+                            if (returnMessage == OperationReturnMessage.True)
+                                realm.Remove(rosterInfo);
+                        }
+
+                        // Clear out DBHandler.GameDatabase in case it references the level just deleted
                         DBHandler.DisposeDatabase();
-                        System.IO.Directory.Delete(path, true);
+                        Directory.Delete(path, true);
                     }
                     this.Setup();
                 }

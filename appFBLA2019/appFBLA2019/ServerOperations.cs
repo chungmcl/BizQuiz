@@ -1,8 +1,11 @@
 ﻿using Plugin.Connectivity;
 using Realms;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace appFBLA2019
@@ -75,6 +78,30 @@ namespace appFBLA2019
         {
             SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{DBId}", ServerRequestTypes.DeleteLevel);
             return ReceiveFromServerORM();
+        }
+
+        public static List<string>[] GetLevelsByAuthorName(string authorName, int chunk)
+        {
+            SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetLevelsByAuthorName);
+            return ReceiveFromServerArrayOfStringLists();
+        }
+
+        public static List<string>[] GetUsers(string username, int chunk)
+        {
+            SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
+            return ReceiveFromServerArrayOfStringLists();
+        }
+
+        public static List<string>[] GetLevelsByCategory(string category, int chunk)
+        {
+            SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetLevelsByCategory);
+            return ReceiveFromServerArrayOfStringLists();
+        }
+
+        public static List<string>[] GetLevelsByLevelName(string levelName, int chunk)
+        {
+            SendStringData($"{levelName}/{chunk}/-", ServerRequestTypes.GetLevelsByLevelName);
+            return ReceiveFromServerArrayOfStringLists();
         }
 
         public static bool SendLevel(string relativeLevelPath)
@@ -195,6 +222,23 @@ namespace appFBLA2019
             else
                 return null;
         }
+
+        public static List<string>[] ReceiveFromServerArrayOfStringLists()
+        {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
+                int size = BitConverter.ToInt32(returnedBytes, 1);
+                byte[] data = ServerConnector.ReadByteArray(size);
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                MemoryStream memStream = new MemoryStream();
+                memStream.Write(data, 0, data.Length);
+                memStream.Position = 0;
+                return binaryFormatter.Deserialize(memStream) as List<string>[];
+            }
+            else
+                return null;
+        }
         #endregion
 
 
@@ -286,6 +330,10 @@ namespace appFBLA2019
         GetEmail,
         GetJPEGImage,
         GetRealmFile,
-        GetLastModifiedDate
+        GetLastModifiedDate,
+        GetLevelsByAuthorName,
+        GetLevelsByLevelName,
+        GetLevelsByCategory,
+        GetUsers
     }
 }
