@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.AboutUsPage">
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout Padding="10">
+                <Label FontSize="30" HorizontalOptions="CenterAndExpand">About Us</Label>
+                <Image Source="BizQuizLogo.png" Aspect="AspectFit" HeightRequest="250" />
+                <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                    <Label HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" FontSize="18">
+                        BizQuiz was developed by Micheal Chung, Eric Hughes, and Thomas Elley. Our dream was to provide students with an easy way to create, share, and learn from quizzes about various business concepts. BizQuiz is a labor of love and we're always happy to take feedback from users. Contact us below with any suggestions or use our bug reporting system to report a problem. Thanks for using BizQuiz!
+                    </Label>
+                </Frame>
+                <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                    <StackLayout>
+                        <Button x:Name="EmailButton" Text="Email us" VerticalOptions="End" CornerRadius="25" TextColor="White" BackgroundColor="Accent" HeightRequest="50" Clicked="EmailButton_Clicked" />
+                        <Button x:Name="BugReportButton" Text="Report a bug" VerticalOptions="End" CornerRadius="25" TextColor="White" BackgroundColor="Accent" HeightRequest="50" Clicked="BugReportButton_Clicked" />
+                        <Button x:Name="GithubButton" Text="Check out our Github" VerticalOptions="End" CornerRadius="25" TextColor="White" BackgroundColor="Accent" HeightRequest="50" Clicked="GithubButton_Clicked" />
+                        <Button x:Name="FacebookButton" Text="See us on Facebook" VerticalOptions="End" CornerRadius="25" TextColor="White" BackgroundColor="Accent" HeightRequest="50" Clicked="FacebookButton_Clicked" />
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

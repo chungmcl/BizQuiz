@@ -47,6 +47,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="AboutUsPage.xaml.cs">
+      <DependentUpon>AboutUsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Game\LevelSelectionPage.xaml.cs">
+      <DependentUpon>LevelSelectionPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Game\LevelCategoriesPage.xaml.cs">
       <DependentUpon>LevelCategoriesPage.xaml</DependentUpon>
     </Compile>
@@ -58,6 +64,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="AboutUsPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Bug Reports\BugReportPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Game\LevelEndPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

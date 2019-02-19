@@ -58,5 +58,15 @@ namespace appFBLA2019
         {
             Navigation.PushModalAsync(new TermsOfUse());
         }
+
+        private void BugReportToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushAsync(new BugReportPage());
+        }
+
+        private void AboutPageToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushAsync(new AboutUsPage());
+        }
     }
 }
