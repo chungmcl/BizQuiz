@@ -18,6 +18,7 @@ namespace appFBLA2019
         {
             this.InitializeComponent();
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
+            Xamarin.Forms.DependencyService.Register<IErrorLogger>();
 
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
