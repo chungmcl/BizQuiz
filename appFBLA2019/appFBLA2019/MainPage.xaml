@@ -12,6 +12,7 @@
     >
     <TabbedPage.ToolbarItems>
         <ToolbarItem Priority="0" Name="Terms Of Use" Order="Secondary"  Activated="TermsOfUse_Activated"/>
+        <ToolbarItem Icon="ic_help_black_48dp.png" Order="Secondary"  Priority="0" Text="Help" Clicked="TutorialButton_Clicked" x:Name="TutorialButton" />
     </TabbedPage.ToolbarItems>
     <local:LevelCategoriesPage x:Name="levelsPage" Title="Quizes" Icon="ic_landscape_black_48dp.png"/>
     <local:StorePage Title="Search" Icon="ic_search_black_48dp.png"/>
