@@ -17,7 +17,7 @@ using Xamarin.Forms;
 namespace appFBLA2019.Droid
 {
     [Activity(Label = "appFBLA2019", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger
     {
         protected override void OnCreate(Bundle bundle)
         {
@@ -29,55 +29,9 @@ namespace appFBLA2019.Droid
 
             this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustResize);
 
-            AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
-            TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
-
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
             this.LoadApplication(new App());
-        }
-
-        private static void HandleUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
-        {
-            if (unobservedTaskExceptionEventArgs.Exception.InnerException == null)
-            {
-                LogUnhandledException(unobservedTaskExceptionEventArgs.Exception);
-            }
-            else
-            {
-                LogUnhandledException(unobservedTaskExceptionEventArgs.Exception.InnerException);
-            }
-        }
-
-        private static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
-        {
-            if ((unhandledExceptionEventArgs.ExceptionObject as Exception).InnerException == null)
-            {
-                LogUnhandledException(unhandledExceptionEventArgs.ExceptionObject as Exception);
-            }
-            else
-            {
-                LogUnhandledException((unhandledExceptionEventArgs.ExceptionObject as Exception).InnerException);
-            }
-        }
-
-        internal static void LogUnhandledException(Exception exception)
-        {
-            try
-            {
-                string logPath = App.Path + "/CrashReport.log";
-                var errorText = String.Format($"Error (Unhandled Exception): {exception.ToString()}");
-                File.WriteAllText(logPath, errorText);
-
-                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
-
-                // Log to Android Device Logging.
-                Android.Util.Log.Error("Crash Report", errorText);
-            }
-            catch
-            {
-                // just suppress any error logging exceptions
-            }
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent intent)
@@ -120,6 +74,11 @@ namespace appFBLA2019.Droid
             MemoryStream outStream = new MemoryStream();
             resultBitmap.Compress(Bitmap.CompressFormat.Jpeg, 100, outStream);
             return outStream;
+        }
+
+        public void LogError(string error)
+        {
+            Android.Util.Log.Error("Crash Report", error);
         }
     }
 }

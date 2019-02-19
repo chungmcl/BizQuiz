@@ -12,7 +12,7 @@ namespace appFBLA2019.iOS
 {
     // The UIApplicationDelegate for the application. This class is responsible for launching the User Interface of the application, as well as listening (and optionally responding) to application events from iOS.
     [Register("AppDelegate")]
-    public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
+    public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate, IGetImage, IGetStorage, IErrorLogger
     {
         // This method is invoked when the application has loaded and is ready to run. In this method you should instantiate the window, load the UI into it and then make the window visible.
         //
@@ -22,40 +22,22 @@ namespace appFBLA2019.iOS
             global::Xamarin.Forms.Forms.Init();
             this.LoadApplication(new App());
 
-            AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
-            TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
-
             return base.FinishedLaunching(app, options);
         }
 
-        private static void HandleUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
+        public Stream GetJPGStreamFromByteArray(byte[] image)
         {
-            Exception ex = new Exception("UnobservedTaskException", unobservedTaskExceptionEventArgs.Exception);
-            LogUnhandledException(ex);
+            throw new NotImplementedException();
         }
 
-        private static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        public string GetStorage()
         {
-            Exception ex = new Exception("UnhandledException", unhandledExceptionEventArgs.ExceptionObject as Exception);
-            LogUnhandledException(ex);
+            throw new NotImplementedException();
         }
 
-        internal static void LogUnhandledException(Exception exception)
+        public void LogError(string error)
         {
-            try
-            {
-                string logPath = System.IO.Path.Combine(App.Path, "/CrashReport.log");
-                var errorText = String.Format($"Error (Unhandled Exception): {exception.ToString()}");
-                File.WriteAllText(logPath, errorText);
-
-                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
-
-                //writing actual crash logs in IOS is difficult and we wouldn't use them anyway
-            }
-            catch
-            {
-                // just suppress any error logging exceptions
-            }
+            throw new NotImplementedException();
         }
     }
 }

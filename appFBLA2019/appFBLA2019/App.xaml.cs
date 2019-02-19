@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
@@ -19,6 +21,9 @@ namespace appFBLA2019
 
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
+
+            AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
+            TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
             BugReportHandler.Setup();
             this.SendCrashLog();
 
@@ -56,6 +61,48 @@ namespace appFBLA2019
                 var errorText = File.ReadAllText(logPath);
                 BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
                 File.Delete(logPath);
+            }
+        }
+
+        private static void HandleUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
+        {
+            if (unobservedTaskExceptionEventArgs.Exception.InnerException == null)
+            {
+                LogUnhandledException(unobservedTaskExceptionEventArgs.Exception);
+            }
+            else
+            {
+                LogUnhandledException(unobservedTaskExceptionEventArgs.Exception.InnerException);
+            }
+        }
+
+        private static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        {
+            if ((unhandledExceptionEventArgs.ExceptionObject as Exception).InnerException == null)
+            {
+                LogUnhandledException(unhandledExceptionEventArgs.ExceptionObject as Exception);
+            }
+            else
+            {
+                LogUnhandledException((unhandledExceptionEventArgs.ExceptionObject as Exception).InnerException);
+            }
+        }
+
+        private static void LogUnhandledException(Exception exception)
+        {
+            try
+            {
+                string logPath = App.Path + "/CrashReport.log";
+                var errorText = String.Format($"Error (Unhandled Exception): {exception.ToString()}");
+                File.WriteAllText(logPath, errorText);
+
+                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
+
+                DependencyService.Get<IErrorLogger>().LogError(errorText);
+            }
+            catch
+            {
+                // just suppress any error logging exceptions
             }
         }
     }
