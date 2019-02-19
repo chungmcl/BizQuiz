@@ -287,6 +287,7 @@ namespace appFBLA2019
         GetEmail,
         GetJPEGImage,
         GetRealmFile,
-        GetLastModifiedDate
+        GetLastModifiedDate,
+        GetLevelsByAuthorName
     }
 }
