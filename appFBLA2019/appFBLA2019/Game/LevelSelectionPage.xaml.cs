@@ -299,23 +299,32 @@ namespace appFBLA2019
                 {
                     if (!unsubscribe) // If delete (user owns this level)
                     {
+                        // Acquire DBId from the level's realm file
                         string realmFilePath = Directory.GetFiles(path, "*.realm").First();
                         Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                         LevelInfo info = realm.All<LevelInfo>().First();
                         string dbId = info.DBId;
 
-                        Directory.Delete(path, true);
-
+                        // Acquire LevelInfo from roster
                         LevelInfo rosterInfo = LevelRosterDatabase.GetLevelInfo(dbId);
                         LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo);
                         rosterInfoUpdated.IsDeletedLocally = true;
+
                         rosterInfoUpdated.LastModifiedDate = DateTime.Now.ToString();
                         LevelRosterDatabase.EditLevelInfo(rosterInfoUpdated);
-                        if (CrossConnectivity.Current.IsConnected)
-                            ServerOperations.DeleteLevel(dbId);
 
+                        // If connected, tell server to delete this level
+                        // If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
+                        if (CrossConnectivity.Current.IsConnected)
+                        {
+                            OperationReturnMessage returnMessage = ServerOperations.DeleteLevel(dbId);
+                            if (returnMessage == OperationReturnMessage.True)
+                                realm.Remove(rosterInfo);
+                        }
+
+                        // Clear out DBHandler.GameDatabase in case it references the level just deleted
                         DBHandler.DisposeDatabase();
-                        System.IO.Directory.Delete(path, true);
+                        Directory.Delete(path, true);
                     }
                     this.Setup();
                 }
