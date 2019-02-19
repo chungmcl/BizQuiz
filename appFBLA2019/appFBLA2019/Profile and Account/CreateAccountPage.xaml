@@ -7,38 +7,40 @@
             Spacing="20"
             Padding="20">
 
-            <Label x:Name="LabelTitle" Text="Create New Account" Font="Bold" HorizontalOptions="Center" />
+            <Label x:Name="LabelTitle" Text="Create New Account" Font="Bold" HorizontalOptions="Center"/>
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
                 </Grid.RowDefinitions>
 
-                <Label Text="Username" Grid.Column="0" Grid.Row="0" />
-                <Label Text="Password" Grid.Column="0" Grid.Row="1" />
-                <Label Text="Email" Grid.Column="0" Grid.Row="2" />
+                <Entry x:Name="EntryUsername" Grid.Column="0" Grid.Row="0"
+                       HorizontalOptions="FillAndExpand" Placeholder="Create a username" TextChanged="EntryUsername_TextChanged"/>
+                <Entry x:Name="EntryPassword" Grid.Column="0" Grid.Row="1"
+                       HorizontalOptions="FillAndExpand" Placeholder="Create a password" TextChanged="EntryPassword_TextChanged"/>
+                <Entry x:Name="EntryEmail" Grid.Column="0" Grid.Row="2"
+                       HorizontalOptions="FillAndExpand" Placeholder="Email" TextChanged="EntryEmail_TextChanged"/>
 
-                <Entry x:Name="EntryUsername" Grid.Column="1" Grid.Row="0"
-                       HorizontalOptions="FillAndExpand" />
-                <Entry x:Name="EntryPassword" Grid.Column="1" Grid.Row="1"
-                       HorizontalOptions="FillAndExpand" />
-                <Entry x:Name="EntryEmail" Grid.Column="1" Grid.Row="2"
-                       HorizontalOptions="FillAndExpand" />
+                <Image x:Name="checkUsername" Source="ic_bad_red_48dp.png" Grid.Column="1" Grid.Row="0" Opacity="0"/>
+                <Image x:Name="checkPassword" Source="ic_bad_red_48dp.png" Grid.Column="1" Grid.Row="1" Opacity="0"/>
+                <Image x:Name="checkEmail" Source="ic_bad_red_48dp.png" Grid.Column="1" Grid.Row="2" Opacity="0"/>
+
             </Grid>
+
 
             <Button x:Name="ButtonCreateAccount"
                     Text="Create Account"
-                    Clicked="ButtonCreateAccount_Clicked" />
+                    Clicked="ButtonCreateAccount_Clicked" CornerRadius="25" IsEnabled="False"/>
             <Label x:Name="LabelMessage" Text=""
-                   HorizontalOptions="Center" />
+                   HorizontalOptions="Center"/>
 
-            <ActivityIndicator x:Name="ActivityIndicator" IsVisible="false" />
+            <ActivityIndicator x:Name="ActivityIndicator" IsVisible="false"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

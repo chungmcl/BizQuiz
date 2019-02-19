@@ -10,6 +10,9 @@
     x:Name="TabbedPagePage"
     CurrentPageChanged="TabbedPage_CurrentPageChanged"
     >
+    <TabbedPage.ToolbarItems>
+        <ToolbarItem Priority="0" Name="Terms Of Use" Order="Secondary"  Activated="TermsOfUse_Activated"/>
+    </TabbedPage.ToolbarItems>
     <local:LevelCategoriesPage x:Name="levelsPage" Title="Quizes" Icon="ic_landscape_black_48dp.png"/>
     <local:StorePage Title="Search" Icon="ic_search_black_48dp.png"/>
     <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png"/>

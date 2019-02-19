@@ -53,5 +53,10 @@ namespace appFBLA2019
 					break;
 			}
 		}
-	}
+
+        private void TermsOfUse_Activated(object sender, EventArgs e)
+        {
+            Navigation.PushModalAsync(new TermsOfUse());
+        }
+    }
 }

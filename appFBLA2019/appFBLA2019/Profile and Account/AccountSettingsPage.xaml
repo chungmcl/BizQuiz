@@ -54,8 +54,7 @@
                                 <Label x:Name="LabelChangePasswordMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangePassword" 
                                         Text="Change Password"
-                                        Clicked="ButtonChangePassword_Clicked"
-                                        BorderRadius="25"/>
+                                        Clicked="ButtonChangePassword_Clicked" CornerRadius="25"/>
                             </StackLayout>
 
 
@@ -100,8 +99,7 @@
                                 <Label x:Name="LabelChangeEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangeEmail" 
                                         Text="Change Email"
-                                        BorderRadius="25"
-                                        Clicked="ButtonChangeEmail_Clicked"/>
+                                        Clicked="ButtonChangeEmail_Clicked" CornerRadius="25"/>
 
                             </StackLayout>
 
@@ -139,8 +137,7 @@
                                 <Label x:Name="LabelConfirmEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonConfirmEmail" 
                                         Text="Confirm Email"
-                                        BorderRadius="25"
-                                        Clicked="ButtonConfirmEmail_Clicked"/>
+                                        Clicked="ButtonConfirmEmail_Clicked" CornerRadius="25"/>
                             </StackLayout>
 
 
@@ -182,8 +179,8 @@
                                 <Button x:Name="ButtonDeleteAccount" 
                                         Text="Delete Account"
                                         BackgroundColor="Accent"
-                                        BorderRadius="25"
-                                        Clicked="ButtonDeleteAccount_Clicked"/>
+                                        TextColor="White"
+                                        Clicked="ButtonDeleteAccount_Clicked" CornerRadius="25"/>
                             </StackLayout>
 
 
@@ -196,7 +193,8 @@
                         Text="Log Out of Account"
                         Clicked="ButtonLogout_Clicked"
                         BackgroundColor="Accent"
-                        BorderRadius="25"
+                        TextColor="White"
+                        CornerRadius="25"
                         VerticalOptions="End"
                         Grid.Column="0"
                         Grid.Row="1"/>
