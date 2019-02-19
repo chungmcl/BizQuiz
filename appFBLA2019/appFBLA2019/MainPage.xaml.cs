@@ -54,5 +54,10 @@ namespace appFBLA2019
                 break;
             }
         }
+
+        private async void TutorialButton_Clicked(object sender, EventArgs e)
+        {
+            await this.Navigation.PushAsync(new HelpPage());
+        }
     }
 }

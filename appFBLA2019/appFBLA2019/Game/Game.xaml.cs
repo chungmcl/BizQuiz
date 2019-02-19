@@ -18,8 +18,7 @@ namespace appFBLA2019
         /// <summary>
         /// creates the game, sets up the level and begins the game loop
         /// </summary>
-        /// <param name="level">
-        /// </param>
+        /// <param name="level">  </param>
         public Game(Level level)
         {
             this.InitializeComponent();
@@ -34,10 +33,8 @@ namespace appFBLA2019
         /// <summary>
         /// Triggered when the endlevelpage closes, resets the level and returns the user to the mainpage
         /// </summary>
-        /// <param name="source">
-        /// </param>
-        /// <param name="args">
-        /// </param>
+        /// <param name="source">  </param>
+        /// <param name="args">    </param>
         public async void OnFinished(object source, EventArgs args)
         {
             this.level.ResetLevel();
@@ -81,8 +78,7 @@ namespace appFBLA2019
         /// <summary>
         /// brings the Next Question banner to the center of the screen
         /// </summary>
-        /// <returns>
-        /// </returns>
+        /// <returns>  </returns>
         private async Task AnimateNextBanner()
         {
             await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.SpringOut);
@@ -91,9 +87,7 @@ namespace appFBLA2019
         /// <summary>
         /// checks the answer for multiple choice type questions
         /// </summary>
-        /// <param name="answer">
-        /// the string of the button that was pressed
-        /// </param>
+        /// <param name="answer"> the string of the button that was pressed </param>
         private async void CheckButtonAnswer(string answer)
         {
             foreach (Button button in this.InputGrid.Children)
@@ -107,7 +101,9 @@ namespace appFBLA2019
             if (answer == this.currentQuestion.CorrectAnswer)
             {
                 foreach (View button in this.InputGrid.Children.Where(x => (x as Button).Text == this.currentQuestion.CorrectAnswer))
+                {
                     (button as Button).BackgroundColor = Color.Green;
+                }
 
                 await this.CorrectAnswer();
             }
@@ -122,12 +118,8 @@ namespace appFBLA2019
         /// <summary>
         /// checks the answer for text type questions
         /// </summary>
-        /// <param name="answer">
-        /// the answer that was typed
-        /// </param>
-        /// <param name="checkCase">
-        /// whether or not to check the case
-        /// </param>
+        /// <param name="answer">    the answer that was typed </param>
+        /// <param name="checkCase"> whether or not to check the case </param>
         private void CheckTextAnswer(string answer, bool checkCase)
         {
             ((Button)this.InputGrid.Children.Where(x => x.GetType() == typeof(Button)).First()).IsEnabled = false;
@@ -152,9 +144,7 @@ namespace appFBLA2019
         /// <summary>
         /// triggered when the answer is correct, modifies score and shows the next question banner
         /// </summary>
-        /// <returns>
-        /// an awaitable task
-        /// </returns>
+        /// <returns> an awaitable task </returns>
         private async Task CorrectAnswer()
         {
             this.LabelFeedback.Text = "Correct!";
@@ -181,8 +171,7 @@ namespace appFBLA2019
         /// <summary>
         /// The core of the game loop, triggered when the user presses "Next Question". This method will either load the next question or end the game if appropriate
         /// </summary>
-        /// <returns>
-        /// </returns>
+        /// <returns>  </returns>
         private async Task CycleQuestion()
         {
             await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
@@ -203,8 +192,7 @@ namespace appFBLA2019
         /// <summary>
         /// triggered when the answer is wrong, modifies score and shows the next question banner
         /// </summary>
-        /// <returns>
-        /// </returns>
+        /// <returns>  </returns>
         private async Task IncorrectAnswer()
         {
             this.LabelFeedback.Text = "Incorrect!";
@@ -253,10 +241,8 @@ namespace appFBLA2019
         /// <summary>
         /// Triggered when the next question button is clicked
         /// </summary>
-        /// <param name="sender">
-        /// </param>
-        /// <param name="e">
-        /// </param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private void NextButton_Clicked(object sender, EventArgs e)
         {
             this.CycleQuestion();
@@ -265,9 +251,7 @@ namespace appFBLA2019
         /// <summary>
         /// Sets up the layout and graphics for the next question
         /// </summary>
-        /// <param name="question">
-        /// the question to be displayed
-        /// </param>
+        /// <param name="question"> the question to be displayed </param>
         private void SetUpQuestion(Question question)
         {
             if (question.QuestionText == "" || question.CorrectAnswer == "")
@@ -415,9 +399,7 @@ namespace appFBLA2019
         /// <summary>
         /// given a list of strings, shuffles it (used for randomizing buttons)
         /// </summary>
-        /// <param name="answers">
-        /// the list of answers to be shuffled
-        /// </param>
+        /// <param name="answers"> the list of answers to be shuffled </param>
         private void Shuffle(List<String> answers)
         {
             int n = answers.Count;

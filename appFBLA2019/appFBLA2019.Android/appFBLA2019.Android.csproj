@@ -237,5 +237,8 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_delete_white_48dp.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\drawable\ic_help_black_48dp.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

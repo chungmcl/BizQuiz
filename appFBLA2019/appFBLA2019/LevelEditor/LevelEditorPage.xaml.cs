@@ -15,7 +15,7 @@ namespace appFBLA2019
         public LevelEditorPage()
         {
             this.InitializeComponent();
-            this.categoryPaths = Directory.GetDirectories(App.Path);
+            this.categoryPaths = Directory.GetDirectories(App.UserPath);
 
             this.categories = new string[this.categoryPaths.Count()];
             for (int i = 0; i < this.categories.Length; i++)

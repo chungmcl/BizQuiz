@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CarouselPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.HelpPage">
+    <ContentPage>
+        <StackLayout Padding="10">
+            <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 1: Intro</Label>
+            <Frame VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                <Image Source=""></Image>
+                <!--tutorial image-->
+            </Frame>
+            <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                <Label FontSize="Large">
+                    Welcome to BizQuiz! This help section contains all the information you'll need to know about the game and how to create, share, and play your own FBLA-related quizzes. Swipe to get started!
+                </Label>
+            </Frame>
+        </StackLayout>
+    </ContentPage>
+    <ContentPage>
+        <StackLayout Padding="10">
+            <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 2: Gameplay</Label>
+            <Frame VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Row="0" Grid.Column="0" />
+                    <Image Grid.Row="0" Grid.Column="1" />
+                    <Label Grid.Row="1" Grid.Column="0">Multiple choice type question</Label>
+                    <Label Grid.Row="1" Grid.Column="1">Text Answer type question</Label>
+                </Grid>
+            </Frame>
+            <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                <Label FontSize="Large">
+                    Bizquiz has two types of question: multiple choice and text answer. To answer a multiple choice question (left), just tap the red box labelled with what you think is the correct answer. To answer a text based question, type your answer into the box provided and tap the "Check Answer" button to submit.
+                </Label>
+            </Frame>
+        </StackLayout>
+    </ContentPage>
+    <ContentPage></ContentPage>
+</CarouselPage>

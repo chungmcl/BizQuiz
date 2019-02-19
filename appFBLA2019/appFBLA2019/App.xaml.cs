@@ -1,7 +1,7 @@
 //BizQuiz App 2019
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -17,13 +17,16 @@ namespace appFBLA2019
             this.InitializeComponent();
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
 
-            Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug");
-            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/FBLADebug";
+            Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
+            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
 
             this.MainPage = new NavigationPage(new MainPage());
         }
 
+        public static string debugFolder = "/FBLADebug/";
+
         public static string Path;
+        public static string UserPath;
 
         protected override void OnResume()
         {
