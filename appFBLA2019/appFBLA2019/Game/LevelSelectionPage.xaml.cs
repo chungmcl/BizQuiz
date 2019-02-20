@@ -339,6 +339,10 @@ namespace appFBLA2019
                     }
                     this.Setup();
                 }
+                else
+                {
+                    await DisplayAlert("Level not Found", "This level is not downloaded. Press download to download the level.", "OK");
+                }
             }
             else
             {

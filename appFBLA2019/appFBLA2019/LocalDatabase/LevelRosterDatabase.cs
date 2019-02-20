@@ -95,7 +95,7 @@ namespace appFBLA2019
         {
             RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
-            return new List<LevelInfo>(realmDB.All<LevelInfo>().Where(levelInfo => levelInfo.Category == category));
+            return new List<LevelInfo>(realmDB.All<LevelInfo>().Where(levelInfo => levelInfo.Category == category && !levelInfo.IsDeletedLocally));
         }
 
         public static void UpdateLocalDatabase()
