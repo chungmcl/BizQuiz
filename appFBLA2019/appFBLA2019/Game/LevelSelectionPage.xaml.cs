@@ -268,10 +268,14 @@ namespace appFBLA2019
             }
         }
 
-        private void SyncUpload_Clicked(object sender, EventArgs e)
+        private async void SyncUpload_Clicked(object sender, EventArgs e)
         {
-            string levelPath = (sender as ImageButton).StyleId;
-            ServerOperations.SendLevel(levelPath);
+            ImageButton button = (sender as ImageButton);
+            string levelPath = button.StyleId;
+            await button.RotateTo(360, 800, Easing.Linear);
+            await button.RotateTo(0, 0);
+            
+            await Task.Run(() => ServerOperations.SendLevel(levelPath));
         }
 
         private void SyncDownload_Clicked(object sender, EventArgs e)
