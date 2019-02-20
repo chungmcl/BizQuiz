@@ -54,7 +54,7 @@ namespace appFBLA2019
             /*REMOVE DURING RELEASE*/
             ServerConnector.Server = "50.106.17.86";
 
-            ThreadTimer.RunServerChecks();
+            await ThreadTimer.RunServerChecks();
         }
 
         private void SendCrashLog()
