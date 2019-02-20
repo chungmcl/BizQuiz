@@ -9,6 +9,7 @@ using appFBLA2019.Droid;
 using Plugin.FacebookClient;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(MainActivity))]
@@ -16,7 +17,7 @@ using Xamarin.Forms;
 namespace appFBLA2019.Droid
 {
     [Activity(Label = "appFBLA2019", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger
     {
         protected override void OnCreate(Bundle bundle)
         {
@@ -26,9 +27,10 @@ namespace appFBLA2019.Droid
             base.OnCreate(bundle);
             FacebookClientManager.Initialize(this);
 
-            this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustPan);
+            this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustResize);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
+
             this.LoadApplication(new App());
         }
 
@@ -72,6 +74,11 @@ namespace appFBLA2019.Droid
             MemoryStream outStream = new MemoryStream();
             resultBitmap.Compress(Bitmap.CompressFormat.Jpeg, 100, outStream);
             return outStream;
+        }
+
+        public void LogError(string error)
+        {
+            Android.Util.Log.Error("Crash Report", error);
         }
     }
 }

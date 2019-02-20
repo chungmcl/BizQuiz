@@ -4,6 +4,7 @@
              x:Class="appFBLA2019.LevelEndPage">
     <ContentPage.Content>
         <StackLayout Padding="10,0,10,10">
+            <Label x:Name="LabelFeedback" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray" />
             <Label x:Name="LabelScore" FontAttributes="Bold" FontSize="100" TextColor="Accent"
                    HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
             <Button x:Name="ButtonShareToFacebook" Text="Share to Facebook" Clicked="ButtonShareToFacebook_Clicked" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" />

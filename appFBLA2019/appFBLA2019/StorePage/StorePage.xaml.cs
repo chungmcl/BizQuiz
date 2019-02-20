@@ -133,8 +133,8 @@ namespace appFBLA2019
             // Delete what was in there previously
             this.SearchedStack.Children.Clear();
             this.end = false;
-            await Task.Run(() => this.Search(1));
-            //this.Search(1);
+            //await Task.Run(() => this.Search(1));
+            this.Search(1);
         }
 
 
