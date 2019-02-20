@@ -11,10 +11,10 @@
                     <!--buttons / progress cards get placed in here-->
                 </StackLayout>
             </ScrollView>
-            <Button AbsoluteLayout.LayoutBounds=".5, 1, .8, .9" AbsoluteLayout.LayoutFlags="All"
+            <!--<Button AbsoluteLayout.LayoutBounds=".5, 1, .8, .9" AbsoluteLayout.LayoutFlags="All"
                     x:Name="ButtonCreateLevel" FontSize="24" TextColor="White" Text="Create new Quiz" HorizontalOptions="CenterAndExpand" 
                     VerticalOptions="End" Clicked="ButtonCreateLevel_Clicked" HeightRequest="50" 
-                    CornerRadius="25" BackgroundColor="Accent" Margin="20" />
+                    CornerRadius="25" BackgroundColor="Accent" Margin="20" />-->
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

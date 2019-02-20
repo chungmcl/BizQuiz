@@ -30,6 +30,13 @@ namespace appFBLA2019
             //this.Setup();
         }
 
+        //public LevelSelectionPage()
+        //{
+        //    this.InitializeComponent();
+        //    Directory.CreateDirectory(App.Path + $"/{category}");
+        //    this.IsLoading = false;
+        //}
+
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
@@ -386,19 +393,6 @@ namespace appFBLA2019
             else
             {
                 await this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
-            }
-        }
-
-        private void ButtonCreateLevel_Clicked(object sender, EventArgs e)
-        {
-            if (CredentialManager.IsLoggedIn)
-            {
-                CreateNewLevelPage level = new CreateNewLevelPage(category);
-                this.Navigation.PushAsync(level);
-            }
-            else
-            {
-                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
             }
         }
     }

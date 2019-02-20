@@ -12,12 +12,15 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class StorePage : ContentPage
 	{
+        private int chunkNum;
+        private bool end;
+        private bool isLoading;
 
         /// <summary>
         /// Adds a level to the search stack given a LevelInfo
         /// </summary>
         /// <param name="level"></param>
-        private void AddLevel(LevelInfo level)
+        private void AddLevel(SearchInfo level)
         {
             Frame levelFrame = new Frame
             {
@@ -65,7 +68,7 @@ namespace appFBLA2019
 
             Label levelAuthor = new Label
             {
-                Text = "Created by: " + level.AuthorName,
+                Text = "Created by: " + level.Author,
             };
             frameStack.Children.Add(levelAuthor);
 
@@ -107,13 +110,13 @@ namespace appFBLA2019
         }
 
         // Temporary
-        private List<LevelInfo> Search(string text)
-        {
-            List <LevelInfo> testInfo = new List<LevelInfo>();
-            testInfo.Add(new LevelInfo { DBId = "TestDBID", AuthorName = "TestAuthor", LevelName = "TestLevel", Category = "FBLA General" });
-            testInfo.Add(new LevelInfo { DBId = "TestDBID2", AuthorName = "TestAuthor2", LevelName = "TestLevel2", Category = "FBLA General" });
-            return testInfo;
-        }
+        //private List<LevelInfo> Search(string text)
+        //{
+        //    List <LevelInfo> testInfo = new List<LevelInfo>();
+        //    testInfo.Add(new LevelInfo { DBId = "TestDBID", AuthorName = "TestAuthor", LevelName = "TestLevel", Category = "FBLA General" });
+        //    testInfo.Add(new LevelInfo { DBId = "TestDBID2", AuthorName = "TestAuthor2", LevelName = "TestLevel2", Category = "FBLA General" });
+        //    return testInfo;
+        //}
 
         public StorePage ()
 		{
@@ -125,24 +128,96 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SearchBar_SearchButtonPressed(object sender, EventArgs e)
+        private async void SearchBar_SearchButtonPressed(object sender, EventArgs e)
         {
             // Delete what was in there previously
             this.SearchedStack.Children.Clear();
-            foreach (LevelInfo level in Search(this.SearchBar.Text))
-            {
-                this.AddLevel(level);
-            }
+            this.end = false;
+            await Task.Run(() => this.Search(1));
+            //this.Search(1);
         }
 
-        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+
+        /// <summary>
+        /// Searches the server for levels by levelName
+        /// </summary>
+        /// <param name="chunkNum">the chunk to get by 1, 2, 3...</param>
+        private void Search(int chunkNum)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ActivityIndicator.IsVisible = true;
+                this.ActivityIndicator.IsRunning = true;
+                this.isLoading = true;
+            });
+
+
+
+            int i = 0;
+
+            List<string[]> test = ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunkNum);
+
+            foreach (string[] level in ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunkNum))
+            {
+                this.AddLevel(new SearchInfo
+                {
+                    DBId = level[0],
+                    Author = level[1],
+                    LevelName = level[2],
+                    Category = level[3],
+                    SubCount = int.Parse(level[4])
+                });
+                i++;
+            }
+            if (i < 20)
+                this.end = true;
+
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ActivityIndicator.IsVisible = false;
+                this.ActivityIndicator.IsRunning = false;
+                this.isLoading = false;
+            });
+
+        }
+        
+
+        private async void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             this.SearchedStack.Children.Clear();
+            if (!string.IsNullOrWhiteSpace(this.SearchBar.Text) && !this.isLoading)
+            {
+                //this.Search(1);
+                //await Task.Run(() => this.Search(1));
+            }    
         }
 
         protected override void OnDisappearing()
         {
             this.SearchedStack.Children.Clear();
+        }
+        
+
+        private class SearchInfo
+        {
+            public string DBId { get; set; }
+            public string Author { get; set; }
+            public string LevelName { get; set; }
+            public string Category { get; set; }
+            public int SubCount { get; set; }
+
+        }
+
+        private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
+        {
+            ScrollView scrollView = sender as ScrollView;
+            double scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
+
+            if (scrollingSpace <= e.ScrollY && !this.end && !this.isLoading)
+            {
+                await Task.Run(() => this.Search(this.chunkNum++));
+                //this.Search(this.chunkNum++);
+            }
         }
     }
 }

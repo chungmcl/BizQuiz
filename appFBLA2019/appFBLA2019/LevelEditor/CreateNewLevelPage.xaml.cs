@@ -46,11 +46,10 @@ namespace appFBLA2019
 		/// <summary>
 		/// Constructing a brand new level
 		/// </summary>
-		public CreateNewLevelPage(string Category)
+		public CreateNewLevelPage()
 		{
 			this.InitializeComponent();
             setUpBar();
-            PickerCategory.SelectedItem = Category;
             AddNewQuestion();
 			AddNewQuestion();
 		}
@@ -151,6 +150,7 @@ namespace appFBLA2019
 			this.ButtonAddDrop.Scale = 0;
 			this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
 			this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
+            this.BoxPush.HeightRequest = this.Height * .12;
 			if (this.x is ImageButton)
 			{
 				if (((ImageButton)this.x).StyleId == "change")
@@ -603,10 +603,10 @@ namespace appFBLA2019
         async void OnButtonQuestionTypeClicked(object sender, EventArgs e)
 		{
             Button button = sender as Button;
-            // Disable button so user can't spam           
-            //button.IsEnabled = false;
+            // Disable button so user can't spam -- for some reasong button.IsEnabled doesn't want to work. IsVisible makes the X jump location.
+            // Translating it away works just fine (Although it seems impractical).  Note: This should probably be figured out.
+            button.TranslationX += this.Width * 2;
             await button.FadeTo(0, 150, Easing.CubicInOut);
-
             switch (button.Text)
             {
                 case "Question Type: Multiple choice":
@@ -655,8 +655,8 @@ namespace appFBLA2019
                 }
             }
 
-            // Re-enable the button and fade it into view - for  some reason this breaks it.
-            //button.IsEnabled = true;
+            // Re-enable (Translate back) the button and fade it into view - for  some reason this breaks it.
+            button.TranslationX -= this.Width * 2;
             await button.FadeTo(1, 150, Easing.CubicInOut);
         }
 
