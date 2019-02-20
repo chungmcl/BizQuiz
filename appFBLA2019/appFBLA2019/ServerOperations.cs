@@ -130,7 +130,16 @@ namespace appFBLA2019
                 }
 
                 // When finished, confirm with server that level send has completed
-                return true;
+                SendStringData(
+                    $"{info.DBId}`{info.LastModifiedDate}`{imageFilePaths.Length + 1}`" +
+                    $"{CredentialManager.Username}`{CredentialManager.Password}`-",
+                    ServerRequestTypes.FinalizeLevelSend);
+                OperationReturnMessage finalizationMessage = ReceiveFromServerORM();
+
+                if (finalizationMessage == OperationReturnMessage.True)
+                    return true;
+                else
+                    return false;
             }
             catch
             {
@@ -359,7 +368,7 @@ namespace appFBLA2019
 
         AddJPEGImage,
         AddRealmFile,
-        AddLevelRecord,
+        FinalizeLevelSend,
 
         DeleteLevel,
         LoginAccount,
