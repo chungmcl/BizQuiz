@@ -52,7 +52,7 @@ namespace appFBLA2019
                 this.IsLoading = true;
                 this.ButtonStack.Children.Clear();
 
-                List<LevelInfo> levels = LevelRosterDatabase.GetRoster();
+                List<LevelInfo> levels = LevelRosterDatabase.GetRoster(category);
 
                 foreach (LevelInfo level in levels)
                 {
@@ -131,45 +131,45 @@ namespace appFBLA2019
 
                     topStack.Children.Add(Sync);
 
-                ImageButton imageButtonMenu = new ImageButton
-                {
-                    Source = "ic_more_vert_black_48dp.png",
-                    HeightRequest = 35,
-                    WidthRequest = 35,
-                    BackgroundColor = Color.White,
-                    VerticalOptions = LayoutOptions.StartAndExpand,
-                    HorizontalOptions = LayoutOptions.End
-                };
+                    ImageButton imageButtonMenu = new ImageButton
+                    {
+                        Source = "ic_more_vert_black_48dp.png",
+                        HeightRequest = 35,
+                        WidthRequest = 35,
+                        BackgroundColor = Color.White,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.End
+                    };
 
                     imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
 
                     topStack.Children.Add(imageButtonMenu);
 
-                Frame frameMenu = new Frame // Child of frameLayout
-                {
-                    Padding = 0,
-                    IsVisible = false,
-                };
-                StackLayout menuStack = new StackLayout
-                {
-                    FlowDirection = FlowDirection.LeftToRight,
-                    Orientation = StackOrientation.Vertical,
-                    Padding = 0,
-                    Spacing = 0
-                };
+                    Frame frameMenu = new Frame // Child of frameLayout
+                    {
+                        Padding = 0,
+                        IsVisible = false,
+                    };
+                    StackLayout menuStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Vertical,
+                        Padding = 0,
+                        Spacing = 0
+                    };
 
-                Button ButtonEdit = new Button(); // 3
-                {
-                    ButtonEdit.Clicked += this.ButtonEdit_Clicked;
-                    ButtonEdit.Text = "Edit";
-                    ButtonEdit.HeightRequest = 45;
-                    ButtonEdit.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                    ButtonEdit.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                    ButtonEdit.VerticalOptions = LayoutOptions.StartAndExpand;
-                    ButtonEdit.BackgroundColor = Color.White;
-                    ButtonEdit.CornerRadius = 0;
-                }
-                menuStack.Children.Add(ButtonEdit);
+                    Button ButtonEdit = new Button(); // 3
+                    {
+                        ButtonEdit.Clicked += this.ButtonEdit_Clicked;
+                        ButtonEdit.Text = "Edit";
+                        ButtonEdit.HeightRequest = 45;
+                        ButtonEdit.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
+                        ButtonEdit.HorizontalOptions = LayoutOptions.CenterAndExpand;
+                        ButtonEdit.VerticalOptions = LayoutOptions.StartAndExpand;
+                        ButtonEdit.BackgroundColor = Color.White;
+                        ButtonEdit.CornerRadius = 0;
+                    }
+                    menuStack.Children.Add(ButtonEdit);
 
                     Button ButtonDelete = new Button();
                     {
@@ -196,11 +196,11 @@ namespace appFBLA2019
 
                     frameMenu.Content = menuStack;
 
-                frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) => {
-                    return parent.Width - 100;
-                }), Constraint.RelativeToParent((parent) => {
-                    return parent.Y;
-                }), Constraint.Constant(90), Constraint.Constant(90));
+                    frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) => {
+                        return parent.Width - 100;
+                    }), Constraint.RelativeToParent((parent) => {
+                        return parent.Y;
+                    }), Constraint.Constant(90), Constraint.Constant(90));
 
                     frameStack.Children.Add(topStack);
 
@@ -323,7 +323,7 @@ namespace appFBLA2019
                         {
                             OperationReturnMessage returnMessage = ServerOperations.DeleteLevel(dbId);
                             if (returnMessage == OperationReturnMessage.True)
-                                realm.Remove(rosterInfo);
+                                realm.Remove(realm.All<LevelInfo>().Where(levelInfo => levelInfo.DBId == rosterInfo.DBId).First());
                         }
 
                         // Clear out DBHandler.GameDatabase in case it references the level just deleted

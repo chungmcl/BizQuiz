@@ -80,28 +80,28 @@ namespace appFBLA2019
             return ReceiveFromServerORM();
         }
 
-        public static List<string>[] GetLevelsByAuthorName(string authorName, int chunk)
+        public static List<string[]> GetLevelsByAuthorName(string authorName, int chunk)
         {
             SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetLevelsByAuthorName);
-            return ReceiveFromServerArrayOfStringLists();
+            return ReceiveFromServerListOfStringArrays();
         }
 
-        public static List<string>[] GetUsers(string username, int chunk)
+        public static List<string[]> GetUsers(string username, int chunk)
         {
             SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
-            return ReceiveFromServerArrayOfStringLists();
+            return ReceiveFromServerListOfStringArrays();
         }
 
-        public static List<string>[] GetLevelsByCategory(string category, int chunk)
+        public static List<string[]> GetLevelsByCategory(string category, int chunk)
         {
             SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetLevelsByCategory);
-            return ReceiveFromServerArrayOfStringLists();
+            return ReceiveFromServerListOfStringArrays();
         }
 
-        public static List<string>[] GetLevelsByLevelName(string levelName, int chunk)
+        public static List<string[]> GetLevelsByLevelName(string levelName, int chunk)
         {
             SendStringData($"{levelName}/{chunk}/-", ServerRequestTypes.GetLevelsByLevelName);
-            return ReceiveFromServerArrayOfStringLists();
+            return ReceiveFromServerListOfStringArrays();
         }
 
         public static bool SendLevel(string relativeLevelPath)
@@ -112,17 +112,17 @@ namespace appFBLA2019
                 Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                 LevelInfo info = realm.All<LevelInfo>().First();
 
-                string[] imageFilePaths = Directory.GetFiles(App.Path + relativeLevelPath, "*.jpg");
                 SendRealmFile(realmFilePath);
                 if (ReceiveFromServerORM() != OperationReturnMessage.True)
                     throw new Exception();
 
+                string[] imageFilePaths = Directory.GetFiles(App.Path + relativeLevelPath, "*.jpg");
                 for (int i = 0; i < imageFilePaths.Length; i++)
                 {
                     //[0] = path, [1] = fileName, [2] = dBId
                     string fileName = imageFilePaths[i].Split('/').Last().Split('.').First();
                     string dbID = info.DBId;
-                    SendImageFile(imageFilePaths[i], imageFilePaths[i].Split('/').Last().Split('.').First(), dbID);
+                    SendImageFile(imageFilePaths[i], fileName, dbID);
 
                     OperationReturnMessage message = ReceiveFromServerORM();
                     if (message == OperationReturnMessage.False)
@@ -223,7 +223,7 @@ namespace appFBLA2019
                 return null;
         }
 
-        public static List<string>[] ReceiveFromServerArrayOfStringLists()
+        public static List<string[]> ReceiveFromServerListOfStringArrays()
         {
             if (CrossConnectivity.Current.IsConnected)
             {
@@ -234,7 +234,7 @@ namespace appFBLA2019
                 MemoryStream memStream = new MemoryStream();
                 memStream.Write(data, 0, data.Length);
                 memStream.Position = 0;
-                return binaryFormatter.Deserialize(memStream) as List<string>[];
+                return binaryFormatter.Deserialize(memStream) as List<string[]>;
             }
             else
                 return null;
@@ -285,7 +285,7 @@ namespace appFBLA2019
         private static void SendImageFile(string path, string fileName, string dbId)
         {
             byte[] imageBytes = File.ReadAllBytes(path);
-            byte[] imageHeader = GenerateImageHeader(dbId, dbId);
+            byte[] imageHeader = GenerateImageHeader(fileName, dbId);
             byte[] header = GenerateHeaderData(ServerRequestTypes.AddJPEGImage, (uint)imageBytes.Length + (uint)imageHeader.Length);
 
             byte[] toSend = new byte[header.Length + imageHeader.Length + imageBytes.Length];

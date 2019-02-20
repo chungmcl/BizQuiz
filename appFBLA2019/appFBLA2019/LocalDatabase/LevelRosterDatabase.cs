@@ -91,6 +91,13 @@ namespace appFBLA2019
             return new List<LevelInfo>(realmDB.All<LevelInfo>());
         }
 
+        public static List<LevelInfo> GetRoster(string category)
+        {
+            RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+            Realm realmDB = Realm.GetInstance(threadConfig);
+            return new List<LevelInfo>(realmDB.All<LevelInfo>().Where(levelInfo => levelInfo.Category == category));
+        }
+
         public static void UpdateLocalDatabase()
         {
             RealmConfiguration threadConfig = new RealmConfiguration(App.Path + "/" + "roster.realm");
