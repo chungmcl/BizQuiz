@@ -24,7 +24,7 @@ namespace appFBLA2019
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = $"/{levelTitle}{realmExtension}";
             }
-            catch
+            catch (Exception ex)
             {
                 BugReportHandler.SubmitReport(ex, nameof(GameDatabase));
             }
