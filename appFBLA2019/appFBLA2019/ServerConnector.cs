@@ -164,9 +164,12 @@ namespace appFBLA2019
         
         public static void CloseConn() // Close connection.
         {
-            ssl.Close();
-            netStream.Close();
-            client.Close();
+            if (ssl != null)
+                ssl.Close();
+            if (netStream != null)
+                netStream.Close();
+            if (client != null)
+                client.Close();
         }
     }
 }

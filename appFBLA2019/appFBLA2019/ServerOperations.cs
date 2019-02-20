@@ -192,12 +192,24 @@ namespace appFBLA2019
                 if (!(returnedBytes == null || returnedBytes.Length < 5))
                 {
                     int size = BitConverter.ToInt32(returnedBytes, 1);
-                    OperationReturnMessage message = (OperationReturnMessage)(ServerConnector.ReadByteArray(size)[0]);
-                    ServerConnector.CloseConn();
-                    return message;
+                    byte[] data = ServerConnector.ReadByteArray(size);
+                    if (data != null)
+                    {
+                        OperationReturnMessage message = (OperationReturnMessage)(data[0]);
+                        ServerConnector.CloseConn();
+                        return message;
+                    }
+                    else
+                    {
+                        ServerConnector.CloseConn();
+                        return OperationReturnMessage.FalseFailedConnection;
+                    }
                 }
                 else
+                {
+                    ServerConnector.CloseConn();
                     return OperationReturnMessage.FalseFailedConnection;
+                }
             }
             else
                 return OperationReturnMessage.FalseNoConnection;
@@ -208,16 +220,28 @@ namespace appFBLA2019
             if (CrossConnectivity.Current.IsConnected)
             {
                 byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes == null && returnedBytes.Length < 5))
+                if (!(returnedBytes == null || returnedBytes.Length < 5))
                 {
                     int size = BitConverter.ToInt32(returnedBytes, 1);
-                    string data = Encoding.Unicode.GetString(ServerConnector.ReadByteArray(size));
-                    ServerConnector.CloseConn();
-                    data = data.Trim();
-                    return data;
+                    byte[] data = ServerConnector.ReadByteArray(size);
+                    if (data != null)
+                    {
+                        string dataString = Encoding.Unicode.GetString(ServerConnector.ReadByteArray(size));
+                        ServerConnector.CloseConn();
+                        dataString = dataString.Trim();
+                        return dataString;
+                    }
+                    else
+                    {
+                        ServerConnector.CloseConn();
+                        return null;
+                    }
                 }
                 else
+                {
+                    ServerConnector.CloseConn();
                     return null;
+                }
             }
             else
                 return null;
@@ -228,13 +252,32 @@ namespace appFBLA2019
             if (CrossConnectivity.Current.IsConnected)
             {
                 byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                int size = BitConverter.ToInt32(returnedBytes, 1);
-                byte[] data = ServerConnector.ReadByteArray(size);
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                MemoryStream memStream = new MemoryStream();
-                memStream.Write(data, 0, data.Length);
-                memStream.Position = 0;
-                return binaryFormatter.Deserialize(memStream) as List<string[]>;
+                if (!(returnedBytes == null || returnedBytes.Length < 5))
+                {
+
+                    int size = BitConverter.ToInt32(returnedBytes, 1);
+                    byte[] data = ServerConnector.ReadByteArray(size);
+                    if (data != null)
+                    {
+
+                        BinaryFormatter binaryFormatter = new BinaryFormatter();
+                        MemoryStream memStream = new MemoryStream();
+                        memStream.Write(data, 0, data.Length);
+                        memStream.Position = 0;
+                        ServerConnector.CloseConn();
+                        return binaryFormatter.Deserialize(memStream) as List<string[]>;
+                    }
+                    else
+                    {
+                        ServerConnector.CloseConn();
+                        return null;
+                    }
+                }
+                else
+                {
+                    ServerConnector.CloseConn();
+                    return null;
+                }
             }
             else
                 return null;
