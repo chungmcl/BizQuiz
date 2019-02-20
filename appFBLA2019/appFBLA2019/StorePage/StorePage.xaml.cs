@@ -14,6 +14,7 @@ namespace appFBLA2019
 	{
         private int chunkNum;
         private bool end;
+        private bool isLoading;
 
         /// <summary>
         /// Adds a level to the search stack given a LevelInfo
@@ -127,17 +128,35 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SearchBar_SearchButtonPressed(object sender, EventArgs e)
+        private async void SearchBar_SearchButtonPressed(object sender, EventArgs e)
         {
             // Delete what was in there previously
             this.SearchedStack.Children.Clear();
             this.end = false;
-            this.Search(1);
+            await Task.Run(() => this.Search(1));
+            //this.Search(1);
         }
 
+
+        /// <summary>
+        /// Searches the server for levels by levelName
+        /// </summary>
+        /// <param name="chunkNum">the chunk to get by 1, 2, 3...</param>
         private void Search(int chunkNum)
         {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ActivityIndicator.IsVisible = true;
+                this.ActivityIndicator.IsRunning = true;
+                this.isLoading = true;
+            });
+
+
+
             int i = 0;
+
+            List<string[]> test = ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunkNum);
+
             foreach (string[] level in ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunkNum))
             {
                 this.AddLevel(new SearchInfo
@@ -152,13 +171,25 @@ namespace appFBLA2019
             }
             if (i < 20)
                 this.end = true;
-        }
 
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                this.ActivityIndicator.IsVisible = false;
+                this.ActivityIndicator.IsRunning = false;
+                this.isLoading = false;
+            });
+
+        }
         
 
-        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        private async void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             this.SearchedStack.Children.Clear();
+            if (!string.IsNullOrWhiteSpace(this.SearchBar.Text) && !this.isLoading)
+            {
+                //this.Search(1);
+                //await Task.Run(() => this.Search(1));
+            }    
         }
 
         protected override void OnDisappearing()
@@ -177,14 +208,15 @@ namespace appFBLA2019
 
         }
 
-        private void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
+        private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
         {
             ScrollView scrollView = sender as ScrollView;
             double scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
 
-            if (scrollingSpace <= e.ScrollY && !this.end)
+            if (scrollingSpace <= e.ScrollY && !this.end && !this.isLoading)
             {
-                this.Search(this.chunkNum++);
+                await Task.Run(() => this.Search(this.chunkNum++));
+                //this.Search(this.chunkNum++);
             }
         }
     }
