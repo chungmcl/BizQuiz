@@ -10,18 +10,18 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class AccountSettingsPage : ContentPage
-	{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class AccountSettingsPage : ContentPage
+    {
         private Frame currentlyOpenFrame;
         private bool currentlyOpenFrameIsRunning;
 
         public delegate void SignOutEventHandler(object source, EventArgs eventArgs);
         public event SignOutEventHandler SignedOut;
-        public AccountSettingsPage ()
-		{
-			InitializeComponent ();
-		}
+        public AccountSettingsPage()
+        {
+            this.InitializeComponent();
+        }
 
         protected override void OnAppearing()
         {
@@ -33,7 +33,7 @@ namespace appFBLA2019
         {
             this.ButtonLogout.IsEnabled = false;
             CredentialManager.Logout(false);
-            OnSignedOut();
+            this.OnSignedOut();
             this.Navigation.PopAsync();
         }
 
@@ -44,7 +44,7 @@ namespace appFBLA2019
 
         private async void ButtonChangePassword_Clicked(object sender, EventArgs e)
         {
-            if (SetupFrameBegin(this.FrameChangePassword, this.StackLayoutChangePasswordContent))
+            if (this.SetupFrameBegin(this.FrameChangePassword, this.StackLayoutChangePasswordContent))
             {
                 string oldPassword = this.EntryCurrentPasswordChangePassword.Text.Trim();
                 string newPassword = this.EntryNewPasswordChangePassword.Text.Trim();
@@ -55,7 +55,7 @@ namespace appFBLA2019
                     {
                         if (!(newPassword.Contains(" ") || newPassword.Contains(".") || newPassword.Contains("/") || newPassword.Contains("`")))
                         {
-                            OperationReturnMessage message = await Task.Run(() => ChangePassword(oldPassword, newPassword));
+                            OperationReturnMessage message = await Task.Run(() => this.ChangePassword(oldPassword, newPassword));
                             if (message == OperationReturnMessage.True)
                             {
                                 this.LabelChangePasswordMessage.Text = "Password changed successfully.";
@@ -78,7 +78,7 @@ namespace appFBLA2019
                     }
                     else
                     {
-                        this.LabelChangePasswordMessage.Text = 
+                        this.LabelChangePasswordMessage.Text =
                             "New password must be greater than 8 characters and less than 16 characters long.";
                     }
                 }
@@ -87,7 +87,7 @@ namespace appFBLA2019
                     this.LabelChangePasswordMessage.Text = "New passwords do not match.";
                 }
             }
-            SetupFrameEnd(this.StackLayoutChangePasswordContent);
+            this.SetupFrameEnd(this.StackLayoutChangePasswordContent);
         }
 
         private OperationReturnMessage ChangePassword(string password, string newPassword)
@@ -95,12 +95,12 @@ namespace appFBLA2019
             Device.BeginInvokeOnMainThread(() => this.LabelChangePasswordMessage.Text = "Waiting...");
             return ServerOperations.ChangePassword(CredentialManager.Username, password.Trim(), newPassword.Trim());
         }
-        
+
         private async void ButtonChangeEmail_Clicked(object sender, EventArgs e)
         {
-            if (SetupFrameBegin(this.FrameChangeEmail, this.StackLayoutChangeEmailContent))
+            if (this.SetupFrameBegin(this.FrameChangeEmail, this.StackLayoutChangeEmailContent))
             {
-                OperationReturnMessage message = await Task.Run(() => ChangeEmail(
+                OperationReturnMessage message = await Task.Run(() => this.ChangeEmail(
                     this.EntryEnterPasswordChangeEmail.Text,
                     this.EntryEnterNewEmailChangeEmail.Text));
 
@@ -109,16 +109,20 @@ namespace appFBLA2019
                     this.LabelChangeEmailMessage.Text = "Email Changed. Please Confirm Email.";
                     EmailConfirmationPage emailConfirmationPage = new EmailConfirmationPage(
                         CredentialManager.Username, this.EntryEnterPasswordChangeEmail.Text);
-                    emailConfirmationPage.EmailConfirmed += OnEmailConfirmed;
-                    emailConfirmationPage.ConfirmLaterSelected += OnConfirmLaterSelected;
+                    emailConfirmationPage.EmailConfirmed += this.OnEmailConfirmed;
+                    emailConfirmationPage.ConfirmLaterSelected += this.OnConfirmLaterSelected;
                     await this.Navigation.PushModalAsync(emailConfirmationPage, true);
                 }
                 else if (message == OperationReturnMessage.FalseInvalidCredentials)
+                {
                     this.LabelChangeEmailMessage.Text = "Incorrect password.";
+                }
                 else if (message == OperationReturnMessage.FalseInvalidEmail)
+                {
                     this.LabelChangeEmailMessage.Text = "Invalid email. Please check the email and try again.";
+                }
             }
-            SetupFrameEnd(this.StackLayoutChangeEmailContent);
+            this.SetupFrameEnd(this.StackLayoutChangeEmailContent);
         }
 
         private OperationReturnMessage ChangeEmail(string password, string newEmail)
@@ -129,23 +133,23 @@ namespace appFBLA2019
 
         private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
         {
-            if (SetupFrameBegin(this.FrameConfirmEmail, this.StackLayoutConfirmEmailContent))
+            if (this.SetupFrameBegin(this.FrameConfirmEmail, this.StackLayoutConfirmEmailContent))
             {
                 string token = this.EntryEnterConfirmationCodeConfirmEmail.Text.Trim();
-                OperationReturnMessage message = await Task.Run(() => ConfirmEmail(token));
+                OperationReturnMessage message = await Task.Run(() => this.ConfirmEmail(token));
                 if (message == OperationReturnMessage.True)
                 {
                     this.LabelConfirmEmailMessage.Text = "Email was confirmed.";
                     CredentialManager.EmailConfirmed = true;
                     this.FrameConfirmEmail.IsVisible = false;
-                    await DisplayAlert("Email Confirmation", "Email was confirmed", "OK");
+                    await this.DisplayAlert("Email Confirmation", "Email was confirmed", "OK");
                 }
                 else
                 {
                     this.LabelConfirmEmailMessage.Text = "Email confirmation code was incorrect.";
                 }
             }
-            SetupFrameEnd(this.StackLayoutConfirmEmailContent);
+            this.SetupFrameEnd(this.StackLayoutConfirmEmailContent);
         }
 
         private OperationReturnMessage ConfirmEmail(string token)
@@ -156,20 +160,20 @@ namespace appFBLA2019
 
         private async void ButtonDeleteAccount_Clicked(object sender, EventArgs e)
         {
-            if (SetupFrameBegin(this.FrameDeleteAccount, this.StackLayoutDeleteAccountContent))
+            if (this.SetupFrameBegin(this.FrameDeleteAccount, this.StackLayoutDeleteAccountContent))
             {
-                bool confirmed = await DisplayAlert("Confirm Delete", "" +
+                bool confirmed = await this.DisplayAlert("Confirm Delete", "" +
                         "Are you sure you want to delete your account? Your account cannot be recovered, and all created levels will be deleted.",
                         "Yes", "No");
                 if (confirmed)
                 {
                     string password = this.EntryEnterPasswordDeleteAccount.Text.Trim();
-                    OperationReturnMessage message = await Task.Run(() => DeleteAccount(password));
+                    OperationReturnMessage message = await Task.Run(() => this.DeleteAccount(password));
                     if (message == OperationReturnMessage.True)
                     {
                         CredentialManager.Logout(true);
-                        await DisplayAlert("Account Deletion", "Account successfully deleted", "OK");
-                        OnSignedOut();
+                        await this.DisplayAlert("Account Deletion", "Account successfully deleted", "OK");
+                        this.OnSignedOut();
                         await this.Navigation.PopAsync();
                     }
                     else
@@ -178,7 +182,7 @@ namespace appFBLA2019
                     }
                 }
             }
-            SetupFrameEnd(this.StackLayoutDeleteAccountContent);
+            this.SetupFrameEnd(this.StackLayoutDeleteAccountContent);
         }
 
         private OperationReturnMessage DeleteAccount(string password)
@@ -187,7 +191,7 @@ namespace appFBLA2019
             return ServerOperations.DeleteAccount(CredentialManager.Username, password.Trim());
         }
 
-        
+
         private void OnEmailConfirmed(object sender, EventArgs eventArgs)
         {
             this.FrameConfirmEmail.IsVisible = false;
@@ -218,12 +222,12 @@ namespace appFBLA2019
                     Label labelMessage = contentStackLayout.Children[contentStackLayout.Children.Count - 2] as Label;
                     labelMessage.Text = "Fields cannot be empty";
                     this.currentlyOpenFrameIsRunning = false;
-                    SetupFrameEnd(contentStackLayout);
+                    this.SetupFrameEnd(contentStackLayout);
                     return false;
                 }
             }
             this.currentlyOpenFrameIsRunning = true;
-            DisableOtherTabs(frame);
+            this.DisableOtherTabs(frame);
             return true;
         }
 
@@ -231,7 +235,7 @@ namespace appFBLA2019
         {
             if (this.currentlyOpenFrameIsRunning)
             {
-                EnableAllTabs();
+                this.EnableAllTabs();
                 this.currentlyOpenFrameIsRunning = false;
             }
 
@@ -244,8 +248,7 @@ namespace appFBLA2019
             {
                 if (this.StackLayoutMain.Children[i] != keepMeEnabled)
                 {
-                    Frame tryFrame = this.StackLayoutMain.Children[i] as Frame;
-                    if (tryFrame != null)
+                    if (this.StackLayoutMain.Children[i] is Frame tryFrame)
                     {
                         ((tryFrame.Content
                             as StackLayout).Children[0]
@@ -262,8 +265,7 @@ namespace appFBLA2019
         {
             for (int i = 0; i < this.StackLayoutMain.Children.Count; i++)
             {
-                Frame tryFrame = this.StackLayoutMain.Children[i] as Frame;
-                if (tryFrame != null)
+                if (this.StackLayoutMain.Children[i] is Frame tryFrame)
                 {
                     ((tryFrame.Content
                              as StackLayout).Children[0]
@@ -282,13 +284,15 @@ namespace appFBLA2019
                 ImageButton imageButton = ((this.currentlyOpenFrame.Content as StackLayout).Children[0] as StackLayout).Children[1] as ImageButton;
                 StackLayout contentStackLayout = (this.currentlyOpenFrame.Content as StackLayout).Children[1] as StackLayout;
 
-                await CloseFrame(((this.currentlyOpenFrame.Content as StackLayout).Children[0] as StackLayout).Children[1] as ImageButton,
+                await this.CloseFrame(((this.currentlyOpenFrame.Content as StackLayout).Children[0] as StackLayout).Children[1] as ImageButton,
                     contentStackLayout,
                     this.currentlyOpenFrame);
 
                 // Clear fields if the open frame is not performing a task
                 if (!this.currentlyOpenFrameIsRunning)
-                    ClearContentStack(contentStackLayout);
+                {
+                    this.ClearContentStack(contentStackLayout);
+                }
             }
         }
 
@@ -313,18 +317,22 @@ namespace appFBLA2019
             if (contentStack.IsVisible) // close
             {
                 if (this.currentlyOpenFrame == frame)
+                {
                     if (!this.currentlyOpenFrameIsRunning)
-                        ClearContentStack((frame.Content as StackLayout).Children[1] as StackLayout);
+                    {
+                        this.ClearContentStack((frame.Content as StackLayout).Children[1] as StackLayout);
+                    }
+                }
 
                 this.currentlyOpenFrame = null;
 
-                await CloseFrame(imageButton, contentStack, frame);
+                await this.CloseFrame(imageButton, contentStack, frame);
             }
             else // open
             {
-                await CloseCurrentlyOpenFrame();
+                await this.CloseCurrentlyOpenFrame();
                 this.currentlyOpenFrame = frame;
-                await OpenFrame(imageButton, contentStack, frame);
+                await this.OpenFrame(imageButton, contentStack, frame);
             }
 
             imageButton.IsEnabled = true;
@@ -363,24 +371,24 @@ namespace appFBLA2019
         #region Image Button Event Handlers
         private async void ChangeEmailTab_Clicked(object sender, EventArgs e)
         {
-            await AnimateFrame(this.ImageButtonCloseChangeEmail, this.StackLayoutChangeEmailContent, this.FrameChangeEmail);
+            await this.AnimateFrame(this.ImageButtonCloseChangeEmail, this.StackLayoutChangeEmailContent, this.FrameChangeEmail);
         }
 
         private async void ChangePasswordTab_Clicked(object sender, EventArgs e)
         {
-            await AnimateFrame(this.ImageButtonCloseChangePassword, this.StackLayoutChangePasswordContent, this.FrameChangePassword);
+            await this.AnimateFrame(this.ImageButtonCloseChangePassword, this.StackLayoutChangePasswordContent, this.FrameChangePassword);
         }
 
         private async void ConfirmEmailTab_Clicked(object sender, EventArgs e)
         {
-            await AnimateFrame(this.ImageButtonCloseConfirmEmail, this.StackLayoutConfirmEmailContent, this.FrameConfirmEmail);
+            await this.AnimateFrame(this.ImageButtonCloseConfirmEmail, this.StackLayoutConfirmEmailContent, this.FrameConfirmEmail);
         }
 
         private async void DeleteAccountTab_Clicked(object sender, EventArgs e)
         {
-            await AnimateFrame(this.ImageButtonDeleteAccount, this.StackLayoutDeleteAccountContent, this.FrameDeleteAccount);
+            await this.AnimateFrame(this.ImageButtonDeleteAccount, this.StackLayoutDeleteAccountContent, this.FrameDeleteAccount);
         }
-        
+
         #endregion
 
         // To do:

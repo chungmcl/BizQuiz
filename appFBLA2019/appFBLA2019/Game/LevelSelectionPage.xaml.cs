@@ -14,17 +14,16 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-
-
     public partial class LevelSelectionPage : ContentPage
     {
-        TapGestureRecognizer recognizer = new TapGestureRecognizer();
+        private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         public bool IsLoading { get; set; }
+
         public LevelSelectionPage(string category)
         {
             this.InitializeComponent();
             this.category = category;
-            Directory.CreateDirectory(App.Path + $"/{category}");
+            Directory.CreateDirectory(App.UserPath + $"{category}/");
             this.IsLoading = false;
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
             //this.Setup();
@@ -47,10 +46,13 @@ namespace appFBLA2019
         {
             base.OnAppearing();
             if (Application.Current.MainPage.Width <= 0)
+            {
                 this.Setup();
+            }
         }
 
         private readonly string category;
+
         // TO DO: Display author name of level
         internal void Setup()
         {
@@ -59,7 +61,7 @@ namespace appFBLA2019
                 this.IsLoading = true;
                 this.ButtonStack.Children.Clear();
 
-                List<LevelInfo> levels = LevelRosterDatabase.GetRoster(category);
+                List<LevelInfo> levels = LevelRosterDatabase.GetRoster(this.category);
 
                 foreach (LevelInfo level in levels)
                 {
@@ -89,9 +91,7 @@ namespace appFBLA2019
                         Orientation = StackOrientation.Horizontal,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.FillAndExpand
-
                     };
-
 
                     Label title = new Label // 0
                     {
@@ -112,28 +112,28 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + category + "/" + level.LevelName + "`" + level.AuthorName
+                        StyleId = "/" + this.category + "/" + level.LevelName + "`" + level.AuthorName
                     };
 
                     if (level.SyncStatus == 3)
                     {
                         Sync.Source = "ic_cloud_off_black_48dp.png";
-                        Sync.Clicked += SyncOffline_Clicked;
+                        Sync.Clicked += this.SyncOffline_Clicked;
                     }
                     else if (level.SyncStatus == 2)
                     {
                         Sync.Source = "ic_cloud_done_black_48dp.png";
-                        Sync.Clicked += SyncNoChange_Clicked;
+                        Sync.Clicked += this.SyncNoChange_Clicked;
                     }
                     else if (level.SyncStatus == 1)
                     {
                         Sync.Source = "ic_cloud_upload_black_48dp.png";
-                        Sync.Clicked += SyncUpload_Clicked;
+                        Sync.Clicked += this.SyncUpload_Clicked;
                     }
                     else if (level.SyncStatus == 0)
                     {
                         Sync.Source = "ic_cloud_download_black_48dp.png";
-                        Sync.Clicked += SyncDownload_Clicked;
+                        Sync.Clicked += this.SyncDownload_Clicked;
                     }
 
                     topStack.Children.Add(Sync);
@@ -188,7 +188,7 @@ namespace appFBLA2019
                         ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
                         ButtonDelete.BackgroundColor = Color.White;
                         ButtonDelete.CornerRadius = 0;
-                        ButtonDelete.StyleId = "/" + category + "/" + level.LevelName + "`" + level.AuthorName;
+                        ButtonDelete.StyleId = "/" + this.category + "/" + level.LevelName + "`" + level.AuthorName;
                     }
                     menuStack.Children.Add(ButtonDelete);
 
@@ -203,9 +203,11 @@ namespace appFBLA2019
 
                     frameMenu.Content = menuStack;
 
-                    frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) => {
+                    frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) =>
+                    {
                         return parent.Width - 100;
-                    }), Constraint.RelativeToParent((parent) => {
+                    }), Constraint.RelativeToParent((parent) =>
+                    {
                         return parent.Y;
                     }), Constraint.Constant(90), Constraint.Constant(90));
 
@@ -222,7 +224,6 @@ namespace appFBLA2019
                     };
                     frameStack.Children.Add(Seperator);
 
-
                     Label Author = new Label // 2
                     {
                         Text = "Created by: " + level.AuthorName,
@@ -232,8 +233,6 @@ namespace appFBLA2019
                         HorizontalOptions = LayoutOptions.StartAndExpand
                     };
                     frameStack.Children.Add(Author);
-
-
 
                     TapGestureRecognizer recognizer = new TapGestureRecognizer();
                     recognizer.Tapped += async (object sender, EventArgs e) =>
@@ -256,8 +255,8 @@ namespace appFBLA2019
 
                     frame.GestureRecognizers.Add(recognizer);
 
-
-                    frameLayout.Children.Add(frameStack, Constraint.RelativeToParent((parent) => {
+                    frameLayout.Children.Add(frameStack, Constraint.RelativeToParent((parent) =>
+                    {
                         return 0;
                     }));
 
@@ -276,17 +275,16 @@ namespace appFBLA2019
 
         private void SyncDownload_Clicked(object sender, EventArgs e)
         {
-
         }
 
         private void SyncNoChange_Clicked(object sender, EventArgs e)
         {
-            DisplayAlert("Already Synchronized", "This level is already up to date with the server version!", "OK");
+            this.DisplayAlert("Already Synchronized", "This level is already up to date with the server version!", "OK");
         }
 
         private void SyncOffline_Clicked(object sender, EventArgs e)
         {
-            DisplayAlert("Offline", "This level cannot be synced because you are offline.", "OK");
+            this.DisplayAlert("Offline", "This level cannot be synced because you are offline.", "OK");
         }
 
         private async void ButtonDelete_Clicked(object sender, EventArgs e)
@@ -301,10 +299,10 @@ namespace appFBLA2019
                 // Decrement subscriber count on server
             }
 
-            bool answer = await DisplayAlert(question, message, "Yes", "No");
+            bool answer = await this.DisplayAlert(question, message, "Yes", "No");
             if (answer)
             {
-                string path = App.Path + ((Button)sender).StyleId;
+                string path = App.UserPath + ((Button)sender).StyleId;
 
                 if (System.IO.Directory.Exists(path))
                 {
@@ -318,19 +316,22 @@ namespace appFBLA2019
 
                         // Acquire LevelInfo from roster
                         LevelInfo rosterInfo = LevelRosterDatabase.GetLevelInfo(dbId);
-                        LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo);
-                        rosterInfoUpdated.IsDeletedLocally = true;
+                        LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo)
+                        {
+                            IsDeletedLocally = true,
 
-                        rosterInfoUpdated.LastModifiedDate = DateTime.Now.ToString();
+                            LastModifiedDate = DateTime.Now.ToString()
+                        };
                         LevelRosterDatabase.EditLevelInfo(rosterInfoUpdated);
 
-                        // If connected, tell server to delete this level
-                        // If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
+                        // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
                         if (CrossConnectivity.Current.IsConnected)
                         {
                             OperationReturnMessage returnMessage = ServerOperations.DeleteLevel(dbId);
                             if (returnMessage == OperationReturnMessage.True)
+                            {
                                 realm.Remove(realm.All<LevelInfo>().Where(levelInfo => levelInfo.DBId == rosterInfo.DBId).First());
+                            }
                         }
 
                         // Clear out DBHandler.GameDatabase in case it references the level just deleted
@@ -341,7 +342,7 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    await DisplayAlert("Level not Found", "This level is not downloaded. Press download to download the level.", "OK");
+                    await this.DisplayAlert("Level not Found", "This level is not downloaded. Press download to download the level.", "OK");
                 }
             }
             else
@@ -350,33 +351,33 @@ namespace appFBLA2019
             }
         }
 
-        async private void ImageButtonMenu_Clicked(object sender, EventArgs e)
+        private async void ImageButtonMenu_Clicked(object sender, EventArgs e)
         {
             Frame menu = ((Frame)((RelativeLayout)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent).Children[0]);
             Frame frame = ((Frame)((RelativeLayout)menu.Parent).Parent);
 
-            frame.GestureRecognizers.Remove(recognizer);
+            frame.GestureRecognizers.Remove(this.recognizer);
             menu.Opacity = 0;
             menu.IsVisible = true;
             await menu.FadeTo(1, 200, Easing.CubicInOut);
 
             TapGestureRecognizer globalRecognizer = new TapGestureRecognizer();
-            globalRecognizer.Tapped += async (s, a) => {
+            globalRecognizer.Tapped += async (s, a) =>
+            {
                 await this.RemoveMenu(menu);
                 this.ButtonStack.GestureRecognizers.Remove(globalRecognizer);
-                frame.GestureRecognizers.Add(recognizer);
+                frame.GestureRecognizers.Add(this.recognizer);
             };
             this.ButtonStack.GestureRecognizers.Add(globalRecognizer);
-
         }
 
-        async private Task RemoveMenu(Frame frame)
+        private async Task RemoveMenu(Frame frame)
         {
             await frame.FadeTo(0, 200, Easing.CubicInOut);
-            frame.IsVisible = false;          
+            frame.IsVisible = false;
         }
 
-        async private void ButtonEdit_Clicked(object sender, EventArgs e)
+        private async void ButtonEdit_Clicked(object sender, EventArgs e)
         {
             Frame frame = ((Frame)((StackLayout)((Button)sender).Parent).Parent);
             await this.RemoveMenu(frame);
@@ -384,8 +385,8 @@ namespace appFBLA2019
             {
                 string levelTitle = ((Label)((StackLayout)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[0]).Children[0]).Text;
                 string levelAuthor = ((Label)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[2]).Text.Split(':')[1].Trim();
-                DBHandler.SelectDatabase(category, levelTitle, levelAuthor);
-                CreateNewLevelPage levelPage = new CreateNewLevelPage(category, levelTitle, levelAuthor); //Create the levelPage
+                DBHandler.SelectDatabase(this.category, levelTitle, levelAuthor);
+                CreateNewLevelPage levelPage = new CreateNewLevelPage(this.category, levelTitle, levelAuthor); //Create the levelPage
 
                 levelPage.SetLevelName(levelTitle);
                 foreach (Question question in DBHandler.Database.GetQuestions())

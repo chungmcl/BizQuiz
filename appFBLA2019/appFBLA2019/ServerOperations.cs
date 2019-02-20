@@ -1,4 +1,6 @@
-﻿using Plugin.Connectivity;
+﻿//BizQuiz App 2019
+
+using Plugin.Connectivity;
 using Realms;
 using System;
 using System.Collections.Generic;
@@ -108,15 +110,17 @@ namespace appFBLA2019
         {
             try
             {
-                string realmFilePath = Directory.GetFiles(App.Path + relativeLevelPath, "*.realm").First();
+                string realmFilePath = Directory.GetFiles(App.UserPath + relativeLevelPath, "*.realm").First();
                 Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                 LevelInfo info = realm.All<LevelInfo>().First();
 
                 SendRealmFile(realmFilePath);
                 if (ReceiveFromServerORM() != OperationReturnMessage.True)
+                {
                     throw new Exception();
+                }
 
-                string[] imageFilePaths = Directory.GetFiles(App.Path + relativeLevelPath, "*.jpg");
+                string[] imageFilePaths = Directory.GetFiles(App.UserPath + relativeLevelPath, "*.jpg");
                 for (int i = 0; i < imageFilePaths.Length; i++)
                 {
                     //[0] = path, [1] = fileName, [2] = dBId
@@ -126,7 +130,9 @@ namespace appFBLA2019
 
                     OperationReturnMessage message = ReceiveFromServerORM();
                     if (message == OperationReturnMessage.False)
+                    {
                         return false;
+                    }
                 }
 
                 // When finished, confirm with server that level send has completed
@@ -137,20 +143,21 @@ namespace appFBLA2019
                 OperationReturnMessage finalizationMessage = ReceiveFromServerORM();
 
                 if (finalizationMessage == OperationReturnMessage.True)
+                {
                     return true;
+                }
                 else
+                {
                     return false;
+                }
             }
             catch
             {
-                // Alert server that level send failed
-                // Delete records 
+                // Alert server that level send failed Delete records
                 return false;
             }
-
         }
 
-        #region Header Generators
         private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
         {
             byte[] headerData = new byte[stringHeaderSize];
@@ -189,10 +196,7 @@ namespace appFBLA2019
             Array.Copy(dBIdBytes, 0, headerData, maxUsernameSize + maxPasswordSize + maxImageNameSize, dBIdBytes.Length);
             return headerData;
         }
-        #endregion
 
-
-        #region Receive Data from Server
         public static OperationReturnMessage ReceiveFromServerORM()
         {
             if (CrossConnectivity.Current.IsConnected)
@@ -221,7 +225,9 @@ namespace appFBLA2019
                 }
             }
             else
+            {
                 return OperationReturnMessage.FalseNoConnection;
+            }
         }
 
         public static string ReceiveFromServerStringData()
@@ -253,7 +259,9 @@ namespace appFBLA2019
                 }
             }
             else
+            {
                 return null;
+            }
         }
 
         public static List<string[]> ReceiveFromServerListOfStringArrays()
@@ -263,12 +271,10 @@ namespace appFBLA2019
                 byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
                 if (!(returnedBytes == null || returnedBytes.Length < 5))
                 {
-
                     int size = BitConverter.ToInt32(returnedBytes, 1);
                     byte[] data = ServerConnector.ReadByteArray(size);
                     if (data != null)
                     {
-
                         BinaryFormatter binaryFormatter = new BinaryFormatter();
                         MemoryStream memStream = new MemoryStream();
                         memStream.Write(data, 0, data.Length);
@@ -289,17 +295,16 @@ namespace appFBLA2019
                 }
             }
             else
+            {
                 return null;
+            }
         }
-        #endregion
 
-
-        #region Data send helper methods
         /// <summary>
         /// Send a string (Unicode) based data request or send to the server.
         /// </summary>
-        /// <param name="data">The string data in Unicode to send.</param>
-        /// <param name="dataType">The type of request to send to the server.</param>
+        /// <param name="data">     The string data in Unicode to send. </param>
+        /// <param name="dataType"> The type of request to send to the server. </param>
         private static void SendStringData(string data, ServerRequestTypes dataType)
         {
             string dataAsString = data;
@@ -314,7 +319,7 @@ namespace appFBLA2019
         /// <summary>
         /// Send realm file to the server.
         /// </summary>
-        /// <param name="path">Path to the realm file on local device.</param>
+        /// <param name="path"> Path to the realm file on local device. </param>
         private static void SendRealmFile(string path)
         {
             byte[] realmBytes = File.ReadAllBytes(path);
@@ -331,9 +336,9 @@ namespace appFBLA2019
         /// <summary>
         /// Send JPEG image to server given the local path, filename, and DBId the image is related to
         /// </summary>
-        /// <param name="path">Path to JPEG image file on local device.</param>
-        /// <param name="fileName">Name of the JPEG image file.</param>
-        /// <param name="dbId">DBId of the database image is contained in.</param>
+        /// <param name="path">     Path to JPEG image file on local device. </param>
+        /// <param name="fileName"> Name of the JPEG image file. </param>
+        /// <param name="dbId">     DBId of the database image is contained in. </param>
         private static void SendImageFile(string path, string fileName, string dbId)
         {
             byte[] imageBytes = File.ReadAllBytes(path);
@@ -346,9 +351,8 @@ namespace appFBLA2019
             imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
             ServerConnector.SendByteArray(toSend);
         }
-        #endregion
     }
-    
+
     public enum OperationReturnMessage : byte
     {
         True,
@@ -380,6 +384,7 @@ namespace appFBLA2019
 
         // "Get" Requests
         GetEmail,
+
         GetJPEGImage,
         GetRealmFile,
         GetLastModifiedDate,
