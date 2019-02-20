@@ -8,7 +8,7 @@
         <StackLayout Padding="10">
             <SearchBar x:Name="SearchBar" TextChanged="SearchBar_TextChanged" SearchButtonPressed="SearchBar_SearchButtonPressed" />
             <Label x:Name="InstructionsLabel"  Text="Search for any level and you can subscribe to it in order to play it yourself!"/>
-            <ScrollView>
+            <ScrollView x:Name="ScrollSearch" Scrolled="ScrollSearch_Scrolled">
                 <StackLayout x:Name="SearchedStack"  Padding="10">
                     <!--Search Results go here-->
                 </StackLayout>
