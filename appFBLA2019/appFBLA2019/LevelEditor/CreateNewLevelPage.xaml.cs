@@ -383,7 +383,7 @@ namespace appFBLA2019
 				// If they renamed the level, delete the old one
 				if (this.originalName != this.EntryLevelName.Text.Trim() && this.originalAuthor == CredentialManager.Username)
 				{
-					Directory.Delete(App.Path + "/" + this.originalName + "`" + this.originalAuthor, true);
+					Directory.Delete(App.UserPath + "/" + this.originalName + "`" + this.originalAuthor, true);
 				}
 
                 // Returns user to front page of LevelEditor and refreshed database

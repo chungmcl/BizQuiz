@@ -55,7 +55,7 @@ namespace appFBLA2019
             ServerConnector.Server = "50.106.17.86";
 
             await CredentialManager.CheckLoginStatus();
-            CredentialManager.StartTimedCheckLoginStatus();
+            await ThreadTimer.RunServerChecks();
         }
 
         private void SendCrashLog()

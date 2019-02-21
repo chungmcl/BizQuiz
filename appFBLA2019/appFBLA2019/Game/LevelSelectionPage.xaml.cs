@@ -24,7 +24,7 @@ namespace appFBLA2019
         {
             this.InitializeComponent();
             this.category = category;
-            Directory.CreateDirectory(App.Path + $"/{category}");
+            Directory.CreateDirectory(App.UserPath + $"/{category}");
             this.IsLoading = false;
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
             //this.Setup();
@@ -304,7 +304,7 @@ namespace appFBLA2019
             bool answer = await DisplayAlert(question, message, "Yes", "No");
             if (answer)
             {
-                string path = App.Path + ((Button)sender).StyleId;
+                string path = App.UserPath + ((Button)sender).StyleId;
 
                 if (System.IO.Directory.Exists(path))
                 {

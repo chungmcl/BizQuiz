@@ -108,7 +108,7 @@ namespace appFBLA2019
         {
             try
             {
-                string realmFilePath = Directory.GetFiles(App.Path + relativeLevelPath, "*.realm").First();
+                string realmFilePath = Directory.GetFiles(App.UserPath + relativeLevelPath, "*.realm").First();
                 Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                 LevelInfo info = realm.All<LevelInfo>().First();
 
@@ -116,7 +116,7 @@ namespace appFBLA2019
                 if (ReceiveFromServerORM() != OperationReturnMessage.True)
                     throw new Exception();
 
-                string[] imageFilePaths = Directory.GetFiles(App.Path + relativeLevelPath, "*.jpg");
+                string[] imageFilePaths = Directory.GetFiles(App.UserPath + relativeLevelPath, "*.jpg");
                 for (int i = 0; i < imageFilePaths.Length; i++)
                 {
                     //[0] = path, [1] = fileName, [2] = dBId
