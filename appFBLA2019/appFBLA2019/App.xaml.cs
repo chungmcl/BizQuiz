@@ -24,6 +24,7 @@ namespace appFBLA2019
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
             App.UserPath = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder + "dflt/";
+            Directory.CreateDirectory(App.Path + $"dflt");
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;

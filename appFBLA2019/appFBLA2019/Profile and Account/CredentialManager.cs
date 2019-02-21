@@ -3,6 +3,7 @@
 using Plugin.Connectivity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
@@ -62,17 +63,21 @@ namespace appFBLA2019
                         {
                             IsLoggedIn = true;
                             EmailConfirmed = true;
+                            App.UserPath = App.Path + $"{username}/";
+                            Directory.CreateDirectory(App.UserPath);
                         }
                         else if (message == OperationReturnMessage.TrueConfirmEmail)
                         {
                             IsLoggedIn = true;
                             EmailConfirmed = false;
+                            App.UserPath = App.Path + $"{username}/";
+                            Directory.CreateDirectory(App.UserPath);
                         }
                         else
                         {
                             IsLoggedIn = false;
                             EmailConfirmed = false;
-
+                            App.UserPath = App.Path + $"dflt/";
                             await SecureStorage.SetAsync("password", "");
                         }
                         return message;
@@ -84,19 +89,38 @@ namespace appFBLA2019
                 }
                 else
                 {
+
+                    App.UserPath = App.Path + "dflt/";
+                    IsLoggedIn = false;
+                    EmailConfirmed = false;
+                    Username = "dflt";
+                    Password = "";
                     return OperationReturnMessage.False;
                 }
             }
             else // If the user is offline
             {
-                if (((username != null) && (password != null)) && ((username != "") && (password != "")))
-                {
-                    return OperationReturnMessage.False;
-                }
-                else
-                {
-                    return OperationReturnMessage.True;
-                }
+                return CannotConnectToServer(username, password);
+            }
+        }
+
+        private static OperationReturnMessage CannotConnectToServer(string username, string password)
+        {
+            if (((username != null) && (password != null)) && ((username != "") && (password != "")))
+            {
+                IsLoggedIn = true;
+                App.UserPath = App.Path + $"{username}/";
+                Directory.CreateDirectory(App.UserPath);
+                return OperationReturnMessage.True;
+            }
+            else
+            {
+                App.UserPath = App.Path + "dflt/";
+                IsLoggedIn = false;
+                EmailConfirmed = false;
+                Username = "dflt";
+                Password = "";
+                return OperationReturnMessage.False;
             }
         }
     }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -271,10 +272,35 @@ namespace appFBLA2019
         {
             ImageButton button = (sender as ImageButton);
             string levelPath = button.StyleId;
-            await button.RotateTo(360, 800, Easing.Linear);
-            await button.RotateTo(0, 0);
-            
-            await Task.Run(() => ServerOperations.SendLevel(levelPath));
+            button.Source = "ic_autorenew_black_48dp.png";
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            CancellationToken token = tokenSource.Token;
+            _ = Task.Run(async() =>
+            {
+                button.IsEnabled = false;
+                while (!token.IsCancellationRequested)
+                {
+                    await button.RotateTo(360, 800, Easing.Linear);
+                    await button.RotateTo(0, 0);
+                }
+            }, token);
+
+            if (await Task.Run(() => ServerOperations.SendLevel(levelPath)))
+            {
+                tokenSource.Cancel();
+                await button.RotateTo(0, 0);
+                button.Source = "ic_cloud_done_black_48dp.png";
+                button.IsEnabled = true;
+                button.Clicked += SyncNoChange_Clicked;
+            }
+            else
+            {
+                button.Source = "ic_cloud_upload_black_48dp.png";
+                button.IsEnabled = true;
+                await DisplayAlert("Level Upload Failed.", 
+                    "This level could not be uploaded to the server. Please try again.", 
+                    "OK");
+            }
         }
 
         private void SyncDownload_Clicked(object sender, EventArgs e)
