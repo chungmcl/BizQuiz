@@ -1,7 +1,7 @@
 //BizQuiz App 2019
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -23,6 +23,7 @@ namespace appFBLA2019
 
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
+            App.UserPath = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder + "dflt/";
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
@@ -39,7 +40,6 @@ namespace appFBLA2019
 
         protected override void OnResume()
         {
-
         }
 
         protected override void OnSleep()
@@ -59,7 +59,7 @@ namespace appFBLA2019
 
         private void SendCrashLog()
         {
-            string logPath = App.Path + "/CrashReport.log";
+            string logPath = App.Path + "/CrashReport.txt";
             if (File.Exists(logPath))
             {
                 var errorText = File.ReadAllText(logPath);
@@ -96,7 +96,7 @@ namespace appFBLA2019
         {
             try
             {
-                string logPath = App.Path + "/CrashReport.log";
+                string logPath = App.Path + "/CrashReport.txt";
                 var errorText = String.Format($"Error (Unhandled Exception): {exception.ToString()}");
                 File.WriteAllText(logPath, errorText);
 

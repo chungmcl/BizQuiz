@@ -1,4 +1,6 @@
-﻿using Plugin.Connectivity;
+﻿//BizQuiz App 2019
+
+using Plugin.Connectivity;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,12 +16,13 @@ namespace appFBLA2019
         public static string Password { get; private set; }
         public static bool IsLoggedIn { get; private set; }
         public static bool EmailConfirmed { get; set; }
-     
+
         public static void SaveCredential(string username, string password, bool emailConfirmed)
         {
-            Task.Run(async() => await SecureStorage.SetAsync("username", username));
-            Task.Run(async() => await SecureStorage.SetAsync("password", password));
-            
+            Task.Run(async () => await SecureStorage.SetAsync("username", username));
+            Task.Run(async () => await SecureStorage.SetAsync("password", password));
+
+            App.UserPath = App.Path + $"{username}/";
             Username = username;
             Password = password;
 
@@ -32,13 +35,16 @@ namespace appFBLA2019
             Task.Run(async () => await SecureStorage.SetAsync("password", ""));
 
             if (clearUsername)
+            {
                 Task.Run(async () => await SecureStorage.SetAsync("username", ""));
+            }
 
+            App.UserPath = App.Path + "dflt/";
             IsLoggedIn = false;
             EmailConfirmed = false;
         }
 
-        public async static Task<OperationReturnMessage> CheckLoginStatus()
+        public static async Task<OperationReturnMessage> CheckLoginStatus()
         {
             string username = await SecureStorage.GetAsync("username");
             Username = username;

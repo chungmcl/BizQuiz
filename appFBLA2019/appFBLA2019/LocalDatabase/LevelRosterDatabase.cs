@@ -1,4 +1,6 @@
-﻿using Plugin.Connectivity;
+﻿//BizQuiz App 2019
+
+using Plugin.Connectivity;
 using Realms;
 using System;
 using System.Collections.Generic;
@@ -12,10 +14,12 @@ namespace appFBLA2019
 {
     public static class LevelRosterDatabase
     {
-        private static string rosterPath = App.Path + "/" + "roster.realm";
+        //needs to be a property so that it changes when UserPath does
+        private static string RosterPath { get { return App.UserPath + "roster.realm"; } }
+
         public static void NewLevelInfo(string authorName, string levelName, string category)
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
@@ -25,7 +29,7 @@ namespace appFBLA2019
 
         public static void NewLevelInfo(LevelInfo levelInfo)
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
@@ -35,14 +39,14 @@ namespace appFBLA2019
 
         public static void EditLevelInfo(LevelInfo editedLevelInfo)
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
-                realmDB.Add(editedLevelInfo, update : true);
+                realmDB.Add(editedLevelInfo, update: true);
             });
         }
-        
+
         private static void EditLevelInfo(Realm threadedRealm, LevelInfo editedLevelInfo)
         {
             threadedRealm.Write(() =>
@@ -58,7 +62,7 @@ namespace appFBLA2019
         {
             try
             {
-                RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+                RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
                 Realm realmDB = Realm.GetInstance(threadConfig);
                 return realmDB.All<LevelInfo>().Where
                                  (levelInfo => levelInfo.AuthorName == authorName && levelInfo.LevelName == levelName).First();
@@ -73,7 +77,7 @@ namespace appFBLA2019
         {
             try
             {
-                RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+                RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
                 Realm realmDB = Realm.GetInstance(threadConfig);
                 return realmDB.All<LevelInfo>().Where
                                  (levelInfo => levelInfo.DBId == dbId).First();
@@ -86,24 +90,24 @@ namespace appFBLA2019
 
         public static List<LevelInfo> GetRoster()
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             return new List<LevelInfo>(realmDB.All<LevelInfo>());
         }
 
         public static List<LevelInfo> GetRoster(string category)
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(rosterPath);
+            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             return new List<LevelInfo>(realmDB.All<LevelInfo>().Where(levelInfo => levelInfo.Category == category && !levelInfo.IsDeletedLocally));
         }
 
         public static void UpdateLocalDatabase()
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(App.Path + "/" + "roster.realm");
+            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm threadInstance = Realm.GetInstance(threadConfig);
 
-            List <LevelInfo> LevelInfos = new List<LevelInfo>(threadInstance.All<LevelInfo>());
+            List<LevelInfo> LevelInfos = new List<LevelInfo>(threadInstance.All<LevelInfo>());
             for (int i = 0; i < LevelInfos.Count(); i++)
             {
                 if (CrossConnectivity.Current.IsConnected)
@@ -121,8 +125,10 @@ namespace appFBLA2019
                             {
                                 if (lastModifiedDate == "" || lastModifiedDate == null)
                                 {
-                                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                    copy.SyncStatus = 1; // 1 represents need upload
+                                    LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                    {
+                                        SyncStatus = 1 // 1 represents need upload
+                                    };
                                     EditLevelInfo(threadInstance, copy);
                                 }
                                 else
@@ -131,28 +137,36 @@ namespace appFBLA2019
                                     DateTime serverModifiedDateTime = Convert.ToDateTime(lastModifiedDate);
                                     if (localModifiedDateTime > serverModifiedDateTime)
                                     {
-                                        LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                        copy.SyncStatus = 1; // 1 represents need upload
+                                        LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                        {
+                                            SyncStatus = 1 // 1 represents need upload
+                                        };
                                         EditLevelInfo(threadInstance, copy);
                                     }
                                     else if (localModifiedDateTime < serverModifiedDateTime)
                                     {
-                                        LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                        copy.SyncStatus = 0; // 0 represents needs download
+                                        LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                        {
+                                            SyncStatus = 0 // 0 represents needs download
+                                        };
                                         EditLevelInfo(threadInstance, copy);
                                     }
                                     else if (localModifiedDateTime == serverModifiedDateTime)
                                     {
-                                        LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                        copy.SyncStatus = 2; // 2 represents in sync
+                                        LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                        {
+                                            SyncStatus = 2 // 2 represents in sync
+                                        };
                                         EditLevelInfo(threadInstance, copy);
                                     }
                                 }
                             }
                             else
                             {
-                                LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                                copy.SyncStatus = 3; // 3 represents offline
+                                LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                {
+                                    SyncStatus = 3 // 3 represents offline
+                                };
                                 EditLevelInfo(threadInstance, copy);
                             }
                         }
@@ -160,8 +174,10 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    LevelInfo copy = new LevelInfo(LevelInfos[i]);
-                    copy.SyncStatus = 3; // 3 represents offline
+                    LevelInfo copy = new LevelInfo(LevelInfos[i])
+                    {
+                        SyncStatus = 3 // 3 represents offline
+                    };
                     EditLevelInfo(threadInstance, copy);
                 }
             }
