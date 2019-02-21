@@ -241,7 +241,7 @@ namespace appFBLA2019
                     byte[] data = ServerConnector.ReadByteArray(size);
                     if (data != null)
                     {
-                        string dataString = Encoding.Unicode.GetString(ServerConnector.ReadByteArray(size));
+                        string dataString = Encoding.Unicode.GetString(data);
                         ServerConnector.CloseConn();
                         dataString = dataString.Trim();
                         return dataString;
