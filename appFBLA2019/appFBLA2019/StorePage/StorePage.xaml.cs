@@ -22,6 +22,7 @@ namespace appFBLA2019
         /// <param name="level"></param>
         private void AddLevel(SearchInfo level)
         {
+
             Frame levelFrame = new Frame
             {
                 VerticalOptions = LayoutOptions.Start,
@@ -89,21 +90,25 @@ namespace appFBLA2019
         /// <param name="e"></param>
         async private void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
         {
-            
-            if ((sender as ImageButton).Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
+            ImageButton button = (sender as ImageButton);
+            if (button.Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
             {
                 bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
                 if (answer)
                 {
-                    (sender as ImageButton).Source = "ic_playlist_add_black_48dp.png";
-                    (sender as ImageButton).HeightRequest = 30;
+                    await button.FadeTo(0, 150, Easing.CubicInOut);
+                    button.Source = "ic_playlist_add_black_48dp.png";
+                    button.HeightRequest = 30;
+                    await button.FadeTo(1, 150, Easing.CubicInOut);
                     // remove from device
                 }
             }
             else // subscribe
             {
-                (sender as ImageButton).Source = "ic_playlist_add_check_black_48dp.png";
-                (sender as ImageButton).HeightRequest = 30;
+                await button.FadeTo(0, 150, Easing.CubicInOut);
+                button.Source = "ic_playlist_add_check_black_48dp.png";
+                button.HeightRequest = 30;
+                await button.FadeTo(1, 150, Easing.CubicInOut);
                 // save to device
             }
 
@@ -133,8 +138,15 @@ namespace appFBLA2019
             // Delete what was in there previously
             this.SearchedStack.Children.Clear();
             this.end = false;
-            //await Task.Run(() => this.Search(1));
-            this.Search(1);
+            try
+            {
+                await Task.Run(() => this.Search(1));
+            }
+            catch
+            {
+                await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+            }
+            //this.Search(1);
         }
 
 
@@ -150,8 +162,6 @@ namespace appFBLA2019
                 this.ActivityIndicator.IsRunning = true;
                 this.isLoading = true;
             });
-
-
 
             int i = 0;
 
@@ -215,7 +225,14 @@ namespace appFBLA2019
 
             if (scrollingSpace <= e.ScrollY && !this.end && !this.isLoading)
             {
-                await Task.Run(() => this.Search(this.chunkNum++));
+                try
+                {
+                    await Task.Run(() => this.Search(this.chunkNum++));
+                }
+                catch
+                {
+                    await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+                }
                 //this.Search(this.chunkNum++);
             }
         }
