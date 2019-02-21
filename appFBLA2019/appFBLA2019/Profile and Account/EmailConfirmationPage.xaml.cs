@@ -16,12 +16,12 @@ namespace appFBLA2019
             this.InitializeComponent();
             this.username = username;
             this.password = password;
-            this.LabelTitle.Text = "Loading...";
         }
 
         protected async override void OnAppearing()
         {
             base.OnAppearing();
+            this.LabelTitle.Text = "Loading...";
             await Task.Run(() => this.GetEmail());
         }
 

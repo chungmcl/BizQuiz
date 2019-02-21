@@ -272,7 +272,6 @@ namespace appFBLA2019
         {
             ImageButton button = (sender as ImageButton);
             string levelPath = button.StyleId;
-            button.Source = "ic_autorenew_black_48dp.png";
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
             _ = Task.Run(async() =>
