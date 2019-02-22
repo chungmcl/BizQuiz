@@ -356,13 +356,14 @@ namespace appFBLA2019
         {
             byte[] reportBytes = Encoding.ASCII.GetBytes(report);
             byte[] imageBytes = image ?? new byte[0];
-            byte[] imageHeader = new byte[0];
-            if (image.Length > 0)
+            byte[] imageHeader = new byte[5];
+            if (image?.Length > 0)
             {
                 imageHeader = new byte[5];
                 Array.Copy(new byte[] { Convert.ToByte(true) }, imageHeader, 1);
                 Array.Copy(BitConverter.GetBytes(imageBytes.Length), 0, imageHeader, 1, 4);
             }
+            else { Array.Copy(new Byte[] { Convert.ToByte(false) }, imageHeader, 1); }
             byte[] header = GenerateHeaderData(ServerRequestTypes.SendBugReport, (uint)(imageHeader.Length + imageBytes.Length + reportBytes.Length));
 
             byte[] toSend = new byte[header.Length + imageHeader.Length + imageBytes.Length + reportBytes.Length];

@@ -24,6 +24,7 @@ namespace appFBLA2019
                     }
                     
                     LevelRosterDatabase.UpdateLocalDatabase();
+                    BugReportHandler.SubmitSavedReports();
                 });
                 // Return true to continue the timer
                 return true;
