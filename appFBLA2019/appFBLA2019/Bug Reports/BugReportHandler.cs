@@ -87,12 +87,20 @@ namespace appFBLA2019
         //micheal write in this one
         private static bool SendReport(BugReport report)
         {
-            string reportText = report.ToString();
-            Image reportImage = new Image { Source = ImageSource.FromFile(report.ImagePath) };
+            byte[] image;
+            try
+            {
+                image = File.ReadAllBytes(report.ImagePath);
+            }
+            catch
+            {
+                image = null;
+            }
+            
 
             //sends the report to the server (and the image, provided it's not null)
             //returns if the send was successful or not
-            return false;
+            return ServerOperations.SendBugReport(report.ToString(), image);
         }
     }
 }

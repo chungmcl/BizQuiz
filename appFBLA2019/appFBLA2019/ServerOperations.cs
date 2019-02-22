@@ -351,6 +351,39 @@ namespace appFBLA2019
             imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
             ServerConnector.SendByteArray(toSend);
         }
+
+        public static bool SendBugReport(string report, byte[] image = null)
+        {
+            byte[] reportBytes = Encoding.ASCII.GetBytes(report);
+            byte[] imageBytes = image ?? new byte[0];
+            byte[] imageHeader = new byte[0];
+            if (image.Length > 0)
+            {
+                imageHeader = new byte[5];
+                Array.Copy(new byte[] { Convert.ToByte(true) }, imageHeader, 1);
+                Array.Copy(BitConverter.GetBytes(imageBytes.Length), 0, imageHeader, 1, 4);
+            }
+            byte[] header = GenerateHeaderData(ServerRequestTypes.SendBugReport, (uint)(imageHeader.Length + imageBytes.Length + reportBytes.Length));
+
+            byte[] toSend = new byte[header.Length + imageHeader.Length + imageBytes.Length + reportBytes.Length];
+            header.CopyTo(toSend, 0);
+            imageHeader.CopyTo(toSend, header.Length);
+            imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
+            reportBytes.CopyTo(toSend, header.Length + imageHeader.Length + imageBytes.Length);
+
+            ServerConnector.SendByteArray(toSend);
+            switch(ReceiveFromServerORM())
+            {
+                case OperationReturnMessage.True:
+                    return true;
+                case OperationReturnMessage.False:
+                case OperationReturnMessage.FalseFailedConnection:
+                case OperationReturnMessage.FalseNoConnection:
+                    return false;
+                default:
+                    throw new Exception("Something went wrong sending the bug report!");
+            }
+        }
     }
 
     public enum OperationReturnMessage : byte
@@ -381,6 +414,7 @@ namespace appFBLA2019
         ConfirmEmail,
         ChangeEmail,
         ChangePassword,
+        SendBugReport,
 
         // "Get" Requests
         GetEmail,
