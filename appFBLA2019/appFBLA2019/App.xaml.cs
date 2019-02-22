@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
@@ -30,7 +29,7 @@ namespace appFBLA2019
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
             BugReportHandler.Setup();
 
-            this.MainPage = new NavigationPage(new MainPage());
+            Current.MainPage = new NavigationPage(new MainPage());
         }
 
         public static string debugFolder = "/FBLADebug/";

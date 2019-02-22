@@ -3,8 +3,11 @@
 using System.Collections.Generic;
 using System;
 using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using static Xamarin.Forms.Application;
+using System.Threading.Tasks;
+using Plugin.Connectivity;
 
 namespace appFBLA2019
 {
@@ -45,7 +48,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void New_Activated(object sender, EventArgs e)
+        private async void New_Activated(object sender, EventArgs e)
         {
             if (CredentialManager.IsLoggedIn)
             {
@@ -54,7 +57,16 @@ namespace appFBLA2019
             }
             else
             {
-                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
+                if (await this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Login/Create Account","Go Back" ))
+                {
+                    ProfilePage profilePage = new ProfilePage();
+                    if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
+                    {
+                        await Task.Run(() => profilePage.UpdateProfilePage(CrossConnectivity.Current.IsConnected));
+                    }
+                    profilePage.SetTemporary();
+                    await this.Navigation.PushModalAsync(profilePage);
+                }
             }
         }
     }

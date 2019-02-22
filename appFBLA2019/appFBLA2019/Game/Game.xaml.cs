@@ -174,7 +174,8 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task CycleQuestion()
         {
-            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
+            await this.ProgressBar.ProgressTo(((double)this.level.Questions.Count() - (double)this.level.QuestionsRemaining) / (double)this.level.Questions.Count(), 500, Easing.SpringOut);
+            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
             if (this.level.QuestionsRemaining > 0)
             {
                 // Save as reference
@@ -212,28 +213,8 @@ namespace appFBLA2019
         /// </summary>
         private void LayoutRefresh()
         {
-            this.StackLayoutMain.WidthRequest = this.RelativeLayout.Width;
-            this.StackLayoutMain.HeightRequest = this.RelativeLayout.Height;
-
             this.QuestionImage.Aspect = Aspect.AspectFit;
-            if (!this.QuestionImage.IsEnabled)
-            {
-                this.LayoutGrid.RowDefinitions = new RowDefinitionCollection
-                {
-                    new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
-                };
-            }
-            else
-            {
-                //this.QuestionImage.HeightRequest = this.StackLayoutMain.Height * 1 / 3;
-                this.LayoutGrid.RowDefinitions = new RowDefinitionCollection
-                {
-                    new RowDefinition() { Height = Xamarin.Forms.GridLength.Auto },
-                    new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
-                };
-            }
-            this.LayoutGrid.HeightRequest = this.StackLayoutMain.Height;
-
+            this.LabelQuestion.WidthRequest = this.Width;
             this.UpdateChildrenLayout();
             this.ForceLayout();
         }
@@ -252,7 +233,7 @@ namespace appFBLA2019
         /// Sets up the layout and graphics for the next question
         /// </summary>
         /// <param name="question"> the question to be displayed </param>
-        private void SetUpQuestion(Question question)
+        private async void SetUpQuestion(Question question)
         {
             if (question.QuestionText == "" || question.CorrectAnswer == "")
             {
@@ -260,7 +241,7 @@ namespace appFBLA2019
                 {
                     question.Status = 3;
                 });
-                this.CycleQuestion();
+                await this.CycleQuestion();
                 return;
             }
 
@@ -274,8 +255,6 @@ namespace appFBLA2019
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star },
                 new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
             };
-
-            this.ProgressBar.ProgressTo(((double)this.level.Questions.Count() - (double)this.level.QuestionsRemaining) / (double)this.level.Questions.Count(), 500, Easing.SpringOut);
 
             if (question.QuestionType == 0) // If multiple-choice button question
             {
@@ -349,11 +328,6 @@ namespace appFBLA2019
             }
             else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
             {
-                this.InputGrid.RowDefinitions = new RowDefinitionCollection
-            {
-                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star},
-                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
-            };
                 Entry entry = new Entry()
                 {
                     FontSize = 35,
