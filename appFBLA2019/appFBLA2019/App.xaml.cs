@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
@@ -22,29 +23,20 @@ namespace appFBLA2019
 
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
-            CredentialManager.Username = "dflt";
+            App.UserPath = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder + "dflt/";
             Directory.CreateDirectory(App.Path + $"dflt");
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
             BugReportHandler.Setup();
 
-            Current.MainPage = new NavigationPage(new MainPage());
+            this.MainPage = new NavigationPage(new MainPage());
         }
 
         public static string debugFolder = "/FBLADebug/";
-        
-        public static string Path { get; set; }
 
-
-        public static string UserPath
-        {
-            get
-            {
-                return Path + "/" + CredentialManager.Username + "/";
-            }
-        }
-
+        public static string Path;
+        public static string UserPath;
 
         protected override void OnResume()
         {
@@ -61,6 +53,7 @@ namespace appFBLA2019
 
             /*REMOVE DURING RELEASE*/
             ServerConnector.Server = "50.106.17.86";
+            //ServerConnector.Server = "73.254.202.205";
 
             await ThreadTimer.RunServerChecks();
         }
