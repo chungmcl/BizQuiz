@@ -105,6 +105,12 @@ namespace appFBLA2019
             SendStringData($"{levelName}/{chunk}/-", ServerRequestTypes.GetLevelsByLevelName);
             return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
         }
+        
+        public static int GetNumberOfLevelsByAuthorName(string username)
+        {
+            SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfLevelsByAuthorName);
+            return int.Parse(ReceiveFromServerStringData() ?? "-1");
+        }
 
         public static bool SendLevel(string relativeLevelPath)
         {
@@ -160,6 +166,7 @@ namespace appFBLA2019
             }
         }
 
+        #region Header Generators
         private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
         {
             byte[] headerData = new byte[stringHeaderSize];
@@ -198,7 +205,9 @@ namespace appFBLA2019
             Array.Copy(dBIdBytes, 0, headerData, maxUsernameSize + maxPasswordSize + maxImageNameSize, dBIdBytes.Length);
             return headerData;
         }
+        #endregion
 
+        #region Data Receives
         public static OperationReturnMessage ReceiveFromServerORM()
         {
             if (CrossConnectivity.Current.IsConnected)
@@ -301,7 +310,9 @@ namespace appFBLA2019
                 return null;
             }
         }
+        #endregion
 
+        #region Data Sends
         /// <summary>
         /// Send a string (Unicode) based data request or send to the server.
         /// </summary>
@@ -387,6 +398,7 @@ namespace appFBLA2019
                     throw new Exception("Something went wrong sending the bug report!");
             }
         }
+        #endregion
     }
 
     public enum OperationReturnMessage : byte
@@ -428,6 +440,7 @@ namespace appFBLA2019
         GetLevelsByAuthorName,
         GetLevelsByLevelName,
         GetLevelsByCategory,
-        GetUsers
+        GetUsers,
+        GetNumberOfLevelsByAuthorName
     }
 }
