@@ -287,6 +287,7 @@ namespace appFBLA2019
                 button.Source = "ic_cloud_done_black_48dp.png";
                 button.IsEnabled = true;
                 button.Clicked += SyncNoChange_Clicked;
+                
             }
             else
             {

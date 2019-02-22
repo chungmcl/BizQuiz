@@ -16,8 +16,7 @@ namespace appFBLA2019
     public static class ServerConnector
     {
         // Server Release Build: 7777 Server Debug Build: 7778
-        public static int Port { get { return 7777; } }
-
+        public static int Port { get { return 7778; } }
         public static string Server { get; set; }
         public static TcpClient client;
         public static NetworkStream netStream;

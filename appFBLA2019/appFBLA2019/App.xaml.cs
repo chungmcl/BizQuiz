@@ -22,7 +22,7 @@ namespace appFBLA2019
 
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
-            App.UserPath = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder + "dflt/";
+            CredentialManager.Username = "dflt";
             Directory.CreateDirectory(App.Path + $"dflt");
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
@@ -33,9 +33,18 @@ namespace appFBLA2019
         }
 
         public static string debugFolder = "/FBLADebug/";
+        
+        public static string Path { get; set; }
 
-        public static string Path;
-        public static string UserPath;
+
+        public static string UserPath
+        {
+            get
+            {
+                return Path + "/" + CredentialManager.Username + "/";
+            }
+        }
+
 
         protected override void OnResume()
         {

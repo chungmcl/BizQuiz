@@ -144,6 +144,8 @@ namespace appFBLA2019
 
                 if (finalizationMessage == OperationReturnMessage.True)
                 {
+                    LevelInfo infoCopy = new LevelInfo(info);
+                    infoCopy.SyncStatus = 2;
                     return true;
                 }
                 else
