@@ -164,7 +164,7 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
             }

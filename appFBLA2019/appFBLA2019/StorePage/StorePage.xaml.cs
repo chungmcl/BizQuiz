@@ -158,15 +158,15 @@ namespace appFBLA2019
                 bool levelsRemaining = true;
                 for (int i = 1; levelsRemaining ; i++)
                 {
+                    List<SearchInfo> temp = new List<SearchInfo>();
+                    if (this.searchType == "Title")
+                        temp = SearchUtils.GetLevelsByLevelNameChunked(SearchBar.Text, i);
+                    else
+                        temp = SearchUtils.GetLevelsByAuthorChunked(SearchBar.Text, i);
+                    if (temp.Count == 0)
+                        levelsRemaining = false;
                     toAwait.Add(Task.Run(() =>
                     {
-                        List<SearchInfo> temp = new List<SearchInfo>();
-                        if (this.searchType == "Title")
-                            temp = SearchUtils.GetLevelsByLevelNameChunked(SearchBar.Text, i);
-                        else
-                            temp = SearchUtils.GetLevelsByAuthorChunked(SearchBar.Text, i);
-                        if (temp.Count == 0)
-                            levelsRemaining = false;
                         AddLevels(temp);
                     }));
                 }

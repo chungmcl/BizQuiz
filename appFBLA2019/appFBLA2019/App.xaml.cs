@@ -29,7 +29,6 @@ namespace appFBLA2019
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
             BugReportHandler.Setup();
-            this.SendCrashLog();
 
             this.MainPage = new NavigationPage(new MainPage());
         }
@@ -53,20 +52,10 @@ namespace appFBLA2019
             // Handle when your app starts
 
             /*REMOVE DURING RELEASE*/
-            ServerConnector.Server = "50.106.17.86";
+            //ServerConnector.Server = "50.106.17.86";
+            ServerConnector.Server = "73.254.202.205";
 
             await ThreadTimer.RunServerChecks();
-        }
-
-        private void SendCrashLog()
-        {
-            string logPath = App.Path + "/CrashReport.txt";
-            if (File.Exists(logPath))
-            {
-                var errorText = File.ReadAllText(logPath);
-                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
-                File.Delete(logPath);
-            }
         }
 
         private static void HandleUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
@@ -100,8 +89,6 @@ namespace appFBLA2019
                 string logPath = App.Path + "/CrashReport.txt";
                 var errorText = String.Format($"Error (Unhandled Exception): {exception.ToString()}");
                 File.WriteAllText(logPath, errorText);
-
-                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
 
                 DependencyService.Get<IErrorLogger>().LogError(errorText);
             }

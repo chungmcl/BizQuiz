@@ -16,6 +16,10 @@ namespace appFBLA2019
         public FeaturedPage()
         {
             InitializeComponent();
+        }
+
+        protected override void OnAppearing()
+        {
             try
             {
                 //Device.BeginInvokeOnMainThread(() => {
@@ -30,9 +34,9 @@ namespace appFBLA2019
                 this.ActivityIndicator.IsRunning = false;
                 //});
             }
-            catch
+            catch (Exception ex)
             {
-
+                BugReportHandler.SubmitReport(ex, nameof(FeaturedPage));
             }
         }
 

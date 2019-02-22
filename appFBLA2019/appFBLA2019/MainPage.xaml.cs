@@ -72,5 +72,15 @@ namespace appFBLA2019
         {
             this.Navigation.PushModalAsync(new AboutUsPage());
         }
+
+        private void ExceptionButton_Clicked(object sender, EventArgs e)
+        {
+            throw new Exception("Test of bug logging");
+        }
+
+        private void HelpButton_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushModalAsync(new HelpPage());
+        }
     }
 }

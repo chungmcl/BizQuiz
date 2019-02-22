@@ -18,8 +18,10 @@ namespace appFBLA2019
 
         public BugReport(string title, string category, string body)
         {
-            this.Title = $"Bug on {DateTime.Now.ToShortDateString()} at {DateTime.Now.ToLongTimeString()}: {title}";
+            this.Title = title;
+            this.Category = category;
             this.Body = body;
+            this.DateAndTime = $"{DateTime.Now.ToShortDateString()} at {DateTime.Now.ToLongTimeString()}";
             this.ReportID = this.ToString().GetHashCode();
         }
 
@@ -28,17 +30,18 @@ namespace appFBLA2019
             this.ReportID = this.ToString().GetHashCode();
         }
 
-        private string Title { get; set; }
-        private string Category { get; set; }
-        private string Body { get; set; }
+        public string Title { get; set; }
+        public string Category { get; set; }
+        public string Body { get; set; }
         public string ImagePath { get; set; }
+        public string DateAndTime { get; set; }
 
         [PrimaryKey]
         public int ReportID { get; private set; }
 
         public override string ToString()
         {
-            return $"{this.Title}`{this.Category}`{this.Body}`{this.ReportID}";
+            return $"{this.DateAndTime}\n{this.Title}\n{this.Category}\n{this.ReportID}\n{this.Body}";
         }
 
         public int Length
