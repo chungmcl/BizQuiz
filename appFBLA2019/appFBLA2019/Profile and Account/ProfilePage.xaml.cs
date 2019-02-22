@@ -94,57 +94,73 @@ namespace appFBLA2019
             }
         }
 
-        private List<LevelInfo> SearchByUser(string username)
+        private List<SearchInfo> GetUserQuizzes(int chunk = 1)
         {
-            List<LevelInfo> testInfo = new List<LevelInfo>();
+            List<SearchInfo> toReturn = new List<SearchInfo>();
+            List<string[]> levels = ServerOperations.GetLevelsByAuthorName(CredentialManager.Username, chunk);
+
+            foreach (string[] levelData in levels)
+            {
+                toReturn.Add(new SearchInfo(levelData));
+            }
+            return toReturn;
             //testInfo.Add(new LevelInfo { DBId = "TestDBID", AuthorName = "TestAuthor", LevelName = "TestLevel", Category = "FBLA General", Subscribers = 12 });
             //testInfo.Add(new LevelInfo { DBId = "TestDBID2", AuthorName = "TestAuthor2", LevelName = "TestLevel2", Category = "FBLA General", Subscribers = 3 });
-            return testInfo;
         }
 
         private void SetupUserQuizzes()
         {
-            this.QuizNumber.Text = "You have created a total of " + SearchByUser(CredentialManager.Username).Count + " quizes!";
+            //this will take a while it would be good to make it async
+            int totalCount = 0;
             this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            foreach (LevelInfo level in SearchByUser(CredentialManager.Username))
+            for (int i = 1; ; i++)
             {
-                Frame frame = new Frame()
+                List<SearchInfo> temp = this.GetUserQuizzes(i);
+                totalCount += temp.Count;
+                if (temp.Count == 0)
+                    break;
+
+                this.QuizNumber.Text = "You have created a total of " + totalCount + " quizes!";
+                foreach (SearchInfo level in temp)
                 {
-                    VerticalOptions = LayoutOptions.Start,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    CornerRadius = 10
-                };
+                    Frame frame = new Frame()
+                    {
+                        VerticalOptions = LayoutOptions.Start,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        CornerRadius = 10
+                    };
 
-                StackLayout frameStack = new StackLayout
-                {
-                    FlowDirection = FlowDirection.LeftToRight,
-                    Orientation = StackOrientation.Vertical
-                };
+                    StackLayout frameStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Vertical
+                    };
 
-                Label levelName = new Label
-                {
-                    Text = level.LevelName,
-                    FontAttributes = FontAttributes.Bold,
-                    FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-                    HorizontalOptions = LayoutOptions.StartAndExpand
-                };
-                frameStack.Children.Add(levelName);
+                    Label levelName = new Label
+                    {
+                        Text = level.LevelName,
+                        FontAttributes = FontAttributes.Bold,
+                        FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
+                        HorizontalOptions = LayoutOptions.StartAndExpand
+                    };
+                    frameStack.Children.Add(levelName);
 
-                Label Category = new Label
-                {
-                    Text = "Category: " + level.Category
-                };
-                frameStack.Children.Add(Category);
+                    Label Category = new Label
+                    {
+                        Text = "Category: " + level.Category
+                    };
+                    frameStack.Children.Add(Category);
 
 
-                Label Subscribers = new Label
-                {
-                    Text = "Subscribers: " /*+ level.Subscribers*/
-                };
-                frameStack.Children.Add(Subscribers);
+                    Label Subscribers = new Label
+                    {
+                        Text = "Subscribers: " /*+ level.Subscribers*/
+                    };
+                    frameStack.Children.Add(Subscribers);
 
-                frame.Content = frameStack;
-                LevelStack.Children.Add(frame);
+                    frame.Content = frameStack;
+                    LevelStack.Children.Add(frame);
+                }
             }
             this.isSetup = true;
         }

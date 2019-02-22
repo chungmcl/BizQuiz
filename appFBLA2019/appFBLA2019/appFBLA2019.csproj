@@ -75,6 +75,9 @@
     <Compile Update="StorePage\FeaturedPage.xaml.cs">
       <DependentUpon>FeaturedPagexaml</DependentUpon>
     </Compile>
+    <Compile Update="StorePage\ExplorePage.xaml.cs">
+      <DependentUpon>ExplorePage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -127,7 +130,7 @@
     <EmbeddedResource Update="StorePage\SearchPageTabs.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="StorePage\StorePage.xaml">
+    <EmbeddedResource Update="StorePage\ExplorePage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="TermsOfUse.xaml">
