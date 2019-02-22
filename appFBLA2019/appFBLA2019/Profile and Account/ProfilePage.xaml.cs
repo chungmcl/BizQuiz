@@ -22,6 +22,15 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
+        public void SetTemporary()
+        {
+            this.LocalLoginPage.LoggedIn -= this.OnLoggedIn;
+            this.LocalLoginPage.LoggedIn += (object sender, EventArgs e) =>
+            {
+                this.Navigation.PopAsync();
+            };
+        }
+
         public async Task UpdateProfilePage(bool updateLoginStatus)
         {
             Device.BeginInvokeOnMainThread(() =>
