@@ -84,7 +84,7 @@ namespace appFBLA2019
                     }
                     else
                     {
-                        return OperationReturnMessage.False;
+                        return CannotConnectToServer(username, password);
                     }
                 }
                 else
