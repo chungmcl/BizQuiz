@@ -24,8 +24,6 @@ namespace appFBLA2019
 		{
 			InitializeComponent();
 			this.searchType = "Title";
-            this.currentChunk = 1;
-		   
 		}
 
 		protected override void OnSizeAllocated(double width, double height)
@@ -151,7 +149,7 @@ namespace appFBLA2019
 			// Delete what was in there previously
 			this.end = false;
             this.levelsRemaining = true;
-            this.currentChunk = 0;
+            this.currentChunk = 1;
 			//Device.BeginInvokeOnMainThread(() => {
 			this.SearchedStack.Children.Clear();
 			this.ActivityIndicator.IsEnabled = true;
@@ -196,7 +194,6 @@ namespace appFBLA2019
                         },
                         CornerRadius = 10,
                         HorizontalOptions = LayoutOptions.CenterAndExpand,
-                        HeightRequest = 100
                     });
                 }
                 );

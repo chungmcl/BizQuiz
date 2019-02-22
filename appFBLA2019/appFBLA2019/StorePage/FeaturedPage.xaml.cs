@@ -16,6 +16,7 @@ namespace appFBLA2019
         public FeaturedPage()
         {
             InitializeComponent();
+            this.currentChunk = 1;
         }
 
         protected override void OnAppearing()
