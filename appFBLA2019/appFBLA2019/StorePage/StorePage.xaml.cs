@@ -148,7 +148,7 @@ namespace appFBLA2019
 			this.end = false;
             //Device.BeginInvokeOnMainThread(() => {
             this.SearchedStack.Children.Clear();
-            this.ActivityIndicator.IsVisible = true;
+            this.ActivityIndicator.IsEnabled = true;
             this.ActivityIndicator.IsRunning = true;
             //});
             this.isLoading = true;
@@ -172,13 +172,14 @@ namespace appFBLA2019
                 }
                 await Task.WhenAll(toAwait);
             }
-            catch
+            catch (Exception ex)
             {
+                BugReportHandler.SubmitReport(ex, "StorePage_SearchBar");
                 await this.DisplayAlert("Search Failed", "Try again later", "Ok");
             }
             //Device.BeginInvokeOnMainThread(() =>
             //{
-            this.ActivityIndicator.IsVisible = false;
+            this.ActivityIndicator.IsEnabled = false;
             this.ActivityIndicator.IsRunning = false;
             this.isLoading = false;
             //});
