@@ -165,9 +165,9 @@ namespace appFBLA2019
 
             int i = 0;
 
-            List<string[]> test = ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunkNum);
+            List<string[]> levels = ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunkNum);
 
-            foreach (string[] level in ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunkNum))
+            foreach (string[] level in levels)
             {
                 this.AddLevel(new SearchInfo
                 {

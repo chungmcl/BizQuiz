@@ -15,6 +15,6 @@
         <ToolbarItem Icon="ic_help_black_48dp.png" Order="Secondary"  Priority="0" Text="Help" Clicked="BugReportToolbarItem_Clicked" x:Name="TutorialButton" />
     </TabbedPage.ToolbarItems>
     <local:LevelCategoriesPage x:Name="levelsPage" Title="Play" Icon="ic_landscape_black_48dp.png" />
-    <local:StorePage Title="Search" Icon="ic_search_black_48dp.png" />
+    <local:SearchPageTabs Title="Search" Icon="ic_search_black_48dp.png" />
     <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png" />
 </TabbedPage>
