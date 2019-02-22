@@ -72,5 +72,10 @@ namespace appFBLA2019
         {
             this.Navigation.PushModalAsync(new AboutUsPage());
         }
+
+        private async void TutorialButton_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushAsync(new HelpPage());
+        }
     }
 }
