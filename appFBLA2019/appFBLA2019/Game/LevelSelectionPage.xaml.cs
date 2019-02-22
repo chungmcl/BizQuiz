@@ -339,10 +339,9 @@ namespace appFBLA2019
                         LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo)
                         {
                             IsDeletedLocally = true,
-
                             LastModifiedDate = DateTime.Now.ToString()
                         };
-                        LevelRosterDatabase.EditLevelInfo(rosterInfoUpdated);
+                        LevelRosterDatabase.EditLevelInfo(rosterInfo);
 
                         // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
                         if (CrossConnectivity.Current.IsConnected)
