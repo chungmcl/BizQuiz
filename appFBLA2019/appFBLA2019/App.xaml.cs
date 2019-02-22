@@ -52,8 +52,8 @@ namespace appFBLA2019
             // Handle when your app starts
 
             /*REMOVE DURING RELEASE*/
-            //ServerConnector.Server = "50.106.17.86";
-            ServerConnector.Server = "73.254.202.205";
+            ServerConnector.Server = "50.106.17.86";
+            //ServerConnector.Server = "73.254.202.205";
 
             await ThreadTimer.RunServerChecks();
         }

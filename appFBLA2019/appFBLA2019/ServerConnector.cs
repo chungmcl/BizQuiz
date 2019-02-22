@@ -16,7 +16,7 @@ namespace appFBLA2019
     public static class ServerConnector
     {
         // Server Release Build: 7777 Server Debug Build: 7778
-        public static int Port { get { return 7777; } }
+        public static int Port { get { return 7778; } }
 
         public static string Server { get; set; }
         public static TcpClient client;
@@ -134,7 +134,7 @@ namespace appFBLA2019
                         client = new TcpClient(AddressFamily.InterNetworkV6);
                         client.Client.DualMode = true;
                         var result = client.BeginConnect(Server, Port, null, null);
-                        var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(7));
+                        var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3));
                         if (!success)
                         {
                             throw new Exception("Failed to connect - Timeout exception.");
@@ -164,9 +164,8 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                BugReportHandler.SubmitReport(ex, "ServerConnector");
                 return false;
             }
         }

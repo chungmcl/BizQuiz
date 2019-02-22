@@ -119,7 +119,7 @@ namespace appFBLA2019
             if (((username != null) && (password != null)) && ((username != "") && (password != "")))
             {
                 IsLoggedIn = true;
-                Username = "dflt";
+                Username = username;
                 Directory.CreateDirectory(App.UserPath);
                 return OperationReturnMessage.True;
             }
@@ -128,7 +128,6 @@ namespace appFBLA2019
                 Username = "dflt";
                 IsLoggedIn = false;
                 EmailConfirmed = false;
-                Username = "dflt";
                 Password = "";
                 return OperationReturnMessage.False;
             }

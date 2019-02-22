@@ -85,25 +85,25 @@ namespace appFBLA2019
         public static List<string[]> GetLevelsByAuthorName(string authorName, int chunk)
         {
             SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetLevelsByAuthorName);
-            return ReceiveFromServerListOfStringArrays();
+            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
         }
 
         public static List<string[]> GetUsers(string username, int chunk)
         {
             SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
-            return ReceiveFromServerListOfStringArrays();
+            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
         }
 
         public static List<string[]> GetLevelsByCategory(string category, int chunk)
         {
             SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetLevelsByCategory);
-            return ReceiveFromServerListOfStringArrays();
+            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
         }
 
         public static List<string[]> GetLevelsByLevelName(string levelName, int chunk)
         {
             SendStringData($"{levelName}/{chunk}/-", ServerRequestTypes.GetLevelsByLevelName);
-            return ReceiveFromServerListOfStringArrays();
+            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
         }
 
         public static bool SendLevel(string relativeLevelPath)
