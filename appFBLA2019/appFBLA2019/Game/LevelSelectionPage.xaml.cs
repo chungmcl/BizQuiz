@@ -19,6 +19,7 @@ namespace appFBLA2019
     {
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         public bool IsLoading { get; set; }
+        bool isSetup;
 
         public LevelSelectionPage(string category)
         {
@@ -40,15 +41,18 @@ namespace appFBLA2019
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            this.Setup();
+            if (!this.isSetup)
+                this.Setup();
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            if (Application.Current.MainPage.Width <= 0)
+            if (Application.Current.MainPage.Width >= 0)
             {
+
                 this.Setup();
+                this.isSetup = true;
             }
         }
 

@@ -22,6 +22,15 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
+        public void SetTemporary()
+        {
+            this.LocalLoginPage.LoggedIn -= this.OnLoggedIn;
+            this.LocalLoginPage.LoggedIn += (object sender, EventArgs e) =>
+            {
+                this.Navigation.PopAsync();
+            };
+        }
+
         public async Task UpdateProfilePage(bool updateLoginStatus)
         {
             Device.BeginInvokeOnMainThread(() =>
@@ -56,7 +65,7 @@ namespace appFBLA2019
                     this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
                     if (!isSetup)
                     {
-                        this.SetupUserQuizes();
+                        this.SetupUserQuizzes();
                     }
                 }
                 else
@@ -90,7 +99,7 @@ namespace appFBLA2019
             base.OnAppearing();
             if (this.StackLayoutProfilePageContent.IsVisible)
             {
-                this.SetupUserQuizes();
+                this.SetupUserQuizzes();
             }
         }
 
@@ -102,7 +111,7 @@ namespace appFBLA2019
             return testInfo;
         }
 
-        private void SetupUserQuizes()
+        private void SetupUserQuizzes()
         {
             this.QuizNumber.Text = "You have created a total of " + SearchByUser(CredentialManager.Username).Count + " quizes!";
             this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
@@ -166,7 +175,7 @@ namespace appFBLA2019
             this.accountSettingsPage.SignedOut += OnSignedOut;
             this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            this.SetupUserQuizes();
+            this.SetupUserQuizzes();
             await Task.Run(() => UpdateProfilePage(false));
         }
 

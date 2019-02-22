@@ -16,9 +16,7 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainPage : Xamarin.Forms.TabbedPage
     {
-        private const int levelCategoriesPage = 0;
-        private const int levelStorePage = 1;
-        private const int profilePageIndex = 2;
+        public enum TabID { levelCategoriesPage, levelStorePage, profilePage}
 
         public MainPage()
         {
@@ -35,14 +33,14 @@ namespace appFBLA2019
 
         private async void TabbedPage_CurrentPageChanged(object sender, EventArgs e)
         {
-            var index = this.Children.IndexOf(this.CurrentPage);
+            var index = (TabID)this.Children.IndexOf(this.CurrentPage);
 
             // If your called method requires async code in initialization, define an "IsLoading" property in your page and change and check that accordingly
             switch (index)
             {
-                case profilePageIndex:
+                case TabID.profilePage:
                 {
-                    ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[profilePageIndex];
+                    ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[(int)TabID.profilePage];
                     if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                     {
                         await Task.Run(() => profilePage.UpdateProfilePage(CrossConnectivity.Current.IsConnected));
@@ -50,7 +48,7 @@ namespace appFBLA2019
                 }
                 break;
 
-                case levelCategoriesPage:
+                case TabID.levelCategoriesPage:
                 {
                     //this.levelsPage.RefreshChildren();
                 }
@@ -63,11 +61,6 @@ namespace appFBLA2019
             this.Navigation.PushModalAsync(new TermsOfUse());
         }
 
-        private async void TutorialButton_Clicked(object sender, EventArgs e)
-        {
-            await this.Navigation.PushAsync(new HelpPage());
-        }
-
         private void BugReportToolbarItem_Clicked(object sender, EventArgs e)
         {
             this.Navigation.PushAsync(new BugReportPage());
@@ -76,6 +69,11 @@ namespace appFBLA2019
         private void AboutPageToolbarItem_Clicked(object sender, EventArgs e)
         {
             this.Navigation.PushModalAsync(new AboutUsPage());
+        }
+
+        private async void TutorialButton_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushAsync(new HelpPage());
         }
     }
 }
