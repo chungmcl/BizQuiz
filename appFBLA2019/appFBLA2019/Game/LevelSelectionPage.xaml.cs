@@ -273,7 +273,9 @@ namespace appFBLA2019
             ImageButton button = (sender as ImageButton);
             string levelPath = button.StyleId;
             button.IsEnabled = false;
+            button.HeightRequest = 25;
             button.Source = "ic_autorenew_black_48dp.png";
+            button.HeightRequest = 25;
 
             if (await Task.Run(() => ServerOperations.SendLevel(levelPath)))
             {

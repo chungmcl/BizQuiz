@@ -141,9 +141,9 @@ namespace appFBLA2019
 
                             lock (ssl)
                             {
-                                // UNCOMMENT DURING RELEASE
-                                //ssl.WriteTimeout = 5000;
-                                //ssl.ReadTimeout = 10000;
+                                
+                                ssl.WriteTimeout = 5000;
+                                ssl.ReadTimeout = 10000;
 
                                 ssl.AuthenticateAsClient("BizQuizServer");
                                 return true;
