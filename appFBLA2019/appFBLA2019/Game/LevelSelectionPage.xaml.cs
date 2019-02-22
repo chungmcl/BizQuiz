@@ -275,22 +275,13 @@ namespace appFBLA2019
         {
             ImageButton button = (sender as ImageButton);
             string levelPath = button.StyleId;
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
-            CancellationToken token = tokenSource.Token;
-            _ = Task.Run(async() =>
-            {
-                button.IsEnabled = false;
-                while (!token.IsCancellationRequested)
-                {
-                    await button.RotateTo(360, 800, Easing.Linear);
-                    await button.RotateTo(0, 0);
-                }
-            }, token);
+            button.IsEnabled = false;
+            button.HeightRequest = 25;
+            button.Source = "ic_autorenew_black_48dp.png";
+            button.HeightRequest = 25;
 
             if (await Task.Run(() => ServerOperations.SendLevel(levelPath)))
             {
-                tokenSource.Cancel();
-                await button.RotateTo(0, 0);
                 button.Source = "ic_cloud_done_black_48dp.png";
                 button.IsEnabled = true;
                 button.Clicked += SyncNoChange_Clicked;
@@ -351,10 +342,9 @@ namespace appFBLA2019
                         LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo)
                         {
                             IsDeletedLocally = true,
-
                             LastModifiedDate = DateTime.Now.ToString()
                         };
-                        LevelRosterDatabase.EditLevelInfo(rosterInfoUpdated);
+                        LevelRosterDatabase.EditLevelInfo(rosterInfo);
 
                         // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
                         if (CrossConnectivity.Current.IsConnected)
