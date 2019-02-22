@@ -94,20 +94,6 @@ namespace appFBLA2019
             }
         }
 
-        private List<SearchInfo> GetUserQuizzes(int chunk = 1)
-        {
-            List<SearchInfo> toReturn = new List<SearchInfo>();
-            List<string[]> levels = ServerOperations.GetLevelsByAuthorName(CredentialManager.Username, chunk);
-
-            foreach (string[] levelData in levels)
-            {
-                toReturn.Add(new SearchInfo(levelData));
-            }
-            return toReturn;
-            //testInfo.Add(new LevelInfo { DBId = "TestDBID", AuthorName = "TestAuthor", LevelName = "TestLevel", Category = "FBLA General", Subscribers = 12 });
-            //testInfo.Add(new LevelInfo { DBId = "TestDBID2", AuthorName = "TestAuthor2", LevelName = "TestLevel2", Category = "FBLA General", Subscribers = 3 });
-        }
-
         private void SetupUserQuizzes()
         {
             //this will take a while it would be good to make it async
@@ -115,7 +101,7 @@ namespace appFBLA2019
             this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             for (int i = 1; ; i++)
             {
-                List<SearchInfo> temp = this.GetUserQuizzes(i);
+                List<SearchInfo> temp = SearchUtils.GetLevelsByAuthorChunked(CredentialManager.Username, i);
                 totalCount += temp.Count;
                 if (temp.Count == 0)
                     break;

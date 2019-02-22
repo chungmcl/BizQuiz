@@ -18,7 +18,17 @@ namespace appFBLA2019
             InitializeComponent();
             try
             {
-                this.Search();
+                //Device.BeginInvokeOnMainThread(() => {
+                this.SearchedStack.Children.Clear();
+                this.ActivityIndicator.IsVisible = true;
+                this.ActivityIndicator.IsRunning = true;
+                //});
+                this.AddLevels(SearchUtils.GetLevelsByAuthorChunked("BizQuiz", 1));
+                //Device.BeginInvokeOnMainThread(() =>
+                //{
+                this.ActivityIndicator.IsVisible = false;
+                this.ActivityIndicator.IsRunning = false;
+                //});
             }
             catch
             {
@@ -123,48 +133,6 @@ namespace appFBLA2019
                 await button.FadeTo(1, 150, Easing.CubicInOut);
                 // save to device
             }
-
-        }
-
-        /// <summary>
-        /// Searches the server for levels by levelName
-        /// </summary>
-        /// <param name="chunkNum">the chunk to get by 1, 2, 3...</param>
-        private void Search()
-        {
-            //Device.BeginInvokeOnMainThread(() =>
-            //{
-                this.SearchedStack.Children.Clear();
-                this.ActivityIndicator.IsVisible = true;
-                this.ActivityIndicator.IsRunning = true;
-            //});
-
-            int i = 0;
-
-            List<string[]> levels = ServerOperations.GetLevelsByAuthorName("BizQuiz", 1);
-            if (levels != null)
-            {
-                //Device.BeginInvokeOnMainThread(() =>
-                //{
-                foreach (string[] level in levels)
-                {
-                    this.FeaturedLevels.Add(new SearchInfo
-                    {
-                        DBId = level[0],
-                        Author = level[1],
-                        LevelName = level[2],
-                        Category = level[3],
-                        SubCount = int.Parse(level[4])
-                    });
-                    i++;
-                }
-
-                this.AddLevels(this.FeaturedLevels);
-                //Device.BeginInvokeOnMainThread(() =>
-                //{
-                this.ActivityIndicator.IsVisible = false;
-                this.ActivityIndicator.IsRunning = false;
-            //});
 
         }
 
