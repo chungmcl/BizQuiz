@@ -354,7 +354,7 @@ namespace appFBLA2019
 
         public static bool SendBugReport(string report, byte[] image = null)
         {
-            byte[] reportBytes = Encoding.ASCII.GetBytes(report);
+            byte[] reportBytes = Encoding.Unicode.GetBytes(report);
             byte[] imageBytes = image ?? new byte[0];
             byte[] imageHeader = new byte[5];
             if (image?.Length > 0)
