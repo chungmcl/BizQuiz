@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:appFBLA2019"
+             x:Class="appFBLA2019.FeaturedPage"
+             Title="Search">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Priority="0" Icon="ic_search_white_48dp.png" Name="Search" Order="Primary"  Activated="Search_Activated" />
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <StackLayout Padding="10">
+            <Label Text="Levels hand picked by the BizQuiz team that are sure to help you out!"/>
+            <ScrollView x:Name="ScrollSearch">
+                <StackLayout x:Name="SearchedStack"  Padding="10">
+                    <!--Search Results go here-->
+                </StackLayout>
+            </ScrollView>
+            <ActivityIndicator x:Name="ActivityIndicator" 
+                               Color="Accent" 
+                               VerticalOptions="CenterAndExpand"
+                               IsVisible="False"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

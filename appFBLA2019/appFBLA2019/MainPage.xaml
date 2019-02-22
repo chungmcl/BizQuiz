@@ -9,13 +9,12 @@
     BarTextColor="White"
     x:Name="TabbedPagePage"
     CurrentPageChanged="TabbedPage_CurrentPageChanged">
-  <TabbedPage.ToolbarItems>
-    <ToolbarItem Priority="0" Name="About Us" Order="Secondary"  Activated="AboutPageToolbarItem_Clicked" />
-    <ToolbarItem Priority="0" Name="Terms Of Use" Order="Secondary"  Activated="TermsOfUse_Activated" />
-    <ToolbarItem Icon="ic_help_black_48dp.png" Order="Secondary"  Priority="0" Text="Help" Clicked="TutorialButton_Clicked" x:Name="TutorialButton" />
-    <ToolbarItem Priority="0" Name="Report a Problem" Order="Secondary" Activated="BugReportToolbarItem_Clicked" />
-  </TabbedPage.ToolbarItems>
-  <local:LevelCategoriesPage x:Name="levelsPage" Title="Quizes" Icon="ic_landscape_black_48dp.png" />
-  <local:StorePage Title="Search" Icon="ic_search_black_48dp.png" />
-  <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png" />
+    <TabbedPage.ToolbarItems>
+        <ToolbarItem Priority="0" Name="About Us" Order="Secondary"  Activated="AboutPageToolbarItem_Clicked" />
+        <ToolbarItem Priority="0" Name="Terms Of Use" Order="Secondary"  Activated="TermsOfUse_Activated" />
+        <ToolbarItem Icon="ic_help_black_48dp.png" Order="Secondary"  Priority="0" Text="Help" Clicked="BugReportToolbarItem_Clicked" x:Name="TutorialButton" />
+    </TabbedPage.ToolbarItems>
+    <local:LevelCategoriesPage x:Name="levelsPage" Title="Play" Icon="ic_landscape_black_48dp.png" />
+    <local:FeaturedPage Title="Search" Icon="ic_search_black_48dp.png" />
+    <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png" />
 </TabbedPage>
