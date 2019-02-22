@@ -50,6 +50,7 @@ namespace appFBLA2019
             base.OnAppearing();
             if (Application.Current.MainPage.Width >= 0)
             {
+
                 this.Setup();
                 this.isSetup = true;
             }

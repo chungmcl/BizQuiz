@@ -16,6 +16,11 @@ namespace appFBLA2019
         private bool end;
         private bool isLoading;
 
+        public StorePage()
+        {
+            InitializeComponent();
+        }
+
         /// <summary>
         /// Adds a level to the search stack given a LevelInfo
         /// </summary>
@@ -123,10 +128,7 @@ namespace appFBLA2019
         //    return testInfo;
         //}
 
-        public StorePage ()
-		{
-			InitializeComponent ();
-		}
+
 
         /// <summary>
         /// Called when the user presses search
@@ -146,7 +148,7 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Search Failed", "Try again later", "Ok");
             }
-            //this.Search(1);
+            this.Search(1);
         }
 
 
@@ -158,6 +160,7 @@ namespace appFBLA2019
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                this.SearchedStack.Children.Clear();
                 this.ActivityIndicator.IsVisible = true;
                 this.ActivityIndicator.IsRunning = true;
                 this.isLoading = true;
@@ -169,13 +172,16 @@ namespace appFBLA2019
 
             foreach (string[] level in levels)
             {
-                this.AddLevel(new SearchInfo
+                Device.BeginInvokeOnMainThread(() =>
                 {
-                    DBId = level[0],
-                    Author = level[1],
-                    LevelName = level[2],
-                    Category = level[3],
-                    SubCount = int.Parse(level[4])
+                    this.AddLevel(new SearchInfo
+                    {
+                        DBId = level[0],
+                        Author = level[1],
+                        LevelName = level[2],
+                        Category = level[3],
+                        SubCount = int.Parse(level[4])
+                    });
                 });
                 i++;
             }
@@ -195,11 +201,11 @@ namespace appFBLA2019
         private async void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             this.SearchedStack.Children.Clear();
-            if (!string.IsNullOrWhiteSpace(this.SearchBar.Text) && !this.isLoading)
-            {
-                //this.Search(1);
-                //await Task.Run(() => this.Search(1));
-            }    
+            //if (!string.IsNullOrWhiteSpace(this.SearchBar.Text) && !this.isLoading)
+            //{
+            //    this.Search(1);
+            //    await Task.Run(() => this.Search(1));
+            //}    
         }
 
         protected override void OnDisappearing()
@@ -215,7 +221,6 @@ namespace appFBLA2019
             public string LevelName { get; set; }
             public string Category { get; set; }
             public int SubCount { get; set; }
-
         }
 
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
@@ -233,7 +238,6 @@ namespace appFBLA2019
                 {
                     await this.DisplayAlert("Search Failed", "Try again later", "Ok");
                 }
-                //this.Search(this.chunkNum++);
             }
         }
     }

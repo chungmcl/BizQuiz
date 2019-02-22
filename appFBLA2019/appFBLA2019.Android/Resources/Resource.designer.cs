@@ -6423,10 +6423,13 @@ namespace appFBLA2019.Droid
 			public const int Tabbar = 2130968656;
 			
 			// aapt resource value: 0x7f040051
-			public const int Toolbar = 2130968657;
+			public const int TabbarFixed = 2130968657;
 			
 			// aapt resource value: 0x7f040052
-			public const int tooltip = 2130968658;
+			public const int Toolbar = 2130968658;
+			
+			// aapt resource value: 0x7f040053
+			public const int tooltip = 2130968659;
 			
 			static Layout()
 			{

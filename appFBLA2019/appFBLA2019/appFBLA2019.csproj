@@ -72,6 +72,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="StorePage\FeaturedPage.xaml.cs">
+      <DependentUpon>FeaturedPagexaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
