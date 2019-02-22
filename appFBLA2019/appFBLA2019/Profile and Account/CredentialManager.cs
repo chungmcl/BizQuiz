@@ -24,6 +24,7 @@ namespace appFBLA2019
             Task.Run(async () => await SecureStorage.SetAsync("password", password));
 
             App.UserPath = App.Path + $"{username}/";
+            Directory.CreateDirectory(App.UserPath);
             Username = username;
             Password = password;
 
@@ -41,6 +42,7 @@ namespace appFBLA2019
             }
 
             App.UserPath = App.Path + "dflt/";
+            Directory.CreateDirectory(App.UserPath);
             IsLoggedIn = false;
             EmailConfirmed = false;
         }

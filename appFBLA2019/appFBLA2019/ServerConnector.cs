@@ -164,9 +164,8 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch ()
             {
-                BugReportHandler.SubmitReport(ex, "ServerConnector");
                 return false;
             }
         }

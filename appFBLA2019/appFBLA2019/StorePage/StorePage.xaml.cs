@@ -100,7 +100,8 @@ namespace appFBLA2019
 				frameStack.Children.Add(levelCategory);
 
 				levelFrame.Content = frameStack;
-				SearchedStack.Children.Add(levelFrame);
+				Device.BeginInvokeOnMainThread(() =>
+				SearchedStack.Children.Add(levelFrame));
 			}
 		   
 		}
@@ -146,46 +147,46 @@ namespace appFBLA2019
 		{
 			// Delete what was in there previously
 			this.end = false;
-            //Device.BeginInvokeOnMainThread(() => {
-            this.SearchedStack.Children.Clear();
-            this.ActivityIndicator.IsEnabled = true;
-            this.ActivityIndicator.IsRunning = true;
-            //});
-            this.isLoading = true;
-            try
-            {
-                List<Task> toAwait = new List<Task>();
-                bool levelsRemaining = true;
-                for (int i = 1; levelsRemaining ; i++)
-                {
-                    List<SearchInfo> chunk = new List<SearchInfo>();
-                    if (this.searchType == "Title")
-                        chunk = SearchUtils.GetLevelsByLevelNameChunked(SearchBar.Text, i);
-                    else
-                        chunk = SearchUtils.GetLevelsByAuthorChunked(SearchBar.Text, i);
-                    if (chunk.Count < 20)
-                        levelsRemaining = false;
-                    toAwait.Add(Task.Run(() =>
-                    {
-                        AddLevels(chunk);
-                    }));
-                }
-                await Task.WhenAll(toAwait);
-            }
-            catch (Exception ex)
-            {
-                BugReportHandler.SubmitReport(ex, "StorePage_SearchBar");
-                await this.DisplayAlert("Search Failed", "Try again later", "Ok");
-            }
-            //Device.BeginInvokeOnMainThread(() =>
-            //{
-            this.ActivityIndicator.IsEnabled = false;
-            this.ActivityIndicator.IsRunning = false;
-            this.isLoading = false;
-            //});
-        }
+			//Device.BeginInvokeOnMainThread(() => {
+			this.SearchedStack.Children.Clear();
+			this.ActivityIndicator.IsEnabled = true;
+			this.ActivityIndicator.IsRunning = true;
+			//});
+			this.isLoading = true;
+			try
+			{
+				List<Task> toAwait = new List<Task>();
+				bool levelsRemaining = true;
+				for (int i = 1; levelsRemaining ; i++)
+				{
+					List<SearchInfo> chunk = new List<SearchInfo>();
+					if (this.searchType == "Title")
+						chunk = SearchUtils.GetLevelsByLevelNameChunked(SearchBar.Text, i);
+					else
+						chunk = SearchUtils.GetLevelsByAuthorChunked(SearchBar.Text, i);
+					if (chunk.Count < 20)
+						levelsRemaining = false;
+					toAwait.Add(Task.Run(() =>
+					{
+						AddLevels(chunk);
+					}));
+				}
+				await Task.WhenAll(toAwait);
+			}
+			catch (Exception ex)
+			{
+				BugReportHandler.SubmitReport(ex, "StorePage_SearchBar");
+				await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+			}
+			//Device.BeginInvokeOnMainThread(() =>
+			//{
+			this.ActivityIndicator.IsEnabled = false;
+			this.ActivityIndicator.IsRunning = false;
+			this.isLoading = false;
+			//});
+		}
 
-        private List<string[]> GetLevels(int chunk)
+		private List<string[]> GetLevels(int chunk)
 		{
 			if (this.searchType == "Title")
 				return ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunk);
