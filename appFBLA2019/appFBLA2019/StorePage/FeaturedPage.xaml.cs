@@ -134,9 +134,9 @@ namespace appFBLA2019
         {
             //Device.BeginInvokeOnMainThread(() =>
             //{
-                this.SearchedStack.Children.Clear();
-                this.ActivityIndicator.IsVisible = true;
-                this.ActivityIndicator.IsRunning = true;
+            this.SearchedStack.Children.Clear();
+            this.ActivityIndicator.IsVisible = true;
+            this.ActivityIndicator.IsRunning = true;
             //});
 
             int i = 0;
@@ -164,8 +164,9 @@ namespace appFBLA2019
                 //{
                 this.ActivityIndicator.IsVisible = false;
                 this.ActivityIndicator.IsRunning = false;
-            //});
+                //});
 
+            }
         }
 
         private void Search_Activated(object sender, EventArgs e)
