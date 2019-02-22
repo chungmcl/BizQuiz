@@ -48,6 +48,8 @@ namespace appFBLA2019
         {
             await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 200);
             this.LayoutRefresh();
+
+            throw new NotImplementedException("This exception is meant to test the bug handling system.");
         }
 
         /// <summary>

@@ -5,7 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
+using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -18,19 +21,25 @@ namespace appFBLA2019
         private string originalName;
         private string originalCategory;
 
+        private ToolbarItem Done = new ToolbarItem
+        {
+            Icon = "ic_done_white_48dp.png",
+            Text = "Done",
+        };
+
         /// <summary>
         /// Constructing from an already existing level
         /// </summary>
-        /// <param name="originalName">
-        /// </param>
-        /// <param name="originalAuthor">
-        /// </param>
+        /// <param name="originalName">    </param>
+        /// <param name="originalAuthor">  </param>
         public CreateNewLevelPage(string originalCategory, string originalName, string originalAuthor)
         {
             this.InitializeComponent();
+            this.SetUpBar();
             this.originalCategory = originalCategory;
             this.originalAuthor = originalAuthor;
             this.originalName = originalName;
+            this.PickerCategory.SelectedItem = originalCategory;
         }
 
         /// <summary>
@@ -39,8 +48,15 @@ namespace appFBLA2019
         public CreateNewLevelPage()
         {
             this.InitializeComponent();
-            AddNewQuestion();
-            AddNewQuestion();
+            this.SetUpBar();
+            this.AddNewQuestion();
+            this.AddNewQuestion();
+        }
+
+        private void SetUpBar()
+        {
+            this.ToolbarItems.Add(this.Done);
+            this.Done.Clicked += this.ButtonCreateLevel_Clicked;
         }
 
         private bool canClose = true;
@@ -48,8 +64,7 @@ namespace appFBLA2019
         /// <summary>
         /// Overrides the backbutton to make sure the user really wants to leave
         /// </summary>
-        /// <returns>
-        /// </returns>
+        /// <returns>  </returns>
         protected override bool OnBackButtonPressed()
         {
             if (this.canClose)
@@ -101,7 +116,7 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    await DisplayAlert("Couldn't use Picture", "Pictures must be under 3 MB", "Back");
+                    await this.DisplayAlert("Couldn't use Picture", "Pictures must be under 3 MB", "Back");
                 }
                 file.Dispose();
             }
@@ -112,40 +127,43 @@ namespace appFBLA2019
         /// <summary>
         /// Called when the user presses the Add Image button on a question eiditor
         /// </summary>
-        /// <param name="sender">
-        /// </param>
-        /// <param name="e">
-        /// </param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private async void ButtonAddImage_Clicked(object sender, EventArgs e)
         {
             if (sender is Button)
             {
-                await PickImage(sender);
+                ((Button)sender).IsEnabled = false;
+                await this.PickImage(sender);
+                ((Button)sender).IsEnabled = true;
             }
             else
             {
+                ((ImageButton)sender).IsEnabled = false;
                 await this.Navigation.PushAsync(new LevelEditor.PhotoPage(((ImageButton)sender)));
-                x = sender;
+                this.x = sender;
+                ((ImageButton)sender).IsEnabled = true;
             }
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            ButtonAddQuestion.Scale = 0;
-            ButtonAddDrop.Scale = 0;
-            ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
-            ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
-            if (x is ImageButton)
+            this.ButtonAddQuestion.Scale = 0;
+            this.ButtonAddDrop.Scale = 0;
+            this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
+            this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
+            this.BoxPush.HeightRequest = this.Height * .12;
+            if (this.x is ImageButton)
             {
-                if (((ImageButton)x).StyleId == "change")
+                if (((ImageButton)this.x).StyleId == "change")
                 {
-                    PickImage(x);
+                    this.PickImage(this.x);
                 }
-                else if (((ImageButton)x).StyleId == "delete")
+                else if (((ImageButton)this.x).StyleId == "delete")
                 {
-                    ((ImageButton)x).IsVisible = false;
-                    ((StackLayout)((ImageButton)x).Parent).Children[7].IsVisible = true;
+                    ((ImageButton)this.x).IsVisible = false;
+                    ((StackLayout)((ImageButton)this.x).Parent).Children[7].IsVisible = true;
                 }
             }
         }
@@ -153,17 +171,15 @@ namespace appFBLA2019
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            ButtonAddQuestion.ScaleTo(0, 250, Easing.CubicInOut);
-            ButtonAddDrop.ScaleTo(0, 250, Easing.CubicInOut);
+            this.ButtonAddQuestion.ScaleTo(0, 250, Easing.CubicInOut);
+            this.ButtonAddDrop.ScaleTo(0, 250, Easing.CubicInOut);
         }
 
         /// <summary>
         /// Called when the add question button is clicked and adds a new question
         /// </summary>
-        /// <param name="sender">
-        /// </param>
-        /// <param name="e">
-        /// </param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private async void ButtonAddQuestion_Clicked(object sender, EventArgs e)
         {
             Frame frame = this.AddNewQuestion();
@@ -179,10 +195,8 @@ namespace appFBLA2019
         /// <summary>
         /// Removes the Question Frame when remove button is clicked
         /// </summary>
-        /// <param name="sender">
-        /// </param>
-        /// <param name="e">
-        /// </param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private async void ButtonRemove_Clicked(object sender, EventArgs e)
         {
             bool answer = await this.DisplayAlert("Warning", "Are you sure you would like to delete this question?", "Yes", "No");
@@ -209,12 +223,11 @@ namespace appFBLA2019
         /// <summary>
         /// Saves the user created level
         /// </summary>
-        /// <param name="sender">
-        /// </param>
-        /// <param name="e">
-        /// </param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private async void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
+            this.Done.IsEnabled = false;
             if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
             {
                 await this.DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
@@ -230,9 +243,9 @@ namespace appFBLA2019
             else
             {
                 // Set previousQuestions to the correct previous questions
-                List<Question> previousQuestions = new List<Question>(); ; // A list of questions already in the database
+                List<Question> previousQuestions = new List<Question>(); // A list of questions already in the database
 
-                if (!string.IsNullOrWhiteSpace(this.originalName))
+                if (!string.IsNullOrWhiteSpace(this.originalName)) // Edit
                 {
                     DBHandler.SelectDatabase(this.originalCategory, this.originalName, this.originalAuthor);
                     previousQuestions = DBHandler.Database.GetQuestions();
@@ -323,12 +336,23 @@ namespace appFBLA2019
                 }
 
                 // Add if it doesn't already exist, delete if it doesn't exist anymore, update the ones that need to be updated, and do nothing to the others Work in progress, algorithm might be off.
-                if (previousQuestions.Count() == 0) // if the user created this for the first time
+                if (previousQuestions.Count() == 0)
                 {
+                    // if the user created this for the first time
+
+                    // Save a new LevelInfo into the level database, which also adds this LevelInfo to the device level roster
+                    DBHandler.Database.NewLevelInfo(CredentialManager.Username,
+                        this.EntryLevelName.Text.Trim(),
+                        this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
                     DBHandler.Database.AddQuestions(NewQuestions);
                 }
                 else
                 {
+                    LevelInfo updatedLevelInfo = DBHandler.Database.GetLevelInfo();
+                    updatedLevelInfo.LevelName = this.EntryLevelName.Text.Trim();
+                    updatedLevelInfo.LastModifiedDate = DateTime.Now.ToString();
+                    DBHandler.Database.EditLevelInfo(updatedLevelInfo);
+
                     for (int i = 0; i <= previousQuestions.Count() - 1; i++)
                     {
                         bool DBIdSame = true;
@@ -359,6 +383,8 @@ namespace appFBLA2019
                     DBHandler.Database.AddQuestions(NewQuestions);
                 }
 
+                File.Create(DBHandler.Database.DBFolderPath + ".nomedia");
+
                 // If they renamed the level, delete the old one
                 if (this.originalName != this.EntryLevelName.Text.Trim() && this.originalAuthor == CredentialManager.Username)
                 {
@@ -369,6 +395,7 @@ namespace appFBLA2019
                 await this.Navigation.PopAsync(true);
             }
         exit:;
+            this.Done.IsEnabled = true;
         }
 
         /// <summary>
@@ -382,15 +409,9 @@ namespace appFBLA2019
         /// <summary>
         /// This add New Questions contains parameters for images for when a question contains an image.
         /// </summary>
-        /// <param name="question">
-        /// the Question to answer
-        /// </param>
-        /// <param name="imagePath">
-        /// the path for the image corrosponding to the question
-        /// </param>
-        /// <param name="answers">
-        /// the first is the correct answer, the rest are incorrect answers
-        /// </param>
+        /// <param name="question">  the Question to answer </param>
+        /// <param name="imagePath"> the path for the image corrosponding to the question </param>
+        /// <param name="answers">   the first is the correct answer, the rest are incorrect answers </param>
         public Frame AddNewQuestion(Question question)
         {
             bool isMultipleChoice = true;
@@ -427,7 +448,7 @@ namespace appFBLA2019
             // 0 - 1
             Button buttonQuestionType = new Button();
             {
-                buttonQuestionType.Clicked += OnButtonQuestionTypeClicked;
+                buttonQuestionType.Clicked += this.OnButtonQuestionTypeClicked;
                 buttonQuestionType.HorizontalOptions = LayoutOptions.StartAndExpand;
                 buttonQuestionType.VerticalOptions = LayoutOptions.Start;
                 buttonQuestionType.BackgroundColor = Color.LightGray;
@@ -555,7 +576,7 @@ namespace appFBLA2019
                 image.Clicked += new EventHandler(this.ButtonAddImage_Clicked);
                 image.BackgroundColor = Color.Transparent;
                 image.VerticalOptions = LayoutOptions.End;
-                //image.HeightRequest = frameStack.Height / 2;
+                image.HeightRequest = Application.Current.MainPage.Height / 5;
                 image.Aspect = Aspect.AspectFit;
                 image.HorizontalOptions = LayoutOptions.CenterAndExpand;
             }
@@ -601,71 +622,83 @@ namespace appFBLA2019
         /// <summary>
         /// When the user clicks the button to change question type: changes to the next question type
         /// </summary>
-        /// <param name="sender">
-        /// </param>
-        /// <param name="e">
-        /// </param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private async void OnButtonQuestionTypeClicked(object sender, EventArgs e)
         {
-            if (((Button)sender).Text == "Question Type: Multiple choice")
+            Button button = sender as Button;
+            // Disable button so user can't spam -- for some reasong button.IsEnabled doesn't want to work. IsVisible makes the X jump location. Translating it away works just fine (Although it seems impractical). Note: This should probably be figured out.
+            button.TranslationX += this.Width * 2;
+            await button.FadeTo(0, 150, Easing.CubicInOut);
+            switch (button.Text)
             {
-                StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
-                Frame frame = ((Frame)stack.Parent);
-                await Task.WhenAll(
-                    stack.Children[3].FadeTo(0, 150, Easing.CubicInOut),
-                    stack.Children[4].FadeTo(0, 150, Easing.CubicInOut),
-                    stack.Children[5].FadeTo(0, 150, Easing.CubicInOut),
-                    frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width, frame.Height - (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
+                case "Question Type: Multiple choice":
+                {
+                    // Do animation stuff - doesn't look the greatest, but the best I can do without downloading customs or doing something too time intesive
+                    StackLayout stack = ((StackLayout)((StackLayout)(button).Parent).Parent);
+                    Frame frame = ((Frame)stack.Parent);
+                    await Task.WhenAll(
+                        stack.Children[3].FadeTo(0, 150, Easing.CubicInOut),
+                        stack.Children[4].FadeTo(0, 150, Easing.CubicInOut),
+                        stack.Children[5].FadeTo(0, 150, Easing.CubicInOut),
+                        frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width, frame.Height - (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
+                        );
+
+                    stack.Children[3].IsVisible = false;
+                    stack.Children[4].IsVisible = false;
+                    stack.Children[5].IsVisible = false;
+
+                    // Change the button to the next question type and change the return command so users can't access the other entries
+                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Unfocus());
+                    // change question type
+                    button.Text = "Question Type: Text answer";
+                    break;
+                }
+                case "Question Type: Text answer":
+                    button.Text = "Question Type: Case sensitive text answer";
+                    break;
+
+                case "Question Type: Case sensitive text answer":
+                {
+                    StackLayout stack = ((StackLayout)((StackLayout)(button).Parent).Parent);
+                    Frame frame = ((Frame)stack.Parent);
+                    stack.Children[3].IsVisible = true;
+                    stack.Children[4].IsVisible = true;
+                    stack.Children[5].IsVisible = true;
+                    await Task.WhenAll(
+                        stack.Children[3].FadeTo(1, 250, Easing.CubicInOut),
+                        stack.Children[4].FadeTo(1, 250, Easing.CubicInOut),
+                        stack.Children[5].FadeTo(1, 250, Easing.CubicInOut),
+                        frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width,
+                        frame.Height + (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
                     );
 
-                stack.Children[3].IsVisible = false;
-                stack.Children[4].IsVisible = false;
-                stack.Children[5].IsVisible = false;
+                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Focus());
+                    button.Text = "Question Type: Multiple choice";
+                    break;
+                }
+            }
 
-                ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Unfocus());
-                ((Button)sender).Text = "Question Type: Text answer";
-            }
-            else if (((Button)sender).Text == "Question Type: Text answer")
-            {
-                ((Button)sender).Text = "Question Type: Case sensitive text answer";
-            }
-            else
-            {
-                StackLayout stack = ((StackLayout)((StackLayout)((Button)sender).Parent).Parent);
-                Frame frame = ((Frame)stack.Parent);
-                stack.Children[3].IsVisible = true;
-                stack.Children[4].IsVisible = true;
-                stack.Children[5].IsVisible = true;
-                await Task.WhenAll(
-                    stack.Children[3].FadeTo(1, 250, Easing.CubicInOut),
-                    stack.Children[4].FadeTo(1, 250, Easing.CubicInOut),
-                    stack.Children[5].FadeTo(1, 250, Easing.CubicInOut),
-                    frame.LayoutTo(new Rectangle(frame.X, frame.Y, frame.Width,
-                    frame.Height + (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
-                );
-
-                ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Focus());
-                ((Button)sender).Text = "Question Type: Multiple choice";
-            }
+            // Re-enable (Translate back) the button and fade it into view - for some reason this breaks it.
+            button.TranslationX -= this.Width * 2;
+            await button.FadeTo(1, 150, Easing.CubicInOut);
         }
 
-        private int restrictCount = 64;
+        private const int restrictCount = 64;
 
         /// <summary>
         /// Sets a limit to how much the user can put in an entry
         /// </summary>
-        /// <param name="sender">
-        /// </param>
-        /// <param name="e">
-        /// </param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private void OnTextChanged(object sender, EventArgs e)
         {
             Entry entry = sender as Entry;
             string val = entry.Text; //Get Current Text
 
-            if (val.Length > this.restrictCount)//If it is more than your character restriction
+            if (val.Length > restrictCount)//If it is more than your character restriction
             {
-                val = val.Remove(this.restrictCount);// Remove Everything past the restriction length
+                val = val.Remove(restrictCount);// Remove Everything past the restriction length
                 entry.Text = val; //Set the Old value
             }
         }

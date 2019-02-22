@@ -19,14 +19,31 @@ namespace appFBLA2019
             try
             {
                 this.dbPath = dbFolderPath + $"/{levelTitle}{realmExtension}";
-                this.dbFolderPath = dbFolderPath;
+                this.DBFolderPath = dbFolderPath + "/";
                 RealmConfiguration rC = new RealmConfiguration(this.dbPath);
                 this.realmDB = Realm.GetInstance(rC);
                 this.fileName = $"/{levelTitle}{realmExtension}";
             }
             catch (Exception ex)
             {
-                string test = ex.Message.ToString();
+                BugReportHandler.SubmitReport(ex, nameof(GameDatabase));
+            }
+        }
+
+        /// <summary>
+        /// Access the full database with the full path to the file.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        public GameDatabase(string fullPath)
+        {
+            try
+            {
+                RealmConfiguration rC = new RealmConfiguration(fullPath);
+                this.realmDB = Realm.GetInstance(rC);
+            }
+            catch
+            {
+
             }
         }
 
@@ -52,7 +69,7 @@ namespace appFBLA2019
             {
                 if (question.NeedsPicture)
                 {
-                    File.Delete(this.dbFolderPath + "/" + question.QuestionId + ".jpg");
+                    File.Delete(this.DBFolderPath + "/" + question.QuestionId + ".jpg");
                 }
 
                 this.realmDB.Write(() =>
@@ -72,7 +89,7 @@ namespace appFBLA2019
             if (updatedQuestion.NeedsPicture)
             {
                 byte[] imageByteArray = File.ReadAllBytes(updatedQuestion.ImagePath);
-                File.WriteAllBytes(this.dbFolderPath + "/" + updatedQuestion.QuestionId + ".jpg", imageByteArray);
+                File.WriteAllBytes(this.DBFolderPath + "/" + updatedQuestion.QuestionId + ".jpg", imageByteArray);
             }
         }
 
@@ -84,14 +101,14 @@ namespace appFBLA2019
             {
                 if (questions[i].NeedsPicture)
                 {
-                    questions[i].ImagePath = this.dbFolderPath + "/" + questions[i].QuestionId + ".jpg";
+                    questions[i].ImagePath = this.DBFolderPath + "/" + questions[i].QuestionId + ".jpg";
                 }
             }
             return questions;
         }
 
         private const string realmExtension = ".realm";
-        private readonly string dbFolderPath;
+        public readonly string DBFolderPath;
         private readonly string dbPath;
 
         private void SaveQuestion(Question question)
@@ -120,14 +137,52 @@ namespace appFBLA2019
                     imageByteArray = new byte[imageMemoryStream.Length];
                     imageMemoryStream.ToArray().CopyTo(imageByteArray, 0);
                 }
-                File.WriteAllBytes(this.dbFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
-                File.Create(this.dbFolderPath + ".nomedia");
+                File.WriteAllBytes(this.DBFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
             }
 
             this.realmDB.Write(() =>
             {
                 this.realmDB.Add(question);
             });
+        }
+
+        public LevelInfo GetLevelInfo()
+        {
+            return this.realmDB.All<LevelInfo>().First();
+        }
+
+        public void NewLevelInfo(string authorName, string levelName, string category)
+        {
+            LevelInfo newLevelInfo = new LevelInfo(authorName, levelName, category)
+            {
+                // Sync status is irrelevant in a Level Database's copy of the LevelInfo
+                SyncStatus = -1
+            };
+
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(newLevelInfo);
+            });
+
+            LevelInfo rosterCopy = new LevelInfo(newLevelInfo)
+            {
+                SyncStatus = 1 // Default to 1, meaning "needs upload" in roster
+            };
+            LevelRosterDatabase.NewLevelInfo(rosterCopy);
+        }
+
+        public void EditLevelInfo(LevelInfo editedLevelInfo)
+        {
+            this.realmDB.Write(() =>
+            {
+                this.realmDB.Add(editedLevelInfo, update: true);
+            });
+
+            LevelInfo rosterCopy = new LevelInfo(editedLevelInfo)
+            {
+                SyncStatus = 1 // Default to 1, meaning "needs upload" in roster
+            };
+            LevelRosterDatabase.EditLevelInfo(rosterCopy);
         }
     }
 }

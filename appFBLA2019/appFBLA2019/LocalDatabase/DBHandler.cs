@@ -51,9 +51,17 @@ namespace appFBLA2019
             }
             catch (Exception ex)// If the database failed to connect
             {
-                string test = ex.Message.ToString();
+                BugReportHandler.SubmitReport(ex, nameof(DBHandler));
                 return false;
             }
+        }
+
+        public static void DisposeDatabase()
+        {
+            if (Database != null)
+                if (Database.realmDB != null)
+                    if (!Database.realmDB.IsClosed)
+                        Database.realmDB.Dispose();
         }
     }
 }

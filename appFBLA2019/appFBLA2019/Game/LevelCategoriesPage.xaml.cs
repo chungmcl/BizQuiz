@@ -14,6 +14,7 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LevelCategoriesPage : Xamarin.Forms.TabbedPage
     {
+        public bool IsLoading { get; set; }
         /// <summary>
         /// Initializes and sets colors
         /// </summary>
@@ -31,9 +32,29 @@ namespace appFBLA2019
         /// </summary>
         public void RefreshChildren()
         {
+            this.IsLoading = true;
             foreach (Page page in this.Children)
             {
                 (page as LevelSelectionPage).Setup();
+            }
+            this.IsLoading = false;
+        }
+
+        /// <summary>
+        /// When the user wants to create a brand new level
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void New_Activated(object sender, EventArgs e)
+        {
+            if (CredentialManager.IsLoggedIn)
+            {
+                CreateNewLevelPage level = new CreateNewLevelPage();
+                this.Navigation.PushAsync(level);
+            }
+            else
+            {
+                this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
             }
         }
     }

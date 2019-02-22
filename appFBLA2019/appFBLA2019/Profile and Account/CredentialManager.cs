@@ -3,6 +3,8 @@
 using Plugin.Connectivity;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -12,25 +14,33 @@ namespace appFBLA2019
     public static class CredentialManager
     {
         public static string Username { get; private set; }
+        public static string Password { get; private set; }
         public static bool IsLoggedIn { get; private set; }
-        public static bool EmailConfirmed { get; private set; }
+        public static bool EmailConfirmed { get; set; }
 
         public static void SaveCredential(string username, string password, bool emailConfirmed)
         {
-            Username = username;
-
             Task.Run(async () => await SecureStorage.SetAsync("username", username));
             Task.Run(async () => await SecureStorage.SetAsync("password", password));
 
-            App.UserPath = DependencyService.Get<IGetStorage>().GetStorage() + App.debugFolder + $"{username}/";
+            App.UserPath = App.Path + $"{username}/";
+            Username = username;
+            Password = password;
+
             IsLoggedIn = true;
+            EmailConfirmed = emailConfirmed;
         }
 
-        public static void Logout()
+        public static void Logout(bool clearUsername)
         {
             Task.Run(async () => await SecureStorage.SetAsync("password", ""));
 
-            App.UserPath = DependencyService.Get<IGetStorage>().GetStorage() + App.debugFolder + "dflt/";
+            if (clearUsername)
+            {
+                Task.Run(async () => await SecureStorage.SetAsync("username", ""));
+            }
+
+            App.UserPath = App.Path + "dflt/";
             IsLoggedIn = false;
             EmailConfirmed = false;
         }
@@ -40,29 +50,34 @@ namespace appFBLA2019
             string username = await SecureStorage.GetAsync("username");
             Username = username;
             string password = await SecureStorage.GetAsync("password");
+            Password = password;
 
             if (CrossConnectivity.Current.IsConnected)
             {
                 if (((username != null) && (password != null)) && ((username != "") && (password != "")))
                 {
-                    if (ServerConnector.SendData(ServerRequestTypes.LoginAccount, username + "/" + password + "/-"))
+                    OperationReturnMessage message = ServerOperations.LoginAccount(username, password);
+                    if (message != OperationReturnMessage.FalseFailedConnection)
                     {
-                        OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
                         if (message == OperationReturnMessage.True)
                         {
                             IsLoggedIn = true;
                             EmailConfirmed = true;
+                            App.UserPath = App.Path + $"{username}/";
+                            Directory.CreateDirectory(App.UserPath);
                         }
                         else if (message == OperationReturnMessage.TrueConfirmEmail)
                         {
                             IsLoggedIn = true;
                             EmailConfirmed = false;
+                            App.UserPath = App.Path + $"{username}/";
+                            Directory.CreateDirectory(App.UserPath);
                         }
                         else
                         {
                             IsLoggedIn = false;
                             EmailConfirmed = false;
-
+                            App.UserPath = App.Path + $"dflt/";
                             await SecureStorage.SetAsync("password", "");
                         }
                         return message;
@@ -74,41 +89,39 @@ namespace appFBLA2019
                 }
                 else
                 {
+
+                    App.UserPath = App.Path + "dflt/";
+                    IsLoggedIn = false;
+                    EmailConfirmed = false;
+                    Username = "dflt";
+                    Password = "";
                     return OperationReturnMessage.False;
                 }
             }
             else // If the user is offline
             {
-                if (((username != null) && (password != null)) && ((username != "") && (password != "")))
-                {
-                    return OperationReturnMessage.False;
-                }
-                else
-                {
-                    return OperationReturnMessage.True;
-                }
+                return CannotConnectToServer(username, password);
             }
         }
 
-        /// <summary>
-        /// Check if the current saved login credentials match with the server - Is the user logged in? Checks every two minutes. Sets the IsLoggedIn property of CredentialManager.
-        /// </summary>
-        public static void StartTimedCheckLoginStatus()
+        private static OperationReturnMessage CannotConnectToServer(string username, string password)
         {
-            var minutes = TimeSpan.FromMinutes(2.0);
-            Device.StartTimer(minutes, () =>
+            if (((username != null) && (password != null)) && ((username != "") && (password != "")))
             {
-                Task.Run(async () =>
-                {
-                    if (IsLoggedIn)
-                    {
-                        await CheckLoginStatus();
-                    }
-                });
-
-                // Return true to continue the timer
-                return true;
-            });
+                IsLoggedIn = true;
+                App.UserPath = App.Path + $"{username}/";
+                Directory.CreateDirectory(App.UserPath);
+                return OperationReturnMessage.True;
+            }
+            else
+            {
+                App.UserPath = App.Path + "dflt/";
+                IsLoggedIn = false;
+                EmailConfirmed = false;
+                Username = "dflt";
+                Password = "";
+                return OperationReturnMessage.False;
+            }
         }
     }
 }

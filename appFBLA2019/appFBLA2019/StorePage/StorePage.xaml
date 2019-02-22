@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:appFBLA2019"
+             x:Class="appFBLA2019.StorePage"
+             Title="Search">
+    <ContentPage.Content>
+        <StackLayout Padding="10">
+            <SearchBar x:Name="SearchBar" TextChanged="SearchBar_TextChanged" SearchButtonPressed="SearchBar_SearchButtonPressed" />
+            <Label x:Name="InstructionsLabel"  Text="Search for any level and you can subscribe to it in order to play it yourself!"/>
+            <ScrollView x:Name="ScrollSearch" Scrolled="ScrollSearch_Scrolled">
+                <StackLayout x:Name="SearchedStack"  Padding="10">
+                    <!--Search Results go here-->
+                </StackLayout>
+            </ScrollView>
+            <ActivityIndicator x:Name="ActivityIndicator" 
+                               Color="Accent" 
+                               VerticalOptions="CenterAndExpand"
+                               IsVisible="False"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

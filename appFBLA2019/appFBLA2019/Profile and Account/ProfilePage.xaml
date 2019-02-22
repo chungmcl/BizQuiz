@@ -5,19 +5,20 @@
              xmlns:local="clr-namespace:appFBLA2019">
     <ContentPage.Content>
         <StackLayout>
-
-            <ActivityIndicator x:Name="ActivityIndicator"
-                               Color="Accent"
+            <ActivityIndicator x:Name="ActivityIndicator" 
+                               Color="Accent" 
                                VerticalOptions="CenterAndExpand"
-                               IsVisible="False" />
-
-            <local:LoginPage x:Name="LocalLoginPage" IsVisible="False" />
-
-            <StackLayout x:Name="StackLayoutProfilePageContent"
+                               IsVisible="False"/>
+            <local:LoginPage x:Name="LocalLoginPage" IsVisible="False"/>
+            <StackLayout x:Name="StackLayoutProfilePageContent" 
                          IsVisible="False">
                 <ScrollView>
-                    <StackLayout>
-                        <Label x:Name="LabelUsername" />
+                    <StackLayout Padding="20">
+                        <Label x:Name="LabelUsername" HorizontalOptions="CenterAndExpand" VerticalOptions="StartAndExpand" FontSize="28" FontAttributes="Bold" Opacity="0"/>
+                        <Label x:Name="QuizNumber" HorizontalOptions="CenterAndExpand" FontSize="18" />
+                        <StackLayout x:Name="LevelStack">
+                            <!--Levels user created goes here!-->
+                        </StackLayout>
                     </StackLayout>
                 </ScrollView>
             </StackLayout>

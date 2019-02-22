@@ -10,13 +10,26 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EmailConfirmationPage : ContentPage
     {
+        private bool emailConfirmed;
         public EmailConfirmationPage(string username, string password)
         {
             this.InitializeComponent();
             this.username = username;
             this.password = password;
             this.LabelTitle.Text = "Loading...";
-            Task getEmail = Task.Run(() => this.GetEmail());
+        }
+
+        protected async override void OnAppearing()
+        {
+            base.OnAppearing();
+            await Task.Run(() => this.GetEmail());
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            if (!this.emailConfirmed)
+                OnConfirmLaterSelected();
         }
 
         public delegate void ConfirmLaterSelectedEventHandler(object source, EventArgs eventArgs);
@@ -34,6 +47,7 @@ namespace appFBLA2019
 
         protected virtual void OnEmailConfirmed()
         {
+            this.emailConfirmed = true;
             this.EmailConfirmed?.Invoke(this, EventArgs.Empty);
         }
 
@@ -49,72 +63,34 @@ namespace appFBLA2019
             await this.Navigation.PopModalAsync(true);
         }
 
-        private void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
+        private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
         {
-            Task confirmEmail = Task.Run(() => this.ConfirmEmail(
-                this.EntryConfirmationCode.Text,
-                this.username));
-        }
+            OperationReturnMessage result = await Task.Run(() => ServerOperations.ConfirmEmail(this.username, this.EntryConfirmationCode.Text.Trim()));
 
-        private void ButtonFixEmail_Clicked(object sender, EventArgs e)
-        {
-            Task changeEmail = Task.Run(() => this.ChangeEmail(
-                this.EntryChangeEmail.Text,
-                this.username));
-        }
-
-        private async Task ChangeEmail(string newEmail, string username)
-        {
-            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.ChangeEmail, $"{username}/{newEmail}/-"));
-
-            if (completedRequest)
+            if (result == OperationReturnMessage.True)
             {
-                OperationReturnMessage result = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
-                if (result == OperationReturnMessage.True)
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Enter the confirmation code sent to {newEmail}");
-                }
-                else
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Email could not be changed.");
-                }
+                this.OnEmailConfirmed();
+                await this.Navigation.PopModalAsync(true);
             }
             else
             {
-                Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = $"Connection failed: Please try again.");
+                this.LabelMessage.Text = "Email could not be confirmed. Please try your code again.";
             }
         }
 
-        private async Task ConfirmEmail(string confirmationCode, string username)
+        private async void ButtonFixEmail_Clicked(object sender, EventArgs e)
         {
-            bool completedRequest = await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.ConfirmEmail,
-                    $"{username}/{confirmationCode}/-"));
+            string newEmail = this.EntryChangeEmail.Text.Trim();
+            OperationReturnMessage result = await Task.Run(() => ServerOperations.ChangeEmail(this.username, 
+                this.password, newEmail));
 
-            if (completedRequest)
+            if (result == OperationReturnMessage.True)
             {
-                OperationReturnMessage returnData = await Task.Run(() => ServerConnector.ReceiveFromServerORM());
-
-                if (returnData == OperationReturnMessage.True)
-                {
-                    Device.BeginInvokeOnMainThread(async () =>
-                    {
-                        this.OnEmailConfirmed();
-                        await this.Navigation.PopModalAsync(true);
-                    });
-                }
-                else
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Email could not be confirmed. Please try your code again.");
-                }
+                this.LabelMessage.Text = $"Enter the confirmation code sent to {newEmail}";
             }
             else
             {
-                Device.BeginInvokeOnMainThread(() =>
-                    this.LabelMessage.Text = "Connection failed: Please try again.");
+                this.LabelMessage.Text = $"Email could not be changed.";
             }
         }
 
@@ -122,8 +98,7 @@ namespace appFBLA2019
         {
             try
             {
-                await Task.Run(() => ServerConnector.SendData(ServerRequestTypes.GetEmail, $"{this.username}/{this.password}/-"));
-                this.email = await Task.Run(() => ServerConnector.ReceiveFromServerStringData());
+                this.email = await Task.Run(() => ServerOperations.GetEmail(this.username, this.password));
 
                 Device.BeginInvokeOnMainThread(() =>
                 this.LabelTitle.Text =

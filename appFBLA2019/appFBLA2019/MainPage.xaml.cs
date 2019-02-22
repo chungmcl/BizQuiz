@@ -1,7 +1,11 @@
 ﻿//BizQuiz App 2019
 
+using Plugin.Connectivity;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
@@ -13,10 +17,8 @@ namespace appFBLA2019
     public partial class MainPage : Xamarin.Forms.TabbedPage
     {
         private const int levelCategoriesPage = 0;
-        private const int levelEditorPage = 1;
-
-        //private const int levelStorePage = 2;
-        private const int profilePageIndex = 3;
+        private const int levelStorePage = 1;
+        private const int profilePageIndex = 2;
 
         public MainPage()
         {
@@ -24,13 +26,14 @@ namespace appFBLA2019
             // Default tabs on Android are on top - Set to bottom on Android (to serve as Navigation)
 #if __ANDROID__
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
-            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.White);
-            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.FromHex("#003463"));
+            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.Accent);
+            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.Gray); //Color.FromHex("#003463")
+            this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(false);
 #endif
-            this.BarTextColor = Color.White;
+            this.BarTextColor = Color.Gray;
         }
 
-        private void TabbedPage_CurrentPageChanged(object sender, EventArgs e)
+        private async void TabbedPage_CurrentPageChanged(object sender, EventArgs e)
         {
             var index = this.Children.IndexOf(this.CurrentPage);
 
@@ -42,22 +45,32 @@ namespace appFBLA2019
                     ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[profilePageIndex];
                     if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                     {
-                        Task.Run(() => profilePage.UpdateProfilePage(true));
+                        await Task.Run(() => profilePage.UpdateProfilePage(CrossConnectivity.Current.IsConnected));
                     }
                 }
                 break;
 
                 case levelCategoriesPage:
                 {
-                    this.levelsPage.RefreshChildren();
+                    //this.levelsPage.RefreshChildren();
                 }
                 break;
             }
         }
 
-        private async void TutorialButton_Clicked(object sender, EventArgs e)
+        private void TermsOfUse_Activated(object sender, EventArgs e)
         {
-            await this.Navigation.PushAsync(new HelpPage());
+            this.Navigation.PushModalAsync(new TermsOfUse());
+        }
+
+        private void BugReportToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushAsync(new BugReportPage());
+        }
+
+        private void AboutPageToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            this.Navigation.PushModalAsync(new AboutUsPage());
         }
     }
 }
