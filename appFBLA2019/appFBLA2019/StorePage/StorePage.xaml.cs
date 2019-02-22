@@ -15,77 +15,94 @@ namespace appFBLA2019
         private int chunkNum;
         private bool end;
         private bool isLoading;
+        private List<SearchInfo> levelsSearched;
+
+        // either "Title" or "Author"
+        private string searchType;
 
         public StorePage()
         {
             InitializeComponent();
+            this.searchType = "Title";
+           
+        }
+
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            base.OnAppearing();
+            this.SearchBar.Focus();
+            this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 2));
         }
 
         /// <summary>
         /// Adds a level to the search stack given a LevelInfo
         /// </summary>
         /// <param name="level"></param>
-        private void AddLevel(SearchInfo level)
+        private void AddLevels(List<SearchInfo> levels)
         {
-
-            Frame levelFrame = new Frame
+            foreach(SearchInfo level in levels)
             {
-                VerticalOptions = LayoutOptions.Start,
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                CornerRadius = 10
-            };
+                Frame levelFrame = new Frame
+                {
+                    VerticalOptions = LayoutOptions.Start,
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    CornerRadius = 10
+                };
 
-            StackLayout frameStack = new StackLayout
-            {
-                FlowDirection = FlowDirection.LeftToRight,
-                Orientation = StackOrientation.Vertical
-            };
+                StackLayout frameStack = new StackLayout
+                {
+                    FlowDirection = FlowDirection.LeftToRight,
+                    Orientation = StackOrientation.Vertical
+                };
 
-            StackLayout topStack = new StackLayout
-            {
-                FlowDirection = FlowDirection.LeftToRight,
-                Orientation = StackOrientation.Horizontal
-            };
+                StackLayout topStack = new StackLayout
+                {
+                    FlowDirection = FlowDirection.LeftToRight,
+                    Orientation = StackOrientation.Horizontal
+                };
 
-            Label levelName = new Label
-            {
-                Text = level.LevelName,
-                FontAttributes = FontAttributes.Bold,
-                FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-                HorizontalOptions = LayoutOptions.StartAndExpand
-            };
-            topStack.Children.Add(levelName);
+                Label levelName = new Label
+                {
+                    Text = level.LevelName,
+                    FontAttributes = FontAttributes.Bold,
+                    FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
+                    HorizontalOptions = LayoutOptions.StartAndExpand
+                };
+                topStack.Children.Add(levelName);
 
-            ImageButton ImageButtonSubscribe = new ImageButton
-            {
-                StyleId = level.DBId,
-                HeightRequest = 30,
-                BackgroundColor = Color.White,
-                HorizontalOptions = LayoutOptions.End
-            };
+                ImageButton ImageButtonSubscribe = new ImageButton
+                {
+                    StyleId = level.DBId,
+                    HeightRequest = 30,
+                    BackgroundColor = Color.White,
+                    HorizontalOptions = LayoutOptions.End
+                };
 
-            // source is add if not subscribed and if they are then source is check
-            ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                // source is add if not subscribed and if they are then source is check
+                ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
 
-            ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
-            topStack.Children.Add(ImageButtonSubscribe);
+                ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
+                topStack.Children.Add(ImageButtonSubscribe);
 
-            frameStack.Children.Add(topStack);
+                frameStack.Children.Add(topStack);
 
-            Label levelAuthor = new Label
-            {
-                Text = "Created by: " + level.Author,
-            };
-            frameStack.Children.Add(levelAuthor);
+                Label levelAuthor = new Label
+                {
+                    Text = "Created by: " + level.Author,
+                };
+                frameStack.Children.Add(levelAuthor);
 
-            Label levelCategory = new Label
-            {
-                Text = "Category: " + level.Category,
-            };
-            frameStack.Children.Add(levelCategory);
+                Label levelCategory = new Label
+                {
+                    Text = "Category: " + level.Category,
+                };
+                frameStack.Children.Add(levelCategory);
 
-            levelFrame.Content = frameStack;
-            SearchedStack.Children.Add(levelFrame);
+                levelFrame.Content = frameStack;
+                SearchedStack.Children.Add(levelFrame);
+            }
+           
         }
 
         /// <summary>
@@ -119,16 +136,6 @@ namespace appFBLA2019
 
         }
 
-        // Temporary
-        //private List<LevelInfo> Search(string text)
-        //{
-        //    List <LevelInfo> testInfo = new List<LevelInfo>();
-        //    testInfo.Add(new LevelInfo { DBId = "TestDBID", AuthorName = "TestAuthor", LevelName = "TestLevel", Category = "FBLA General" });
-        //    testInfo.Add(new LevelInfo { DBId = "TestDBID2", AuthorName = "TestAuthor2", LevelName = "TestLevel2", Category = "FBLA General" });
-        //    return testInfo;
-        //}
-
-
 
         /// <summary>
         /// Called when the user presses search
@@ -140,15 +147,23 @@ namespace appFBLA2019
             // Delete what was in there previously
             this.SearchedStack.Children.Clear();
             this.end = false;
-            try
+            //try
             {
                 await Task.Run(() => this.Search(1));
             }
-            catch
+            //catch
             {
-                await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+                //await this.DisplayAlert("Search Failed", "Try again later", "Ok");
             }
-            this.Search(1);
+            //this.Search(1);
+        }
+
+        private List<string[]> GetLevels(int chunk)
+        {
+            if (this.searchType == "Title")
+                return ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunk);
+            else
+                return ServerOperations.GetLevelsByAuthorName(this.SearchBar.Text, chunk);
         }
 
 
@@ -158,42 +173,51 @@ namespace appFBLA2019
         /// <param name="chunkNum">the chunk to get by 1, 2, 3...</param>
         private void Search(int chunkNum)
         {
-            Device.BeginInvokeOnMainThread(() =>
-            {
+            //Device.BeginInvokeOnMainThread(() =>
+            //{
                 this.SearchedStack.Children.Clear();
                 this.ActivityIndicator.IsVisible = true;
                 this.ActivityIndicator.IsRunning = true;
                 this.isLoading = true;
-            });
+            //});
 
             int i = 0;
 
-            List<string[]> levels = ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunkNum);
-
-            foreach (string[] level in levels)
+            List<string[]> levels = this.GetLevels(chunkNum);
+            if (levels != null)
             {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    this.AddLevel(new SearchInfo
+                //Device.BeginInvokeOnMainThread(() =>
+                //{
+                    foreach (string[] level in levels)
                     {
-                        DBId = level[0],
-                        Author = level[1],
-                        LevelName = level[2],
-                        Category = level[3],
-                        SubCount = int.Parse(level[4])
-                    });
-                });
-                i++;
+                        this.levelsSearched.Add(new SearchInfo
+                        {
+                            DBId = level[0],
+                            Author = level[1],
+                            LevelName = level[2],
+                            Category = level[3],
+                            SubCount = int.Parse(level[4])
+                        });
+                        i++;
+                    }
+
+                    this.AddLevels(this.levelsSearched);
+                //});
             }
+            else
+            {
+                this.message.Text = "No levels found matching search";
+            }
+
             if (i < 20)
                 this.end = true;
 
-            Device.BeginInvokeOnMainThread(() =>
-            {
+            //Device.BeginInvokeOnMainThread(() =>
+            //{
                 this.ActivityIndicator.IsVisible = false;
                 this.ActivityIndicator.IsRunning = false;
                 this.isLoading = false;
-            });
+            //});
 
         }
         
@@ -214,15 +238,6 @@ namespace appFBLA2019
         }
         
 
-        private class SearchInfo
-        {
-            public string DBId { get; set; }
-            public string Author { get; set; }
-            public string LevelName { get; set; }
-            public string Category { get; set; }
-            public int SubCount { get; set; }
-        }
-
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
         {
             ScrollView scrollView = sender as ScrollView;
@@ -239,6 +254,20 @@ namespace appFBLA2019
                     await this.DisplayAlert("Search Failed", "Try again later", "Ok");
                 }
             }
+        }
+
+        private void ButtonTitle_Clicked(object sender, EventArgs e)
+        {
+            this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 2), 250, Easing.CubicInOut); 
+            this.searchType = "Title";
+           
+        }
+
+        private void ButtonAuthor_Clicked(object sender, EventArgs e)
+        {        
+            //this.searchIndicator.TranslateTo(this.buttonAuthor.X, this.Y, 150, Easing.CubicInOut);
+            this.searchIndicator.LayoutTo(new Rectangle(this.buttonAuthor.X, this.searchIndicator.Y, this.buttonAuthor.Width, 2), 250, Easing.CubicInOut);
+            this.searchType = "Author";
         }
     }
 }
