@@ -119,7 +119,7 @@ namespace appFBLA2019
         private bool usernameLength;
         private bool passwordLength;
 
-        private void checkLength()
+        private void CheckLength()
         {
             this.ButtonLogin.IsEnabled = this.usernameLength && this.passwordLength;
         }
@@ -127,13 +127,13 @@ namespace appFBLA2019
         private void EntryUsername_TextChanged(object sender, TextChangedEventArgs e)
         {
             this.usernameLength = this.EntryUsername.Text.Length > minLength && this.EntryUsername.Text.Length <= maxLength;
-            this.checkLength();
+            this.CheckLength();
         }
 
         private void EntryPassword_TextChanged(object sender, TextChangedEventArgs e)
         {
             this.passwordLength = this.EntryPassword.Text.Length > minLength && this.EntryPassword.Text.Length <= maxLength;
-            this.checkLength();
+            this.CheckLength();
         }
     }
 }

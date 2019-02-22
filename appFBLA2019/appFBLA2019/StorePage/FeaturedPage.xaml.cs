@@ -20,6 +20,7 @@ namespace appFBLA2019
 
         protected override void OnAppearing()
         {
+            this.levelsRemaining = true;
             try
             {
                 //Device.BeginInvokeOnMainThread(() => {
@@ -37,6 +38,38 @@ namespace appFBLA2019
             catch (Exception ex)
             {
                 BugReportHandler.SubmitReport(ex, nameof(FeaturedPage));
+            }
+        }
+
+        private bool levelsRemaining;
+        private int currentChunk;
+
+        private async Task Search()
+        {
+            List<Task> toAwait = new List<Task>();
+            List<SearchInfo> chunk = new List<SearchInfo>();
+                chunk = SearchUtils.GetLevelsByAuthorChunked("BizQuiz", this.currentChunk);
+            if (chunk.Count < 20)
+                levelsRemaining = false;
+            await Task.Run(() => AddLevels(chunk));
+        }
+
+        private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
+        {
+            ScrollView scrollView = sender as ScrollView;
+            double scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
+
+            if (scrollingSpace <= e.ScrollY && this.levelsRemaining)
+            {
+                try
+                {
+                    this.currentChunk++;
+                    await Task.Run(() => this.Search());
+                }
+                catch
+                {
+                    await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+                }
             }
         }
 
@@ -105,7 +138,8 @@ namespace appFBLA2019
                 frameStack.Children.Add(levelCategory);
 
                 levelFrame.Content = frameStack;
-                SearchedStack.Children.Add(levelFrame);
+                Device.BeginInvokeOnMainThread(() =>
+                SearchedStack.Children.Add(levelFrame));
             }
         }
 
