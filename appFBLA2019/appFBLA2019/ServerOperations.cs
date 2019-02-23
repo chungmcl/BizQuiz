@@ -85,25 +85,31 @@ namespace appFBLA2019
         public static List<string[]> GetLevelsByAuthorName(string authorName, int chunk)
         {
             SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetLevelsByAuthorName);
-            return ReceiveFromServerListOfStringArrays();
+            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
         }
 
         public static List<string[]> GetUsers(string username, int chunk)
         {
             SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
-            return ReceiveFromServerListOfStringArrays();
+            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
         }
 
         public static List<string[]> GetLevelsByCategory(string category, int chunk)
         {
             SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetLevelsByCategory);
-            return ReceiveFromServerListOfStringArrays();
+            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
         }
 
         public static List<string[]> GetLevelsByLevelName(string levelName, int chunk)
         {
             SendStringData($"{levelName}/{chunk}/-", ServerRequestTypes.GetLevelsByLevelName);
-            return ReceiveFromServerListOfStringArrays();
+            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
+        }
+        
+        public static int GetNumberOfLevelsByAuthorName(string username)
+        {
+            SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfLevelsByAuthorName);
+            return int.Parse(ReceiveFromServerStringData() ?? "-1");
         }
 
         public static bool SendLevel(string relativeLevelPath)
@@ -131,7 +137,7 @@ namespace appFBLA2019
                     OperationReturnMessage message = ReceiveFromServerORM();
                     if (message == OperationReturnMessage.False)
                     {
-                        return false;
+                        throw new Exception();
                     }
                 }
 
@@ -144,11 +150,13 @@ namespace appFBLA2019
 
                 if (finalizationMessage == OperationReturnMessage.True)
                 {
+                    LevelInfo infoCopy = new LevelInfo(info);
+                    infoCopy.SyncStatus = 2;
                     return true;
                 }
                 else
                 {
-                    return false;
+                    throw new Exception();
                 }
             }
             catch
@@ -158,6 +166,18 @@ namespace appFBLA2019
             }
         }
 
+        public static bool GetLevel(string dBId, string levelName, string authorName)
+        {
+            string levelPath = App.UserPath + "/" + $"{levelName}`{authorName}";
+
+            Directory.CreateDirectory(App.UserPath + "/" + $"{levelName}`{authorName}");
+            SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
+
+
+            throw new NotImplementedException();
+        }
+
+        #region Header Generators
         private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
         {
             byte[] headerData = new byte[stringHeaderSize];
@@ -196,17 +216,19 @@ namespace appFBLA2019
             Array.Copy(dBIdBytes, 0, headerData, maxUsernameSize + maxPasswordSize + maxImageNameSize, dBIdBytes.Length);
             return headerData;
         }
+        #endregion
 
-        public static OperationReturnMessage ReceiveFromServerORM()
+        #region Data Receives
+        private static OperationReturnMessage ReceiveFromServerORM()
         {
             if (CrossConnectivity.Current.IsConnected)
             {
                 byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes == null || returnedBytes.Length < 5))
+                if (!(returnedBytes.Length < 5))
                 {
                     int size = BitConverter.ToInt32(returnedBytes, 1);
                     byte[] data = ServerConnector.ReadByteArray(size);
-                    if (data != null)
+                    if (data.Length > 0)
                     {
                         OperationReturnMessage message = (OperationReturnMessage)(data[0]);
                         ServerConnector.CloseConn();
@@ -230,16 +252,16 @@ namespace appFBLA2019
             }
         }
 
-        public static string ReceiveFromServerStringData()
+        private static string ReceiveFromServerStringData()
         {
             if (CrossConnectivity.Current.IsConnected)
             {
                 byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes == null || returnedBytes.Length < 5))
+                if (!(returnedBytes.Length < 5))
                 {
                     int size = BitConverter.ToInt32(returnedBytes, 1);
                     byte[] data = ServerConnector.ReadByteArray(size);
-                    if (data != null)
+                    if (data.Length > 0)
                     {
                         string dataString = Encoding.Unicode.GetString(data);
                         ServerConnector.CloseConn();
@@ -264,16 +286,16 @@ namespace appFBLA2019
             }
         }
 
-        public static List<string[]> ReceiveFromServerListOfStringArrays()
+        private static List<string[]> ReceiveFromServerListOfStringArrays()
         {
             if (CrossConnectivity.Current.IsConnected)
             {
                 byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes == null || returnedBytes.Length < 5))
+                if (!(returnedBytes.Length < 5))
                 {
                     int size = BitConverter.ToInt32(returnedBytes, 1);
                     byte[] data = ServerConnector.ReadByteArray(size);
-                    if (data != null)
+                    if (data.Length > 0)
                     {
                         BinaryFormatter binaryFormatter = new BinaryFormatter();
                         MemoryStream memStream = new MemoryStream();
@@ -285,21 +307,46 @@ namespace appFBLA2019
                     else
                     {
                         ServerConnector.CloseConn();
-                        return null;
+                        return new List<string[]>(0);
                     }
                 }
                 else
                 {
                     ServerConnector.CloseConn();
-                    return null;
+                    return new List<string[]>(0);
                 }
             }
             else
             {
-                return null;
+                return new List<string[]>(0);
             }
         }
 
+        private static byte[] ReceiveFromServerBytes()
+        {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
+                if (!(returnedBytes.Length < 5))
+                {
+                    int size = BitConverter.ToInt32(returnedBytes, 1);
+                    byte[] data = ServerConnector.ReadByteArray(size);
+                    return data;
+                }
+                else
+                {
+                    ServerConnector.CloseConn();
+                    return new byte[0];
+                }
+            }
+            else
+            {
+                return new byte[0];
+            }
+        }
+        #endregion
+
+        #region Data Sends
         /// <summary>
         /// Send a string (Unicode) based data request or send to the server.
         /// </summary>
@@ -385,6 +432,7 @@ namespace appFBLA2019
                     throw new Exception("Something went wrong sending the bug report!");
             }
         }
+        #endregion
     }
 
     public enum OperationReturnMessage : byte
@@ -426,6 +474,7 @@ namespace appFBLA2019
         GetLevelsByAuthorName,
         GetLevelsByLevelName,
         GetLevelsByCategory,
-        GetUsers
+        GetUsers,
+        GetNumberOfLevelsByAuthorName
     }
 }

@@ -28,7 +28,7 @@ namespace appFBLA2019
             this.LocalLoginPage.LoggedIn -= this.OnLoggedIn;
             this.LocalLoginPage.LoggedIn += (object sender, EventArgs e) =>
             {
-                this.Navigation.PopAsync();
+                this.Navigation.PopAsync(); 
             };
         }
 

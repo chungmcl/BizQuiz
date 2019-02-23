@@ -306,8 +306,9 @@ namespace appFBLA2019
             ImageButton button = (sender as ImageButton);
             string levelPath = button.StyleId;
             button.IsEnabled = false;
-            button.HeightRequest = 25;
+            await button.FadeTo(0, 150, Easing.CubicInOut);
             button.Source = "ic_autorenew_black_48dp.png";
+            await button.FadeTo(1, 150, Easing.CubicInOut);
             button.HeightRequest = 25;
 
             if (await Task.Run(() => ServerOperations.SendLevel(levelPath)))
@@ -315,6 +316,7 @@ namespace appFBLA2019
                 button.Source = "ic_cloud_done_black_48dp.png";
                 button.IsEnabled = true;
                 button.Clicked += SyncNoChange_Clicked;
+                
             }
             else
             {

@@ -13,7 +13,20 @@ namespace appFBLA2019
 {
     public static class CredentialManager
     {
-        public static string Username { get; private set; }
+        private static string username;
+        public static string Username
+        {
+            get
+            {
+                return username;
+            }
+            set
+            {
+                username = value;
+                Directory.CreateDirectory(App.Path + "/" + value);
+            }
+        }
+
         public static string Password { get; private set; }
         public static bool IsLoggedIn { get; private set; }
         public static bool EmailConfirmed { get; set; }
@@ -22,9 +35,7 @@ namespace appFBLA2019
         {
             Task.Run(async () => await SecureStorage.SetAsync("username", username));
             Task.Run(async () => await SecureStorage.SetAsync("password", password));
-
-            App.UserPath = App.Path + $"{username}/";
-            Directory.CreateDirectory(App.UserPath);
+            
             Username = username;
             Password = password;
 
@@ -41,8 +52,7 @@ namespace appFBLA2019
                 Task.Run(async () => await SecureStorage.SetAsync("username", ""));
             }
 
-            App.UserPath = App.Path + "dflt/";
-            Directory.CreateDirectory(App.UserPath);
+            Username = "dflt";
             IsLoggedIn = false;
             EmailConfirmed = false;
         }
@@ -65,21 +75,17 @@ namespace appFBLA2019
                         {
                             IsLoggedIn = true;
                             EmailConfirmed = true;
-                            App.UserPath = App.Path + $"{username}/";
-                            Directory.CreateDirectory(App.UserPath);
                         }
                         else if (message == OperationReturnMessage.TrueConfirmEmail)
                         {
                             IsLoggedIn = true;
                             EmailConfirmed = false;
-                            App.UserPath = App.Path + $"{username}/";
-                            Directory.CreateDirectory(App.UserPath);
                         }
                         else
                         {
                             IsLoggedIn = false;
                             EmailConfirmed = false;
-                            App.UserPath = App.Path + $"dflt/";
+                            Username = "dflt";
                             await SecureStorage.SetAsync("password", "");
                         }
                         return message;
@@ -92,7 +98,7 @@ namespace appFBLA2019
                 else
                 {
 
-                    App.UserPath = App.Path + "dflt/";
+                    Username = "dflt";
                     IsLoggedIn = false;
                     EmailConfirmed = false;
                     Username = "dflt";
@@ -111,16 +117,14 @@ namespace appFBLA2019
             if (((username != null) && (password != null)) && ((username != "") && (password != "")))
             {
                 IsLoggedIn = true;
-                App.UserPath = App.Path + $"{username}/";
-                Directory.CreateDirectory(App.UserPath);
+                Username = username;
                 return OperationReturnMessage.True;
             }
             else
             {
-                App.UserPath = App.Path + "dflt/";
+                Username = "dflt";
                 IsLoggedIn = false;
                 EmailConfirmed = false;
-                Username = "dflt";
                 Password = "";
                 return OperationReturnMessage.False;
             }
