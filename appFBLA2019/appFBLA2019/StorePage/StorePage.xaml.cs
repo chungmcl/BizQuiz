@@ -15,6 +15,8 @@ namespace appFBLA2019
 		private int chunkNum;
 		private bool end;
 		private bool isLoading;
+
+        private bool isStartup;
 		private List<SearchInfo> levelsSearched;
 
 		// either "Title" or "Author"
@@ -22,6 +24,7 @@ namespace appFBLA2019
 
 		public StorePage()
 		{
+            this.isStartup = true;
 			InitializeComponent();
 			this.searchType = "Title";
 		}
@@ -30,8 +33,13 @@ namespace appFBLA2019
 		{
 			base.OnSizeAllocated(width, height);
 			base.OnAppearing();
-			this.SearchBar.Focus();
-			this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 2));
+            if (this.isStartup)
+            {
+                this.SearchBar.Focus();
+                this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 2));
+            }
+
+            this.isStartup = false;
 		}
 
 		/// <summary>

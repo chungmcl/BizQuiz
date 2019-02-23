@@ -75,13 +75,11 @@ namespace appFBLA2019
                         {
                             IsLoggedIn = true;
                             EmailConfirmed = true;
-                            Directory.CreateDirectory(App.UserPath);
                         }
                         else if (message == OperationReturnMessage.TrueConfirmEmail)
                         {
                             IsLoggedIn = true;
                             EmailConfirmed = false;
-                            Directory.CreateDirectory(App.UserPath);
                         }
                         else
                         {
@@ -120,7 +118,6 @@ namespace appFBLA2019
             {
                 IsLoggedIn = true;
                 Username = username;
-                Directory.CreateDirectory(App.UserPath);
                 return OperationReturnMessage.True;
             }
             else
