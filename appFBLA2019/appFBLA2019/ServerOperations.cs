@@ -271,18 +271,18 @@ namespace appFBLA2019
                     else
                     {
                         ServerConnector.CloseConn();
-                        return null;
+                        return "";
                     }
                 }
                 else
                 {
                     ServerConnector.CloseConn();
-                    return null;
+                    return "";
                 }
             }
             else
             {
-                return null;
+                return "";
             }
         }
 
