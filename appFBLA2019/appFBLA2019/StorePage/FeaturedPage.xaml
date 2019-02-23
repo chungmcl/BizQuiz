@@ -10,6 +10,12 @@
     <ContentPage.Content>
         <StackLayout Padding="10">
             <StackLayout Orientation="Horizontal">
+                <Frame Padding="0">
+                    <!--<StackLayout Orientation="Horizontal" Padding="0" Spacing="0">
+                        <Label Text="Category"/>
+                        <Image Source="ic_arrow_drop_down_black_48dp.png" Scale=".1"/>
+                    </StackLayout>-->
+                </Frame>
                 <Label Text="Featured Quizzes" HorizontalOptions="Center" FontSize="Large" FontAttributes="Bold"/>
             </StackLayout>
             <ScrollView x:Name="ScrollSearch">

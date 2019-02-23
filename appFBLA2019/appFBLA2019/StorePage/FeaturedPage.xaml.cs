@@ -19,26 +19,27 @@ namespace appFBLA2019
             this.currentChunk = 1;
         }
 
-        protected override void OnAppearing()
-        {
+        protected async override void OnAppearing()
+            {
             this.levelsRemaining = true;
             try
             {
-                //Device.BeginInvokeOnMainThread(() => {
+                Device.BeginInvokeOnMainThread(() => {
                 this.SearchedStack.Children.Clear();
                 this.ActivityIndicator.IsVisible = true;
                 this.ActivityIndicator.IsRunning = true;
-                //});
-                this.AddLevels(SearchUtils.GetLevelsByAuthorChunked("BizQuiz", 1));
-                //Device.BeginInvokeOnMainThread(() =>
-                //{
+                });
+                await Task.Run(() => this.AddLevels(SearchUtils.GetLevelsByAuthorChunked("BizQuiz", 1)));
+                Device.BeginInvokeOnMainThread(() =>
+                {
                 this.ActivityIndicator.IsVisible = false;
                 this.ActivityIndicator.IsRunning = false;
-                //});
+                });
             }
             catch (Exception ex)
             {
                 BugReportHandler.SubmitReport(ex, nameof(FeaturedPage));
+                await this.DisplayAlert("Search Failed", "Try again later", "Ok");
             }
         }
 
@@ -51,8 +52,8 @@ namespace appFBLA2019
             List<SearchInfo> chunk = new List<SearchInfo>();
                 chunk = SearchUtils.GetLevelsByAuthorChunked("BizQuiz", this.currentChunk);
             if (chunk.Count < 20)
-                levelsRemaining = false;
-            await Task.Run(() => AddLevels(chunk));
+                this.levelsRemaining = false;
+            await Task.Run(() => this.AddLevels(chunk));
         }
 
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
