@@ -8,25 +8,38 @@
         <ToolbarItem Priority="0" Icon="ic_search_white_48dp.png" Name="Search" Order="Primary"  Activated="Search_Activated" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <StackLayout Padding="10">
-            <StackLayout Orientation="Horizontal">
-                <Frame Padding="0">
-                    <!--<StackLayout Orientation="Horizontal" Padding="0" Spacing="0">
-                        <Label Text="Category"/>
-                        <Image Source="ic_arrow_drop_down_black_48dp.png" Scale=".1"/>
-                    </StackLayout>-->
-                </Frame>
-                <Label Text="Featured Quizzes" HorizontalOptions="Center" FontSize="Large" FontAttributes="Bold"/>
-            </StackLayout>
-            <ScrollView x:Name="ScrollSearch">
-                <StackLayout x:Name="SearchedStack"  Padding="10">
-                    <!--Search Results go here-->
+        <StackLayout Padding="0">
+            <Frame CornerRadius="0" >
+                <StackLayout>
+                    <Label Text="Featured Quizzes" Grid.Column="1" HorizontalOptions="CenterAndExpand" FontSize="25" FontAttributes="Bold"/>
+
+                    <Picker x:Name="PickerCategory" BackgroundColor="White" HeightRequest="40" Title="Category" FontSize="17" FontAttributes="Italic" TextColor="Accent" SelectedIndexChanged="PickerCategory_SelectedIndexChanged">
+                        <Picker.Items>
+                            <x:String>All</x:String>
+                            <x:String>Tech Events</x:String>
+                            <x:String>Finance Events</x:String>
+                            <x:String>Business Events</x:String>
+                            <x:String>FBLA General</x:String>
+                            <x:String>Officers</x:String>
+                            <x:String>Parliamentary Procedure</x:String>
+                        </Picker.Items>
+                    </Picker>
+
                 </StackLayout>
-            </ScrollView>
-            <ActivityIndicator x:Name="ActivityIndicator" 
+            </Frame>
+
+            <StackLayout Padding="10">
+                <ScrollView x:Name="ScrollSearch">
+                    <StackLayout x:Name="SearchedStack"  Padding="10">
+                        <!--Search Results go here-->
+                    </StackLayout>
+                </ScrollView>
+                <ActivityIndicator x:Name="ActivityIndicator" 
                                Color="Accent" 
                                VerticalOptions="CenterAndExpand"
                                IsVisible="False"/>
+            </StackLayout>
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
