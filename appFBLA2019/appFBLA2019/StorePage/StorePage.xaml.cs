@@ -24,7 +24,6 @@ namespace appFBLA2019
 		{
 			InitializeComponent();
 			this.searchType = "Title";
-		   
 		}
 
 		protected override void OnSizeAllocated(double width, double height)
@@ -137,6 +136,8 @@ namespace appFBLA2019
 
 		}
 
+        private bool levelsRemaining;
+        private int currentChunk;
 
 		/// <summary>
 		/// Called when the user presses search
@@ -147,6 +148,8 @@ namespace appFBLA2019
 		{
 			// Delete what was in there previously
 			this.end = false;
+            this.levelsRemaining = true;
+            this.currentChunk = 1;
 			//Device.BeginInvokeOnMainThread(() => {
 			this.SearchedStack.Children.Clear();
 			this.ActivityIndicator.IsEnabled = true;
@@ -154,26 +157,10 @@ namespace appFBLA2019
 			//});
 			this.isLoading = true;
 			try
-			{
-				List<Task> toAwait = new List<Task>();
-				bool levelsRemaining = true;
-				for (int i = 1; levelsRemaining ; i++)
-				{
-					List<SearchInfo> chunk = new List<SearchInfo>();
-					if (this.searchType == "Title")
-						chunk = SearchUtils.GetLevelsByLevelNameChunked(SearchBar.Text, i);
-					else
-						chunk = SearchUtils.GetLevelsByAuthorChunked(SearchBar.Text, i);
-					if (chunk.Count < 20)
-						levelsRemaining = false;
-					toAwait.Add(Task.Run(() =>
-					{
-						AddLevels(chunk);
-					}));
-				}
-				await Task.WhenAll(toAwait);
-			}
-			catch (Exception ex)
+            {
+                await this.Search();
+            }
+            catch (Exception ex)
 			{
 				BugReportHandler.SubmitReport(ex, "StorePage_SearchBar");
 				await this.DisplayAlert("Search Failed", "Try again later", "Ok");
@@ -186,64 +173,46 @@ namespace appFBLA2019
 			//});
 		}
 
-		private List<string[]> GetLevels(int chunk)
+        private async Task Search()
+        {
+            List<SearchInfo> chunk = new List<SearchInfo>();
+            if (this.searchType == "Title")
+                chunk = SearchUtils.GetLevelsByLevelNameChunked(SearchBar.Text, this.currentChunk);
+            else
+                chunk = SearchUtils.GetLevelsByAuthorChunked(SearchBar.Text, this.currentChunk);
+            if (currentChunk == 1 && chunk.Count == 0)
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    SearchedStack.Children.Add(new Frame()
+                    {
+                        Content = new Label
+                        {
+                            Text = "Sorry, we couldn't find any levels matching what you searched",
+                            HorizontalTextAlignment = TextAlignment.Center,
+                            FontSize = 38
+                        },
+                        CornerRadius = 10,
+                        HorizontalOptions = LayoutOptions.CenterAndExpand,
+                    });
+                }
+                );
+            }
+            if (chunk.Count < 20)
+                levelsRemaining = false;
+            await Task.Run(() => this.AddLevels(chunk));
+        }
+
+        private List<string[]> GetLevels(int chunk)
 		{
 			if (this.searchType == "Title")
 				return ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunk);
 			else
 				return ServerOperations.GetLevelsByAuthorName(this.SearchBar.Text, chunk);
 		}
-
-
-		/// <summary>
-		/// Searches the server for levels by levelName
-		/// </summary>
-		/// <param name="chunkNum">the chunk to get by 1, 2, 3...</param>
-		private void Search(int chunkNum)
-		{
-			//Device.BeginInvokeOnMainThread(() =>
-			//{
-				this.SearchedStack.Children.Clear();
-				this.ActivityIndicator.IsVisible = true;
-				this.ActivityIndicator.IsRunning = true;
-				this.isLoading = true;
-			//});
-
-			int i = 0;
-
-			List<string[]> levels = this.GetLevels(chunkNum);
-			if (levels != null)
-			{
-				//Device.BeginInvokeOnMainThread(() =>
-				//{
-					foreach (string[] level in levels)
-					{
-					this.levelsSearched.Add(new SearchInfo(level));
-					i++;
-					}
-
-					this.AddLevels(this.levelsSearched);
-				//});
-			}
-			else
-			{
-				this.message.Text = "No levels found matching search";
-			}
-
-			if (i < 20)
-				this.end = true;
-
-			//Device.BeginInvokeOnMainThread(() =>
-			//{
-				this.ActivityIndicator.IsVisible = false;
-				this.ActivityIndicator.IsRunning = false;
-				this.isLoading = false;
-			//});
-
-		}
 		
 
-		private async void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+		private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			this.SearchedStack.Children.Clear();
 			//if (!string.IsNullOrWhiteSpace(this.SearchBar.Text) && !this.isLoading)
@@ -268,7 +237,8 @@ namespace appFBLA2019
 			{
 				try
 				{
-					await Task.Run(() => this.Search(this.chunkNum++));
+                    this.chunkNum++;
+					await Task.Run(() => this.Search());
 				}
 				catch
 				{

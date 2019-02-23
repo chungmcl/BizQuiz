@@ -16,6 +16,7 @@ namespace appFBLA2019
         public bool IsOnLoginPage { get; private set; }
         private AccountSettingsPage accountSettingsPage;
         private bool isSetup;
+        private int currentChunk;
 
         public ProfilePage()
         {
@@ -65,7 +66,9 @@ namespace appFBLA2019
                     this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
                     if (!isSetup)
                     {
-                        this.SetupUserQuizzes();
+                        this.SetupLocalQuizzes();
+                        this.SetupNetworkQuizzes();
+                        this.isSetup = true; ;
                     }
                 }
                 else
@@ -99,24 +102,103 @@ namespace appFBLA2019
             base.OnAppearing();
             if (this.StackLayoutProfilePageContent.IsVisible)
             {
-                this.SetupUserQuizzes();
+                this.SetupNetworkQuizzes();
             }
         }
 
-        private void SetupUserQuizzes()
+        private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
+        {
+            ScrollView scrollView = sender as ScrollView;
+            double scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
+
+            if (scrollingSpace <= e.ScrollY)
+            {
+                try
+                {
+                    this.currentChunk++;
+                    await Task.Run(() => this.SetupNetworkQuizzes());
+                }
+                catch
+                {
+                    await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+                }
+            }
+        }
+
+        private void SetupLocalQuizzes()
+        {
+            List<LevelInfo> levels = LevelRosterDatabase.GetRoster();
+            List<SearchInfo> userLevels = new List<SearchInfo>();
+            foreach (LevelInfo level in levels)
+            {
+                if (level.AuthorName == CredentialManager.Username)
+                {
+                    userLevels.Add(new SearchInfo()
+                    {
+                        DBId = level.DBId,
+                        Author = level.AuthorName,
+                        LevelName = level.LevelName,
+                        Category = level.Category
+                    });
+                }
+            }
+            this.AddLevels(userLevels, false);
+            this.totalCount += userLevels.Count;
+        }
+
+        private int totalCount = 0;
+        private void SetupNetworkQuizzes()
         {
             //this will take a while it would be good to make it async
-            int totalCount = 0;
+            
             this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            for (int i = 1; ; i++)
+            List<SearchInfo> temp = SearchUtils.GetLevelsByAuthorChunked(CredentialManager.Username, this.currentChunk);
+            totalCount += temp.Count;
+            if (temp.Count == 0)
             {
-                List<SearchInfo> temp = SearchUtils.GetLevelsByAuthorChunked(CredentialManager.Username, i);
-                totalCount += temp.Count;
-                if (temp.Count == 0)
-                    break;
+                if (totalCount == 0)
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        StackLayout stack = new StackLayout();
+                        stack.Children.Add(new Label
+                        {
+                            Text = "You haven't made any levels yet!",
+                            HorizontalTextAlignment = TextAlignment.Center,
+                            FontSize = 38
+                        });
+                        stack.Children.Add(new Button
+                        {
+                            Text = "Make a level now",
+                            CornerRadius = 25,
+                            BackgroundColor = Color.Accent,
+                            TextColor = Color.White,
+                            FontSize = 26
+                        });
+                        (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushModalAsync(new CreateNewLevelPage());
+                        Frame frame = new Frame()
+                        {
+                            CornerRadius = 10,
+                            HorizontalOptions = LayoutOptions.CenterAndExpand,
+                            Content = stack
+                        };
+                        this.LevelStack.Children.Add(frame);
+                    }
+                );
+                }
+                return;
+            }
+            this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!";
+            AddLevels(temp, true);
+        }
 
-                this.QuizNumber.Text = "You have created a total of " + totalCount + " quizes!";
-                foreach (SearchInfo level in temp)
+        private void AddLevels(List<SearchInfo> levels, bool isNetworkLevels)
+        {
+            
+                foreach (SearchInfo level in levels)
+            {
+                //if its not already stored locally (only apllies to networklevels)
+                if (isNetworkLevels && LevelRosterDatabase.GetLevelInfo(level.DBId) != null)
                 {
                     Frame frame = new Frame()
                     {
@@ -149,7 +231,7 @@ namespace appFBLA2019
 
                     Label Subscribers = new Label
                     {
-                        Text = "Subscribers: " /*+ level.Subscribers*/
+                        Text = "Subscribers: " + level.SubCount
                     };
                     frameStack.Children.Add(Subscribers);
 
@@ -157,7 +239,6 @@ namespace appFBLA2019
                     LevelStack.Children.Add(frame);
                 }
             }
-            this.isSetup = true;
         }
 
         private async void ToolbarItemAccountSettings_Clicked(object sender, EventArgs e)
@@ -177,7 +258,7 @@ namespace appFBLA2019
             this.accountSettingsPage.SignedOut += OnSignedOut;
             this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            this.SetupUserQuizzes();
+            this.SetupNetworkQuizzes();
             await Task.Run(() => UpdateProfilePage(false));
         }
 
