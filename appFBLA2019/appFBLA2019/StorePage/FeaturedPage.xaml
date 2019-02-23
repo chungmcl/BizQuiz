@@ -9,7 +9,9 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout Padding="10">
-            <Label Text="Levels hand picked by the BizQuiz team that are sure to help you out!"/>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Featured Quizzes" HorizontalOptions="Center" FontSize="Large" FontAttributes="Bold"/>
+            </StackLayout>
             <ScrollView x:Name="ScrollSearch">
                 <StackLayout x:Name="SearchedStack"  Padding="10">
                     <!--Search Results go here-->
