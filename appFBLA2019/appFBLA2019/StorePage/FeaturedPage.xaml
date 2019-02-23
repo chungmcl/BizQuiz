@@ -10,7 +10,7 @@
     <ContentPage.Content>
         <StackLayout Padding="10">
             <Label Text="Levels hand picked by the BizQuiz team that are sure to help you out!"/>
-            <ScrollView x:Name="ScrollSearch">
+            <ScrollView x:Name="ScrollSearch" Scrolled="ScrollSearch_Scrolled">
                 <StackLayout x:Name="SearchedStack"  Padding="10">
                     <!--Search Results go here-->
                 </StackLayout>

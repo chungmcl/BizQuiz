@@ -6,6 +6,7 @@ namespace appFBLA2019
 {
     internal class SearchInfo
     {
+        public string Title { get; set; }
         public string DBId { get; set; }
         public string Author { get; set; }
         public string LevelName { get; set; }
@@ -20,5 +21,8 @@ namespace appFBLA2019
             this.Category = data[3];
             this.SubCount = int.Parse(data[4]);
         }
+
+        internal SearchInfo()
+        { }
     }
 }

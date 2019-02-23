@@ -67,7 +67,36 @@ namespace appFBLA2019
                 this.ButtonStack.Children.Clear();
 
                 List<LevelInfo> levels = LevelRosterDatabase.GetRoster(this.category);
-
+                if (levels.Count == 0)
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        StackLayout stack = new StackLayout();
+                        stack.Children.Add(new Label
+                        {
+                            Text = "You haven't made any levels in this category yet!",
+                            HorizontalTextAlignment = TextAlignment.Center,
+                            FontSize = 38
+                        });
+                        if (CredentialManager.IsLoggedIn)
+                        {
+                            stack.Children.Add(new Button
+                            {
+                                Text = "Make a level now",
+                                CornerRadius = 25,
+                                BackgroundColor = Color.Accent,
+                                TextColor = Color.White,
+                                FontSize = 26
+                            });
+                            (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new CreateNewLevelPage());
+                        }
+                        Frame frame = new Frame()
+                        {
+                            CornerRadius = 10,
+                            HorizontalOptions = LayoutOptions.CenterAndExpand,
+                            Content = stack
+                        };
+                        this.ButtonStack.Children.Add(frame);
+                    });
                 foreach (LevelInfo level in levels)
                 {
                     Frame frame = new Frame()

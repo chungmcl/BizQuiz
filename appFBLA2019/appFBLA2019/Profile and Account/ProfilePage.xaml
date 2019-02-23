@@ -12,7 +12,7 @@
             <local:LoginPage x:Name="LocalLoginPage" IsVisible="False"/>
             <StackLayout x:Name="StackLayoutProfilePageContent" 
                          IsVisible="False">
-                <ScrollView>
+                <ScrollView Scrolled="ScrollSearch_Scrolled">
                     <StackLayout Padding="20">
                         <Label x:Name="LabelUsername" HorizontalOptions="CenterAndExpand" VerticalOptions="StartAndExpand" FontSize="28" FontAttributes="Bold" Opacity="0"/>
                         <Label x:Name="QuizNumber" HorizontalOptions="CenterAndExpand" FontSize="18" />
