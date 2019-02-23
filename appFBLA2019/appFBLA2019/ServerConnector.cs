@@ -15,6 +15,8 @@ namespace appFBLA2019
 {
     public static class ServerConnector
     {
+        private const int headerSize = 5;
+
         // Server Release Build: 7777 Server Debug Build: 7778
         public static int Port { get { return 7778; } }
 
@@ -31,7 +33,7 @@ namespace appFBLA2019
             return true; // Allow untrusted certificates.
         }
         
-        public static bool SendByteArray(byte[] data)
+        public static byte[] SendByteArray(byte[] data)
         {
             if (SetupConnection())
             {
@@ -45,75 +47,75 @@ namespace appFBLA2019
                             {
                                 ssl.Write(data, 0, data.Length);
                                 ssl.Flush();
-                                return false;
+
+                                byte[] header = ReadByteArray(headerSize);
+                                int size = BitConverter.ToInt32(header, 1);
+                                if (header.Length >= 5)
+                                {
+                                    return ReadByteArray(size);
+                                }
+                                else
+                                    return new byte[0];
                             }
                             else
-                                return false;
+                                return new byte[0];
                         }
                     }
                     else
-                        return false;
+                        return new byte[0];
                 }
                 catch
                 {
-                    return false;
+                    return new byte[0];
                 }
             }
             else
             {
-                return false;
+                return new byte[0];
             }
         }
 
-        public static byte[] ReadByteArray(int size)
+        private static byte[] ReadByteArray(int size)
         {
             try
             {
-                if (ssl != null)
+                if (CrossConnectivity.Current.IsConnected)
                 {
-                    lock (ssl)
+                    byte[] buffer = new byte[1024];
+
+                    List<byte> data = new List<byte>();
+                    int bytes = -1;
+                    int bytesRead = 0;
+                    do
                     {
-                        if (CrossConnectivity.Current.IsConnected)
+                        int toRead = 0;
+                        if ((size - bytesRead) > buffer.Length)
                         {
-                            byte[] buffer = new byte[1024];
-
-                            List<byte> data = new List<byte>();
-                            int bytes = -1;
-                            int bytesRead = 0;
-                            do
-                            {
-                                int toRead = 0;
-                                if ((size - bytesRead) > buffer.Length)
-                                {
-                                    toRead = buffer.Length;
-                                }
-                                else
-                                {
-                                    toRead = size - bytesRead;
-                                }
-
-                                bytes = ssl.Read(buffer, 0, toRead);
-                                bytesRead += bytes;
-
-                                if (bytes > 0)
-                                {
-                                    for (int i = 0; i < bytes; i++)
-                                    {
-                                        data.Add(buffer[i]);
-                                    }
-                                }
-                            } while (data.Count < size);
-                            data.RemoveRange(size, data.Count - size);
-                            return data.ToArray();
+                            toRead = buffer.Length;
                         }
                         else
                         {
-                            return new byte[0];
+                            toRead = size - bytesRead;
                         }
-                    }
+
+                        bytes = ssl.Read(buffer, 0, toRead);
+                        bytesRead += bytes;
+
+                        if (bytes > 0)
+                        {
+                            for (int i = 0; i < bytes; i++)
+                            {
+                                data.Add(buffer[i]);
+                            }
+                        }
+                    } while (data.Count < size);
+                    data.RemoveRange(size, data.Count - size);
+                    return data.ToArray();
                 }
                 else
+                {
                     return new byte[0];
+                }
             }
             catch (Exception ex)
             {
@@ -122,7 +124,7 @@ namespace appFBLA2019
             }
         }
 
-        public static bool SetupConnection()
+        private static bool SetupConnection()
         {
             try
             {

@@ -30,86 +30,72 @@ namespace appFBLA2019
 
         public static OperationReturnMessage LoginAccount(string username, string password)
         {
-            SendStringData($"{username}/{password}/-", ServerRequestTypes.LoginAccount);
-            return ReceiveFromServerORM();
+            return (OperationReturnMessage)SendStringData($"{username}/{password}/-", ServerRequestTypes.LoginAccount);
         }
 
         public static OperationReturnMessage RegisterAccount(string username, string password, string email)
         {
-            SendStringData($"{username}/{password}/{email}/-", ServerRequestTypes.RegisterAccount);
-            return ReceiveFromServerORM();
+            return (OperationReturnMessage)SendStringData($"{username}/{password}/{email}/-", ServerRequestTypes.RegisterAccount);
         }
 
         public static OperationReturnMessage ChangePassword(string username, string currentPassword, string newPassword)
         {
-            SendStringData($"{username}/{currentPassword}/{newPassword}/-", ServerRequestTypes.ChangePassword);
-            return ReceiveFromServerORM();
+            return (OperationReturnMessage)SendStringData($"{username}/{currentPassword}/{newPassword}/-", ServerRequestTypes.ChangePassword);
         }
 
         public static OperationReturnMessage ConfirmEmail(string username, string confirmationToken)
         {
-            SendStringData($"{username}/{confirmationToken}/-", ServerRequestTypes.ConfirmEmail);
-            return ReceiveFromServerORM();
+            return (OperationReturnMessage)SendStringData($"{username}/{confirmationToken}/-", ServerRequestTypes.ConfirmEmail);
         }
 
         public static OperationReturnMessage ChangeEmail(string username, string password, string newEmail)
         {
-            SendStringData($"{username}/{password}/{newEmail}/-", ServerRequestTypes.ChangeEmail);
-            return ReceiveFromServerORM();
+            return (OperationReturnMessage)SendStringData($"{username}/{password}/{newEmail}/-", ServerRequestTypes.ChangeEmail);
         }
 
         public static OperationReturnMessage DeleteAccount(string username, string password)
         {
-            SendStringData($"{username}/{password}/-", ServerRequestTypes.DeleteAccount);
-            return ReceiveFromServerORM();
+            return (OperationReturnMessage)SendStringData($"{username}/{password}/-", ServerRequestTypes.DeleteAccount);
         }
 
         public static string GetLastModifiedDate(string DBId)
         {
-            SendStringData($"{DBId}/-", ServerRequestTypes.GetLastModifiedDate);
-            return ReceiveFromServerStringData();
+            return (string)SendStringData($"{DBId}/-", ServerRequestTypes.GetLastModifiedDate);
         }
 
         public static string GetEmail(string username, string password)
         {
-            SendStringData($"{username}/{password}/-", ServerRequestTypes.GetEmail);
-            return ReceiveFromServerStringData();
+            return (string)SendStringData($"{username}/{password}/-", ServerRequestTypes.GetEmail);
         }
 
         public static OperationReturnMessage DeleteLevel(string DBId)
         {
-            SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{DBId}", ServerRequestTypes.DeleteLevel);
-            return ReceiveFromServerORM();
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{DBId}", ServerRequestTypes.DeleteLevel);
         }
 
         public static List<string[]> GetLevelsByAuthorName(string authorName, int chunk)
         {
-            SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetLevelsByAuthorName);
-            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
+            return (List<string[]>)SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetLevelsByAuthorName);
         }
 
         public static List<string[]> GetUsers(string username, int chunk)
         {
-            SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
-            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
+            return (List<string[]>)SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
         }
 
         public static List<string[]> GetLevelsByCategory(string category, int chunk)
         {
-            SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetLevelsByCategory);
-            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
+            return (List<string[]>)SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetLevelsByCategory);
         }
 
         public static List<string[]> GetLevelsByLevelName(string levelName, int chunk)
         {
-            SendStringData($"{levelName}/{chunk}/-", ServerRequestTypes.GetLevelsByLevelName);
-            return ReceiveFromServerListOfStringArrays() ?? new List<string[]>(0);
+            return (List<string[]>)SendStringData($"{levelName}/{chunk}/-", ServerRequestTypes.GetLevelsByLevelName);
         }
         
         public static int GetNumberOfLevelsByAuthorName(string username)
         {
-            SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfLevelsByAuthorName);
-            return int.Parse(ReceiveFromServerStringData() ?? "-1");
+            return int.Parse((string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfLevelsByAuthorName));
         }
 
         public static bool SendLevel(string relativeLevelPath)
@@ -119,9 +105,8 @@ namespace appFBLA2019
                 string realmFilePath = Directory.GetFiles(App.UserPath + relativeLevelPath, "*.realm").First();
                 Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                 LevelInfo info = realm.All<LevelInfo>().First();
-
-                SendRealmFile(realmFilePath);
-                if (ReceiveFromServerORM() != OperationReturnMessage.True)
+                
+                if (SendRealmFile(realmFilePath) != OperationReturnMessage.True)
                 {
                     throw new Exception();
                 }
@@ -132,9 +117,8 @@ namespace appFBLA2019
                     //[0] = path, [1] = fileName, [2] = dBId
                     string fileName = imageFilePaths[i].Split('/').Last().Split('.').First();
                     string dbID = info.DBId;
-                    SendImageFile(imageFilePaths[i], fileName, dbID);
-
-                    OperationReturnMessage message = ReceiveFromServerORM();
+                    OperationReturnMessage message = SendImageFile(imageFilePaths[i], fileName, dbID);
+                    
                     if (message == OperationReturnMessage.False)
                     {
                         throw new Exception();
@@ -142,11 +126,10 @@ namespace appFBLA2019
                 }
 
                 // When finished, confirm with server that level send has completed
-                SendStringData(
+                OperationReturnMessage finalizationMessage = (OperationReturnMessage)SendStringData(
                     $"{info.DBId}`{info.LastModifiedDate}`{imageFilePaths.Length + 1}`" +
                     $"{CredentialManager.Username}`{CredentialManager.Password}`-",
                     ServerRequestTypes.FinalizeLevelSend);
-                OperationReturnMessage finalizationMessage = ReceiveFromServerORM();
 
                 if (finalizationMessage == OperationReturnMessage.True)
                 {
@@ -168,13 +151,29 @@ namespace appFBLA2019
 
         public static bool GetLevel(string dBId, string levelName, string authorName)
         {
-            string levelPath = App.UserPath + "/" + $"{levelName}`{authorName}";
+            string levelPath = App.UserPath + "/" + $"{levelName}`{authorName}/";
 
             Directory.CreateDirectory(App.UserPath + "/" + $"{levelName}`{authorName}");
-            SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
+            byte[] realmFile = (byte[])SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
+            string realmFilePath = levelPath + "/" + levelName + realmFileExtension;
+            if (realmFile.Length > 0)
+                File.WriteAllBytes(realmFilePath, realmFile);
+            else
+                return false;
 
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+            IQueryable<Question> questionsWithPictures = realmDB.All<Question>().Where(question => question.NeedsPicture);
+            foreach (Question question in questionsWithPictures)
+            {
+                byte[] jpegFile = (byte[])SendStringData($"{question.QuestionId}/{dBId}/-", ServerRequestTypes.GetJPEGImage);
+                string jpegFilePath = levelPath + "/" + question.QuestionId + "/" + jpegFileExtension;
+                if (jpegFile.Length > 0)
+                    File.WriteAllBytes(jpegFilePath, jpegFile);
+                else
+                    return false;
+            }
 
-            throw new NotImplementedException();
+            return true;
         }
 
         #region Header Generators
@@ -219,26 +218,16 @@ namespace appFBLA2019
         #endregion
 
         #region Data Receives
-        private static OperationReturnMessage ReceiveFromServerORM()
+        private static OperationReturnMessage ReceiveFromServerORM(byte[] toSend)
         {
             if (CrossConnectivity.Current.IsConnected)
             {
-                byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes.Length < 5))
+                byte[] data = ServerConnector.SendByteArray(toSend);
+                if (data.Length > 0)
                 {
-                    int size = BitConverter.ToInt32(returnedBytes, 1);
-                    byte[] data = ServerConnector.ReadByteArray(size);
-                    if (data.Length > 0)
-                    {
-                        OperationReturnMessage message = (OperationReturnMessage)(data[0]);
-                        ServerConnector.CloseConn();
-                        return message;
-                    }
-                    else
-                    {
-                        ServerConnector.CloseConn();
-                        return OperationReturnMessage.FalseFailedConnection;
-                    }
+                    OperationReturnMessage message = (OperationReturnMessage)(data[0]);
+                    ServerConnector.CloseConn();
+                    return message;
                 }
                 else
                 {
@@ -252,27 +241,17 @@ namespace appFBLA2019
             }
         }
 
-        private static string ReceiveFromServerStringData()
+        private static string ReceiveFromServerStringData(byte[] toSend)
         {
             if (CrossConnectivity.Current.IsConnected)
             {
-                byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes.Length < 5))
+                byte[] data = ServerConnector.SendByteArray(toSend);
+                if (data.Length > 0)
                 {
-                    int size = BitConverter.ToInt32(returnedBytes, 1);
-                    byte[] data = ServerConnector.ReadByteArray(size);
-                    if (data.Length > 0)
-                    {
-                        string dataString = Encoding.Unicode.GetString(data);
-                        ServerConnector.CloseConn();
-                        dataString = dataString.Trim();
-                        return dataString;
-                    }
-                    else
-                    {
-                        ServerConnector.CloseConn();
-                        return "";
-                    }
+                    string dataString = Encoding.Unicode.GetString(data);
+                    ServerConnector.CloseConn();
+                    dataString = dataString.Trim();
+                    return dataString;
                 }
                 else
                 {
@@ -286,29 +265,19 @@ namespace appFBLA2019
             }
         }
 
-        private static List<string[]> ReceiveFromServerListOfStringArrays()
+        private static List<string[]> ReceiveFromServerListOfStringArrays(byte[] toSend)
         {
             if (CrossConnectivity.Current.IsConnected)
             {
-                byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes.Length < 5))
+                byte[] data = ServerConnector.SendByteArray(toSend);
+                if (data.Length > 0)
                 {
-                    int size = BitConverter.ToInt32(returnedBytes, 1);
-                    byte[] data = ServerConnector.ReadByteArray(size);
-                    if (data.Length > 0)
-                    {
-                        BinaryFormatter binaryFormatter = new BinaryFormatter();
-                        MemoryStream memStream = new MemoryStream();
-                        memStream.Write(data, 0, data.Length);
-                        memStream.Position = 0;
-                        ServerConnector.CloseConn();
-                        return binaryFormatter.Deserialize(memStream) as List<string[]>;
-                    }
-                    else
-                    {
-                        ServerConnector.CloseConn();
-                        return new List<string[]>(0);
-                    }
+                    BinaryFormatter binaryFormatter = new BinaryFormatter();
+                    MemoryStream memStream = new MemoryStream();
+                    memStream.Write(data, 0, data.Length);
+                    memStream.Position = 0;
+                    ServerConnector.CloseConn();
+                    return binaryFormatter.Deserialize(memStream) as List<string[]>;
                 }
                 else
                 {
@@ -322,22 +291,12 @@ namespace appFBLA2019
             }
         }
 
-        private static byte[] ReceiveFromServerBytes()
+        private static byte[] ReceiveFromServerBytes(byte[] toSend)
         {
             if (CrossConnectivity.Current.IsConnected)
             {
-                byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes.Length < 5))
-                {
-                    int size = BitConverter.ToInt32(returnedBytes, 1);
-                    byte[] data = ServerConnector.ReadByteArray(size);
-                    return data;
-                }
-                else
-                {
-                    ServerConnector.CloseConn();
-                    return new byte[0];
-                }
+                byte[] data = ServerConnector.SendByteArray(toSend);
+                return data;
             }
             else
             {
@@ -352,7 +311,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="data">     The string data in Unicode to send. </param>
         /// <param name="dataType"> The type of request to send to the server. </param>
-        private static void SendStringData(string data, ServerRequestTypes dataType)
+        private static object SendStringData(string data, ServerRequestTypes dataType)
         {
             string dataAsString = data;
             byte[] dataAsBytes = Encoding.Unicode.GetBytes(dataAsString);
@@ -360,14 +319,33 @@ namespace appFBLA2019
             byte[] toSend = new byte[headerData.Length + dataAsBytes.Length];
             headerData.CopyTo(toSend, 0);
             dataAsBytes.CopyTo(toSend, headerData.Length);
-            ServerConnector.SendByteArray(toSend);
+
+            switch (dataType)
+            {
+                case ServerRequestTypes.GetEmail:
+                case ServerRequestTypes.GetLastModifiedDate:
+                case ServerRequestTypes.GetNumberOfLevelsByAuthorName:
+                    return ReceiveFromServerStringData(toSend);
+
+                case ServerRequestTypes.GetLevelsByAuthorName:
+                case ServerRequestTypes.GetLevelsByLevelName:
+                case ServerRequestTypes.GetLevelsByCategory:
+                    return ReceiveFromServerListOfStringArrays(toSend);
+
+                case ServerRequestTypes.GetRealmFile:
+                case ServerRequestTypes.GetJPEGImage:
+                    return ReceiveFromServerBytes(toSend);
+                    
+                default:
+                    return ReceiveFromServerORM(toSend);
+            }
         }
 
         /// <summary>
         /// Send realm file to the server.
         /// </summary>
         /// <param name="path"> Path to the realm file on local device. </param>
-        private static void SendRealmFile(string path)
+        private static OperationReturnMessage SendRealmFile(string path)
         {
             byte[] realmBytes = File.ReadAllBytes(path);
             byte[] realmHeader = GenerateRealmHeader();
@@ -377,7 +355,7 @@ namespace appFBLA2019
             header.CopyTo(toSend, 0);
             realmHeader.CopyTo(toSend, header.Length);
             realmBytes.CopyTo(toSend, header.Length + realmHeader.Length);
-            ServerConnector.SendByteArray(toSend);
+            return ReceiveFromServerORM(toSend);
         }
 
         /// <summary>
@@ -386,7 +364,7 @@ namespace appFBLA2019
         /// <param name="path">     Path to JPEG image file on local device. </param>
         /// <param name="fileName"> Name of the JPEG image file. </param>
         /// <param name="dbId">     DBId of the database image is contained in. </param>
-        private static void SendImageFile(string path, string fileName, string dbId)
+        private static OperationReturnMessage SendImageFile(string path, string fileName, string dbId)
         {
             byte[] imageBytes = File.ReadAllBytes(path);
             byte[] imageHeader = GenerateImageHeader(fileName, dbId);
@@ -396,7 +374,7 @@ namespace appFBLA2019
             header.CopyTo(toSend, 0);
             imageHeader.CopyTo(toSend, header.Length);
             imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
-            ServerConnector.SendByteArray(toSend);
+            return ReceiveFromServerORM(toSend);
         }
 
         public static bool SendBugReport(string report, byte[] image = null)
@@ -418,9 +396,8 @@ namespace appFBLA2019
             imageHeader.CopyTo(toSend, header.Length);
             imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
             reportBytes.CopyTo(toSend, header.Length + imageHeader.Length + imageBytes.Length);
-
-            ServerConnector.SendByteArray(toSend);
-            switch(ReceiveFromServerORM())
+            
+            switch(ReceiveFromServerORM(toSend))
             {
                 case OperationReturnMessage.True:
                     return true;
