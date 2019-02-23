@@ -137,7 +137,7 @@ namespace appFBLA2019
                     OperationReturnMessage message = ReceiveFromServerORM();
                     if (message == OperationReturnMessage.False)
                     {
-                        return false;
+                        throw new Exception();
                     }
                 }
 
@@ -156,7 +156,7 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    return false;
+                    throw new Exception();
                 }
             }
             catch
@@ -164,6 +164,17 @@ namespace appFBLA2019
                 // Alert server that level send failed Delete records
                 return false;
             }
+        }
+
+        public static bool GetLevel(string dBId, string levelName, string authorName)
+        {
+            string levelPath = App.UserPath + "/" + $"{levelName}`{authorName}";
+
+            Directory.CreateDirectory(App.UserPath + "/" + $"{levelName}`{authorName}");
+            SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
+
+
+            throw new NotImplementedException();
         }
 
         #region Header Generators
@@ -208,16 +219,16 @@ namespace appFBLA2019
         #endregion
 
         #region Data Receives
-        public static OperationReturnMessage ReceiveFromServerORM()
+        private static OperationReturnMessage ReceiveFromServerORM()
         {
             if (CrossConnectivity.Current.IsConnected)
             {
                 byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes == null || returnedBytes.Length < 5))
+                if (!(returnedBytes.Length < 5))
                 {
                     int size = BitConverter.ToInt32(returnedBytes, 1);
                     byte[] data = ServerConnector.ReadByteArray(size);
-                    if (data != null)
+                    if (data.Length > 0)
                     {
                         OperationReturnMessage message = (OperationReturnMessage)(data[0]);
                         ServerConnector.CloseConn();
@@ -241,16 +252,16 @@ namespace appFBLA2019
             }
         }
 
-        public static string ReceiveFromServerStringData()
+        private static string ReceiveFromServerStringData()
         {
             if (CrossConnectivity.Current.IsConnected)
             {
                 byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes == null || returnedBytes.Length < 5))
+                if (!(returnedBytes.Length < 5))
                 {
                     int size = BitConverter.ToInt32(returnedBytes, 1);
                     byte[] data = ServerConnector.ReadByteArray(size);
-                    if (data != null)
+                    if (data.Length > 0)
                     {
                         string dataString = Encoding.Unicode.GetString(data);
                         ServerConnector.CloseConn();
@@ -275,16 +286,16 @@ namespace appFBLA2019
             }
         }
 
-        public static List<string[]> ReceiveFromServerListOfStringArrays()
+        private static List<string[]> ReceiveFromServerListOfStringArrays()
         {
             if (CrossConnectivity.Current.IsConnected)
             {
                 byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
-                if (!(returnedBytes == null || returnedBytes.Length < 5))
+                if (!(returnedBytes.Length < 5))
                 {
                     int size = BitConverter.ToInt32(returnedBytes, 1);
                     byte[] data = ServerConnector.ReadByteArray(size);
-                    if (data != null)
+                    if (data.Length > 0)
                     {
                         BinaryFormatter binaryFormatter = new BinaryFormatter();
                         MemoryStream memStream = new MemoryStream();
@@ -296,18 +307,41 @@ namespace appFBLA2019
                     else
                     {
                         ServerConnector.CloseConn();
-                        return null;
+                        return new List<string[]>(0);
                     }
                 }
                 else
                 {
                     ServerConnector.CloseConn();
-                    return null;
+                    return new List<string[]>(0);
                 }
             }
             else
             {
-                return null;
+                return new List<string[]>(0);
+            }
+        }
+
+        private static byte[] ReceiveFromServerBytes()
+        {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                byte[] returnedBytes = ServerConnector.ReadByteArray(headerSize);
+                if (!(returnedBytes.Length < 5))
+                {
+                    int size = BitConverter.ToInt32(returnedBytes, 1);
+                    byte[] data = ServerConnector.ReadByteArray(size);
+                    return data;
+                }
+                else
+                {
+                    ServerConnector.CloseConn();
+                    return new byte[0];
+                }
+            }
+            else
+            {
+                return new byte[0];
             }
         }
         #endregion

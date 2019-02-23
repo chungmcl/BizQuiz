@@ -108,17 +108,17 @@ namespace appFBLA2019
                         }
                         else
                         {
-                            return null;
+                            return new byte[0];
                         }
                     }
                 }
                 else
-                    return null;
+                    return new byte[0];
             }
             catch (Exception ex)
             {
                 BugReportHandler.SubmitReport(ex, "ServerConnector.ReadByteArray()");
-                return null;
+                return new byte[0];
             }
         }
 
