@@ -12,47 +12,54 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class FeaturedPage : ContentPage
 	{
-        List<SearchInfo> FeaturedLevels;
+        private string category = "All";
+
         public FeaturedPage()
         {
             InitializeComponent();
             this.currentChunk = 1;
         }
 
-        protected override void OnAppearing()
-        {
+        protected async override void OnAppearing()
+            {
             this.levelsRemaining = true;
-            try
-            {
-                //Device.BeginInvokeOnMainThread(() => {
-                this.SearchedStack.Children.Clear();
-                this.ActivityIndicator.IsVisible = true;
-                this.ActivityIndicator.IsRunning = true;
-                //});
-                this.AddLevels(SearchUtils.GetLevelsByAuthorChunked("BizQuiz", 1));
-                //Device.BeginInvokeOnMainThread(() =>
-                //{
-                this.ActivityIndicator.IsVisible = false;
-                this.ActivityIndicator.IsRunning = false;
-                //});
-            }
-            catch (Exception ex)
-            {
-                BugReportHandler.SubmitReport(ex, nameof(FeaturedPage));
-            }
+            await this.Refresh();
         }
 
         private bool levelsRemaining;
         private int currentChunk;
 
+        private async Task Refresh()
+        {
+            SearchedStack.Children.Clear();
+            try
+            {
+                Device.BeginInvokeOnMainThread(() => {
+                    this.SearchedStack.Children.Clear();
+                    this.ActivityIndicator.IsVisible = true;
+                    this.ActivityIndicator.IsRunning = true;
+                });
+                await Task.Run(() => this.AddLevels(SearchUtils.GetLevelsByAuthorChunked("BizQuiz", 1)));
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    this.ActivityIndicator.IsVisible = false;
+                    this.ActivityIndicator.IsRunning = false;
+                });
+            }
+            catch (Exception ex)
+            {
+                BugReportHandler.SubmitReport(ex, nameof(FeaturedPage));
+                await this.DisplayAlert("Error", "Couldn't get levels", "Ok");
+            }
+        }
+
         private async Task Search()
         {
-            List<Task> toAwait = new List<Task>();
             List<SearchInfo> chunk = new List<SearchInfo>();
-                chunk = SearchUtils.GetLevelsByAuthorChunked("BizQuiz", this.currentChunk);
+            chunk = SearchUtils.GetLevelsByAuthorChunked("BizQuiz", this.currentChunk);
             if (chunk.Count < 20)
-                levelsRemaining = false;
-            await Task.Run(() => AddLevels(chunk));
+                this.levelsRemaining = false;
+            await Task.Run(() => this.AddLevels(chunk));
         }
 
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
@@ -69,7 +76,7 @@ namespace appFBLA2019
                 }
                 catch
                 {
-                    await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+                    await this.DisplayAlert("Error", "Couldn't get levels", "Ok");
                 }
             }
         }
@@ -80,67 +87,82 @@ namespace appFBLA2019
         /// <param name="level"></param>
         private void AddLevels(List<SearchInfo> levels)
         {
+
             foreach (SearchInfo level in levels)
             {
-                Frame levelFrame = new Frame
+                if (this.category == "All" || level.Category == this.category) // Only add level if the category is what user picked
                 {
-                    VerticalOptions = LayoutOptions.Start,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    CornerRadius = 10
-                };
+                    Frame levelFrame = new Frame
+                    {
+                        VerticalOptions = LayoutOptions.Start,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        CornerRadius = 10
+                    };
 
-                StackLayout frameStack = new StackLayout
-                {
-                    FlowDirection = FlowDirection.LeftToRight,
-                    Orientation = StackOrientation.Vertical
-                };
+                    StackLayout frameStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Vertical
+                    };
 
-                StackLayout topStack = new StackLayout
-                {
-                    FlowDirection = FlowDirection.LeftToRight,
-                    Orientation = StackOrientation.Horizontal
-                };
+                    StackLayout topStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Horizontal
+                    };
 
-                Label levelName = new Label
+                    Label levelName = new Label
+                    {
+                        Text = level.LevelName,
+                        FontAttributes = FontAttributes.Bold,
+                        FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
+                        HorizontalOptions = LayoutOptions.StartAndExpand
+                    };
+                    topStack.Children.Add(levelName);
+
+                    ImageButton ImageButtonSubscribe = new ImageButton
+                    {
+                        StyleId = level.DBId,
+                        HeightRequest = 30,
+                        BackgroundColor = Color.White,
+                        HorizontalOptions = LayoutOptions.End
+                    };
+
+                    // source is add if not subscribed and if they are then source is check
+                    ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+
+                    ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
+                    topStack.Children.Add(ImageButtonSubscribe);
+
+                    frameStack.Children.Add(topStack);
+
+                    Label levelAuthor = new Label
+                    {
+                        Text = "Created by: " + level.Author,
+                    };
+                    frameStack.Children.Add(levelAuthor);
+
+                    Label levelCategory = new Label
+                    {
+                        Text = "Category: " + level.Category,
+                    };
+                    frameStack.Children.Add(levelCategory);
+
+                    levelFrame.Content = frameStack;
+                    Device.BeginInvokeOnMainThread(() =>
+                    this.SearchedStack.Children.Add(levelFrame));
+                }
+            }
+            if (this.SearchedStack.Children.Count() == 0)
+            {
+                Label FeaturedMessage = new Label
                 {
-                    Text = level.LevelName,
-                    FontAttributes = FontAttributes.Bold,
+                    Text = "No featured quizzes here yet. Check back later!",
                     FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-                    HorizontalOptions = LayoutOptions.StartAndExpand
+                    HorizontalOptions = LayoutOptions.CenterAndExpand
                 };
-                topStack.Children.Add(levelName);
-
-                ImageButton ImageButtonSubscribe = new ImageButton
-                {
-                    StyleId = level.DBId,
-                    HeightRequest = 30,
-                    BackgroundColor = Color.White,
-                    HorizontalOptions = LayoutOptions.End
-                };
-
-                // source is add if not subscribed and if they are then source is check
-                ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
-
-                ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
-                topStack.Children.Add(ImageButtonSubscribe);
-
-                frameStack.Children.Add(topStack);
-
-                Label levelAuthor = new Label
-                {
-                    Text = "Created by: " + level.Author,
-                };
-                frameStack.Children.Add(levelAuthor);
-
-                Label levelCategory = new Label
-                {
-                    Text = "Category: " + level.Category,
-                };
-                frameStack.Children.Add(levelCategory);
-
-                levelFrame.Content = frameStack;
                 Device.BeginInvokeOnMainThread(() =>
-                SearchedStack.Children.Add(levelFrame));
+                    this.SearchedStack.Children.Add(FeaturedMessage));
             }
         }
 
@@ -154,7 +176,7 @@ namespace appFBLA2019
             ImageButton button = (sender as ImageButton);
             if (button.Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
             {
-                bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+                bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
                 if (answer)
                 {
                     await button.FadeTo(0, 150, Easing.CubicInOut);
@@ -177,7 +199,14 @@ namespace appFBLA2019
 
         private void Search_Activated(object sender, EventArgs e)
         {
-            Navigation.PushModalAsync(new StorePage());
+            this.Navigation.PushModalAsync(new StorePage());
+        }
+
+        private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex];
+            this.currentChunk = 1;
+            await this.Refresh();
         }
     }
 }
