@@ -135,6 +135,7 @@ namespace appFBLA2019
                 {
                     LevelInfo infoCopy = new LevelInfo(info);
                     infoCopy.SyncStatus = 2;
+                    LevelRosterDatabase.EditLevelInfo(infoCopy);
                     return true;
                 }
                 else

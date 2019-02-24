@@ -31,6 +31,7 @@ namespace appFBLA2019
 
         private async Task Refresh()
         {
+            SearchedStack.Children.Clear();
             try
             {
                 Device.BeginInvokeOnMainThread(() => {
@@ -89,7 +90,7 @@ namespace appFBLA2019
 
             foreach (SearchInfo level in levels)
             {
-                if(level.Category == this.category || this.category == "All") // Only add level if the category is what user picked
+                if (this.category == "All" || level.Category == this.category) // Only add level if the category is what user picked
                 {
                     Frame levelFrame = new Frame
                     {
@@ -154,7 +155,14 @@ namespace appFBLA2019
             }
             if (this.SearchedStack.Children.Count() == 0)
             {
-                // display no levels found
+                Label FeaturedMessage = new Label
+                {
+                    Text = "No featured quizzes here yet. Check back later!",
+                    FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
+                    HorizontalOptions = LayoutOptions.CenterAndExpand
+                };
+                Device.BeginInvokeOnMainThread(() =>
+                    this.SearchedStack.Children.Add(FeaturedMessage));
             }
         }
 

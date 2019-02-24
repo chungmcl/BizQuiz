@@ -4,11 +4,11 @@
              x:Class="appFBLA2019.ProfilePage"
              xmlns:local="clr-namespace:appFBLA2019">
     <ContentPage.Content>
-        <StackLayout>
-            <local:LoginPage x:Name="LocalLoginPage" IsVisible="False"/>
+        <Grid>
+            <local:LoginPage x:Name="LocalLoginPage" IsVisible="False" Grid.Row="0"/>
             <StackLayout x:Name="StackLayoutProfilePageContent" 
-                         IsVisible="False">
-                <ScrollView Scrolled="ScrollSearch_Scrolled">
+                         IsVisible="False" Grid.Row="0" Padding="10">
+                <ScrollView Scrolled="ScrollSearch_Scrolled" VerticalOptions="StartAndExpand">
                     <StackLayout Padding="20">
                         <Label x:Name="LabelUsername" HorizontalOptions="CenterAndExpand" VerticalOptions="StartAndExpand" FontSize="28" FontAttributes="Bold" Opacity="0"/>
                         <Label x:Name="QuizNumber" HorizontalOptions="CenterAndExpand" FontSize="18" />
@@ -21,7 +21,11 @@
                         </StackLayout>
                     </StackLayout>
                 </ScrollView>
+                <Frame CornerRadius="25" Padding="0" IsClippedToBounds="False" HorizontalOptions="Center">
+                    <Button x:Name="ButtonCreateLevel" FontSize="24" TextColor="White" Text="Create new Quiz"
+                            Clicked="New_Activated" BackgroundColor="Accent" Padding="10,0" HeightRequest="50"/>
+                </Frame>
             </StackLayout>
-        </StackLayout>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

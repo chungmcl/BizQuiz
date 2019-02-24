@@ -42,32 +42,5 @@ namespace appFBLA2019
             }
             this.IsLoading = false;
         }
-
-        /// <summary>
-        /// When the user wants to create a brand new level
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void New_Activated(object sender, EventArgs e)
-        {
-            if (CredentialManager.IsLoggedIn)
-            {
-                CreateNewLevelPage level = new CreateNewLevelPage();
-                this.Navigation.PushAsync(level);
-            }
-            else
-            {
-                if (await this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Login/Create Account","Go Back" ))
-                {
-                    ProfilePage profilePage = new ProfilePage();
-                    if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
-                    {
-                        await profilePage.UpdateProfilePage();
-                    }
-                    profilePage.SetTemporary();
-                    await this.Navigation.PushModalAsync(profilePage);
-                }
-            }
-        }
     }
 }

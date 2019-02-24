@@ -143,26 +143,8 @@ namespace appFBLA2019
                         StyleId = "/" + this.category + "/" + level.LevelName + "`" + level.AuthorName
                     };
 
-                    if (level.SyncStatus == 3)
-                    {
-                        Sync.Source = "ic_cloud_off_black_48dp.png";
-                        Sync.Clicked += this.SyncOffline_Clicked;
-                    }
-                    else if (level.SyncStatus == 2)
-                    {
-                        Sync.Source = "ic_cloud_done_black_48dp.png";
-                        Sync.Clicked += this.SyncNoChange_Clicked;
-                    }
-                    else if (level.SyncStatus == 1)
-                    {
-                        Sync.Source = "ic_cloud_upload_black_48dp.png";
-                        Sync.Clicked += this.SyncUpload_Clicked;
-                    }
-                    else if (level.SyncStatus == 0)
-                    {
-                        Sync.Source = "ic_cloud_download_black_48dp.png";
-                        Sync.Clicked += this.SyncDownload_Clicked;
-                    }
+
+                    
 
                     topStack.Children.Add(Sync);
 
@@ -262,23 +244,57 @@ namespace appFBLA2019
                     };
                     frameStack.Children.Add(Author);
 
+                    if (level.SyncStatus == 3)
+                    {
+                        Sync.Source = "ic_cloud_off_black_48dp.png";
+                        Sync.Clicked += this.SyncOffline_Clicked;
+                    }
+                    else if (level.SyncStatus == 2)
+                    {
+                        Sync.Source = "ic_cloud_done_black_48dp.png";
+                        Sync.Clicked += this.SyncNoChange_Clicked;
+                    }
+                    else if (level.SyncStatus == 1)
+                    {
+                        Sync.Source = "ic_cloud_upload_black_48dp.png";
+                        Sync.Clicked += this.SyncUpload_Clicked;
+                    }
+                    else if (level.SyncStatus == 0 || level.SyncStatus == 4)
+                    {
+                        Sync.Source = "ic_cloud_download_black_48dp.png";
+                        Sync.Clicked += this.SyncDownload_Clicked;
+                        if (level.SyncStatus == 4)
+                        {
+                            frame.StyleId = "offline";
+                            ButtonEdit.StyleId = "offline";
+                        }
+                    }
+
+
                     TapGestureRecognizer recognizer = new TapGestureRecognizer();
                     recognizer.Tapped += async (object sender, EventArgs e) =>
                     {
-                        frame.GestureRecognizers.Remove(recognizer);
-                        frame.BackgroundColor = Color.LightGray;
-                        Seperator.Color = Color.Gray;
-                        imageButtonMenu.BackgroundColor = Color.LightGray;
-                        Sync.BackgroundColor = Color.LightGray;
-                        Level newLevel = new Level(this.category, level.LevelName, level.AuthorName);
-                        newLevel.LoadQuestions();
-                        await this.RemoveMenu(frameMenu);
-                        await this.Navigation.PushAsync(new Game(newLevel));
-                        frame.BackgroundColor = Color.Default;
-                        Seperator.Color = Color.LightGray;
-                        imageButtonMenu.BackgroundColor = Color.White;
-                        Sync.BackgroundColor = Color.White;
-                        frame.GestureRecognizers.Add(recognizer);
+                        if (frame.StyleId != "offline")
+                        {
+                            frame.GestureRecognizers.Remove(recognizer);
+                            frame.BackgroundColor = Color.LightGray;
+                            Seperator.Color = Color.Gray;
+                            imageButtonMenu.BackgroundColor = Color.LightGray;
+                            Sync.BackgroundColor = Color.LightGray;
+                            Level newLevel = new Level(this.category, level.LevelName, level.AuthorName);
+                            newLevel.LoadQuestions();
+                            await this.RemoveMenu(frameMenu);
+                            await this.Navigation.PushAsync(new Game(newLevel));
+                            frame.BackgroundColor = Color.Default;
+                            Seperator.Color = Color.LightGray;
+                            imageButtonMenu.BackgroundColor = Color.White;
+                            Sync.BackgroundColor = Color.White;
+                            frame.GestureRecognizers.Add(recognizer);
+                        }
+                        else
+                        {
+                            await this.DisplayAlert("Hold on!", "In order to study with this quiz, you must download it first", "OK");
+                        }
                     };
 
                     frame.GestureRecognizers.Add(recognizer);
@@ -287,6 +303,7 @@ namespace appFBLA2019
                     {
                         return 0;
                     }));
+
 
                     frame.Content = frameLayout;
                     this.ButtonStack.Children.Add(frame);
@@ -429,7 +446,15 @@ namespace appFBLA2019
         {
             Frame frame = ((Frame)((StackLayout)((Button)sender).Parent).Parent);
             await this.RemoveMenu(frame);
-            if (CredentialManager.IsLoggedIn)
+            if (!CredentialManager.IsLoggedIn)
+            {
+                await this.DisplayAlert("Hold on!", "Before you can edit any levels, you have to login.", "Ok");
+            }
+            else if (((Button)sender).StyleId != "offline")
+            {
+                await this.DisplayAlert("Hold on!", "This quiz isn't on your device, download it before you try to edit it", "Ok");
+            }
+            else
             {
                 string levelTitle = ((Label)((StackLayout)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[0]).Children[0]).Text;
                 string levelAuthor = ((Label)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[2]).Text.Split(':')[1].Trim();
@@ -442,10 +467,6 @@ namespace appFBLA2019
                     levelPage.AddNewQuestion(question);
                 }
                 await this.Navigation.PushAsync(levelPage);
-            }
-            else
-            {
-                await this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Ok");
             }
         }
     }
