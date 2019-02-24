@@ -15,7 +15,6 @@ namespace appFBLA2019
         public bool IsLoading { get; private set; }
         public bool IsOnLoginPage { get; private set; }
         private AccountSettingsPage accountSettingsPage;
-        private bool isSetup;
         private int currentChunk;
 
         public ProfilePage()
@@ -32,78 +31,59 @@ namespace appFBLA2019
             };
         }
 
-        public async Task UpdateProfilePage(bool updateLoginStatus)
+        /// <summary>
+        /// Update the Profile Tab Page to either show profile info or the login page if not logged in.
+        /// </summary>
+        /// <returns></returns>
+        public async Task UpdateProfilePage()
         {
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                // Initialize profile content to be hidden to avoid wonky UI behavior during async loading
-                this.StackLayoutProfilePageContent.IsVisible = false;
-                this.ActivityIndicator.IsVisible = true;
-                this.ActivityIndicator.IsRunning = true;
-                this.IsLoading = true;
-            });
-
-            if (updateLoginStatus)
-                await CredentialManager.CheckLoginStatus();
-
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
-                this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
-                if (this.StackLayoutProfilePageContent.IsVisible)
-                {
-                    if (this.ToolbarItems.Count <= 0)
-                    {
-                        ToolbarItem accountSettingsButton = new ToolbarItem();
-                        accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
-                        accountSettingsButton.Icon = ImageSource.FromFile("ic_settings_white_48dp.png") as FileImageSource;
-                        this.ToolbarItems.Add(accountSettingsButton);
-                    }
-
-                    // Get number of quizes from server.
-                    this.IsOnLoginPage = false;
-                                      
-                    this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
-                    if (!isSetup)
-                    {
-                        this.SetupLocalQuizzes();
-                        this.SetupNetworkQuizzes();
-                        this.isSetup = true; ;
-                    }
-                }
-                else
-                {
-                    if (this.ToolbarItems.Count > 0)
-                        this.ToolbarItems.Clear();
-
-                    this.IsOnLoginPage = true;
-                    this.LocalLoginPage.LoggedIn += OnLoggedIn;
-                }
-
-                this.ActivityIndicator.IsRunning = false;
-                this.ActivityIndicator.IsVisible = false;
-                this.IsLoading = false;                    
-            });
-        }
-
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
+            this.IsLoading = true;
+            this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
+            this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
             if (this.StackLayoutProfilePageContent.IsVisible)
+                await UpdateProfileContent();
+            else
             {
-                this.LabelUsername.Opacity = 0;
-                this.LevelStack.Children.Clear();
-                this.isSetup = false;
+                if (this.ToolbarItems.Count > 0)
+                    this.ToolbarItems.Clear();
+
+                this.IsOnLoginPage = true;
+                this.LocalLoginPage.LoggedIn += OnLoggedIn;
             }
+
+            this.IsLoading = false;
         }
 
-        protected override void OnAppearing()
+        /// <summary>
+        /// Loads the profile content if the user is logged in.
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateProfileContent()
         {
-            base.OnAppearing();
-            if (this.StackLayoutProfilePageContent.IsVisible)
+            this.LevelStack.IsVisible = false;
+            this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
+            this.ActivityIndicator.IsVisible = true;
+            this.ActivityIndicator.IsRunning = true;
+
+            await Task.Run(() =>
             {
+                this.SetupLocalQuizzes();
                 this.SetupNetworkQuizzes();
+            });
+
+            if (this.ToolbarItems.Count <= 0)
+            {
+                ToolbarItem accountSettingsButton = new ToolbarItem();
+                accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
+                accountSettingsButton.Icon = ImageSource.FromFile("ic_settings_white_48dp.png") as FileImageSource;
+                this.ToolbarItems.Add(accountSettingsButton);
             }
+            
+            this.IsOnLoginPage = false;
+
+            this.ActivityIndicator.IsRunning = false;
+            this.ActivityIndicator.IsVisible = false;
+            this.LevelStack.IsVisible = true;
         }
 
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
@@ -195,7 +175,7 @@ namespace appFBLA2019
         private void AddLevels(List<SearchInfo> levels, bool isNetworkLevels)
         {
             
-                foreach (SearchInfo level in levels)
+            foreach (SearchInfo level in levels)
             {
                 //if its not already stored locally (only apllies to networklevels)
                 if (isNetworkLevels && LevelRosterDatabase.GetLevelInfo(level.DBId) != null)
@@ -258,8 +238,7 @@ namespace appFBLA2019
             this.accountSettingsPage.SignedOut += OnSignedOut;
             this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            this.SetupNetworkQuizzes();
-            await Task.Run(() => UpdateProfilePage(false));
+            await UpdateProfilePage();
         }
 
         private string GetHello()
@@ -272,7 +251,7 @@ namespace appFBLA2019
         public async void OnSignedOut(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = null;
-            await Task.Run(() => UpdateProfilePage(false));
+            await UpdateProfilePage();
         }
     }
 }

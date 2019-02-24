@@ -62,7 +62,7 @@ namespace appFBLA2019
                     ProfilePage profilePage = new ProfilePage();
                     if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                     {
-                        await Task.Run(() => profilePage.UpdateProfilePage(CrossConnectivity.Current.IsConnected));
+                        await profilePage.UpdateProfilePage();
                     }
                     profilePage.SetTemporary();
                     await this.Navigation.PushModalAsync(profilePage);

@@ -70,6 +70,7 @@ namespace appFBLA2019
             this.ButtonToCreateAccountPage.IsEnabled = true;
             this.ActivityIndicator.IsRunning = false;
             this.ActivityIndicator.IsVisible = false;
+            this.EntryPassword.Text = "";
         }
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)

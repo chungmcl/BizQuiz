@@ -16,7 +16,7 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainPage : Xamarin.Forms.TabbedPage
     {
-        public enum TabID { levelCategoriesPage, levelStorePage, profilePage}
+        public enum TabID : int { levelCategoriesPage, levelStorePage, profilePage}
 
         public MainPage()
         {
@@ -43,7 +43,7 @@ namespace appFBLA2019
                     ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[(int)TabID.profilePage];
                     if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                     {
-                        await Task.Run(() => profilePage.UpdateProfilePage(CrossConnectivity.Current.IsConnected));
+                        await profilePage.UpdateProfilePage();
                     }
                 }
                 break;
