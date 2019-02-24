@@ -334,14 +334,18 @@ namespace appFBLA2019
 
             if (await Task.Run(() => ServerOperations.SendLevel(levelPath)))
             {
+                await button.FadeTo(0, 150, Easing.CubicInOut);
                 button.Source = "ic_cloud_done_black_48dp.png";
+                await button.FadeTo(1, 150, Easing.CubicInOut);
                 button.IsEnabled = true;
                 button.Clicked += SyncNoChange_Clicked;
                 
             }
             else
             {
+                await button.FadeTo(0, 150, Easing.CubicInOut);
                 button.Source = "ic_cloud_upload_black_48dp.png";
+                await button.FadeTo(1, 150, Easing.CubicInOut);
                 button.IsEnabled = true;
                 await DisplayAlert("Level Upload Failed.", 
                     "This level could not be uploaded to the server. Please try again.", 
