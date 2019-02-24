@@ -348,9 +348,11 @@ namespace appFBLA2019
                 }
                 else // edit
                 {
-                    LevelInfo updatedLevelInfo = new LevelInfo(DBHandler.Database.GetLevelInfo());
-                    updatedLevelInfo.LevelName = this.EntryLevelName.Text.Trim();
-                    updatedLevelInfo.LastModifiedDate = DateTime.Now.ToString();
+                    LevelInfo updatedLevelInfo = new LevelInfo(DBHandler.Database.GetLevelInfo())
+                    {
+                        LevelName = this.EntryLevelName.Text.Trim(),
+                        LastModifiedDate = DateTime.Now.ToString()
+                    };
                     DBHandler.Database.EditLevelInfo(updatedLevelInfo);
 
                     for (int i = 0; i <= previousQuestions.Count() - 1; i++)

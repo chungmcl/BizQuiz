@@ -108,9 +108,9 @@ namespace appFBLA2019
             Realm threadInstance = Realm.GetInstance(threadConfig);
 
             List<LevelInfo> LevelInfos = new List<LevelInfo>(threadInstance.All<LevelInfo>());
-            for (int i = 0; i < LevelInfos.Count(); i++)
+            if (CrossConnectivity.Current.IsConnected)
             {
-                if (CrossConnectivity.Current.IsConnected)
+                for (int i = 0; i < LevelInfos.Count(); i++)
                 {
                     if (CredentialManager.IsLoggedIn)
                     {
@@ -172,13 +172,42 @@ namespace appFBLA2019
                         }
                     }
                 }
-                else
+            }
+            else
+            {
+                for (int i = 0; i < LevelInfos.Count; i++)
                 {
                     LevelInfo copy = new LevelInfo(LevelInfos[i])
                     {
                         SyncStatus = 3 // 3 represents offline
                     };
                     EditLevelInfo(threadInstance, copy);
+                }
+            }
+
+            int numberOfLevelsOnServer = ServerOperations.GetNumberOfLevelsByAuthorName(CredentialManager.Username);
+            if (numberOfLevelsOnServer > LevelInfos.Count)
+            {
+                string[] dbIds = new string[LevelInfos.Count];
+                for (int i = 0; i < dbIds.Length; i++)
+                    dbIds[i] = LevelInfos[i].DBId;
+
+                List<string[]> missingLevels = ServerOperations.GetMissingLevelsByAuthorName(CredentialManager.Username, dbIds);
+                foreach (string[] missingLevel in missingLevels)
+                {
+                    LevelInfo info = new LevelInfo
+                    {
+                        DBId = missingLevel[0],
+                        AuthorName = missingLevel[1],
+                        LevelName = missingLevel[2],
+                        Category = missingLevel[3],
+                        LastModifiedDate = missingLevel[4],
+                        SyncStatus = 4
+                    };
+                    threadInstance.Write(() =>
+                    {
+                        threadInstance.Add(info);
+                    });
                 }
             }
         }

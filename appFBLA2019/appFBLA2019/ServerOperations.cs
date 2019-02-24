@@ -78,6 +78,14 @@ namespace appFBLA2019
             return (List<string[]>)SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetLevelsByAuthorName);
         }
 
+        public static List<string[]> GetMissingLevelsByAuthorName(string authorName, string[] dBIdsOnDevice)
+        {
+            string queryString = $"{authorName}";
+            foreach (string dbId in dBIdsOnDevice)
+                queryString = queryString + "/" + dbId;
+            return (List<string[]>)SendStringData(queryString, ServerRequestTypes.GetMissingLevelsByAuthorName);
+        }
+
         public static List<string[]> GetUsers(string username, int chunk)
         {
             return (List<string[]>)SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
@@ -133,8 +141,10 @@ namespace appFBLA2019
 
                 if (finalizationMessage == OperationReturnMessage.True)
                 {
-                    LevelInfo infoCopy = new LevelInfo(info);
-                    infoCopy.SyncStatus = 2;
+                    LevelInfo infoCopy = new LevelInfo(info)
+                    {
+                        SyncStatus = 2
+                    };
                     LevelRosterDatabase.EditLevelInfo(infoCopy);
                     return true;
                 }
@@ -331,6 +341,7 @@ namespace appFBLA2019
                 case ServerRequestTypes.GetLevelsByAuthorName:
                 case ServerRequestTypes.GetLevelsByLevelName:
                 case ServerRequestTypes.GetLevelsByCategory:
+                case ServerRequestTypes.GetMissingLevelsByAuthorName:
                     return ReceiveFromServerListOfStringArrays(toSend);
 
                 case ServerRequestTypes.GetRealmFile:
@@ -450,6 +461,7 @@ namespace appFBLA2019
         GetRealmFile,
         GetLastModifiedDate,
         GetLevelsByAuthorName,
+        GetMissingLevelsByAuthorName,
         GetLevelsByLevelName,
         GetLevelsByCategory,
         GetUsers,
