@@ -16,7 +16,9 @@ using Xamarin.Forms;
 
 namespace appFBLA2019.Droid
 {
-    [Activity(Label = "appFBLA2019", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "appFBLA2019", Icon = "@mipmap/icon", Theme = "@style/MainTheme", 
+        MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, 
+        WindowSoftInputMode =Android.Views.SoftInput.AdjustResize, ScreenOrientation =ScreenOrientation.Portrait)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger
     {
         protected override void OnCreate(Bundle bundle)
@@ -27,11 +29,10 @@ namespace appFBLA2019.Droid
             base.OnCreate(bundle);
             FacebookClientManager.Initialize(this);
 
-            this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustResize);
-
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
             this.LoadApplication(new App());
+            this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustResize);
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent intent)
