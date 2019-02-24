@@ -5,15 +5,14 @@
              x:Class="appFBLA2019.FeaturedPage"
              Title="Search">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Priority="0" Icon="ic_search_white_48dp.png" Name="Search" Order="Primary"  Activated="Search_Activated" />
+        <ToolbarItem Priority="0" Icon="ic_search_white_48dp.png" Text="Search" Name="Search" Order="Primary"  Activated="Search_Activated" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout Padding="0">
             <Frame CornerRadius="0" >
                 <StackLayout>
                     <Label Text="Featured Quizzes" Grid.Column="1" HorizontalOptions="CenterAndExpand" FontSize="25" FontAttributes="Bold"/>
-
-                    <Picker x:Name="PickerCategory" BackgroundColor="White" HeightRequest="40" Title="Category" FontSize="17" FontAttributes="Italic" TextColor="Accent" SelectedIndexChanged="PickerCategory_SelectedIndexChanged">
+                    <Picker x:Name="PickerCategory" BackgroundColor="White" Title="Category" FontSize="17" FontAttributes="Italic" TextColor="Accent" SelectedIndexChanged="PickerCategory_SelectedIndexChanged" HorizontalOptions="StartAndExpand">
                         <Picker.Items>
                             <x:String>All</x:String>
                             <x:String>Tech Events</x:String>
@@ -24,7 +23,6 @@
                             <x:String>Parliamentary Procedure</x:String>
                         </Picker.Items>
                     </Picker>
-
                 </StackLayout>
             </Frame>
 

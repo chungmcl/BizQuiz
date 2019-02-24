@@ -182,14 +182,21 @@ namespace appFBLA2019
         /// <param name="e">       </param>
         private async void ButtonAddQuestion_Clicked(object sender, EventArgs e)
         {
-            Frame frame = this.AddNewQuestion();
-            double x = frame.X;
-            frame.TranslationX = this.Width;
-            // Scroll to bottom
-            this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
+            if (this.StackLayoutQuestionStack.Children.Count() <= 100)
+            {
+                Frame frame = this.AddNewQuestion();
+                double x = frame.X;
+                frame.TranslationX = this.Width;
+                // Scroll to bottom
+                await this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
 
-            //animate in frame
-            await frame.TranslateTo(x - 10, 0, 500, Easing.CubicOut);
+                //animate in frame
+                await frame.TranslateTo(x - 10, 0, 500, Easing.CubicOut);
+            }
+            else
+            {
+                await this.DisplayAlert("Couldn't add question", "Question limit reached", "Back");
+            }
         }
 
         /// <summary>
