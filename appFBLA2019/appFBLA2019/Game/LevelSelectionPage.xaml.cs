@@ -42,10 +42,27 @@ namespace appFBLA2019
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
+            this.CheckSetup();
+            this.isSetup = true;
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            this.CheckSetup();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            this.isSetup = false;
+        }
+
+        private void CheckSetup()
+        {
             if (Application.Current.MainPage.Width >= 0 && !this.isSetup)
             {
-                this.Setup();
-                this.isSetup = true;
+                this.Setup();                
             }
         }
 
@@ -276,6 +293,7 @@ namespace appFBLA2019
                     }
 
 
+
                     TapGestureRecognizer recognizer = new TapGestureRecognizer();
                     recognizer.Tapped += async (object sender, EventArgs e) =>
                     {
@@ -329,14 +347,18 @@ namespace appFBLA2019
 
             if (await Task.Run(() => ServerOperations.SendLevel(levelPath)))
             {
+                await button.FadeTo(0, 150, Easing.CubicInOut);
                 button.Source = "ic_cloud_done_black_48dp.png";
+                await button.FadeTo(1, 150, Easing.CubicInOut);
                 button.IsEnabled = true;
                 button.Clicked += SyncNoChange_Clicked;
                 
             }
             else
             {
+                await button.FadeTo(0, 150, Easing.CubicInOut);
                 button.Source = "ic_cloud_upload_black_48dp.png";
+                await button.FadeTo(1, 150, Easing.CubicInOut);
                 button.IsEnabled = true;
                 await DisplayAlert("Level Upload Failed.", 
                     "This level could not be uploaded to the server. Please try again.", 

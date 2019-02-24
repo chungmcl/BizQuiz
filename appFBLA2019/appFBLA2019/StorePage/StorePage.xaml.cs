@@ -15,7 +15,7 @@ namespace appFBLA2019
 		private int chunkNum;
 		private bool end;
 		private bool isLoading;
-
+        private string category;
         private bool isStartup;
 		private List<SearchInfo> levelsSearched;
 
@@ -36,81 +36,83 @@ namespace appFBLA2019
             if (this.isStartup)
             {
                 this.SearchBar.Focus();
-                this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 2));
+                this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 3));
             }
 
             this.isStartup = false;
 		}
 
-		/// <summary>
-		/// Adds a level to the search stack given a LevelInfo
-		/// </summary>
-		/// <param name="level"></param>
-		private void AddLevels(List<SearchInfo> levels)
+        /// <summary>
+        /// Adds a level to the search stack given a LevelInfo
+        /// </summary>
+        /// <param name="level"></param>
+        private void AddLevels(List<SearchInfo> levels)
 		{
 			foreach(SearchInfo level in levels)
-			{
-				Frame levelFrame = new Frame
-				{
-					VerticalOptions = LayoutOptions.Start,
-					HorizontalOptions = LayoutOptions.FillAndExpand,
-					CornerRadius = 10
-				};
+            {// Only add level if the category is what user picked (we are asking the server for more then we need so this could be changed)
+                if (this.category == "All" || level.Category == this.category) 
+                {
+                    Frame levelFrame = new Frame
+                    {
+                        VerticalOptions = LayoutOptions.Start,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        CornerRadius = 10
+                    };
 
-				StackLayout frameStack = new StackLayout
-				{
-					FlowDirection = FlowDirection.LeftToRight,
-					Orientation = StackOrientation.Vertical
-				};
+                    StackLayout frameStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Vertical
+                    };
 
-				StackLayout topStack = new StackLayout
-				{
-					FlowDirection = FlowDirection.LeftToRight,
-					Orientation = StackOrientation.Horizontal
-				};
+                    StackLayout topStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Horizontal
+                    };
 
-				Label levelName = new Label
-				{
-					Text = level.LevelName,
-					FontAttributes = FontAttributes.Bold,
-					FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-					HorizontalOptions = LayoutOptions.StartAndExpand
-				};
-				topStack.Children.Add(levelName);
+                    Label levelName = new Label
+                    {
+                        Text = level.LevelName,
+                        FontAttributes = FontAttributes.Bold,
+                        FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
+                        HorizontalOptions = LayoutOptions.StartAndExpand
+                    };
+                    topStack.Children.Add(levelName);
 
-				ImageButton ImageButtonSubscribe = new ImageButton
-				{
-					StyleId = level.DBId,
-					HeightRequest = 30,
-					BackgroundColor = Color.White,
-					HorizontalOptions = LayoutOptions.End
-				};
+                    ImageButton ImageButtonSubscribe = new ImageButton
+                    {
+                        StyleId = level.DBId,
+                        HeightRequest = 30,
+                        BackgroundColor = Color.White,
+                        HorizontalOptions = LayoutOptions.End
+                    };
 
-				// source is add if not subscribed and if they are then source is check
-				ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                    // source is add if not subscribed and if they are then source is check
+                    ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
 
-				ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
-				topStack.Children.Add(ImageButtonSubscribe);
+                    ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
+                    topStack.Children.Add(ImageButtonSubscribe);
 
-				frameStack.Children.Add(topStack);
+                    frameStack.Children.Add(topStack);
 
-				Label levelAuthor = new Label
-				{
-					Text = "Created by: " + level.Author,
-				};
-				frameStack.Children.Add(levelAuthor);
+                    Label levelAuthor = new Label
+                    {
+                        Text = "Created by: " + level.Author,
+                    };
+                    frameStack.Children.Add(levelAuthor);
 
-				Label levelCategory = new Label
-				{
-					Text = "Category: " + level.Category,
-				};
-				frameStack.Children.Add(levelCategory);
+                    Label levelCategory = new Label
+                    {
+                        Text = "Category: " + level.Category,
+                    };
+                    frameStack.Children.Add(levelCategory);
 
-				levelFrame.Content = frameStack;
-				Device.BeginInvokeOnMainThread(() =>
-				SearchedStack.Children.Add(levelFrame));
-			}
-		   
+                    levelFrame.Content = frameStack;
+                    Device.BeginInvokeOnMainThread(() =>
+                    this. SearchedStack.Children.Add(levelFrame));
+                }
+			}		   
 		}
 
 		/// <summary>
@@ -158,29 +160,33 @@ namespace appFBLA2019
 			this.end = false;
             this.levelsRemaining = true;
             this.currentChunk = 1;
-			//Device.BeginInvokeOnMainThread(() => {
-			this.SearchedStack.Children.Clear();
-			this.ActivityIndicator.IsEnabled = true;
-			this.ActivityIndicator.IsRunning = true;
-			//});
+			Device.BeginInvokeOnMainThread(() => {
+			    this.SearchedStack.Children.Clear();
+			    this.ActivityIndicator.IsEnabled = true;
+			    this.ActivityIndicator.IsRunning = true;
+			});
 			this.isLoading = true;
 			try
             {
-                await this.Search();
+                await Task.Run(() => this.Search());
             }
             catch (Exception ex)
 			{
 				BugReportHandler.SubmitReport(ex, "StorePage_SearchBar");
 				await this.DisplayAlert("Search Failed", "Try again later", "Ok");
 			}
-			//Device.BeginInvokeOnMainThread(() =>
-			//{
-			this.ActivityIndicator.IsEnabled = false;
-			this.ActivityIndicator.IsRunning = false;
-			this.isLoading = false;
-			//});
+			Device.BeginInvokeOnMainThread(() =>
+			{
+			    this.ActivityIndicator.IsEnabled = false;
+			    this.ActivityIndicator.IsRunning = false;
+			    this.isLoading = false;
+			});
 		}
 
+        /// <summary>
+        /// Conducts a search of the online database
+        /// </summary>
+        /// <returns></returns>
         private async Task Search()
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
@@ -188,29 +194,29 @@ namespace appFBLA2019
                 chunk = SearchUtils.GetLevelsByLevelNameChunked(SearchBar.Text, this.currentChunk);
             else
                 chunk = SearchUtils.GetLevelsByAuthorChunked(SearchBar.Text, this.currentChunk);
-            if (currentChunk == 1 && chunk.Count == 0)
+            if (this.currentChunk == 1 && chunk.Count == 0)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    SearchedStack.Children.Add(new Frame()
+                    SearchedStack.Children.Add(new Label()
                     {
-                        Content = new Label
-                        {
-                            Text = "Sorry, we couldn't find any levels matching what you searched",
-                            HorizontalTextAlignment = TextAlignment.Center,
-                            FontSize = 38
-                        },
-                        CornerRadius = 10,
+                        Text = "Sorry, we couldn't find any levels matching what you searched",
+                        FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         HorizontalOptions = LayoutOptions.CenterAndExpand,
                     });
                 }
                 );
             }
             if (chunk.Count < 20)
-                levelsRemaining = false;
+                this.levelsRemaining = false;
             await Task.Run(() => this.AddLevels(chunk));
         }
 
+        /// <summary>
+        /// gets the levels to display depending on the tab the user is on
+        /// </summary>
+        /// <param name="chunk"></param>
+        /// <returns></returns>
         private List<string[]> GetLevels(int chunk)
 		{
 			if (this.searchType == "Title")
@@ -219,7 +225,7 @@ namespace appFBLA2019
 				return ServerOperations.GetLevelsByAuthorName(this.SearchBar.Text, chunk);
 		}
 		
-
+        // Impliment this if we want to conduct a search each time we press a key down.
 		private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			this.SearchedStack.Children.Clear();
@@ -235,7 +241,11 @@ namespace appFBLA2019
 			this.SearchedStack.Children.Clear();
 		}
 		
-
+        /// <summary>
+        /// does a search when user scrolls to the end.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
 		{
 			ScrollView scrollView = sender as ScrollView;
@@ -255,18 +265,33 @@ namespace appFBLA2019
 			}
 		}
 
+        /// <summary>
+        /// Runs when the user switches to search by title tab
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void ButtonTitle_Clicked(object sender, EventArgs e)
 		{
-			this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 2), 250, Easing.CubicInOut); 
+			this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 3), 250, Easing.CubicInOut); 
 			this.searchType = "Title";
 		   
 		}
 
+        /// <summary>
+        /// Runs when user switches to search by author tab
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void ButtonAuthor_Clicked(object sender, EventArgs e)
 		{        
-			//this.searchIndicator.TranslateTo(this.buttonAuthor.X, this.Y, 150, Easing.CubicInOut);
-			this.searchIndicator.LayoutTo(new Rectangle(this.buttonAuthor.X, this.searchIndicator.Y, this.buttonAuthor.Width, 2), 250, Easing.CubicInOut);
+			this.searchIndicator.LayoutTo(new Rectangle(this.buttonAuthor.X, this.searchIndicator.Y, this.buttonAuthor.Width, 3), 250, Easing.CubicInOut);
 			this.searchType = "Author";
 		}
-	}
+
+        private void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex];
+            this.currentChunk = 1;
+        }
+    }
 }

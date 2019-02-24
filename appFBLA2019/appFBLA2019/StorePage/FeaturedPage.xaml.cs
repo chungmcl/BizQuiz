@@ -153,7 +153,7 @@ namespace appFBLA2019
                     this.SearchedStack.Children.Add(levelFrame));
                 }
             }
-            if (this.SearchedStack.Children.Count() == 0)
+            if (this.SearchedStack.Children.Count() == 0)   
             {
                 Label FeaturedMessage = new Label
                 {

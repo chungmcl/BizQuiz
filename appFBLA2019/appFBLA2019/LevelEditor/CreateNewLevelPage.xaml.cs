@@ -234,7 +234,7 @@ namespace appFBLA2019
         private async void ButtonCreateLevel_Clicked(object sender, EventArgs e)
         {
             this.Done.IsEnabled = false;
-            if (string.IsNullOrWhiteSpace(this.EntryLevelName.Text))
+            if (string.IsNullOrWhiteSpace(this.EditorLevelName.Text))
             {
                 await this.DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
             }
@@ -260,7 +260,7 @@ namespace appFBLA2019
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
 
                 // Now open the database the user just made, might be the same as the one already open
-                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EntryLevelName.Text.Trim(), CredentialManager.Username);
+                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EditorLevelName.Text.Trim(), CredentialManager.Username);
                 // Loops through each question frame on the screen
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
@@ -269,13 +269,13 @@ namespace appFBLA2019
 
                     Question addThis;
                     //The answers to the question
-                    string[] answers = {((Entry)children[2]).Text, //Correct answer
-								((Entry)children[3]).Text, // Incorect answer
-								((Entry)children[4]).Text, // Incorect answer
-								((Entry)children[5]).Text}; // Incorect answer
+                    string[] answers = {((Editor)children[2]).Text, //Correct answer
+								((Editor)children[3]).Text, // Incorect answer
+								((Editor)children[4]).Text, // Incorect answer
+								((Editor)children[5]).Text}; // Incorect answer
 
                     // Checks if there is a question set
-                    if (string.IsNullOrWhiteSpace(((Entry)children[1]).Text))
+                    if (string.IsNullOrWhiteSpace(((Editor)children[1]).Text))
                     {
                         await this.DisplayAlert("Couldn't Create Level", "Every question must have a question set", "OK");
                         goto exit;
@@ -284,7 +284,7 @@ namespace appFBLA2019
                     if (((ImageButton)children[6]).IsVisible) // if needs image
                     {
                         addThis = new Question(
-                                ((Entry)children[1]).Text, // The Question
+                                ((Editor)children[1]).Text, // The Question
                                 ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
                                 answers)
                         { NeedsPicture = true };
@@ -292,7 +292,7 @@ namespace appFBLA2019
                     else // if not needs picture
                     {
                         addThis = new Question(
-                                ((Entry)children[1]).Text,
+                                ((Editor)children[1]).Text,
                                 answers);
                     }
 
@@ -348,7 +348,7 @@ namespace appFBLA2019
 
                     // Save a new LevelInfo into the level database, which also adds this LevelInfo to the device level roster
                     DBHandler.Database.NewLevelInfo(CredentialManager.Username,
-                        this.EntryLevelName.Text.Trim(),
+                        this.EditorLevelName.Text.Trim(),
                         this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
                     DBHandler.Database.AddQuestions(NewQuestions);
                 }
@@ -356,7 +356,7 @@ namespace appFBLA2019
                 {
                     LevelInfo updatedLevelInfo = new LevelInfo(DBHandler.Database.GetLevelInfo())
                     {
-                        LevelName = this.EntryLevelName.Text.Trim(),
+                        LevelName = this.EditorLevelName.Text.Trim(),
                         LastModifiedDate = DateTime.Now.ToString()
                     };
                     DBHandler.Database.EditLevelInfo(updatedLevelInfo);
@@ -394,7 +394,7 @@ namespace appFBLA2019
                 File.Create(DBHandler.Database.DBFolderPath + ".nomedia");
 
                 // If they renamed the level, delete the old one
-                if (this.originalName != this.EntryLevelName.Text.Trim() && this.originalAuthor == CredentialManager.Username)
+                if (this.originalName != this.EditorLevelName.Text.Trim() && this.originalAuthor == CredentialManager.Username)
                 {
                     Directory.Delete(App.UserPath + "/" + this.originalName + "`" + this.originalAuthor, true);
                 }
@@ -493,76 +493,78 @@ namespace appFBLA2019
             topStack.Children.Add(Remove);
 
             // 1
-            Entry entryQuestion = new Entry // The question
+            Editor EditorQuestion = new Editor // The question
             {
                 Placeholder = "Enter question",
                 FontSize = 20,
-                ReturnType=ReturnType.Next
+                MaxLength = 150,
+                AutoSize = EditorAutoSizeOption.TextChanges
+                //ReturnType=ReturnType.Next
             };
             if (question != null)
             {
-                entryQuestion.Text = question.QuestionText;
+                EditorQuestion.Text = question.QuestionText;
             }
 
-            frameStack.Children.Add(entryQuestion);
-            entryQuestion.TextChanged += this.OnTextChanged;
+            frameStack.Children.Add(EditorQuestion);
 
             // 2
-            Entry entryAnswerCorrect = new Entry // The correct answer
+            Editor EditorAnswerCorrect = new Editor // The correct answer
             {
                 Placeholder = "Enter correct answer",
-                ReturnType = ReturnType.Next
+                MaxLength = 150,
+                AutoSize = EditorAutoSizeOption.TextChanges
+                //ReturnType = ReturnType.Next
             };
             if (question != null)
             {
-                entryAnswerCorrect.Text = question.CorrectAnswer;
+                EditorAnswerCorrect.Text = question.CorrectAnswer;
             }
-
-            entryAnswerCorrect.TextChanged += this.OnTextChanged;
-            frameStack.Children.Add(entryAnswerCorrect);
+            frameStack.Children.Add(EditorAnswerCorrect);
 
             // 3
-            Entry entryAnswerWrongOne = new Entry // A wrong answer
+            Editor EditorAnswerWrongOne = new Editor // A wrong answer
             {
                 Placeholder = "Enter a possible answer",
-                ReturnType = ReturnType.Next
+                MaxLength = 150,
+                AutoSize = EditorAutoSizeOption.TextChanges
+                //ReturnType = ReturnType.Next
             };
             if (question != null)
             {
-                entryAnswerWrongOne.Text = question.AnswerOne;
+                EditorAnswerWrongOne.Text = question.AnswerOne;
             }
-
-            entryAnswerWrongOne.TextChanged += this.OnTextChanged;
-            frameStack.Children.Add(entryAnswerWrongOne);
+            frameStack.Children.Add(EditorAnswerWrongOne);
 
             // 4
-            Entry entryAnswerWrongTwo = new Entry// A wrong answer
+            Editor EditorAnswerWrongTwo = new Editor// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
-                ReturnType = ReturnType.Next
+                MaxLength = 150,
+                AutoSize = EditorAutoSizeOption.TextChanges
+
+                //ReturnType = ReturnType.Next
             };
             if (question != null)
             {
-                entryAnswerWrongTwo.Text = question.AnswerTwo;
+                EditorAnswerWrongTwo.Text = question.AnswerTwo;
             }
-
-            entryAnswerWrongTwo.TextChanged += this.OnTextChanged;
-            frameStack.Children.Add(entryAnswerWrongTwo);
+            frameStack.Children.Add(EditorAnswerWrongTwo);
 
             // 5
-            Entry entryAnswerWrongThree = new Entry// A wrong answer
+            Editor EditorAnswerWrongThree = new Editor// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
-                ReturnType = ReturnType.Next,
+                AutoSize = EditorAutoSizeOption.TextChanges,
+                MaxLength = 150,
+                //ReturnType = ReturnType.Next,
                 VerticalOptions = LayoutOptions.StartAndExpand
             };
             if (question != null)
             {
-                entryAnswerWrongThree.Text = question.AnswerThree;
+                EditorAnswerWrongThree.Text = question.AnswerThree;
             }
-
-            entryAnswerWrongThree.TextChanged += this.OnTextChanged;
-            frameStack.Children.Add(entryAnswerWrongThree);
+            frameStack.Children.Add(EditorAnswerWrongThree);
 
             // 7
             Button AddImage = new Button(); // The add Image button
@@ -606,24 +608,24 @@ namespace appFBLA2019
                 AddImage.IsVisible = true;
             }
 
-            entryQuestion.ReturnCommand = new Command(() => entryAnswerCorrect.Focus());
+            //EditorQuestion.ReturnCommand = new Command(() => EditorAnswerCorrect.Focus());
             if (isMultipleChoice)
             {
-                entryAnswerCorrect.ReturnCommand = new Command(() => entryAnswerWrongOne.Focus());
-                entryAnswerWrongOne.ReturnCommand = new Command(() => entryAnswerWrongTwo.Focus());
-                entryAnswerWrongTwo.ReturnCommand = new Command(() => entryAnswerWrongThree.Focus());
+                //EditorAnswerCorrect.ReturnCommand = new Command(() => EditorAnswerWrongOne.Focus());
+                //EditorAnswerWrongOne.ReturnCommand = new Command(() => EditorAnswerWrongTwo.Focus());
+                //EditorAnswerWrongTwo.ReturnCommand = new Command(() => EditorAnswerWrongThree.Focus());
             }
             else
             {
-                entryAnswerWrongOne.Opacity = 0;
-                entryAnswerWrongTwo.Opacity = 0;
-                entryAnswerWrongThree.Opacity = 0;
+                EditorAnswerWrongOne.Opacity = 0;
+                EditorAnswerWrongTwo.Opacity = 0;
+                EditorAnswerWrongThree.Opacity = 0;
             }
 
             // Dissable extra answers if its not mulitple choice
-            entryAnswerWrongOne.IsVisible = isMultipleChoice;
-            entryAnswerWrongTwo.IsVisible = isMultipleChoice;
-            entryAnswerWrongThree.IsVisible = isMultipleChoice;
+            EditorAnswerWrongOne.IsVisible = isMultipleChoice;
+            EditorAnswerWrongTwo.IsVisible = isMultipleChoice;
+            EditorAnswerWrongThree.IsVisible = isMultipleChoice;
 
             frame.Content = frameStack;
             // and add the frame to the the other stacklaout.
@@ -661,8 +663,8 @@ namespace appFBLA2019
                     stack.Children[4].IsVisible = false;
                     stack.Children[5].IsVisible = false;
 
-                    // Change the button to the next question type and change the return command so users can't access the other entries
-                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Unfocus());
+                    // Change the button to the next question type and change the return command so users can't access the other editors
+                    //((Editor)stack.Children[2]).ReturnCommand = new Command(() => ((Editor)stack.Children[2]).Unfocus());
                     // change question type
                     button.Text = "Question Type: Text answer";
                     break;
@@ -686,7 +688,7 @@ namespace appFBLA2019
                         frame.Height + (stack.Children[3].Height + stack.Children[4].Height + stack.Children[5].Height)), 200, Easing.CubicInOut)
                     );
 
-                    ((Entry)stack.Children[2]).ReturnCommand = new Command(() => ((Entry)stack.Children[2]).Focus());
+                    //((Editor)stack.Children[2]).ReturnCommand = new Command(() => ((Editor)stack.Children[2]).Focus());
                     button.Text = "Question Type: Multiple choice";
                     break;
                 }
@@ -697,28 +699,10 @@ namespace appFBLA2019
             await button.FadeTo(1, 150, Easing.CubicInOut);
         }
 
-        private const int restrictCount = 64;
-
-        /// <summary>
-        /// Sets a limit to how much the user can put in an entry
-        /// </summary>
-        /// <param name="sender">  </param>
-        /// <param name="e">       </param>
-        private void OnTextChanged(object sender, EventArgs e)
-        {
-            Entry entry = sender as Entry;
-            string val = entry.Text; //Get Current Text
-
-            if (val.Length > restrictCount)//If it is more than your character restriction
-            {
-                val = val.Remove(restrictCount);// Remove Everything past the restriction length
-                entry.Text = val; //Set the Old value
-            }
-        }
 
         public void SetLevelName(string levelName)
         {
-            this.EntryLevelName.Text = levelName;
+            this.EditorLevelName.Text = levelName;
         }
     }
 }
