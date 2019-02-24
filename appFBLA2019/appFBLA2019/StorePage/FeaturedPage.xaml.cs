@@ -14,6 +14,7 @@ namespace appFBLA2019
 	public partial class FeaturedPage : ContentPage
 	{
         private string category = "All";
+        private List<SearchInfo> levelsFeatured;
 
         public FeaturedPage()
         {
@@ -32,7 +33,8 @@ namespace appFBLA2019
 
         private async Task Refresh()
         {
-            SearchedStack.Children.Clear();
+            this.SearchedStack.Children.Clear();
+            this.levelsFeatured.Clear();
             try
             {
                 Device.BeginInvokeOnMainThread(() => {
@@ -93,6 +95,7 @@ namespace appFBLA2019
             {
                 if (this.category == "All" || level.Category == this.category) // Only add level if the category is what user picked
                 {
+                    this.levelsFeatured.Add(level);
                     Frame levelFrame = new Frame
                     {
                         VerticalOptions = LayoutOptions.Start,
@@ -154,7 +157,7 @@ namespace appFBLA2019
                     this.SearchedStack.Children.Add(levelFrame));
                 }
             }
-            if (this.SearchedStack.Children.Count() == 0)   
+            if (this.levelsFeatured.Count() == 0)   
             {
                 Label FeaturedMessage = new Label
                 {
