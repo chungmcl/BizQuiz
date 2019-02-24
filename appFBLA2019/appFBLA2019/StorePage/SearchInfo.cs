@@ -13,7 +13,7 @@ namespace appFBLA2019
         public string Category { get; set; }
         public int SubCount { get; set; }
 
-        internal SearchInfo(params string[] data)
+        public SearchInfo(params string[] data)
         {
             this.DBId = data[0];
             this.Author = data[1];
@@ -22,7 +22,7 @@ namespace appFBLA2019
             this.SubCount = int.Parse(data[4]);
         }
 
-        internal SearchInfo()
+        public SearchInfo()
         { }
     }
 }
