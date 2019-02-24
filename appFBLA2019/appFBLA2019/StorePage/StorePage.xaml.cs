@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,8 +19,9 @@ namespace appFBLA2019
         private bool isStartup;
 		private List<SearchInfo> levelsSearched;
 
-		// either "Title" or "Author"
-		private string searchType;
+
+        // either "Title" or "Author"
+        private string searchType;
 
 		public StorePage()
 		{
@@ -53,6 +53,7 @@ namespace appFBLA2019
             {// Only add level if the category is what user picked (we are asking the server for more then we need so this could be changed)
                 if (this.category == "All" || level.Category == this.category) 
                 {
+
                     Frame levelFrame = new Frame
                     {
                         VerticalOptions = LayoutOptions.Start,
@@ -121,10 +122,9 @@ namespace appFBLA2019
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private async void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
+		async private void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
 		{
 			ImageButton button = (sender as ImageButton);
-            string dbId = button.StyleId;
 			if (button.Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
 			{
 				bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
@@ -134,27 +134,7 @@ namespace appFBLA2019
 					button.Source = "ic_playlist_add_black_48dp.png";
 					button.HeightRequest = 30;
 					await button.FadeTo(1, 150, Easing.CubicInOut);
-
-                    LevelInfo info = LevelRosterDatabase.GetLevelInfo(dbId);
-                    string location = App.UserPath + "/" + info.Category + "/" + info.LevelName + "`" + info.AuthorName;
-                    if (Directory.Exists(location))
-                        Directory.Delete(location, true);
-
-                    LevelRosterDatabase.DeleteLevelInfo(dbId);
-                    OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.UnsubscribeToLevel(dbId));
-                    if (returnMessage == OperationReturnMessage.True)
-                    {
-                        // Show sub button
-                    }
-                    else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
-                    {
-                        await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
-                        CredentialManager.IsLoggedIn = false;
-                    }
-                    else
-                    {
-                        await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
-                    }
+					// remove from device
 				}
 			}
 			else // subscribe
@@ -163,31 +143,8 @@ namespace appFBLA2019
 				button.Source = "ic_playlist_add_check_black_48dp.png";
 				button.HeightRequest = 30;
 				await button.FadeTo(1, 150, Easing.CubicInOut);
-                OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.SubscribeToLevel(dbId));
-                if (returnMessage == OperationReturnMessage.True)
-                {
-                    SearchInfo level = this.levelsSearched.Where(searchInfo => searchInfo.DBId == dbId).First();
-                    LevelInfo newInfo = new LevelInfo
-                    {
-                        AuthorName = level.Author,
-                        LevelName = level.LevelName,
-                        Category = level.Category,
-                        SyncStatus = 4 // 4 to represent not present in local directory and need download
-                    };
-                    LevelRosterDatabase.NewLevelInfo(newInfo);
-                    
-                    // Show finished icon
-                }
-                else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
-                {
-                    await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
-                    CredentialManager.IsLoggedIn = false;
-                }
-                else
-                {
-                    await DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
-                }
-            }
+				// save to device
+			}
 
 		}
 
@@ -245,7 +202,7 @@ namespace appFBLA2019
                 {
                     SearchedStack.Children.Add(new Label()
                     {
-                        Text = "Sorry, we couldn't find any levels matching what you searched",
+                        Text = "Sorry, we couldn't find any levels matching what you searched", 
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         HorizontalOptions = LayoutOptions.CenterAndExpand,
                     });
