@@ -14,9 +14,9 @@
             <StackLayout BackgroundColor="White" AbsoluteLayout.LayoutBounds="0, 0, 1.0, 1.0" AbsoluteLayout.LayoutFlags="All">
                 <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand" x:Name ="ScrollViewQuestions">
                     <StackLayout x:Name="stkMain">
-                        <Frame VerticalOptions="Start" CornerRadius="10">
+                        <Frame VerticalOptions="Start" CornerRadius="0" Padding="0">
                             <StackLayout Padding="10">
-                                <Entry x:Name="EntryLevelName" BackgroundColor="White" Placeholder="Level Name" FontSize="38" TextColor="Gray" FontAttributes="Bold" TextChanged="OnTextChanged" HorizontalOptions="FillAndExpand"/>
+                                <Editor x:Name="EditorLevelName" BackgroundColor="White" Placeholder="Level Name" AutoSize="TextChanges" MaxLength="64" FontSize="38" TextColor="Gray" FontAttributes="Bold" HorizontalOptions="FillAndExpand"/>
                                 <Picker x:Name="PickerCategory" BackgroundColor="White" Title="Category" FontSize="17" FontAttributes="Italic" TextColor="Accent" HorizontalOptions="FillAndExpand">
                                     <Picker.Items>
                                         <x:String>Tech Events</x:String>
