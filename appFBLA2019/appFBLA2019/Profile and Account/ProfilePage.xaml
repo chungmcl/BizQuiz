@@ -9,7 +9,7 @@
             <StackLayout x:Name="StackLayoutProfilePageContent" 
                          IsVisible="False" Grid.Row="0" Padding="10">
                 <ScrollView Scrolled="ScrollSearch_Scrolled" VerticalOptions="StartAndExpand">
-                    <StackLayout Padding="20">
+                    <StackLayout Padding="0,0,0,10">
                         <Label x:Name="LabelUsername" HorizontalOptions="CenterAndExpand" VerticalOptions="StartAndExpand" FontSize="28" FontAttributes="Bold" Opacity="0"/>
                         <Label x:Name="QuizNumber" HorizontalOptions="CenterAndExpand" FontSize="18" />
                         <ActivityIndicator x:Name="ActivityIndicator" 
