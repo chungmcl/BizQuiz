@@ -346,9 +346,9 @@ namespace appFBLA2019
                         this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
                     DBHandler.Database.AddQuestions(NewQuestions);
                 }
-                else
+                else // edit
                 {
-                    LevelInfo updatedLevelInfo = DBHandler.Database.GetLevelInfo();
+                    LevelInfo updatedLevelInfo = new LevelInfo(DBHandler.Database.GetLevelInfo());
                     updatedLevelInfo.LevelName = this.EntryLevelName.Text.Trim();
                     updatedLevelInfo.LastModifiedDate = DateTime.Now.ToString();
                     DBHandler.Database.EditLevelInfo(updatedLevelInfo);
