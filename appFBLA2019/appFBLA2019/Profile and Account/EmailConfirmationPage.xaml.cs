@@ -52,8 +52,7 @@ namespace appFBLA2019
         }
 
         private const int maxEmailLengthSize = 640;
-
-        private string email;
+        
         private string username;
         private string password;
 
@@ -98,11 +97,11 @@ namespace appFBLA2019
         {
             try
             {
-                this.email = await Task.Run(() => ServerOperations.GetEmail(this.username, this.password));
+                string email = await Task.Run(() => ServerOperations.GetEmail(this.username, this.password));
 
                 Device.BeginInvokeOnMainThread(() =>
                 this.LabelTitle.Text =
-                $"Enter the confirmation code sent to {this.email}");
+                $"Enter the confirmation code sent to {email}");
             }
             catch
             {

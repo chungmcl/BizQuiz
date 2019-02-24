@@ -35,13 +35,18 @@ namespace appFBLA2019
         
         public static byte[] SendByteArray(byte[] data)
         {
-            if (SetupConnection())
+            // initialze an empty sslStream in order to lock it
+            ssl = new SslStream(new MemoryStream());
+
+            // Prevent sending and receiving corrupted data
+            // because of thread collisions through the lock
+            lock (ssl)
             {
-                try
+                if (SetupConnection())
                 {
-                    if (ssl != null)
+                    try
                     {
-                        lock (ssl)
+                        if (ssl != null)
                         {
                             if (CrossConnectivity.Current.IsConnected)
                             {
@@ -60,18 +65,18 @@ namespace appFBLA2019
                             else
                                 return new byte[0];
                         }
+                        else
+                            return new byte[0];
                     }
-                    else
+                    catch
+                    {
                         return new byte[0];
+                    }
                 }
-                catch
+                else
                 {
                     return new byte[0];
                 }
-            }
-            else
-            {
-                return new byte[0];
             }
         }
 
