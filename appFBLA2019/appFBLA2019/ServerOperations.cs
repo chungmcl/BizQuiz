@@ -165,11 +165,11 @@ namespace appFBLA2019
             }
         }
 
-        public static bool GetLevel(string dBId, string levelName, string authorName)
+        public static bool GetLevel(string dBId, string levelName, string authorName, string category)
         {
-            string levelPath = App.UserPath + "/" + $"{levelName}`{authorName}/";
+            string levelPath = App.UserPath + "/" + category + "/" + $"{levelName}`{authorName}/";
 
-            Directory.CreateDirectory(App.UserPath + "/" + $"{levelName}`{authorName}");
+            Directory.CreateDirectory(levelPath);
             byte[] realmFile = (byte[])SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
             string realmFilePath = levelPath + "/" + levelName + realmFileExtension;
             if (realmFile.Length > 0)

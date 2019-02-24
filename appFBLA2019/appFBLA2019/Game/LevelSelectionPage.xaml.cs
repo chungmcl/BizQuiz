@@ -148,7 +148,7 @@ namespace appFBLA2019
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
                         StyleId = "/" + this.category + "/" + level.LevelName + "`" + level.AuthorName,
-                        ClassId = level.DBId + "/" + level.AuthorName + "/" + level.LevelName
+                        ClassId = level.DBId + "/" + level.AuthorName + "/" + level.LevelName + "/" + level.Category
                     };
                     
                     topStack.Children.Add(Sync);
@@ -350,13 +350,14 @@ namespace appFBLA2019
             string dbId = button.ClassId.Split('/')[0];
             string authorName = button.ClassId.Split('/')[1];
             string levelName = button.ClassId.Split('/')[2];
+            string category = button.ClassId.Split('/')[3];
             button.IsEnabled = false;
             await button.FadeTo(0, 150, Easing.CubicInOut);
             button.Source = "ic_autorenew_black_48dp.png";
             await button.FadeTo(1, 150, Easing.CubicInOut);
             button.HeightRequest = 25;
 
-            if (await Task.Run(() => ServerOperations.GetLevel(dbId, levelName, authorName)))
+            if (await Task.Run(() => ServerOperations.GetLevel(dbId, levelName, authorName, category)))
             {
                 button.Source = "ic_cloud_done_black_48dp.png";
                 button.IsEnabled = true;
