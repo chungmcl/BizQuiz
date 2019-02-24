@@ -153,7 +153,6 @@ namespace appFBLA2019
             this.ButtonAddDrop.Scale = 0;
             this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
             this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
-            this.BoxPush.HeightRequest = this.Height * .12;
             if (this.x is ImageButton)
             {
                 if (((ImageButton)this.x).StyleId == "change")
@@ -497,7 +496,8 @@ namespace appFBLA2019
             Entry entryQuestion = new Entry // The question
             {
                 Placeholder = "Enter question",
-                FontSize = 20
+                FontSize = 20,
+                ReturnType=ReturnType.Next
             };
             if (question != null)
             {
@@ -511,6 +511,7 @@ namespace appFBLA2019
             Entry entryAnswerCorrect = new Entry // The correct answer
             {
                 Placeholder = "Enter correct answer",
+                ReturnType = ReturnType.Next
             };
             if (question != null)
             {
@@ -524,6 +525,7 @@ namespace appFBLA2019
             Entry entryAnswerWrongOne = new Entry // A wrong answer
             {
                 Placeholder = "Enter a possible answer",
+                ReturnType = ReturnType.Next
             };
             if (question != null)
             {
@@ -537,6 +539,7 @@ namespace appFBLA2019
             Entry entryAnswerWrongTwo = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
+                ReturnType = ReturnType.Next
             };
             if (question != null)
             {
@@ -550,6 +553,7 @@ namespace appFBLA2019
             Entry entryAnswerWrongThree = new Entry// A wrong answer
             {
                 Placeholder = "Enter a possible answer",
+                ReturnType = ReturnType.Next,
                 VerticalOptions = LayoutOptions.StartAndExpand
             };
             if (question != null)
