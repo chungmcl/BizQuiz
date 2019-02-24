@@ -65,7 +65,7 @@ namespace appFBLA2019
                         await profilePage.UpdateProfilePage();
                     }
                     profilePage.SetTemporary();
-                    await this.Navigation.PushModalAsync(profilePage);
+                    await this.Navigation.PushAsync(profilePage);
                 }
             }
         }
