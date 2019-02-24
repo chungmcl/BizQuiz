@@ -42,10 +42,27 @@ namespace appFBLA2019
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
+            this.CheckSetup();
+            this.isSetup = true;
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            this.CheckSetup();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            this.isSetup = false;
+        }
+
+        private void CheckSetup()
+        {
             if (Application.Current.MainPage.Width >= 0 && !this.isSetup)
             {
-                this.Setup();
-                this.isSetup = true;
+                this.Setup();                
             }
         }
 
