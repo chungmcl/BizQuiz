@@ -164,7 +164,7 @@ namespace appFBLA2019
                         Sync.Source = "ic_cloud_upload_black_48dp.png";
                         Sync.Clicked += this.SyncUpload_Clicked;
                     }
-                    else if (level.SyncStatus == 0)
+                    else if (level.SyncStatus == 0 || level.SyncStatus == 4)
                     {
                         Sync.Source = "ic_cloud_download_black_48dp.png";
                         Sync.Clicked += this.SyncDownload_Clicked;

@@ -13,7 +13,7 @@ namespace appFBLA2019
         public string LastModifiedDate { get; set; }
 
         /// <summary>
-        ///  0 = Need Download, 1 = Need Upload, 2 = Synced, 3 = Offline
+        ///  0 = Need Download, 1 = Need Upload, 2 = Synced, 3 = Offline, 4 = Not downloaded + Need download
         /// </summary>
         public int SyncStatus { get; set; }
         public bool IsDeletedLocally { get; set; }
