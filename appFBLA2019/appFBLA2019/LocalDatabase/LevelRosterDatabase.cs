@@ -102,6 +102,21 @@ namespace appFBLA2019
             return new List<LevelInfo>(realmDB.All<LevelInfo>().Where(levelInfo => levelInfo.Category == category && !levelInfo.IsDeletedLocally));
         }
 
+        public static bool DeleteLevelInfo(string dbId)
+        {
+            try
+            {
+                RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+                Realm realmDB = Realm.GetInstance(threadConfig);
+                realmDB.Remove(realmDB.All<LevelInfo>().Where(levelInfo => levelInfo.DBId == dbId).First());
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static void UpdateLocalDatabase()
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);

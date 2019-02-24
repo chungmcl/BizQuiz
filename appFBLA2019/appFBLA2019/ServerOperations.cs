@@ -111,6 +111,18 @@ namespace appFBLA2019
             return result;
         }
 
+        public static OperationReturnMessage SubscribeToLevel(string dbId)
+        {
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{dbId}/-", 
+                ServerRequestTypes.SubscribeToLevel);
+        }
+
+        public static OperationReturnMessage UnsubscribeToLevel(string dbId)
+        {
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{dbId}/-", 
+                ServerRequestTypes.UnsubscribeToLevel);
+        }
+
         public static bool SendLevel(string relativeLevelPath)
         {
             try
@@ -193,6 +205,39 @@ namespace appFBLA2019
             LevelRosterDatabase.EditLevelInfo(infoCopy);
 
             return true;
+        }
+        
+        public static bool SendBugReport(string report, byte[] image = null)
+        {
+            byte[] reportBytes = Encoding.Unicode.GetBytes(report);
+            byte[] imageBytes = image ?? new byte[0];
+            byte[] imageHeader = new byte[5];
+            if (image?.Length > 0)
+            {
+                imageHeader = new byte[5];
+                Array.Copy(new byte[] { Convert.ToByte(true) }, imageHeader, 1);
+                Array.Copy(BitConverter.GetBytes(imageBytes.Length), 0, imageHeader, 1, 4);
+            }
+            else { Array.Copy(new Byte[] { Convert.ToByte(false) }, imageHeader, 1); }
+            byte[] header = GenerateHeaderData(ServerRequestTypes.SendBugReport, (uint)(imageHeader.Length + imageBytes.Length + reportBytes.Length));
+
+            byte[] toSend = new byte[header.Length + imageHeader.Length + imageBytes.Length + reportBytes.Length];
+            header.CopyTo(toSend, 0);
+            imageHeader.CopyTo(toSend, header.Length);
+            imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
+            reportBytes.CopyTo(toSend, header.Length + imageHeader.Length + imageBytes.Length);
+
+            switch (ReceiveFromServerORM(toSend))
+            {
+                case OperationReturnMessage.True:
+                    return true;
+                case OperationReturnMessage.False:
+                case OperationReturnMessage.FalseFailedConnection:
+                case OperationReturnMessage.FalseNoConnection:
+                    return false;
+                default:
+                    throw new Exception("Something went wrong sending the bug report!");
+            }
         }
 
         #region Header Generators
@@ -324,7 +369,7 @@ namespace appFBLA2019
         }
         #endregion
 
-        #region Data Sends
+        #region Data Send Helper Methods
         /// <summary>
         /// Send a string (Unicode) based data request or send to the server.
         /// </summary>
@@ -396,39 +441,6 @@ namespace appFBLA2019
             imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
             return ReceiveFromServerORM(toSend);
         }
-
-        public static bool SendBugReport(string report, byte[] image = null)
-        {
-            byte[] reportBytes = Encoding.Unicode.GetBytes(report);
-            byte[] imageBytes = image ?? new byte[0];
-            byte[] imageHeader = new byte[5];
-            if (image?.Length > 0)
-            {
-                imageHeader = new byte[5];
-                Array.Copy(new byte[] { Convert.ToByte(true) }, imageHeader, 1);
-                Array.Copy(BitConverter.GetBytes(imageBytes.Length), 0, imageHeader, 1, 4);
-            }
-            else { Array.Copy(new Byte[] { Convert.ToByte(false) }, imageHeader, 1); }
-            byte[] header = GenerateHeaderData(ServerRequestTypes.SendBugReport, (uint)(imageHeader.Length + imageBytes.Length + reportBytes.Length));
-
-            byte[] toSend = new byte[header.Length + imageHeader.Length + imageBytes.Length + reportBytes.Length];
-            header.CopyTo(toSend, 0);
-            imageHeader.CopyTo(toSend, header.Length);
-            imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
-            reportBytes.CopyTo(toSend, header.Length + imageHeader.Length + imageBytes.Length);
-            
-            switch(ReceiveFromServerORM(toSend))
-            {
-                case OperationReturnMessage.True:
-                    return true;
-                case OperationReturnMessage.False:
-                case OperationReturnMessage.FalseFailedConnection:
-                case OperationReturnMessage.FalseNoConnection:
-                    return false;
-                default:
-                    throw new Exception("Something went wrong sending the bug report!");
-            }
-        }
         #endregion
     }
 
@@ -440,6 +452,8 @@ namespace appFBLA2019
         FalseInvalidCredentials,
         FalseInvalidEmail,
         FalseUsernameAlreadyExists,
+        FalseAlreadySubscribed,
+        FalseAlreadyUnsubscribed,
         FalseNoConnection,
         FalseFailedConnection
     }
@@ -448,11 +462,11 @@ namespace appFBLA2019
     {
         // "Command" Requests
         StringData,
-
         AddJPEGImage,
         AddRealmFile,
         FinalizeLevelSend,
-
+        SubscribeToLevel,
+        UnsubscribeToLevel,
         DeleteLevel,
         LoginAccount,
         RegisterAccount,
@@ -464,7 +478,6 @@ namespace appFBLA2019
 
         // "Get" Requests
         GetEmail,
-
         GetJPEGImage,
         GetRealmFile,
         GetLastModifiedDate,
