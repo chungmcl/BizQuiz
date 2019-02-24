@@ -67,7 +67,7 @@ namespace appFBLA2019
                         StackLayout stack = new StackLayout();
                         stack.Children.Add(new Label
                         {
-                            Text = "You haven't made any levels in this category yet!",
+                            Text = "You don't have any levels in this category yet!",
                             HorizontalTextAlignment = TextAlignment.Center,
                             FontSize = 38
                         });
@@ -82,6 +82,15 @@ namespace appFBLA2019
                                 FontSize = 26
                             });
                             (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new CreateNewLevelPage());
+                            stack.Children.Add(new Button
+                            {
+                                Text = "Search for levels",
+                                CornerRadius = 25,
+                                BackgroundColor = Color.Accent,
+                                TextColor = Color.White,
+                                FontSize = 26
+                            });
+                            (stack.Children[2] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new StorePage());
                         }
                         Frame frame = new Frame()
                         {
