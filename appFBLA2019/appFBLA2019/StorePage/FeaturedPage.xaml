@@ -12,7 +12,7 @@
             <Frame CornerRadius="0" >
                 <StackLayout>
                     <Label Text="Featured Quizzes" Grid.Column="1" HorizontalOptions="CenterAndExpand" FontSize="25" FontAttributes="Bold"/>
-                    <Picker x:Name="PickerCategory" BackgroundColor="White" Title="Category" FontSize="17" FontAttributes="Italic" TextColor="Accent" SelectedIndexChanged="PickerCategory_SelectedIndexChanged" HorizontalOptions="StartAndExpand">
+                    <Picker x:Name="PickerCategory" BackgroundColor="White" Title="Category" FontSize="17" FontAttributes="Italic" TextColor="Accent" SelectedIndexChanged="PickerCategory_SelectedIndexChanged" HorizontalOptions="FillAndExpand">
                         <Picker.Items>
                             <x:String>All</x:String>
                             <x:String>Tech Events</x:String>
