@@ -19,7 +19,7 @@ namespace appFBLA2019
     {
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         public bool IsLoading { get; set; }
-        bool isSetup;
+        public bool isSetup;
 
         public LevelSelectionPage(string category)
         {
@@ -27,6 +27,7 @@ namespace appFBLA2019
             this.category = category;
             Directory.CreateDirectory(App.UserPath + $"{category}/");
             this.IsLoading = false;
+            this.isSetup = false;
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
             //this.Setup();
         }
@@ -41,14 +42,7 @@ namespace appFBLA2019
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            if (!this.isSetup)
-                this.Setup();
-        }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            if (Application.Current.MainPage.Width >= 0)
+            if (Application.Current.MainPage.Width >= 0 && !this.isSetup)
             {
 
                 this.Setup();
@@ -73,7 +67,7 @@ namespace appFBLA2019
                         StackLayout stack = new StackLayout();
                         stack.Children.Add(new Label
                         {
-                            Text = "You haven't made any levels in this category yet!",
+                            Text = "You don't have any levels in this category yet!",
                             HorizontalTextAlignment = TextAlignment.Center,
                             FontSize = 38
                         });
@@ -88,6 +82,15 @@ namespace appFBLA2019
                                 FontSize = 26
                             });
                             (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new CreateNewLevelPage());
+                            stack.Children.Add(new Button
+                            {
+                                Text = "Search for levels",
+                                CornerRadius = 25,
+                                BackgroundColor = Color.Accent,
+                                TextColor = Color.White,
+                                FontSize = 26
+                            });
+                            (stack.Children[2] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new StorePage());
                         }
                         Frame frame = new Frame()
                         {

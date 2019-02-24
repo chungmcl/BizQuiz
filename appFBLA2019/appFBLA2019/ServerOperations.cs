@@ -95,7 +95,12 @@ namespace appFBLA2019
         
         public static int GetNumberOfLevelsByAuthorName(string username)
         {
-            return int.Parse((string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfLevelsByAuthorName));
+            string returnData = (string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfLevelsByAuthorName);
+            if (!int.TryParse(returnData, out int result))
+            {
+                result = 0;
+            }
+            return result;
         }
 
         public static bool SendLevel(string relativeLevelPath)
