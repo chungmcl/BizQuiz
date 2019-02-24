@@ -20,10 +20,11 @@ namespace appFBLA2019
         {
             InitializeComponent();
             this.currentChunk = 1;
+            levelsFeatured = new List<SearchInfo>();
         }
 
         protected async override void OnAppearing()
-            {
+        {
             this.levelsRemaining = true;
             await this.Refresh();
         }
@@ -90,7 +91,6 @@ namespace appFBLA2019
         /// <param name="level"></param>
         private void AddLevels(List<SearchInfo> levels)
         {
-
             foreach (SearchInfo level in levels)
             {
                 if (this.category == "All" || level.Category == this.category) // Only add level if the category is what user picked
