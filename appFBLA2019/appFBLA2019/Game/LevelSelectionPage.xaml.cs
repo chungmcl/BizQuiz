@@ -350,6 +350,7 @@ namespace appFBLA2019
 
         private void SyncDownload_Clicked(object sender, EventArgs e)
         {
+
         }
 
         private void SyncNoChange_Clicked(object sender, EventArgs e)
@@ -459,7 +460,7 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Hold on!", "Before you can edit any levels, you have to login.", "Ok");
             }
-            else if (((Button)sender).StyleId != "offline")
+            else if (((Button)sender).StyleId == "offline")
             {
                 await this.DisplayAlert("Hold on!", "This quiz isn't on your device, download it before you try to edit it", "Ok");
             }

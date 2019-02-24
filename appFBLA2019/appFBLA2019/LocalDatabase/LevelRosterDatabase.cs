@@ -172,6 +172,32 @@ namespace appFBLA2019
                         }
                     }
                 }
+
+                int numberOfLevelsOnServer = ServerOperations.GetNumberOfLevelsByAuthorName(CredentialManager.Username);
+                if (numberOfLevelsOnServer > LevelInfos.Count)
+                {
+                    string[] dbIds = new string[LevelInfos.Count];
+                    for (int i = 0; i < dbIds.Length; i++)
+                        dbIds[i] = LevelInfos[i].DBId;
+
+                    List<string[]> missingLevels = ServerOperations.GetMissingLevelsByAuthorName(CredentialManager.Username, dbIds);
+                    foreach (string[] missingLevel in missingLevels)
+                    {
+                        LevelInfo info = new LevelInfo
+                        {
+                            DBId = missingLevel[0],
+                            AuthorName = missingLevel[1],
+                            LevelName = missingLevel[2],
+                            Category = missingLevel[3],
+                            LastModifiedDate = missingLevel[4],
+                            SyncStatus = 4
+                        };
+                        threadInstance.Write(() =>
+                        {
+                            threadInstance.Add(info);
+                        });
+                    }
+                }
             }
             else
             {
@@ -182,32 +208,6 @@ namespace appFBLA2019
                         SyncStatus = 3 // 3 represents offline
                     };
                     EditLevelInfo(threadInstance, copy);
-                }
-            }
-
-            int numberOfLevelsOnServer = ServerOperations.GetNumberOfLevelsByAuthorName(CredentialManager.Username);
-            if (numberOfLevelsOnServer > LevelInfos.Count)
-            {
-                string[] dbIds = new string[LevelInfos.Count];
-                for (int i = 0; i < dbIds.Length; i++)
-                    dbIds[i] = LevelInfos[i].DBId;
-
-                List<string[]> missingLevels = ServerOperations.GetMissingLevelsByAuthorName(CredentialManager.Username, dbIds);
-                foreach (string[] missingLevel in missingLevels)
-                {
-                    LevelInfo info = new LevelInfo
-                    {
-                        DBId = missingLevel[0],
-                        AuthorName = missingLevel[1],
-                        LevelName = missingLevel[2],
-                        Category = missingLevel[3],
-                        LastModifiedDate = missingLevel[4],
-                        SyncStatus = 4
-                    };
-                    threadInstance.Write(() =>
-                    {
-                        threadInstance.Add(info);
-                    });
                 }
             }
         }
