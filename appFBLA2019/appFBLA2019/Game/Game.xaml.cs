@@ -25,6 +25,7 @@ namespace appFBLA2019
             this.level = level;
             this.score = 0;
             this.random = new Random();
+            this.Title = level.Title;
 
             this.LayoutRefresh();
             this.CycleQuestion();
@@ -81,7 +82,8 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task AnimateNextBanner()
         {
-            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.SpringOut);
+            this.NextBanner.ForceLayout();
+            await this.NextBanner.TranslateTo((this.Width - 300) / 2, this.Height * 2 / 3, 500, Easing.SpringOut);
         }
 
         /// <summary>
@@ -120,7 +122,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="answer">    the answer that was typed </param>
         /// <param name="checkCase"> whether or not to check the case </param>
-        private void CheckTextAnswer(string answer, bool checkCase)
+        private async void CheckTextAnswer(string answer, bool checkCase)
         {
             ((Button)this.InputGrid.Children.Where(x => x.GetType() == typeof(Button)).First()).IsEnabled = false;
             answer = answer.Trim();
@@ -133,11 +135,11 @@ namespace appFBLA2019
 
             if (answer == correctAnswer)
             {
-                this.CorrectAnswer();
+                await this.CorrectAnswer();
             }
             else
             {
-                this.IncorrectAnswer();
+                await this.IncorrectAnswer();
             }
         }
 
@@ -174,8 +176,8 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task CycleQuestion()
         {
-            await this.ProgressBar.ProgressTo(((double)this.level.Questions.Count() - (double)this.level.QuestionsRemaining) / (double)this.level.Questions.Count(), 500, Easing.SpringOut);
-            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
+            this.ProgressBar.ProgressTo(((double)this.level.Questions.Count() - (double)this.level.QuestionsRemaining) / (double)this.level.Questions.Count(), 500, Easing.SpringOut);
+            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
             if (this.level.QuestionsRemaining > 0)
             {
                 // Save as reference
@@ -202,7 +204,7 @@ namespace appFBLA2019
 
             // 1 represents 'failed'
             DBHandler.Database.realmDB.Write(() =>
-                this.level.Questions[0].Status = 1
+                this.currentQuestion.Status = 1
             );
 
             await this.AnimateNextBanner();
@@ -246,6 +248,8 @@ namespace appFBLA2019
             }
 
             this.LabelQuestion.Text = question.QuestionText;
+            this.LabelQuestion.VerticalTextAlignment = TextAlignment.Center;
+            this.LabelQuestion.VerticalOptions = LayoutOptions.Center;
             this.correct = question.CorrectAnswer;
             List<string> answers = question.Answers;
 
@@ -281,7 +285,7 @@ namespace appFBLA2019
                     Button button = new Button
                     {
                         Text = answer,
-                        FontSize = 45,
+                        FontSize = 30,
                         CornerRadius = 25,
                         Padding = 10,
                         BackgroundColor = Color.Accent,
@@ -332,10 +336,9 @@ namespace appFBLA2019
                 {
                     FontSize = 35,
                     FontAttributes = FontAttributes.Italic,
-                    TextColor = Color.Gray,
+                    TextColor = Color.Gray, 
                     HorizontalTextAlignment = TextAlignment.Center,
-                    VerticalOptions = LayoutOptions.End,
-                    HorizontalOptions = LayoutOptions.CenterAndExpand,
+                    WidthRequest = this.Width,
                     Placeholder = "Answer Here",
                     PlaceholderColor = Color.LightGray
                 }
@@ -347,8 +350,7 @@ namespace appFBLA2019
                     CornerRadius = 25,
                     Padding = 10,
                     BackgroundColor = Color.Accent,
-                    TextColor = Color.White,
-                    HeightRequest = 100
+                    TextColor = Color.White
                 };
                 buttonCheckAnswer.Clicked += (object sender, EventArgs e) =>
                 {
