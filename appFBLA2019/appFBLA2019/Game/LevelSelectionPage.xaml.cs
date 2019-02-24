@@ -19,7 +19,7 @@ namespace appFBLA2019
     {
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         public bool IsLoading { get; set; }
-        bool isSetup;
+        public bool isSetup;
 
         public LevelSelectionPage(string category)
         {
@@ -27,6 +27,7 @@ namespace appFBLA2019
             this.category = category;
             Directory.CreateDirectory(App.UserPath + $"{category}/");
             this.IsLoading = false;
+            this.isSetup = false;
             // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
             //this.Setup();
         }
@@ -41,14 +42,7 @@ namespace appFBLA2019
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            if (!this.isSetup)
-                this.Setup();
-        }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            if (Application.Current.MainPage.Width >= 0)
+            if (Application.Current.MainPage.Width >= 0 && !this.isSetup)
             {
 
                 this.Setup();

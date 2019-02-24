@@ -15,7 +15,7 @@ namespace appFBLA2019
         public bool IsLoading { get; private set; }
         public bool IsOnLoginPage { get; private set; }
         private AccountSettingsPage accountSettingsPage;
-        private int currentChunk;
+        private int currentChunk = 1;
 
         public ProfilePage()
         {
@@ -60,16 +60,47 @@ namespace appFBLA2019
         /// <returns></returns>
         private async Task UpdateProfileContent()
         {
-            this.LevelStack.IsVisible = false;
+            this.LevelStack.Children.Clear();
             this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
 
             await Task.Run(() =>
             {
+                this.totalCount = 0;
                 this.SetupLocalQuizzes();
                 this.SetupNetworkQuizzes();
-            });
+                this.totalCount += ServerOperations.GetNumberOfLevelsByAuthorName(CredentialManager.Username);
+                if (totalCount == 0)
+                {
+                    StackLayout stack = new StackLayout();
+                    stack.Children.Add(new Label
+                    {
+                        Text = "You haven't made any levels yet!",
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        FontSize = 38
+                    });
+                    stack.Children.Add(new Button
+                    {
+                        Text = "Make a level now",
+                        CornerRadius = 25,
+                        BackgroundColor = Color.Accent,
+                        TextColor = Color.White,
+                        FontSize = 26
+                    });
+                    (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new CreateNewLevelPage());
+                    Frame frame = new Frame()
+                    {
+                        CornerRadius = 10,
+                        HorizontalOptions = LayoutOptions.CenterAndExpand,
+                        Content = stack
+                    };
+                    Device.BeginInvokeOnMainThread(() =>
+                        this.LevelStack.Children.Add(frame));
+                }
+                Device.BeginInvokeOnMainThread(() =>
+                    this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
+        });
 
             if (this.ToolbarItems.Count <= 0)
             {
@@ -132,44 +163,12 @@ namespace appFBLA2019
             //this will take a while it would be good to make it async
             
             this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            List<SearchInfo> temp = SearchUtils.GetLevelsByAuthorChunked(CredentialManager.Username, this.currentChunk);
-            totalCount += temp.Count;
-            if (temp.Count == 0)
+            List<SearchInfo> chunk = SearchUtils.GetLevelsByAuthorChunked(CredentialManager.Username, this.currentChunk);
+            if (chunk.Count == 0)
             {
-                if (totalCount == 0)
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        StackLayout stack = new StackLayout();
-                        stack.Children.Add(new Label
-                        {
-                            Text = "You haven't made any levels yet!",
-                            HorizontalTextAlignment = TextAlignment.Center,
-                            FontSize = 38
-                        });
-                        stack.Children.Add(new Button
-                        {
-                            Text = "Make a level now",
-                            CornerRadius = 25,
-                            BackgroundColor = Color.Accent,
-                            TextColor = Color.White,
-                            FontSize = 26
-                        });
-                        (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushModalAsync(new CreateNewLevelPage());
-                        Frame frame = new Frame()
-                        {
-                            CornerRadius = 10,
-                            HorizontalOptions = LayoutOptions.CenterAndExpand,
-                            Content = stack
-                        };
-                        this.LevelStack.Children.Add(frame);
-                    }
-                );
-                }
                 return;
             }
-            this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!";
-            AddLevels(temp, true);
+            AddLevels(chunk, true);
         }
 
         private void AddLevels(List<SearchInfo> levels, bool isNetworkLevels)
@@ -180,12 +179,16 @@ namespace appFBLA2019
                 //if its not already stored locally (only apllies to networklevels)
                 if (isNetworkLevels && LevelRosterDatabase.GetLevelInfo(level.DBId) != null)
                 {
+                    this.totalCount--;
+                }
+                else
+                {
                     Frame frame = new Frame()
-                    {
-                        VerticalOptions = LayoutOptions.Start,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        CornerRadius = 10
-                    };
+                {
+                    VerticalOptions = LayoutOptions.Start,
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    CornerRadius = 10
+                };
 
                     StackLayout frameStack = new StackLayout
                     {
@@ -216,7 +219,9 @@ namespace appFBLA2019
                     frameStack.Children.Add(Subscribers);
 
                     frame.Content = frameStack;
-                    LevelStack.Children.Add(frame);
+
+                    Device.BeginInvokeOnMainThread(() =>
+                    LevelStack.Children.Add(frame));
                 }
             }
         }

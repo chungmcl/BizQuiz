@@ -54,9 +54,8 @@ namespace appFBLA2019
 
         private async Task Search()
         {
-            List<Task> toAwait = new List<Task>();
             List<SearchInfo> chunk = new List<SearchInfo>();
-                chunk = SearchUtils.GetLevelsByAuthorChunked("BizQuiz", this.currentChunk);
+            chunk = SearchUtils.GetLevelsByAuthorChunked("BizQuiz", this.currentChunk);
             if (chunk.Count < 20)
                 this.levelsRemaining = false;
             await Task.Run(() => this.AddLevels(chunk));

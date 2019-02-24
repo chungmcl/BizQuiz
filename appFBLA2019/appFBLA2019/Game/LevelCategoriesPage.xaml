@@ -7,7 +7,7 @@
                         BarTextColor="White"
                         BarBackgroundColor="#004f96">
     <TabbedPage.ToolbarItems>
-        <ToolbarItem Text="Create New Quiz"  Priority="0" Name="Create Quiz" Order="Primary"  Activated="New_Activated"/>
+        <ToolbarItem Icon="ic_note_add_white_48dp.png"  Priority="0" Name="Create Quiz" Order="Primary"  Activated="New_Activated"/>
     </TabbedPage.ToolbarItems>
     <local:LevelSelectionPage Title="Tech Events">
         <x:Arguments>
