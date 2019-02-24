@@ -155,7 +155,7 @@ namespace appFBLA2019
                             TextColor = Color.White,
                             FontSize = 26
                         });
-                        (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushModalAsync(new CreateNewLevelPage());
+                        (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new CreateNewLevelPage());
                         Frame frame = new Frame()
                         {
                             CornerRadius = 10,

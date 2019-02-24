@@ -188,7 +188,7 @@ namespace appFBLA2019
                 double x = frame.X;
                 frame.TranslationX = this.Width;
                 // Scroll to bottom
-                await this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
+                this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
 
                 //animate in frame
                 await frame.TranslateTo(x - 10, 0, 500, Easing.CubicOut);
