@@ -118,7 +118,7 @@ namespace appFBLA2019
                         {
                             ServerOperations.DeleteLevel(LevelInfos[i].DBId);
                         }
-                        else
+                        else if (LevelInfos[i].SyncStatus != 4)
                         {
                             string lastModifiedDate = ServerOperations.GetLastModifiedDate(LevelInfos[i].DBId);
                             if (lastModifiedDate != null) // returns null if could not reach server

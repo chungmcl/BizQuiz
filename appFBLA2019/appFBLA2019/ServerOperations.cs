@@ -182,12 +182,15 @@ namespace appFBLA2019
             foreach (Question question in questionsWithPictures)
             {
                 byte[] jpegFile = (byte[])SendStringData($"{question.QuestionId}/{dBId}/-", ServerRequestTypes.GetJPEGImage);
-                string jpegFilePath = levelPath + "/" + question.QuestionId + "/" + jpegFileExtension;
+                string jpegFilePath = levelPath + "/" + question.QuestionId + jpegFileExtension;
                 if (jpegFile.Length > 0)
                     File.WriteAllBytes(jpegFilePath, jpegFile);
                 else
                     return false;
             }
+            LevelInfo infoCopy = new LevelInfo(LevelRosterDatabase.GetLevelInfo(dBId));
+            infoCopy.SyncStatus = 2;
+            LevelRosterDatabase.EditLevelInfo(infoCopy);
 
             return true;
         }

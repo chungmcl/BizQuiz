@@ -44,7 +44,6 @@ namespace appFBLA2019
             base.OnSizeAllocated(width, height);
             if (Application.Current.MainPage.Width >= 0 && !this.isSetup)
             {
-
                 this.Setup();
                 this.isSetup = true;
             }
@@ -141,7 +140,6 @@ namespace appFBLA2019
                     };
                     topStack.Children.Add(title);
 
-                    // check status
                     ImageButton Sync = new ImageButton
                     {
                         HeightRequest = 25,
@@ -149,12 +147,10 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + level.LevelName + "`" + level.AuthorName
+                        StyleId = "/" + this.category + "/" + level.LevelName + "`" + level.AuthorName,
+                        ClassId = level.DBId + "/" + level.AuthorName + "/" + level.LevelName
                     };
-
-
                     
-
                     topStack.Children.Add(Sync);
 
                     ImageButton imageButtonMenu = new ImageButton
@@ -274,8 +270,8 @@ namespace appFBLA2019
                         Sync.Clicked += this.SyncDownload_Clicked;
                         if (level.SyncStatus == 4)
                         {
-                            frame.StyleId = "offline";
-                            ButtonEdit.StyleId = "offline";
+                            frame.StyleId = "notLocal";
+                            ButtonEdit.StyleId = "notLocal";
                         }
                     }
 
@@ -283,7 +279,7 @@ namespace appFBLA2019
                     TapGestureRecognizer recognizer = new TapGestureRecognizer();
                     recognizer.Tapped += async (object sender, EventArgs e) =>
                     {
-                        if (frame.StyleId != "offline")
+                        if (frame.StyleId != "notLocal")
                         {
                             frame.GestureRecognizers.Remove(recognizer);
                             frame.BackgroundColor = Color.LightGray;
@@ -348,9 +344,32 @@ namespace appFBLA2019
             }
         }
 
-        private void SyncDownload_Clicked(object sender, EventArgs e)
+        private async void SyncDownload_Clicked(object sender, EventArgs e)
         {
+            ImageButton button = sender as ImageButton;
+            string dbId = button.ClassId.Split('/')[0];
+            string authorName = button.ClassId.Split('/')[1];
+            string levelName = button.ClassId.Split('/')[2];
+            button.IsEnabled = false;
+            await button.FadeTo(0, 150, Easing.CubicInOut);
+            button.Source = "ic_autorenew_black_48dp.png";
+            await button.FadeTo(1, 150, Easing.CubicInOut);
+            button.HeightRequest = 25;
 
+            if (await Task.Run(() => ServerOperations.GetLevel(dbId, levelName, authorName)))
+            {
+                button.Source = "ic_cloud_done_black_48dp.png";
+                button.IsEnabled = true;
+                button.Clicked += SyncNoChange_Clicked;
+            }
+            else
+            {
+                button.Source = "ic_cloud_download_black_48dp.png";
+                button.IsEnabled = true;
+                await DisplayAlert("Level Upload Failed.",
+                    "This level could not be downloaded from the server. Please try again.",
+                    "OK");
+            }
         }
 
         private void SyncNoChange_Clicked(object sender, EventArgs e)
@@ -460,7 +479,7 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Hold on!", "Before you can edit any levels, you have to login.", "Ok");
             }
-            else if (((Button)sender).StyleId == "offline")
+            else if (((Button)sender).StyleId == "notLocal")
             {
                 await this.DisplayAlert("Hold on!", "This quiz isn't on your device, download it before you try to edit it", "Ok");
             }

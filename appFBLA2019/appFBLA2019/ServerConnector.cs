@@ -57,7 +57,8 @@ namespace appFBLA2019
                                 int size = BitConverter.ToInt32(header, 1);
                                 if (header.Length >= 5)
                                 {
-                                    return ReadByteArray(size);
+                                    byte[] returnedData = ReadByteArray(size);
+                                    return returnedData;
                                 }
                                 else
                                     return new byte[0];
