@@ -242,6 +242,16 @@ namespace appFBLA2019
             }
         }
 
+        public static OperationReturnMessage ForgotPassword(string username)
+        {
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/-", ServerRequestTypes.ForgotPassword);
+        }
+
+        public static OperationReturnMessage ForgotPasswordChangePassword(string username, string resetCode, string newPassword)
+        {
+            return (OperationReturnMessage)SendStringData($"{username}/{resetCode}/{newPassword}/-", ServerRequestTypes.ForgotPasswordChangePassword);
+        }
+
         #region Header Generators
         private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
         {
@@ -477,6 +487,8 @@ namespace appFBLA2019
         ChangeEmail,
         ChangePassword,
         SendBugReport,
+        ForgotPassword,
+        ForgotPasswordChangePassword,
 
         // "Get" Requests
         GetEmail,
