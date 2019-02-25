@@ -188,6 +188,7 @@ namespace appFBLA2019
                     string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
                     LevelInfo newInfo = new LevelInfo
                     {
+                        DBId = level.DBId,
                         AuthorName = level.Author,
                         LevelName = level.LevelName,
                         Category = level.Category,
