@@ -218,6 +218,7 @@ namespace appFBLA2019
                     SearchInfo level = this.levelsFeatured.Where(searchInfo => searchInfo.DBId == dbId).First();
                     LevelInfo newInfo = new LevelInfo
                     {
+                        DBId = level.DBId,
                         AuthorName = level.Author,
                         LevelName = level.LevelName,
                         Category = level.Category,

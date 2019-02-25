@@ -27,6 +27,7 @@ namespace appFBLA2019
 		public StorePage()
 		{
             this.isStartup = true;
+            this.levelsSearched = new List<SearchInfo>();
 			InitializeComponent();
 			this.searchType = "Title";
             this.category = "All";
@@ -51,6 +52,7 @@ namespace appFBLA2019
         /// <param name="level"></param>
         private void AddLevels(List<SearchInfo> levels)
 		{
+            List<LevelInfo> currentlySubscribed = LevelRosterDatabase.GetRoster();
 			foreach(SearchInfo level in levels)
             {// Only add level if the category is what user picked (we are asking the server for more then we need so this could be changed)
                 if (this.category == "All" || level.Category == this.category) 
@@ -92,8 +94,16 @@ namespace appFBLA2019
                         HorizontalOptions = LayoutOptions.End
                     };
 
-                    // source is add if not subscribed and if they are then source is check
-                    ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                    // If already subscribed
+                    if (currentlySubscribed.Where(levelInfo => levelInfo.DBId == level.DBId).Count() > 0)
+                    {
+                        // source is add if not subscribed and if they are then source is check
+                        ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                    }
+                    else
+                    {
+                        ImageButtonSubscribe.Source = "ic_playlist_add_check_black_48dp.png";
+                    }
 
                     ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
                     topStack.Children.Add(ImageButtonSubscribe);
@@ -113,8 +123,9 @@ namespace appFBLA2019
                     frameStack.Children.Add(levelCategory);
 
                     levelFrame.Content = frameStack;
+                    this.levelsSearched.Add(level);
                     Device.BeginInvokeOnMainThread(() =>
-                    this. SearchedStack.Children.Add(levelFrame));
+                    this.SearchedStack.Children.Add(levelFrame));
                 }
 			}		   
 		}
