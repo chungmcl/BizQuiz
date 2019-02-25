@@ -6,7 +6,7 @@
         <ScrollView>
             <StackLayout Padding="10">
                 <Label FontSize="30" HorizontalOptions="CenterAndExpand">About Us</Label>
-                <Image Source="BizQuizLogo.png" Aspect="AspectFit" HeightRequest="250" />
+                <Image Source="BizQuizLogo.png" Aspect="AspectFit" HeightRequest="240" />
                 <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10">
                     <Label HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" FontSize="18">
                         BizQuiz was developed by Micheal Chung, Eric Hughes, and Thomas Elley. Our dream was to provide students with an easy way to create, share, and learn from quizzes about various business concepts. BizQuiz is a labor of love and we're always happy to take feedback from users. Contact us below with any suggestions or use our bug reporting system to report a problem. Thanks for using BizQuiz!

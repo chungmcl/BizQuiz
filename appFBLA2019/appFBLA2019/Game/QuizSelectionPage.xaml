@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="appFBLA2019.LevelSelectionPage"
+             x:Class="appFBLA2019.QuizSelectionPage"
              xmlns:local="clr-namespace:appFBLA2019">
-    <!--Titles should be implemented by the containing XAMl (LevelCategoriesPage.xaml) -->
+    <!--Titles should be implemented by the containing XAMl (QuizCategoriesPage.xaml) -->
     <ContentPage.Content>
         <AbsoluteLayout>
             <ScrollView AbsoluteLayout.LayoutBounds="0, 0, 1.0, 1.0" AbsoluteLayout.LayoutFlags="All">
@@ -11,10 +11,6 @@
                     <!--buttons / progress cards get placed in here-->
                 </StackLayout>
             </ScrollView>
-            <!--<Button AbsoluteLayout.LayoutBounds=".5, 1, .8, .9" AbsoluteLayout.LayoutFlags="All"
-                    x:Name="ButtonCreateLevel" FontSize="24" TextColor="White" Text="Create new Quiz" HorizontalOptions="CenterAndExpand" 
-                    VerticalOptions="End" Clicked="ButtonCreateLevel_Clicked" HeightRequest="50" 
-                    CornerRadius="25" BackgroundColor="Accent" Margin="20" />-->
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

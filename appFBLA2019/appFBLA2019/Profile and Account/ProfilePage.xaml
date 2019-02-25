@@ -16,13 +16,13 @@
                                Color="Accent" 
                                VerticalOptions="CenterAndExpand"
                                IsVisible="False"/>
-                        <StackLayout x:Name="LevelStack">
-                            <!--Levels user created goes here!-->
+                        <StackLayout x:Name="QuizStack">
+                            <!--Quizzes user created goes here!-->
                         </StackLayout>
                     </StackLayout>
                 </ScrollView>
                 <Frame CornerRadius="25" Padding="0" IsClippedToBounds="False" HorizontalOptions="Center">
-                    <Button x:Name="ButtonCreateLevel" FontSize="24" TextColor="White" Text="Create new Quiz"
+                    <Button x:Name="ButtonCreateQuiz" FontSize="24" TextColor="White" Text="Create new Quiz"
                             Clicked="New_Activated" BackgroundColor="Accent" Padding="10,0" HeightRequest="50"/>
                 </Frame>
             </StackLayout>

@@ -12,17 +12,17 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
     /// <summary>
-    /// Showed at the end of the level
+    /// Showed at the end of the quiz
     /// </summary>
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LevelEndPage : ContentPage
+    public partial class QuizEndPage : ContentPage
     {
         /// <summary>
         /// Constructs the page and sets the score
         /// </summary>
         /// <param name="score">           </param>
         /// <param name="totalQuestions">  </param>
-        public LevelEndPage(int score, int totalQuestions)
+        public QuizEndPage(int score, int totalQuestions)
         {
             this.InitializeComponent();
             this.percentscore = score / (totalQuestions * 2.0) * 100;

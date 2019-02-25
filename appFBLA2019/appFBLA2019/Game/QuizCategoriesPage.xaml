@@ -1,39 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TabbedPage  xmlns="http://xamarin.com/schemas/2014/forms"
                         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                        x:Class="appFBLA2019.LevelCategoriesPage"
+                        x:Class="appFBLA2019.QuizCategoriesPage"
                         xmlns:local="clr-namespace:appFBLA2019"
                         xmlns:sys="clr-namespace:System;assembly=netstandard"
                         BarTextColor="White"
                         BarBackgroundColor="#004f96">
-    <local:LevelSelectionPage Title="Tech Events">
+    <local:QuizSelectionPage Title="Tech Events">
         <x:Arguments>
             <x:String>Tech Events</x:String>
         </x:Arguments>
-    </local:LevelSelectionPage>
-    <local:LevelSelectionPage Title="Finance Events">
+    </local:QuizSelectionPage>
+    <local:QuizSelectionPage Title="Finance Events">
         <x:Arguments>
             <x:String>Finance Events</x:String>
         </x:Arguments>
-    </local:LevelSelectionPage>
-    <local:LevelSelectionPage Title="Business Events">
+    </local:QuizSelectionPage>
+    <local:QuizSelectionPage Title="Business Events">
         <x:Arguments>
             <x:String>Business Events</x:String>
         </x:Arguments>
-    </local:LevelSelectionPage>
-    <local:LevelSelectionPage Title="FBLA General">
+    </local:QuizSelectionPage>
+    <local:QuizSelectionPage Title="FBLA General">
         <x:Arguments>
             <x:String>FBLA General</x:String>
         </x:Arguments>
-    </local:LevelSelectionPage>
-    <local:LevelSelectionPage Title="Officers">
+    </local:QuizSelectionPage>
+    <local:QuizSelectionPage Title="Officers">
         <x:Arguments>
             <x:String>Officers</x:String>
         </x:Arguments>
-    </local:LevelSelectionPage>
-    <local:LevelSelectionPage Title="Parliamentary Procedure">
+    </local:QuizSelectionPage>
+    <local:QuizSelectionPage Title="Parliamentary Procedure">
         <x:Arguments>
             <x:String>Parliamentary Procedure</x:String>
         </x:Arguments>
-    </local:LevelSelectionPage>
+    </local:QuizSelectionPage>
 </TabbedPage>

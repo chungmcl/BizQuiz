@@ -14,15 +14,15 @@ namespace appFBLA2019
     /// </summary>
     public class GameDatabase
     {
-        public GameDatabase(string dbFolderPath, string levelTitle)
+        public GameDatabase(string dbFolderPath, string quizTitle)
         {
             try
             {
-                this.dbPath = dbFolderPath + $"/{levelTitle}{realmExtension}";
+                this.dbPath = dbFolderPath + $"/{quizTitle}{realmExtension}";
                 this.DBFolderPath = dbFolderPath + "/";
                 RealmConfiguration rC = new RealmConfiguration(this.dbPath);
                 this.realmDB = Realm.GetInstance(rC);
-                this.fileName = $"/{levelTitle}{realmExtension}";
+                this.fileName = $"/{quizTitle}{realmExtension}";
             }
             catch (Exception ex)
             {
@@ -146,43 +146,43 @@ namespace appFBLA2019
             });
         }
 
-        public LevelInfo GetLevelInfo()
+        public QuizInfo GetQuizInfo()
         {
-            return this.realmDB.All<LevelInfo>().First();
+            return this.realmDB.All<QuizInfo>().First();
         }
 
-        public void NewLevelInfo(string authorName, string levelName, string category)
+        public void NewQuizInfo(string authorName, string quizName, string category)
         {
-            LevelInfo newLevelInfo = new LevelInfo(authorName, levelName, category)
+            QuizInfo newQuizInfo = new QuizInfo(authorName, quizName, category)
             {
-                // Sync status is irrelevant in a Level Database's copy of the LevelInfo
+                // Sync status is irrelevant in a Quiz Database's copy of the QuizInfo
                 SyncStatus = -1
             };
 
             this.realmDB.Write(() =>
             {
-                this.realmDB.Add(newLevelInfo);
+                this.realmDB.Add(newQuizInfo);
             });
 
-            LevelInfo rosterCopy = new LevelInfo(newLevelInfo)
+            QuizInfo rosterCopy = new QuizInfo(newQuizInfo)
             {
                 SyncStatus = 1 // Default to 1, meaning "needs upload" in roster
             };
-            LevelRosterDatabase.NewLevelInfo(rosterCopy);
+            QuizRosterDatabase.NewQuizInfo(rosterCopy);
         }
 
-        public void EditLevelInfo(LevelInfo editedLevelInfo)
+        public void EditQuizInfo(QuizInfo editedQuizInfo)
         {
             this.realmDB.Write(() =>
             {
-                this.realmDB.Add(editedLevelInfo, update: true);
+                this.realmDB.Add(editedQuizInfo, update: true);
             });
 
-            LevelInfo rosterCopy = new LevelInfo(editedLevelInfo)
+            QuizInfo rosterCopy = new QuizInfo(editedQuizInfo)
             {
                 SyncStatus = 1 // Default to 1, meaning "needs upload" in roster
             };
-            LevelRosterDatabase.EditLevelInfo(rosterCopy);
+            QuizRosterDatabase.EditQuizInfo(rosterCopy);
         }
     }
 }

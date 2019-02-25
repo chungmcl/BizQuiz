@@ -52,11 +52,14 @@
     <Compile Update="AboutUsPage.xaml.cs">
       <DependentUpon>AboutUsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Game\LevelSelectionPage.xaml.cs">
-      <DependentUpon>LevelSelectionPage.xaml</DependentUpon>
+    <Compile Update="Game\QuizEndPage.xaml.cs">
+      <DependentUpon>QuizEndPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Game\LevelCategoriesPage.xaml.cs">
-      <DependentUpon>LevelCategoriesPage.xaml</DependentUpon>
+    <Compile Update="Game\QuizSelectionPage.xaml.cs">
+      <DependentUpon>QuizSelectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Game\QuizCategoriesPage.xaml.cs">
+      <DependentUpon>QuizCategoriesPage.xaml</DependentUpon>
     </Compile>
     <Compile Update="Game\Game.xaml.cs">
       <DependentUpon>Game.xaml</DependentUpon>
@@ -66,6 +69,9 @@
     </Compile>
     <Compile Update="LevelEditor\LevelEditorPage.xaml.cs">
       <DependentUpon>LevelEditorPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="QuizEditor\CreateNewQuizPage.xaml.cs">
+      <DependentUpon>CreateNewQuizPage.xaml</DependentUpon>
     </Compile>
     <Compile Update="Resources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -84,7 +90,7 @@
     <EmbeddedResource Update="Bug Reports\BugReportPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Game\LevelEndPage.xaml">
+    <EmbeddedResource Update="Game\QuizEndPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Game\Game.xaml">
@@ -93,10 +99,10 @@
     <EmbeddedResource Update="HelpPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="LevelEditor\CreateNewLevelPage.xaml">
+    <EmbeddedResource Update="QuizEditor\CreateNewQuizPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="LevelEditor\PhotoPage.xaml">
+    <EmbeddedResource Update="QuizEditor\PhotoPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Profile and Account\AccountSettingsPage.xaml">
