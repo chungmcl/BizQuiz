@@ -176,11 +176,13 @@ namespace appFBLA2019
                 if (returnMessage == OperationReturnMessage.True)
                 {
                     SearchInfo level = this.levelsSearched.Where(searchInfo => searchInfo.DBId == dbId).First();
+                    string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
                     LevelInfo newInfo = new LevelInfo
                     {
                         AuthorName = level.Author,
                         LevelName = level.LevelName,
                         Category = level.Category,
+                        LastModifiedDate = lastModifiedDate,
                         SyncStatus = 4 // 4 to represent not present in local directory and need download
                     };
                     LevelRosterDatabase.NewLevelInfo(newInfo);

@@ -291,9 +291,7 @@ namespace appFBLA2019
                             ButtonEdit.StyleId = "notLocal";
                         }
                     }
-
-
-
+                    
                     TapGestureRecognizer recognizer = new TapGestureRecognizer();
                     recognizer.Tapped += async (object sender, EventArgs e) =>
                     {
