@@ -87,8 +87,8 @@ namespace appFBLA2019
         /// <returns></returns>
         private async Task UpdateProfileContent()
         {
-            this.LevelStack.Children.Clear();
-            this.LevelStack.IsVisible = false;
+            this.QuizStack.Children.Clear();
+            this.QuizStack.IsVisible = false;
             this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
