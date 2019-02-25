@@ -116,7 +116,7 @@ namespace appFBLA2019
                 }
                 Device.BeginInvokeOnMainThread(() =>
                     this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
-        });
+                });
 
             if (this.ToolbarItems.Count <= 0)
             {
