@@ -88,6 +88,10 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Gets all subscribed levels of a user.
+        /// </summary>
+        /// <returns></returns>
         public static List<LevelInfo> GetRoster()
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
@@ -95,6 +99,11 @@ namespace appFBLA2019
             return new List<LevelInfo>(realmDB.All<LevelInfo>());
         }
 
+        /// <summary>
+        /// Gets all subscribed levels of the user of a specified category.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
         public static List<LevelInfo> GetRoster(string category)
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
