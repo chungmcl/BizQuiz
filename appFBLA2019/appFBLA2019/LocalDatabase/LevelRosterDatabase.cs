@@ -127,7 +127,7 @@ namespace appFBLA2019
             }
         }
 
-        public static void UpdateLocalDatabase()
+        public static async Task UpdateLocalDatabase()
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm threadInstance = Realm.GetInstance(threadConfig);
@@ -141,7 +141,7 @@ namespace appFBLA2019
                     {
                         if (LevelInfos[i].IsDeletedLocally)
                         {
-                            ServerOperations.DeleteLevel(LevelInfos[i].DBId);
+                            await ServerOperations.DeleteLevel(LevelInfos[i].DBId);
                         }
                         else if (LevelInfos[i].SyncStatus != 4)
                         {
