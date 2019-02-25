@@ -15,10 +15,9 @@ namespace appFBLA2019
         public static void Setup()
         {
             Directory.CreateDirectory(App.Path + "/bugreportimages");
-            ProcessCrashLog();
         }
 
-        private static void ProcessCrashLog()
+        public static void ProcessCrashLog()
         {
             string logPath = App.Path + "/CrashReport.txt";
             if (File.Exists(logPath))

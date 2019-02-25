@@ -4,7 +4,6 @@ using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace appFBLA2019
@@ -135,7 +134,7 @@ namespace appFBLA2019
 
         private async void EntryUsername_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (EntryUsername.Text.Length > minLength && EntryUsername.Text.Length <= maxLength)
+            if (this.EntryUsername.Text.Length > minLength && this.EntryUsername.Text.Length <= maxLength)
             {
                 this.usernameLength = true;
                 await this.CheckIconAsync("ic_check_green_48dp.png", "ic_bad_red_48dp.png", this.checkUsername);
@@ -150,7 +149,7 @@ namespace appFBLA2019
 
         private async void EntryPassword_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (EntryPassword.Text.Length > minLength && EntryPassword.Text.Length <= maxLength)
+            if (this.EntryPassword.Text.Length > minLength && this.EntryPassword.Text.Length <= maxLength)
             {
                 this.passwordLength = true;
                 await this.CheckIconAsync("ic_check_green_48dp.png", "ic_bad_red_48dp.png", this.checkPassword);
@@ -170,7 +169,7 @@ namespace appFBLA2019
 
         private async void EntryEmail_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(Regex.IsMatch(EntryEmail.Text, ComplexEmailPattern))
+            if(Regex.IsMatch(this.EntryEmail.Text, this.ComplexEmailPattern))
             {
                 this.emailCorrect = true;
                 await this.CheckIconAsync("ic_check_green_48dp.png", "ic_bad_red_48dp.png", this.checkEmail);

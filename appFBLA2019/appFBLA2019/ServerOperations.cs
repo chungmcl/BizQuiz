@@ -202,8 +202,10 @@ namespace appFBLA2019
                 else
                     return false;
             }
-            QuizInfo infoCopy = new QuizInfo(QuizRosterDatabase.GetQuizInfo(dBId));
-            infoCopy.SyncStatus = 2;
+            QuizInfo infoCopy = new QuizInfo(QuizRosterDatabase.GetQuizInfo(dBId))
+            {
+                SyncStatus = 2
+            };
             QuizRosterDatabase.EditQuizInfo(infoCopy);
 
             return true;

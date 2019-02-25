@@ -28,8 +28,9 @@ namespace appFBLA2019
             this.Title = quiz.Title;
 
             this.LayoutRefresh();
-            this.CycleQuestion();
+            Task.Run(() => this.CycleQuestion());
         }
+
 
         /// <summary>
         /// Triggered when the endquizpage closes, resets the quiz and returns the user to the mainpage
@@ -176,8 +177,10 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task CycleQuestion()
         {
+#pragma warning disable CS4014
             this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
             this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
+#pragma warning restore CS4014
             if (this.quiz.QuestionsRemaining > 0)
             {
                 // Save as reference
@@ -226,9 +229,9 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender">  </param>
         /// <param name="e">       </param>
-        private void NextButton_Clicked(object sender, EventArgs e)
+        private async void NextButton_Clicked(object sender, EventArgs e)
         {
-            this.CycleQuestion();
+            await this.CycleQuestion();
         }
 
         /// <summary>

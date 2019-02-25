@@ -146,18 +146,20 @@ namespace appFBLA2019
             }
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
             this.ButtonAddQuestion.Scale = 0;
             this.ButtonAddDrop.Scale = 0;
+#pragma warning disable CS4014
             this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
             this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
+#pragma warning restore CS4014
             if (this.x is ImageButton)
             {
                 if (((ImageButton)this.x).StyleId == "change")
                 {
-                    this.PickImage(this.x);
+                    await this.PickImage(this.x);
                 }
                 else if (((ImageButton)this.x).StyleId == "delete")
                 {
@@ -187,7 +189,9 @@ namespace appFBLA2019
                 double x = frame.X;
                 frame.TranslationX = this.Width;
                 // Scroll to bottom
+#pragma warning disable CS4014
                 this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
+#pragma warning restore CS4014
 
                 //animate in frame
                 await frame.TranslateTo(x - 10, 0, 500, Easing.CubicOut);

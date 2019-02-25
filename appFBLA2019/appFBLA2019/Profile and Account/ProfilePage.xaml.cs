@@ -32,7 +32,7 @@ namespace appFBLA2019
             if (CredentialManager.IsLoggedIn)
             {
                 CreateNewQuizPage quiz = new CreateNewQuizPage();
-                this.Navigation.PushAsync(quiz);
+                await this.Navigation.PushAsync(quiz);
             }
             else
             {
@@ -64,20 +64,20 @@ namespace appFBLA2019
         /// <returns></returns>
         public async Task UpdateProfilePage()
         {
+            this.LocalLoginPage.LoggedIn -= this.OnLoggedIn;
             this.IsLoading = true;
             this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
             this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
             if (this.StackLayoutProfilePageContent.IsVisible)
-                await UpdateProfileContent();
+                await this.UpdateProfileContent();
             else
             {
                 if (this.ToolbarItems.Count > 0)
                     this.ToolbarItems.Clear();
 
                 this.IsOnLoginPage = true;
-                this.LocalLoginPage.LoggedIn += OnLoggedIn;
+                this.LocalLoginPage.LoggedIn += this.OnLoggedIn;
             }
-
             this.IsLoading = false;
         }
 
@@ -98,7 +98,7 @@ namespace appFBLA2019
                 this.SetupLocalQuizzes();
                 this.SetupNetworkQuizzes();
                 this.totalCount += ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
-                if (totalCount == 0)
+                if (this.totalCount == 0)
                 {
                     Frame frame = new Frame()
                     {
@@ -115,13 +115,13 @@ namespace appFBLA2019
                         this.QuizStack.Children.Add(frame));
                 }
                 Device.BeginInvokeOnMainThread(() =>
-                    this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
+                    this.QuizNumber.Text = "You have created a total of " + this.totalCount + " quizzes!");
                 });
 
             if (this.ToolbarItems.Count <= 0)
             {
                 ToolbarItem accountSettingsButton = new ToolbarItem();
-                accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
+                accountSettingsButton.Clicked += this.ToolbarItemAccountSettings_Clicked;
                 accountSettingsButton.Icon = ImageSource.FromFile("ic_settings_white_48dp.png") as FileImageSource;
                 this.ToolbarItems.Add(accountSettingsButton);
             }
@@ -184,7 +184,7 @@ namespace appFBLA2019
             {
                 return;
             }
-            AddQuizzes(chunk, true);
+            this.AddQuizzes(chunk, true);
         }
 
         private void AddQuizzes(List<SearchInfo> quizzes, bool isNetworkQuiz)
@@ -237,7 +237,7 @@ namespace appFBLA2019
                     frame.Content = frameStack;
 
                     Device.BeginInvokeOnMainThread(() =>
-                    QuizStack.Children.Add(frame));
+                    this.QuizStack.Children.Add(frame));
                 }
             }
         }
@@ -247,7 +247,7 @@ namespace appFBLA2019
             if (this.accountSettingsPage == null)
             {
                 this.accountSettingsPage = new AccountSettingsPage();
-                this.accountSettingsPage.SignedOut += OnSignedOut;
+                this.accountSettingsPage.SignedOut += this.OnSignedOut;
                 this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             }
             await this.Navigation.PushAsync(this.accountSettingsPage);
@@ -256,10 +256,10 @@ namespace appFBLA2019
         public async void OnLoggedIn(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = new AccountSettingsPage();
-            this.accountSettingsPage.SignedOut += OnSignedOut;
+            this.accountSettingsPage.SignedOut += this.OnSignedOut;
             this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            await UpdateProfilePage();
+            await this.UpdateProfilePage();
         }
 
         private string GetHello()
@@ -272,7 +272,7 @@ namespace appFBLA2019
         public async void OnSignedOut(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = null;
-            await UpdateProfilePage();
+            await this.UpdateProfilePage();
         }
     }
 }
