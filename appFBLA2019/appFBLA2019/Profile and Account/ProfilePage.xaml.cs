@@ -23,7 +23,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// When the user wants to create a brand new level
+        /// When the user wants to create a brand new quiz
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -31,12 +31,12 @@ namespace appFBLA2019
         {
             if (CredentialManager.IsLoggedIn)
             {
-                CreateNewLevelPage level = new CreateNewLevelPage();
-                this.Navigation.PushAsync(level);
+                CreateNewQuizPage quiz = new CreateNewQuizPage();
+                this.Navigation.PushAsync(quiz);
             }
             else
             {
-                if (await this.DisplayAlert("Hold on!", "Before you can create your own custom levels, you have to create your own account.", "Login/Create Account", "Go Back"))
+                if (await this.DisplayAlert("Hold on!", "Before you can create your own custom quizzes, you have to create your own account.", "Login/Create Account", "Go Back"))
                 {
                     ProfilePage profilePage = new ProfilePage();
                     if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
@@ -98,7 +98,7 @@ namespace appFBLA2019
                 this.totalCount = 0;
                 this.SetupLocalQuizzes();
                 this.SetupNetworkQuizzes();
-                this.totalCount += ServerOperations.GetNumberOfLevelsByAuthorName(CredentialManager.Username);
+                this.totalCount += ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
                 if (totalCount == 0)
                 {
                     Frame frame = new Frame()
@@ -107,13 +107,13 @@ namespace appFBLA2019
                         HorizontalOptions = LayoutOptions.CenterAndExpand,
                         Content = new Label
                         {
-                            Text = "You haven't made any levels yet!",
+                            Text = "You haven't made any quizzes yet!",
                             HorizontalTextAlignment = TextAlignment.Center,
                             FontSize = 38
                         }
                     };
                     Device.BeginInvokeOnMainThread(() =>
-                        this.LevelStack.Children.Add(frame));
+                        this.QuizStack.Children.Add(frame));
                 }
                 Device.BeginInvokeOnMainThread(() =>
                     this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
@@ -131,7 +131,7 @@ namespace appFBLA2019
 
             this.ActivityIndicator.IsRunning = false;
             this.ActivityIndicator.IsVisible = false;
-            this.LevelStack.IsVisible = true;
+            this.QuizStack.IsVisible = true;
         }
 
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
@@ -155,23 +155,23 @@ namespace appFBLA2019
 
         private void SetupLocalQuizzes()
         {
-            List<LevelInfo> levels = LevelRosterDatabase.GetRoster();
-            List<SearchInfo> userLevels = new List<SearchInfo>();
-            foreach (LevelInfo level in levels)
+            List<QuizInfo> quizzes = QuizRosterDatabase.GetRoster();
+            List<SearchInfo> userQuizzes = new List<SearchInfo>();
+            foreach (QuizInfo quiz in quizzes)
             {
-                if (level.AuthorName == CredentialManager.Username)
+                if (quiz.AuthorName == CredentialManager.Username)
                 {
-                    userLevels.Add(new SearchInfo()
+                    userQuizzes.Add(new SearchInfo()
                     {
-                        DBId = level.DBId,
-                        Author = level.AuthorName,
-                        LevelName = level.LevelName,
-                        Category = level.Category
+                        DBId = quiz.DBId,
+                        Author = quiz.AuthorName,
+                        QuizName = quiz.QuizName,
+                        Category = quiz.Category
                     });
                 }
             }
-            this.AddLevels(userLevels, false);
-            this.totalCount += userLevels.Count;
+            this.AddQuizzes(userQuizzes, false);
+            this.totalCount += userQuizzes.Count;
         }
 
         private int totalCount = 0;
@@ -180,21 +180,21 @@ namespace appFBLA2019
             //this will take a while it would be good to make it async
             
             this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            List<SearchInfo> chunk = SearchUtils.GetLevelsByAuthorChunked(CredentialManager.Username, this.currentChunk);
+            List<SearchInfo> chunk = SearchUtils.GetQuizzesByAuthorChunked(CredentialManager.Username, this.currentChunk);
             if (chunk.Count == 0)
             {
                 return;
             }
-            AddLevels(chunk, true);
+            AddQuizzes(chunk, true);
         }
 
-        private void AddLevels(List<SearchInfo> levels, bool isNetworkLevels)
+        private void AddQuizzes(List<SearchInfo> quizzes, bool isNetworkQuiz)
         {
             
-            foreach (SearchInfo level in levels)
+            foreach (SearchInfo quiz in quizzes)
             {
-                //if its not already stored locally (only apllies to networklevels)
-                if (isNetworkLevels && LevelRosterDatabase.GetLevelInfo(level.DBId) != null)
+                //if its not already stored locally (only applies to network quizzess)
+                if (isNetworkQuiz && QuizRosterDatabase.GetQuizInfo(quiz.DBId) != null)
                 {
                     this.totalCount--;
                 }
@@ -213,32 +213,32 @@ namespace appFBLA2019
                         Orientation = StackOrientation.Vertical
                     };
 
-                    Label levelName = new Label
+                    Label quizName = new Label
                     {
-                        Text = level.LevelName,
+                        Text = quiz.QuizName,
                         FontAttributes = FontAttributes.Bold,
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         HorizontalOptions = LayoutOptions.StartAndExpand
                     };
-                    frameStack.Children.Add(levelName);
+                    frameStack.Children.Add(quizName);
 
                     Label Category = new Label
                     {
-                        Text = "Category: " + level.Category
+                        Text = "Category: " + quiz.Category
                     };
                     frameStack.Children.Add(Category);
 
 
                     Label Subscribers = new Label
                     {
-                        Text = "Subscribers: " + level.SubCount
+                        Text = "Subscribers: " + quiz.SubCount
                     };
                     frameStack.Children.Add(Subscribers);
 
                     frame.Content = frameStack;
 
                     Device.BeginInvokeOnMainThread(() =>
-                    LevelStack.Children.Add(frame));
+                    QuizStack.Children.Add(frame));
                 }
             }
         }

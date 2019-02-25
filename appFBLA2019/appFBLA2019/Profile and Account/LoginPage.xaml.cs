@@ -23,7 +23,6 @@ namespace appFBLA2019
         public LoginPage()
         {
             this.InitializeComponent();
-            
         }
 
         private async void ButtonLogin_Clicked(object sender, EventArgs e)

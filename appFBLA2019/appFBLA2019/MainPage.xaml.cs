@@ -16,7 +16,7 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainPage : Xamarin.Forms.TabbedPage
     {
-        public enum TabID : int { levelCategoriesPage, levelStorePage, profilePage}
+        public enum TabID : int { quizCategoriesPage, quizStorePage, profilePage}
 
         public MainPage()
         {
@@ -48,9 +48,9 @@ namespace appFBLA2019
                 }
                 break;
 
-                case TabID.levelCategoriesPage:
+                case TabID.quizCategoriesPage:
                 {
-                    //this.levelsPage.RefreshChildren();
+                    //this.quizsPage.RefreshChildren();
                 }
                 break;
             }

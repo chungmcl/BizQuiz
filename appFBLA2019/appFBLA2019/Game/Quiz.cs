@@ -2,29 +2,26 @@
 
 using System;
 using System.Collections.Generic;
-
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("appFBLA2019_Tests")]
-
 namespace appFBLA2019
 {
     /// <summary>
-    /// This class handles questions and the level
+    /// This class handles questions and the quiz
     /// </summary>
-    public class Level
+    public class Quiz
     {
         //this one will be used in the app for database stuff
         /// <summary>
         /// Select/create database file for the current game/topic, Load the questions from file
         /// </summary>
-        /// <param name="levelTitle">
+        /// <param name="quizTitle">
         /// The name of the database file - if one does not yet exist, it will create one based on the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME.
         /// </param>
         /// <param name="author">
-        /// The username of the author of the level
+        /// The username of the author of the quiz
         /// </param>
-        public Level(string category, string levelTitle, string author)
+        public Quiz(string category, string quizTitle, string author)
         {
-            DBHandler.SelectDatabase(category, levelTitle, author);
+            DBHandler.SelectDatabase(category, quizTitle, author);
         }
 
         /// <summary>
@@ -50,7 +47,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// the title of the level
+        /// the title of the quiz
         /// </summary>
         public string Title { get; private set; }
 
@@ -74,18 +71,18 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Loads the questions from the DB into the level and sets them all unanswered
+        /// Loads the questions from the DB into the quiz and sets them all unanswered
         /// </summary>
         public void LoadQuestions()
         {
             this.Questions = DBHandler.Database.GetQuestions();
-            this.ResetLevel();
+            this.ResetQuiz();
         }
 
         /// <summary>
         /// Sets all the questions to be unanswered
         /// </summary>
-        public void ResetLevel()
+        public void ResetQuiz()
         {
             DBHandler.Database.realmDB.Write(() =>
             {

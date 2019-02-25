@@ -12,60 +12,60 @@ using Xamarin.Forms;
 
 namespace appFBLA2019
 {
-    public static class LevelRosterDatabase
+    public static class QuizRosterDatabase
     {
         //needs to be a property so that it changes when UserPath does
         private static string RosterPath { get { return App.UserPath + "roster.realm"; } }
 
-        public static void NewLevelInfo(string authorName, string levelName, string category)
+        public static void NewQuizInfo(string authorName, string quizName, string category)
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
-                realmDB.Add(new LevelInfo(authorName, levelName, category));
+                realmDB.Add(new QuizInfo(authorName, quizName, category));
             });
         }
 
-        public static void NewLevelInfo(LevelInfo levelInfo)
+        public static void NewQuizInfo(QuizInfo quizInfo)
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
-                realmDB.Add(levelInfo);
+                realmDB.Add(quizInfo);
             });
         }
 
-        public static void EditLevelInfo(LevelInfo editedLevelInfo)
+        public static void EditQuizInfo(QuizInfo editedQuizInfo)
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
-                realmDB.Add(editedLevelInfo, update: true);
+                realmDB.Add(editedQuizInfo, update: true);
             });
         }
 
-        private static void EditLevelInfo(Realm threadedRealm, LevelInfo editedLevelInfo)
+        private static void EditQuizInfo(Realm threadedRealm, QuizInfo editedQuizInfo)
         {
             threadedRealm.Write(() =>
             {
-                threadedRealm.Add(editedLevelInfo, update: true);
+                threadedRealm.Add(editedQuizInfo, update: true);
             });
         }
 
         /// <summary>
-        /// Load LevelInfos property before entering task.
+        /// Load QuizInfos property before entering task.
         /// </summary>
-        public static LevelInfo GetLevelInfo(string levelName, string authorName)
+        public static QuizInfo GetQuizInfo(string quizName, string authorName)
         {
             try
             {
                 RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
                 Realm realmDB = Realm.GetInstance(threadConfig);
-                return realmDB.All<LevelInfo>().Where
-                                 (levelInfo => levelInfo.AuthorName == authorName && levelInfo.LevelName == levelName).First();
+                return realmDB.All<QuizInfo>().Where
+                                 (quizInfo => quizInfo.AuthorName == authorName && quizInfo.QuizName == quizName).First();
             }
             catch
             {
@@ -73,52 +73,43 @@ namespace appFBLA2019
             }
         }
 
-        public static LevelInfo GetLevelInfo(string dbId)
+        public static QuizInfo GetQuizInfo(string dbId)
         {
             try
             {
                 RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
                 Realm realmDB = Realm.GetInstance(threadConfig);
-                return realmDB.All<LevelInfo>().Where
-                                 (levelInfo => levelInfo.DBId == dbId).First();
+                return realmDB.All<QuizInfo>().Where
+                                 (quizInfo => quizInfo.DBId == dbId).First();
             }
             catch (Exception ex)
             {
-                BugReportHandler.SubmitReport(ex, "LevelRosterDatabase.GetLevelInfo()");
+                BugReportHandler.SubmitReport(ex, "QuizRosterDatabase.GetQuizInfo()");
                 return null;
             }
         }
 
-        /// <summary>
-        /// Gets all subscribed levels of a user.
-        /// </summary>
-        /// <returns></returns>
-        public static List<LevelInfo> GetRoster()
+        public static List<QuizInfo> GetRoster()
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
-            return new List<LevelInfo>(realmDB.All<LevelInfo>());
+            return new List<QuizInfo>(realmDB.All<QuizInfo>());
         }
 
-        /// <summary>
-        /// Gets all subscribed levels of the user of a specified category.
-        /// </summary>
-        /// <param name="category"></param>
-        /// <returns></returns>
-        public static List<LevelInfo> GetRoster(string category)
+        public static List<QuizInfo> GetRoster(string category)
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
-            return new List<LevelInfo>(realmDB.All<LevelInfo>().Where(levelInfo => levelInfo.Category == category && !levelInfo.IsDeletedLocally));
+            return new List<QuizInfo>(realmDB.All<QuizInfo>().Where(quizInfo => quizInfo.Category == category && !quizInfo.IsDeletedLocally));
         }
 
-        public static bool DeleteLevelInfo(string dbId)
+        public static bool DeleteQuizInfo(string dbId)
         {
             try
             {
                 RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
                 Realm realmDB = Realm.GetInstance(threadConfig);
-                realmDB.Remove(realmDB.All<LevelInfo>().Where(levelInfo => levelInfo.DBId == dbId).First());
+                realmDB.Remove(realmDB.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
                 return true;
             }
             catch
@@ -132,89 +123,89 @@ namespace appFBLA2019
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm threadInstance = Realm.GetInstance(threadConfig);
 
-            List<LevelInfo> LevelInfos = new List<LevelInfo>(threadInstance.All<LevelInfo>());
+            List<QuizInfo> QuizInfos = new List<QuizInfo>(threadInstance.All<QuizInfo>());
             if (CrossConnectivity.Current.IsConnected)
             {
-                for (int i = 0; i < LevelInfos.Count(); i++)
+                for (int i = 0; i < QuizInfos.Count(); i++)
                 {
                     if (CredentialManager.IsLoggedIn)
                     {
-                        if (LevelInfos[i].IsDeletedLocally)
+                        if (QuizInfos[i].IsDeletedLocally)
                         {
-                            await ServerOperations.DeleteLevel(LevelInfos[i].DBId);
+                            ServerOperations.DeleteQuiz(QuizInfos[i].DBId);
                         }
-                        else if (LevelInfos[i].SyncStatus != 4)
+                        else if (QuizInfos[i].SyncStatus != 4)
                         {
-                            string lastModifiedDate = ServerOperations.GetLastModifiedDate(LevelInfos[i].DBId);
+                            string lastModifiedDate = ServerOperations.GetLastModifiedDate(QuizInfos[i].DBId);
                             if (lastModifiedDate != null) // returns null if could not reach server
                             {
                                 if (lastModifiedDate == "" || lastModifiedDate == null)
                                 {
-                                    LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                    QuizInfo copy = new QuizInfo(QuizInfos[i])
                                     {
                                         SyncStatus = 1 // 1 represents need upload
                                     };
-                                    EditLevelInfo(threadInstance, copy);
+                                    EditQuizInfo(threadInstance, copy);
                                 }
                                 else
                                 {
-                                    DateTime localModifiedDateTime = Convert.ToDateTime(LevelInfos[i].LastModifiedDate);
+                                    DateTime localModifiedDateTime = Convert.ToDateTime(QuizInfos[i].LastModifiedDate);
                                     DateTime serverModifiedDateTime = Convert.ToDateTime(lastModifiedDate);
                                     if (localModifiedDateTime > serverModifiedDateTime)
                                     {
-                                        LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                        QuizInfo copy = new QuizInfo(QuizInfos[i])
                                         {
                                             SyncStatus = 1 // 1 represents need upload
                                         };
-                                        EditLevelInfo(threadInstance, copy);
+                                        EditQuizInfo(threadInstance, copy);
                                     }
                                     else if (localModifiedDateTime < serverModifiedDateTime)
                                     {
-                                        LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                        QuizInfo copy = new QuizInfo(QuizInfos[i])
                                         {
                                             SyncStatus = 0 // 0 represents needs download
                                         };
-                                        EditLevelInfo(threadInstance, copy);
+                                        EditQuizInfo(threadInstance, copy);
                                     }
                                     else if (localModifiedDateTime == serverModifiedDateTime)
                                     {
-                                        LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                        QuizInfo copy = new QuizInfo(QuizInfos[i])
                                         {
                                             SyncStatus = 2 // 2 represents in sync
                                         };
-                                        EditLevelInfo(threadInstance, copy);
+                                        EditQuizInfo(threadInstance, copy);
                                     }
                                 }
                             }
                             else
                             {
-                                LevelInfo copy = new LevelInfo(LevelInfos[i])
+                                QuizInfo copy = new QuizInfo(QuizInfos[i])
                                 {
                                     SyncStatus = 3 // 3 represents offline
                                 };
-                                EditLevelInfo(threadInstance, copy);
+                                EditQuizInfo(threadInstance, copy);
                             }
                         }
                     }
                 }
 
-                int numberOfLevelsOnServer = ServerOperations.GetNumberOfLevelsByAuthorName(CredentialManager.Username);
-                if (numberOfLevelsOnServer > LevelInfos.Count)
+                int numberOfQuizsOnServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
+                if (numberOfQuizsOnServer > QuizInfos.Count)
                 {
-                    string[] dbIds = new string[LevelInfos.Count];
+                    string[] dbIds = new string[QuizInfos.Count];
                     for (int i = 0; i < dbIds.Length; i++)
-                        dbIds[i] = LevelInfos[i].DBId;
+                        dbIds[i] = QuizInfos[i].DBId;
 
-                    List<string[]> missingLevels = ServerOperations.GetMissingLevelsByAuthorName(CredentialManager.Username, dbIds);
-                    foreach (string[] missingLevel in missingLevels)
+                    List<string[]> missingQuizs = ServerOperations.GetMissingQuizzesByAuthorName(CredentialManager.Username, dbIds);
+                    foreach (string[] missingQuiz in missingQuizs)
                     {
-                        LevelInfo info = new LevelInfo
+                        QuizInfo info = new QuizInfo
                         {
-                            DBId = missingLevel[0],
-                            AuthorName = missingLevel[1],
-                            LevelName = missingLevel[2],
-                            Category = missingLevel[3],
-                            LastModifiedDate = missingLevel[4],
+                            DBId = missingQuiz[0],
+                            AuthorName = missingQuiz[1],
+                            QuizName = missingQuiz[2],
+                            Category = missingQuiz[3],
+                            LastModifiedDate = missingQuiz[4],
                             SyncStatus = 4
                         };
                         threadInstance.Write(() =>
@@ -226,13 +217,13 @@ namespace appFBLA2019
             }
             else
             {
-                for (int i = 0; i < LevelInfos.Count; i++)
+                for (int i = 0; i < QuizInfos.Count; i++)
                 {
-                    LevelInfo copy = new LevelInfo(LevelInfos[i])
+                    QuizInfo copy = new QuizInfo(QuizInfos[i])
                     {
                         SyncStatus = 3 // 3 represents offline
                     };
-                    EditLevelInfo(threadInstance, copy);
+                    EditQuizInfo(threadInstance, copy);
                 }
             }
         }

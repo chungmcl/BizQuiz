@@ -3,12 +3,12 @@ using System;
 
 namespace appFBLA2019
 {
-    public class LevelInfo : RealmObject
+    public class QuizInfo : RealmObject
     {
         [PrimaryKey]
         public string DBId { get; set; }
         public string AuthorName { get; set; }
-        public string LevelName { get; set; }
+        public string QuizName { get; set; }
         public string Category { get; set; }
         public string LastModifiedDate { get; set; }
 
@@ -19,13 +19,13 @@ namespace appFBLA2019
         public bool IsDeletedLocally { get; set; }
         public bool IsDeletedOnServer { get; set; }
         
-        public LevelInfo() { }
+        public QuizInfo() { }
 
-        public LevelInfo(string authorName, string levelName, string category)
+        public QuizInfo(string authorName, string quizName, string category)
         {
             this.DBId = Guid.NewGuid().ToString();
             this.AuthorName = authorName;
-            this.LevelName = levelName;
+            this.QuizName = quizName;
             this.Category = category;
 
             this.LastModifiedDate = DateTime.Now.ToString();
@@ -34,17 +34,17 @@ namespace appFBLA2019
             this.IsDeletedOnServer = false;
         }
 
-        public LevelInfo(LevelInfo levelInfoToCopy)
+        public QuizInfo(QuizInfo quizInfoToCopy)
         {
-            this.DBId = levelInfoToCopy.DBId;
-            this.AuthorName = levelInfoToCopy.AuthorName;
-            this.LevelName = levelInfoToCopy.LevelName;
-            this.Category = levelInfoToCopy.Category;
+            this.DBId = quizInfoToCopy.DBId;
+            this.AuthorName = quizInfoToCopy.AuthorName;
+            this.QuizName = quizInfoToCopy.QuizName;
+            this.Category = quizInfoToCopy.Category;
 
-            this.LastModifiedDate = levelInfoToCopy.LastModifiedDate;
-            this.SyncStatus = levelInfoToCopy.SyncStatus;
-            this.IsDeletedLocally = levelInfoToCopy.IsDeletedLocally;
-            this.IsDeletedOnServer = levelInfoToCopy.IsDeletedOnServer;
+            this.LastModifiedDate = quizInfoToCopy.LastModifiedDate;
+            this.SyncStatus = quizInfoToCopy.SyncStatus;
+            this.IsDeletedLocally = quizInfoToCopy.IsDeletedLocally;
+            this.IsDeletedOnServer = quizInfoToCopy.IsDeletedOnServer;
         }
     }
 }
