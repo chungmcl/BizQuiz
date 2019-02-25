@@ -12,16 +12,16 @@ using Plugin.Connectivity;
 namespace appFBLA2019
 {
     /// <summary>
-    /// A simple tabbed page that contains all of the levelselection pages
+    /// A simple tabbed page that contains all of the quizselection pages
     /// </summary>
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LevelCategoriesPage : Xamarin.Forms.TabbedPage
+    public partial class QuizCategoriesPage : Xamarin.Forms.TabbedPage
     {
         public bool IsLoading { get; set; }
         /// <summary>
         /// Initializes and sets colors
         /// </summary>
-        public LevelCategoriesPage()
+        public QuizCategoriesPage()
         {
             this.InitializeComponent();
 #if __ANDROID__
@@ -38,7 +38,7 @@ namespace appFBLA2019
             this.IsLoading = true;
             foreach (Page page in this.Children)
             {
-                (page as LevelSelectionPage).Setup();
+                (page as QuizSelectionPage).Setup();
             }
             this.IsLoading = false;
         }

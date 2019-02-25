@@ -17,7 +17,7 @@
                                     <x:String>Gameplay</x:String>
                                     <x:String>Profile</x:String>
                                     <x:String>Store</x:String>
-                                    <x:String>Level Editor</x:String>
+                                    <x:String>Quiz Editor</x:String>
                                     <x:String>Other</x:String>
                                 </Picker.Items>
                             </Picker>

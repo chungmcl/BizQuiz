@@ -15,13 +15,13 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LevelSelectionPage : ContentPage
+    public partial class QuizSelectionPage : ContentPage
     {
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         public bool IsLoading { get; set; }
         public bool isSetup;
 
-        public LevelSelectionPage(string category)
+        public QuizSelectionPage(string category)
         {
             this.InitializeComponent();
             this.category = category;
@@ -32,7 +32,7 @@ namespace appFBLA2019
             //this.Setup();
         }
 
-        //public LevelSelectionPage()
+        //public QuizSelectionPage()
         //{
         //    this.InitializeComponent();
         //    Directory.CreateDirectory(App.Path + $"/{category}");
@@ -68,7 +68,7 @@ namespace appFBLA2019
 
         private readonly string category;
 
-        // TO DO: Display author name of level
+        // TO DO: Display author name of quiz
         internal void Setup()
         {
             if (!this.IsLoading)
@@ -76,14 +76,14 @@ namespace appFBLA2019
                 this.IsLoading = true;
                 this.ButtonStack.Children.Clear();
 
-                List<LevelInfo> levels = LevelRosterDatabase.GetRoster(this.category);
-                if (levels.Count == 0)
+                List<QuizInfo> quizs = QuizRosterDatabase.GetRoster(this.category);
+                if (quizs.Count == 0)
                     Device.BeginInvokeOnMainThread(() =>
                     {
                         StackLayout stack = new StackLayout();
                         stack.Children.Add(new Label
                         {
-                            Text = "You don't have any levels in this category yet!",
+                            Text = "You don't have any quizs in this category yet!",
                             HorizontalTextAlignment = TextAlignment.Center,
                             FontSize = 38
                         });
@@ -91,16 +91,16 @@ namespace appFBLA2019
                         {
                             stack.Children.Add(new Button
                             {
-                                Text = "Make a level now",
+                                Text = "Make a quiz now",
                                 CornerRadius = 25,
                                 BackgroundColor = Color.Accent,
                                 TextColor = Color.White,
                                 FontSize = 26
                             });
-                            (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new CreateNewLevelPage());
+                            (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new CreateNewQuizPage());
                             stack.Children.Add(new Button
                             {
-                                Text = "Search for levels",
+                                Text = "Search for quizs",
                                 CornerRadius = 25,
                                 BackgroundColor = Color.Accent,
                                 TextColor = Color.White,
@@ -116,7 +116,7 @@ namespace appFBLA2019
                         };
                         this.ButtonStack.Children.Add(frame);
                     });
-                foreach (LevelInfo level in levels)
+                foreach (QuizInfo quiz in quizs)
                 {
                     Frame frame = new Frame()
                     {
@@ -148,7 +148,7 @@ namespace appFBLA2019
 
                     Label title = new Label // 0
                     {
-                        Text = level.LevelName,
+                        Text = quiz.QuizName,
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         FontAttributes = FontAttributes.Bold,
                         VerticalOptions = LayoutOptions.StartAndExpand,
@@ -164,8 +164,8 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + level.LevelName + "`" + level.AuthorName,
-                        ClassId = level.DBId + "/" + level.AuthorName + "/" + level.LevelName + "/" + level.Category
+                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                        ClassId = quiz.DBId + "/" + quiz.AuthorName + "/" + quiz.QuizName + "/" + quiz.Category
                     };
                     
                     topStack.Children.Add(Sync);
@@ -220,11 +220,11 @@ namespace appFBLA2019
                         ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
                         ButtonDelete.BackgroundColor = Color.White;
                         ButtonDelete.CornerRadius = 0;
-                        ButtonDelete.StyleId = "/" + this.category + "/" + level.LevelName + "`" + level.AuthorName;
+                        ButtonDelete.StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
                     }
                     menuStack.Children.Add(ButtonDelete);
 
-                    if (CredentialManager.Username == level.AuthorName)
+                    if (CredentialManager.Username == quiz.AuthorName)
                     {
                         ButtonDelete.Text = "Delete";
                     }
@@ -258,7 +258,7 @@ namespace appFBLA2019
 
                     Label Author = new Label // 2
                     {
-                        Text = "Created by: " + level.AuthorName,
+                        Text = "Created by: " + quiz.AuthorName,
                         FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
                         HeightRequest = 60,
                         VerticalOptions = LayoutOptions.End,
@@ -266,26 +266,26 @@ namespace appFBLA2019
                     };
                     frameStack.Children.Add(Author);
 
-                    if (level.SyncStatus == 3)
+                    if (quiz.SyncStatus == 3)
                     {
                         Sync.Source = "ic_cloud_off_black_48dp.png";
                         Sync.Clicked += this.SyncOffline_Clicked;
                     }
-                    else if (level.SyncStatus == 2)
+                    else if (quiz.SyncStatus == 2)
                     {
                         Sync.Source = "ic_cloud_done_black_48dp.png";
                         Sync.Clicked += this.SyncNoChange_Clicked;
                     }
-                    else if (level.SyncStatus == 1)
+                    else if (quiz.SyncStatus == 1)
                     {
                         Sync.Source = "ic_cloud_upload_black_48dp.png";
                         Sync.Clicked += this.SyncUpload_Clicked;
                     }
-                    else if (level.SyncStatus == 0 || level.SyncStatus == 4)
+                    else if (quiz.SyncStatus == 0 || quiz.SyncStatus == 4)
                     {
                         Sync.Source = "ic_cloud_download_black_48dp.png";
                         Sync.Clicked += this.SyncDownload_Clicked;
-                        if (level.SyncStatus == 4)
+                        if (quiz.SyncStatus == 4)
                         {
                             frame.StyleId = "notLocal";
                             ButtonEdit.StyleId = "notLocal";
@@ -304,10 +304,10 @@ namespace appFBLA2019
                             Seperator.Color = Color.Gray;
                             imageButtonMenu.BackgroundColor = Color.LightGray;
                             Sync.BackgroundColor = Color.LightGray;
-                            Level newLevel = new Level(this.category, level.LevelName, level.AuthorName);
-                            newLevel.LoadQuestions();
+                            Quiz newQuiz = new Quiz(this.category, quiz.QuizName, quiz.AuthorName);
+                            newQuiz.LoadQuestions();
                             await this.RemoveMenu(frameMenu);
-                            await this.Navigation.PushAsync(new Game(newLevel));
+                            await this.Navigation.PushAsync(new Game(newQuiz));
                             frame.BackgroundColor = Color.Default;
                             Seperator.Color = Color.LightGray;
                             imageButtonMenu.BackgroundColor = Color.White;
@@ -338,14 +338,14 @@ namespace appFBLA2019
         private async void SyncUpload_Clicked(object sender, EventArgs e)
         {
             ImageButton button = (sender as ImageButton);
-            string levelPath = button.StyleId;
+            string quizPath = button.StyleId;
             button.IsEnabled = false;
             await button.FadeTo(0, 150, Easing.CubicInOut);
             button.Source = "ic_autorenew_black_48dp.png";
             await button.FadeTo(1, 150, Easing.CubicInOut);
             button.HeightRequest = 25;
 
-            if (await Task.Run(() => ServerOperations.SendLevel(levelPath)))
+            if (await Task.Run(() => ServerOperations.SendQuiz(quizPath)))
             {
                 await button.FadeTo(0, 150, Easing.CubicInOut);
                 button.Source = "ic_cloud_done_black_48dp.png";
@@ -360,8 +360,8 @@ namespace appFBLA2019
                 button.Source = "ic_cloud_upload_black_48dp.png";
                 await button.FadeTo(1, 150, Easing.CubicInOut);
                 button.IsEnabled = true;
-                await DisplayAlert("Level Upload Failed.", 
-                    "This level could not be uploaded to the server. Please try again.", 
+                await DisplayAlert("Quiz Upload Failed.", 
+                    "This quiz could not be uploaded to the server. Please try again.", 
                     "OK");
             }
         }
@@ -371,7 +371,7 @@ namespace appFBLA2019
             ImageButton button = sender as ImageButton;
             string dbId = button.ClassId.Split('/')[0];
             string authorName = button.ClassId.Split('/')[1];
-            string levelName = button.ClassId.Split('/')[2];
+            string quizName = button.ClassId.Split('/')[2];
             string category = button.ClassId.Split('/')[3];
             button.IsEnabled = false;
             await button.FadeTo(0, 150, Easing.CubicInOut);
@@ -379,7 +379,7 @@ namespace appFBLA2019
             await button.FadeTo(1, 150, Easing.CubicInOut);
             button.HeightRequest = 25;
 
-            if (await Task.Run(() => ServerOperations.GetLevel(dbId, levelName, authorName, category)))
+            if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
             {
                 button.Source = "ic_cloud_done_black_48dp.png";
                 button.IsEnabled = true;
@@ -389,26 +389,26 @@ namespace appFBLA2019
             {
                 button.Source = "ic_cloud_download_black_48dp.png";
                 button.IsEnabled = true;
-                await DisplayAlert("Level Upload Failed.",
-                    "This level could not be downloaded from the server. Please try again.",
+                await DisplayAlert("Quiz Upload Failed.",
+                    "This quiz could not be downloaded from the server. Please try again.",
                     "OK");
             }
         }
 
         private void SyncNoChange_Clicked(object sender, EventArgs e)
         {
-            this.DisplayAlert("Already Synchronized", "This level is already up to date with the server version!", "OK");
+            this.DisplayAlert("Already Synchronized", "This quiz is already up to date with the server version!", "OK");
         }
 
         private void SyncOffline_Clicked(object sender, EventArgs e)
         {
-            this.DisplayAlert("Offline", "This level cannot be synced because you are offline.", "OK");
+            this.DisplayAlert("Offline", "This quiz cannot be synced because you are offline.", "OK");
         }
 
         private async void ButtonDelete_Clicked(object sender, EventArgs e)
         {
             bool unsubscribe = ((Button)sender).Text == "Unsubscribe";
-            string question = "Are you sure you want to delete this level?";
+            string question = "Are you sure you want to delete this quiz?";
             string message = "This will delete the copy on your device and in the cloud. This is not reversable.";
             if (unsubscribe)
             {
@@ -424,34 +424,34 @@ namespace appFBLA2019
 
                 if (System.IO.Directory.Exists(path))
                 {
-                    if (!unsubscribe) // If delete (user owns this level)
+                    if (!unsubscribe) // If delete (user owns this quiz)
                     {
-                        // Acquire DBId from the level's realm file
+                        // Acquire DBId from the quiz's realm file
                         string realmFilePath = Directory.GetFiles(path, "*.realm").First();
                         Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                        LevelInfo info = realm.All<LevelInfo>().First();
+                        QuizInfo info = realm.All<QuizInfo>().First();
                         string dbId = info.DBId;
 
-                        // Acquire LevelInfo from roster
-                        LevelInfo rosterInfo = LevelRosterDatabase.GetLevelInfo(dbId);
-                        LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo)
+                        // Acquire QuizInfo from roster
+                        QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+                        QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
                         {
                             IsDeletedLocally = true,
                             LastModifiedDate = DateTime.Now.ToString()
                         };
-                        LevelRosterDatabase.EditLevelInfo(rosterInfo);
+                        QuizRosterDatabase.EditQuizInfo(rosterInfo);
 
-                        // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
+                        // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
                         if (CrossConnectivity.Current.IsConnected)
                         {
-                            OperationReturnMessage returnMessage = ServerOperations.DeleteLevel(dbId);
+                            OperationReturnMessage returnMessage = ServerOperations.DeleteQuiz(dbId);
                             if (returnMessage == OperationReturnMessage.True)
                             {
-                                realm.Remove(realm.All<LevelInfo>().Where(levelInfo => levelInfo.DBId == rosterInfo.DBId).First());
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
                             }
                         }
 
-                        // Clear out DBHandler.GameDatabase in case it references the level just deleted
+                        // Clear out DBHandler.GameDatabase in case it references the quiz just deleted
                         DBHandler.DisposeDatabase();
                         Directory.Delete(path, true);
                     }
@@ -459,7 +459,7 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    await this.DisplayAlert("Level not Found", "This level is not downloaded. Press download to download the level.", "OK");
+                    await this.DisplayAlert("Quiz not Found", "This quiz is not downloaded. Press download to download the quiz.", "OK");
                 }
             }
             else
@@ -500,7 +500,7 @@ namespace appFBLA2019
             await this.RemoveMenu(frame);
             if (!CredentialManager.IsLoggedIn)
             {
-                await this.DisplayAlert("Hold on!", "Before you can edit any levels, you have to login.", "Ok");
+                await this.DisplayAlert("Hold on!", "Before you can edit any quizs, you have to login.", "Ok");
             }
             else if (((Button)sender).StyleId == "notLocal")
             {
@@ -508,17 +508,17 @@ namespace appFBLA2019
             }
             else
             {
-                string levelTitle = ((Label)((StackLayout)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[0]).Children[0]).Text;
-                string levelAuthor = ((Label)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[2]).Text.Split(':')[1].Trim();
-                DBHandler.SelectDatabase(this.category, levelTitle, levelAuthor);
-                CreateNewLevelPage levelPage = new CreateNewLevelPage(this.category, levelTitle, levelAuthor); //Create the levelPage
+                string quizTitle = ((Label)((StackLayout)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[0]).Children[0]).Text;
+                string quizAuthor = ((Label)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[2]).Text.Split(':')[1].Trim();
+                DBHandler.SelectDatabase(this.category, quizTitle, quizAuthor);
+                CreateNewQuizPage quizPage = new CreateNewQuizPage(this.category, quizTitle, quizAuthor); //Create the quizPage
 
-                levelPage.SetLevelName(levelTitle);
+                quizPage.SetQuizName(quizTitle);
                 foreach (Question question in DBHandler.Database.GetQuestions())
                 {
-                    levelPage.AddNewQuestion(question);
+                    quizPage.AddNewQuestion(question);
                 }
-                await this.Navigation.PushAsync(levelPage);
+                await this.Navigation.PushAsync(quizPage);
             }
         }
     }

@@ -15,7 +15,7 @@
         <ToolbarItem Priority="0" Name="Report a Problem" Order="Secondary" Activated="BugReportToolbarItem_Clicked"/>
         <ToolbarItem Order="Secondary"  Priority="0" Text="Help" Clicked="HelpButton_Clicked"/>
     </TabbedPage.ToolbarItems>
-    <local:LevelCategoriesPage x:Name="levelsPage" Title="Play" Icon="ic_landscape_black_48dp.png" />
+    <local:QuizCategoriesPage x:Name="quizsPage" Title="Play" Icon="ic_landscape_black_48dp.png" />
     <local:FeaturedPage Title="Explore" Icon="ic_search_black_48dp.png" />
     <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png" />
 </TabbedPage>

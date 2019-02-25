@@ -9,7 +9,7 @@ namespace appFBLA2019
         public string Title { get; set; }
         public string DBId { get; set; }
         public string Author { get; set; }
-        public string LevelName { get; set; }
+        public string QuizName { get; set; }
         public string Category { get; set; }
         public int SubCount { get; set; }
 
@@ -17,7 +17,7 @@ namespace appFBLA2019
         {
             this.DBId = data[0];
             this.Author = data[1];
-            this.LevelName = data[2];
+            this.QuizName = data[2];
             this.Category = data[3];
             this.SubCount = int.Parse(data[4]);
         }

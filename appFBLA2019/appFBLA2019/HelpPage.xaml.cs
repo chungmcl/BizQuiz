@@ -18,5 +18,11 @@ namespace appFBLA2019
         {
             InitializeComponent();
         }
+
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            this.MCQuestionImage.WidthRequest = this.TextQuestionImage.WidthRequest = this.Width * 2 / 5 ;
+        }
     }
 }

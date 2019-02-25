@@ -21,6 +21,7 @@ namespace appFBLA2019.Droid
         WindowSoftInputMode =Android.Views.SoftInput.AdjustResize, ScreenOrientation =ScreenOrientation.Portrait)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger
     {
+        private Android.Views.Window currentWindow;
         protected override void OnCreate(Bundle bundle)
         {
             TabLayoutResource = Resource.Layout.Tabbar;
@@ -32,6 +33,7 @@ namespace appFBLA2019.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
             this.LoadApplication(new App());
+            this.currentWindow = this.Window;
             this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustResize);
         }
 

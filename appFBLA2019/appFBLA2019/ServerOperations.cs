@@ -68,22 +68,22 @@ namespace appFBLA2019
             return (string)SendStringData($"{username}/{password}/-", ServerRequestTypes.GetEmail);
         }
 
-        public static OperationReturnMessage DeleteLevel(string DBId)
+        public static OperationReturnMessage DeleteQuiz(string DBId)
         {
-            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{DBId}", ServerRequestTypes.DeleteLevel);
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{DBId}", ServerRequestTypes.DeleteQuiz);
         }
 
-        public static List<string[]> GetLevelsByAuthorName(string authorName, int chunk)
+        public static List<string[]> GetQuizsByAuthorName(string authorName, int chunk)
         {
-            return (List<string[]>)SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetLevelsByAuthorName);
+            return (List<string[]>)SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetQuizsByAuthorName);
         }
 
-        public static List<string[]> GetMissingLevelsByAuthorName(string authorName, string[] dBIdsOnDevice)
+        public static List<string[]> GetMissingQuizsByAuthorName(string authorName, string[] dBIdsOnDevice)
         {
             string queryString = $"{authorName}";
             foreach (string dbId in dBIdsOnDevice)
                 queryString = queryString + "/" + dbId;
-            return (List<string[]>)SendStringData(queryString, ServerRequestTypes.GetMissingLevelsByAuthorName);
+            return (List<string[]>)SendStringData(queryString, ServerRequestTypes.GetMissingQuizsByAuthorName);
         }
 
         public static List<string[]> GetUsers(string username, int chunk)
@@ -91,19 +91,19 @@ namespace appFBLA2019
             return (List<string[]>)SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
         }
 
-        public static List<string[]> GetLevelsByCategory(string category, int chunk)
+        public static List<string[]> GetQuizsByCategory(string category, int chunk)
         {
-            return (List<string[]>)SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetLevelsByCategory);
+            return (List<string[]>)SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetQuizsByCategory);
         }
 
-        public static List<string[]> GetLevelsByLevelName(string levelName, int chunk)
+        public static List<string[]> GetQuizsByQuizName(string quizName, int chunk)
         {
-            return (List<string[]>)SendStringData($"{levelName}/{chunk}/-", ServerRequestTypes.GetLevelsByLevelName);
+            return (List<string[]>)SendStringData($"{quizName}/{chunk}/-", ServerRequestTypes.GetQuizsByQuizName);
         }
         
-        public static int GetNumberOfLevelsByAuthorName(string username)
+        public static int GetNumberOfQuizsByAuthorName(string username)
         {
-            string returnData = (string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfLevelsByAuthorName);
+            string returnData = (string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfQuizsByAuthorName);
             if (!int.TryParse(returnData, out int result))
             {
                 result = 0;
@@ -111,32 +111,32 @@ namespace appFBLA2019
             return result;
         }
 
-        public static OperationReturnMessage SubscribeToLevel(string dbId)
+        public static OperationReturnMessage SubscribeToQuiz(string dbId)
         {
             return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{dbId}/-", 
-                ServerRequestTypes.SubscribeToLevel);
+                ServerRequestTypes.SubscribeToQuiz);
         }
 
-        public static OperationReturnMessage UnsubscribeToLevel(string dbId)
+        public static OperationReturnMessage UnsubscribeToQuiz(string dbId)
         {
             return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{dbId}/-", 
-                ServerRequestTypes.UnsubscribeToLevel);
+                ServerRequestTypes.UnsubscribeToQuiz);
         }
 
-        public static bool SendLevel(string relativeLevelPath)
+        public static bool SendQuiz(string relativeQuizPath)
         {
             try
             {
-                string realmFilePath = Directory.GetFiles(App.UserPath + relativeLevelPath, "*.realm").First();
+                string realmFilePath = Directory.GetFiles(App.UserPath + relativeQuizPath, "*.realm").First();
                 Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                LevelInfo info = realm.All<LevelInfo>().First();
+                QuizInfo info = realm.All<QuizInfo>().First();
                 
                 if (SendRealmFile(realmFilePath) != OperationReturnMessage.True)
                 {
                     throw new Exception();
                 }
 
-                string[] imageFilePaths = Directory.GetFiles(App.UserPath + relativeLevelPath, "*.jpg");
+                string[] imageFilePaths = Directory.GetFiles(App.UserPath + relativeQuizPath, "*.jpg");
                 for (int i = 0; i < imageFilePaths.Length; i++)
                 {
                     //[0] = path, [1] = fileName, [2] = dBId
@@ -150,19 +150,19 @@ namespace appFBLA2019
                     }
                 }
 
-                // When finished, confirm with server that level send has completed
+                // When finished, confirm with server that quiz send has completed
                 OperationReturnMessage finalizationMessage = (OperationReturnMessage)SendStringData(
                     $"{info.DBId}`{info.LastModifiedDate}`{imageFilePaths.Length + 1}`" +
                     $"{CredentialManager.Username}`{CredentialManager.Password}`-",
-                    ServerRequestTypes.FinalizeLevelSend);
+                    ServerRequestTypes.FinalizeQuizSend);
 
                 if (finalizationMessage == OperationReturnMessage.True)
                 {
-                    LevelInfo infoCopy = new LevelInfo(info)
+                    QuizInfo infoCopy = new QuizInfo(info)
                     {
                         SyncStatus = 2
                     };
-                    LevelRosterDatabase.EditLevelInfo(infoCopy);
+                    QuizRosterDatabase.EditQuizInfo(infoCopy);
                     return true;
                 }
                 else
@@ -172,18 +172,18 @@ namespace appFBLA2019
             }
             catch
             {
-                // Alert server that level send failed Delete records
+                // Alert server that quiz send failed Delete records
                 return false;
             }
         }
 
-        public static bool GetLevel(string dBId, string levelName, string authorName, string category)
+        public static bool GetQuiz(string dBId, string quizName, string authorName, string category)
         {
-            string levelPath = App.UserPath + "/" + category + "/" + $"{levelName}`{authorName}/";
+            string quizPath = App.UserPath + "/" + category + "/" + $"{quizName}`{authorName}/";
 
-            Directory.CreateDirectory(levelPath);
+            Directory.CreateDirectory(quizPath);
             byte[] realmFile = (byte[])SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
-            string realmFilePath = levelPath + "/" + levelName + realmFileExtension;
+            string realmFilePath = quizPath + "/" + quizName + realmFileExtension;
             if (realmFile.Length > 0)
                 File.WriteAllBytes(realmFilePath, realmFile);
             else
@@ -194,15 +194,15 @@ namespace appFBLA2019
             foreach (Question question in questionsWithPictures)
             {
                 byte[] jpegFile = (byte[])SendStringData($"{question.QuestionId}/{dBId}/-", ServerRequestTypes.GetJPEGImage);
-                string jpegFilePath = levelPath + "/" + question.QuestionId + jpegFileExtension;
+                string jpegFilePath = quizPath + "/" + question.QuestionId + jpegFileExtension;
                 if (jpegFile.Length > 0)
                     File.WriteAllBytes(jpegFilePath, jpegFile);
                 else
                     return false;
             }
-            LevelInfo infoCopy = new LevelInfo(LevelRosterDatabase.GetLevelInfo(dBId));
+            QuizInfo infoCopy = new QuizInfo(QuizRosterDatabase.GetQuizInfo(dBId));
             infoCopy.SyncStatus = 2;
-            LevelRosterDatabase.EditLevelInfo(infoCopy);
+            QuizRosterDatabase.EditQuizInfo(infoCopy);
 
             return true;
         }
@@ -388,13 +388,13 @@ namespace appFBLA2019
             {
                 case ServerRequestTypes.GetEmail:
                 case ServerRequestTypes.GetLastModifiedDate:
-                case ServerRequestTypes.GetNumberOfLevelsByAuthorName:
+                case ServerRequestTypes.GetNumberOfQuizsByAuthorName:
                     return ReceiveFromServerStringData(toSend);
 
-                case ServerRequestTypes.GetLevelsByAuthorName:
-                case ServerRequestTypes.GetLevelsByLevelName:
-                case ServerRequestTypes.GetLevelsByCategory:
-                case ServerRequestTypes.GetMissingLevelsByAuthorName:
+                case ServerRequestTypes.GetQuizsByAuthorName:
+                case ServerRequestTypes.GetQuizsByQuizName:
+                case ServerRequestTypes.GetQuizsByCategory:
+                case ServerRequestTypes.GetMissingQuizsByAuthorName:
                     return ReceiveFromServerListOfStringArrays(toSend);
 
                 case ServerRequestTypes.GetRealmFile:
@@ -464,10 +464,10 @@ namespace appFBLA2019
         StringData,
         AddJPEGImage,
         AddRealmFile,
-        FinalizeLevelSend,
-        SubscribeToLevel,
-        UnsubscribeToLevel,
-        DeleteLevel,
+        FinalizeQuizSend,
+        SubscribeToQuiz,
+        UnsubscribeToQuiz,
+        DeleteQuiz,
         LoginAccount,
         RegisterAccount,
         DeleteAccount,
@@ -481,11 +481,11 @@ namespace appFBLA2019
         GetJPEGImage,
         GetRealmFile,
         GetLastModifiedDate,
-        GetLevelsByAuthorName,
-        GetMissingLevelsByAuthorName,
-        GetLevelsByLevelName,
-        GetLevelsByCategory,
+        GetQuizsByAuthorName,
+        GetMissingQuizsByAuthorName,
+        GetQuizsByQuizName,
+        GetQuizsByCategory,
         GetUsers,
-        GetNumberOfLevelsByAuthorName
+        GetNumberOfQuizsByAuthorName
     }
 }

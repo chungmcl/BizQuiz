@@ -15,7 +15,7 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class CreateNewLevelPage : ContentPage
+    public partial class CreateNewQuizPage : ContentPage
     {
         private string originalAuthor;
         private string originalName;
@@ -28,11 +28,11 @@ namespace appFBLA2019
         };
 
         /// <summary>
-        /// Constructing from an already existing level
+        /// Constructing from an already existing quiz
         /// </summary>
         /// <param name="originalName">    </param>
         /// <param name="originalAuthor">  </param>
-        public CreateNewLevelPage(string originalCategory, string originalName, string originalAuthor)
+        public CreateNewQuizPage(string originalCategory, string originalName, string originalAuthor)
         {
             this.InitializeComponent();
             this.SetUpBar();
@@ -43,9 +43,9 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Constructing a brand new level
+        /// Constructing a brand new quiz
         /// </summary>
-        public CreateNewLevelPage()
+        public CreateNewQuizPage()
         {
             this.InitializeComponent();
             this.SetUpBar();
@@ -56,7 +56,7 @@ namespace appFBLA2019
         private void SetUpBar()
         {
             this.ToolbarItems.Add(this.Done);
-            this.Done.Clicked += this.ButtonCreateLevel_Clicked;
+            this.Done.Clicked += this.ButtonCreateQuiz_Clicked;
         }
 
         private bool canClose = true;
@@ -140,7 +140,7 @@ namespace appFBLA2019
             else
             {
                 ((ImageButton)sender).IsEnabled = false;
-                await this.Navigation.PushAsync(new LevelEditor.PhotoPage(((ImageButton)sender)));
+                await this.Navigation.PushAsync(new PhotoPage(((ImageButton)sender)));
                 this.x = sender;
                 ((ImageButton)sender).IsEnabled = true;
             }
@@ -227,24 +227,24 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Saves the user created level
+        /// Saves the user created quiz
         /// </summary>
         /// <param name="sender">  </param>
         /// <param name="e">       </param>
-        private async void ButtonCreateLevel_Clicked(object sender, EventArgs e)
+        private async void ButtonCreateQuiz_Clicked(object sender, EventArgs e)
         {
             this.Done.IsEnabled = false;
-            if (string.IsNullOrWhiteSpace(this.EditorLevelName.Text))
+            if (string.IsNullOrWhiteSpace(this.EditorQuizName.Text))
             {
-                await this.DisplayAlert("Couldn't Create Level", "Please give your level a name.", "OK");
+                await this.DisplayAlert("Couldn't Create Quiz", "Please give your quiz a name.", "OK");
             }
             else if (this.StackLayoutQuestionStack.Children.Count < 2)
             {
-                await this.DisplayAlert("Couldn't Create Level", "Please create at least two questions", "OK");
+                await this.DisplayAlert("Couldn't Create Quiz", "Please create at least two questions", "OK");
             }
             else if (this.PickerCategory.SelectedIndex == -1)
             {
-                await this.DisplayAlert("Couldn't Create Level", "Please give your level a category", "OK");
+                await this.DisplayAlert("Couldn't Create Quiz", "Please give your quiz a category", "OK");
             }
             else
             {
@@ -260,7 +260,7 @@ namespace appFBLA2019
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
 
                 // Now open the database the user just made, might be the same as the one already open
-                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EditorLevelName.Text.Trim(), CredentialManager.Username);
+                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EditorQuizName.Text.Trim(), CredentialManager.Username);
                 // Loops through each question frame on the screen
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
@@ -277,7 +277,7 @@ namespace appFBLA2019
                     // Checks if there is a question set
                     if (string.IsNullOrWhiteSpace(((Editor)children[1]).Text))
                     {
-                        await this.DisplayAlert("Couldn't Create Level", "Every question must have a question set", "OK");
+                        await this.DisplayAlert("Couldn't Create Quiz", "Every question must have a question set", "OK");
                         goto exit;
                     }
 
@@ -312,7 +312,7 @@ namespace appFBLA2019
                         }
                         if (size < 2 || string.IsNullOrWhiteSpace(answers[0]))
                         {
-                            await this.DisplayAlert("Couldn't Create Level", "Mulitple choice questions must have a correct answer and at least one wrong answer", "OK");
+                            await this.DisplayAlert("Couldn't Create Quiz", "Mulitple choice questions must have a correct answer and at least one wrong answer", "OK");
                             goto exit;
                         }
 
@@ -322,7 +322,7 @@ namespace appFBLA2019
                     {
                         if (string.IsNullOrWhiteSpace(answers[0]))
                         {
-                            await this.DisplayAlert("Couldn't Create Level", "Text answer questions must have an answer", "OK");
+                            await this.DisplayAlert("Couldn't Create Quiz", "Text answer questions must have an answer", "OK");
                             goto exit;
                         }
 
@@ -346,20 +346,20 @@ namespace appFBLA2019
                 {
                     // if the user created this for the first time
 
-                    // Save a new LevelInfo into the level database, which also adds this LevelInfo to the device level roster
-                    DBHandler.Database.NewLevelInfo(CredentialManager.Username,
-                        this.EditorLevelName.Text.Trim(),
+                    // Save a new QuizInfo into the quiz database, which also adds this QuizInfo to the device quiz roster
+                    DBHandler.Database.NewQuizInfo(CredentialManager.Username,
+                        this.EditorQuizName.Text.Trim(),
                         this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
                     DBHandler.Database.AddQuestions(NewQuestions);
                 }
                 else // edit
                 {
-                    LevelInfo updatedLevelInfo = new LevelInfo(DBHandler.Database.GetLevelInfo())
+                    QuizInfo updatedQuizInfo = new QuizInfo(DBHandler.Database.GetQuizInfo())
                     {
-                        LevelName = this.EditorLevelName.Text.Trim(),
+                        QuizName = this.EditorQuizName.Text.Trim(),
                         LastModifiedDate = DateTime.Now.ToString()
                     };
-                    DBHandler.Database.EditLevelInfo(updatedLevelInfo);
+                    DBHandler.Database.EditQuizInfo(updatedQuizInfo);
 
                     for (int i = 0; i <= previousQuestions.Count() - 1; i++)
                     {
@@ -393,13 +393,13 @@ namespace appFBLA2019
 
                 File.Create(DBHandler.Database.DBFolderPath + ".nomedia");
 
-                // If they renamed the level, delete the old one
-                if (this.originalName != this.EditorLevelName.Text.Trim() && this.originalAuthor == CredentialManager.Username)
+                // If they renamed the quiz, delete the old one
+                if (this.originalName != this.EditorQuizName.Text.Trim() && this.originalAuthor == CredentialManager.Username)
                 {
                     Directory.Delete(App.UserPath + "/" + this.originalName + "`" + this.originalAuthor, true);
                 }
 
-                // Returns user to front page of LevelEditor and refreshed database
+                // Returns user to front page of QuizEditor and refreshed database
                 await this.Navigation.PopAsync(true);
             }
         exit:;
@@ -700,9 +700,9 @@ namespace appFBLA2019
         }
 
 
-        public void SetLevelName(string levelName)
+        public void SetQuizName(string quizName)
         {
-            this.EditorLevelName.Text = levelName;
+            this.EditorQuizName.Text = quizName;
         }
     }
 }

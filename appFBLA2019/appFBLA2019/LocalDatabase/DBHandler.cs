@@ -17,16 +17,16 @@ namespace appFBLA2019
         /// <summary>
         /// </summary>
         /// <param name="fileName"> Name of the database file to be selected without extension </param>
-        /// <param name="author">   The username of the author of this level, which is unique (Two levels with the same name must have two unique authors) </param>
+        /// <param name="author">   The username of the author of this quiz, which is unique (Two quizs with the same name must have two unique authors) </param>
         /// <returns> Bool representing successful database connection or not. </returns>
-        public static bool SelectDatabase(string category, string levelTitle, string author)
+        public static bool SelectDatabase(string category, string quizTitle, string author)
         {
             try
             {
                 // If the current database is null, or the name of the current database does not match the name of the database being requested to be selected, connect to the database specified in the parameter fileName
 
-                // Backtick ( ` ) character used to seperate level name from author name
-                if (Database == null || Database.fileName != $"/{category}/{levelTitle}`{author}")
+                // Backtick ( ` ) character used to seperate quiz name from author name
+                if (Database == null || Database.fileName != $"/{category}/{quizTitle}`{author}")
                 {
                     // This path should be used when app is finished This will hide the application database and prevent it from unwanted user manipulation
 
@@ -38,9 +38,9 @@ namespace appFBLA2019
 
                     // On Android: Set appFBLA2019.Android's storage permissions to "on"
 
-                    string folderPath = App.UserPath + $"{category}/{levelTitle}`{author}";
+                    string folderPath = App.UserPath + $"{category}/{quizTitle}`{author}";
                     Directory.CreateDirectory(folderPath);
-                    Database = new GameDatabase(folderPath, levelTitle);
+                    Database = new GameDatabase(folderPath, quizTitle);
 
                     return true;
                 }

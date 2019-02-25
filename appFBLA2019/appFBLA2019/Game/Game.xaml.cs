@@ -16,29 +16,29 @@ namespace appFBLA2019
     public partial class Game : ContentPage
     {
         /// <summary>
-        /// creates the game, sets up the level and begins the game loop
+        /// creates the game, sets up the quiz and begins the game loop
         /// </summary>
-        /// <param name="level">  </param>
-        public Game(Level level)
+        /// <param name="quiz">  </param>
+        public Game(Quiz quiz)
         {
             this.InitializeComponent();
-            this.level = level;
+            this.quiz = quiz;
             this.score = 0;
             this.random = new Random();
-            this.Title = level.Title;
+            this.Title = quiz.Title;
 
             this.LayoutRefresh();
             this.CycleQuestion();
         }
 
         /// <summary>
-        /// Triggered when the endlevelpage closes, resets the level and returns the user to the mainpage
+        /// Triggered when the endquizpage closes, resets the quiz and returns the user to the mainpage
         /// </summary>
         /// <param name="source">  </param>
         /// <param name="args">    </param>
         public async void OnFinished(object source, EventArgs args)
         {
-            this.level.ResetLevel();
+            this.quiz.ResetQuiz();
             await this.Navigation.PopAsync();
         }
 
@@ -62,9 +62,9 @@ namespace appFBLA2019
         private Question currentQuestion;
 
         /// <summary>
-        /// the current level
+        /// the current quiz
         /// </summary>
-        private Level level;
+        private Quiz quiz;
 
         /// <summary>
         /// a random to be used for shuffling
@@ -176,19 +176,19 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task CycleQuestion()
         {
-            this.ProgressBar.ProgressTo(((double)this.level.Questions.Count() - (double)this.level.QuestionsRemaining) / (double)this.level.Questions.Count(), 500, Easing.SpringOut);
+            this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
             this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
-            if (this.level.QuestionsRemaining > 0)
+            if (this.quiz.QuestionsRemaining > 0)
             {
                 // Save as reference
-                this.currentQuestion = this.level.GetQuestion();
+                this.currentQuestion = this.quiz.GetQuestion();
                 this.SetUpQuestion(this.currentQuestion);
             }
-            else // Finished level
+            else // Finished quiz
             {
-                LevelEndPage levelEndPage = (new LevelEndPage(this.score, this.level.Questions.Count));
-                levelEndPage.Finished += this.OnFinished;
-                await this.Navigation.PushModalAsync(levelEndPage);
+                QuizEndPage quizEndPage = (new QuizEndPage(this.score, this.quiz.Questions.Count));
+                quizEndPage.Finished += this.OnFinished;
+                await this.Navigation.PushModalAsync(quizEndPage);
             }
         }
 

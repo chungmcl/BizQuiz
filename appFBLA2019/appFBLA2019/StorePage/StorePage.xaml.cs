@@ -17,7 +17,7 @@ namespace appFBLA2019
 		private bool isLoading;
         private string category;
         private bool isStartup;
-		private List<SearchInfo> levelsSearched;
+		private List<SearchInfo> quizsSearched;
 
 
         // either "Title" or "Author"
@@ -44,17 +44,17 @@ namespace appFBLA2019
 		}
 
         /// <summary>
-        /// Adds a level to the search stack given a LevelInfo
+        /// Adds a quiz to the search stack given a QuizInfo
         /// </summary>
-        /// <param name="level"></param>
-        private void AddLevels(List<SearchInfo> levels)
+        /// <param name="quiz"></param>
+        private void AddQuizs(List<SearchInfo> quizs)
 		{
-			foreach(SearchInfo level in levels)
-            {// Only add level if the category is what user picked (we are asking the server for more then we need so this could be changed)
-                if (this.category == "All" || level.Category == this.category) 
+			foreach(SearchInfo quiz in quizs)
+            {// Only add quiz if the category is what user picked (we are asking the server for more then we need so this could be changed)
+                if (this.category == "All" || quiz.Category == this.category) 
                 {
 
-                    Frame levelFrame = new Frame
+                    Frame quizFrame = new Frame
                     {
                         VerticalOptions = LayoutOptions.Start,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -73,18 +73,18 @@ namespace appFBLA2019
                         Orientation = StackOrientation.Horizontal
                     };
 
-                    Label levelName = new Label
+                    Label quizName = new Label
                     {
-                        Text = level.LevelName,
+                        Text = quiz.QuizName,
                         FontAttributes = FontAttributes.Bold,
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         HorizontalOptions = LayoutOptions.StartAndExpand
                     };
-                    topStack.Children.Add(levelName);
+                    topStack.Children.Add(quizName);
 
                     ImageButton ImageButtonSubscribe = new ImageButton
                     {
-                        StyleId = level.DBId,
+                        StyleId = quiz.DBId,
                         HeightRequest = 30,
                         BackgroundColor = Color.White,
                         HorizontalOptions = LayoutOptions.End
@@ -98,27 +98,27 @@ namespace appFBLA2019
 
                     frameStack.Children.Add(topStack);
 
-                    Label levelAuthor = new Label
+                    Label quizAuthor = new Label
                     {
-                        Text = "Created by: " + level.Author,
+                        Text = "Created by: " + quiz.Author,
                     };
-                    frameStack.Children.Add(levelAuthor);
+                    frameStack.Children.Add(quizAuthor);
 
-                    Label levelCategory = new Label
+                    Label quizCategory = new Label
                     {
-                        Text = "Category: " + level.Category,
+                        Text = "Category: " + quiz.Category,
                     };
-                    frameStack.Children.Add(levelCategory);
+                    frameStack.Children.Add(quizCategory);
 
-                    levelFrame.Content = frameStack;
+                    quizFrame.Content = frameStack;
                     Device.BeginInvokeOnMainThread(() =>
-                    this. SearchedStack.Children.Add(levelFrame));
+                    this. SearchedStack.Children.Add(quizFrame));
                 }
 			}		   
 		}
 
 		/// <summary>
-		/// When a user wants to subscribe to a level
+		/// When a user wants to subscribe to a quiz
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -148,7 +148,7 @@ namespace appFBLA2019
 
 		}
 
-        private bool levelsRemaining;
+        private bool quizsRemaining;
         private int currentChunk;
 
 		/// <summary>
@@ -160,7 +160,7 @@ namespace appFBLA2019
 		{
 			// Delete what was in there previously
 			this.end = false;
-            this.levelsRemaining = true;
+            this.quizsRemaining = true;
             this.currentChunk = 1;
 			Device.BeginInvokeOnMainThread(() => {
 			    this.SearchedStack.Children.Clear();
@@ -193,16 +193,16 @@ namespace appFBLA2019
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
             if (this.searchType == "Title")
-                chunk = SearchUtils.GetLevelsByLevelNameChunked(SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizsByQuizNameChunked(SearchBar.Text, this.currentChunk);
             else
-                chunk = SearchUtils.GetLevelsByAuthorChunked(SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizsByAuthorChunked(SearchBar.Text, this.currentChunk);
             if (this.currentChunk == 1 && chunk.Count == 0)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     SearchedStack.Children.Add(new Label()
                     {
-                        Text = "Sorry, we couldn't find any levels matching what you searched", 
+                        Text = "Sorry, we couldn't find any quizzes matching what you searched", 
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         HorizontalOptions = LayoutOptions.CenterAndExpand,
                     });
@@ -210,21 +210,21 @@ namespace appFBLA2019
                 );
             }
             if (chunk.Count < 20)
-                this.levelsRemaining = false;
-            await Task.Run(() => this.AddLevels(chunk));
+                this.quizsRemaining = false;
+            await Task.Run(() => this.AddQuizs(chunk));
         }
 
         /// <summary>
-        /// gets the levels to display depending on the tab the user is on
+        /// gets the quiz to display depending on the tab the user is on
         /// </summary>
         /// <param name="chunk"></param>
         /// <returns></returns>
-        private List<string[]> GetLevels(int chunk)
+        private List<string[]> GetQuizs(int chunk)
 		{
 			if (this.searchType == "Title")
-				return ServerOperations.GetLevelsByLevelName(this.SearchBar.Text, chunk);
+				return ServerOperations.GetQuizsByQuizName(this.SearchBar.Text, chunk);
 			else
-				return ServerOperations.GetLevelsByAuthorName(this.SearchBar.Text, chunk);
+				return ServerOperations.GetQuizsByAuthorName(this.SearchBar.Text, chunk);
 		}
 		
         // Impliment this if we want to conduct a search each time we press a key down.

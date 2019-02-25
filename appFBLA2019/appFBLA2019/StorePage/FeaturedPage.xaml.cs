@@ -14,28 +14,28 @@ namespace appFBLA2019
 	public partial class FeaturedPage : ContentPage
 	{
         private string category = "All";
-        private List<SearchInfo> levelsFeatured;
+        private List<SearchInfo> quizzesFeatured;
 
         public FeaturedPage()
         {
             InitializeComponent();
             this.currentChunk = 1;
-            levelsFeatured = new List<SearchInfo>();
+            quizzesFeatured = new List<SearchInfo>();
         }
 
         protected async override void OnAppearing()
         {
-            this.levelsRemaining = true;
+            this.quizzesRemaining = true;
             await this.Refresh();
         }
 
-        private bool levelsRemaining;
+        private bool quizzesRemaining;
         private int currentChunk;
 
         private async Task Refresh()
         {
             this.SearchedStack.Children.Clear();
-            this.levelsFeatured.Clear();
+            this.quizzesFeatured.Clear();
             try
             {
                 Device.BeginInvokeOnMainThread(() => {
@@ -43,7 +43,7 @@ namespace appFBLA2019
                     this.ActivityIndicator.IsVisible = true;
                     this.ActivityIndicator.IsRunning = true;
                 });
-                await Task.Run(() => this.AddLevels(SearchUtils.GetLevelsByAuthorChunked("BizQuiz", 1)));
+                await Task.Run(() => this.AddQuizzes(SearchUtils.GetQuizsByAuthorChunked("BizQuiz", 1)));
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     this.ActivityIndicator.IsVisible = false;
@@ -53,17 +53,17 @@ namespace appFBLA2019
             catch (Exception ex)
             {
                 BugReportHandler.SubmitReport(ex, nameof(FeaturedPage));
-                await this.DisplayAlert("Error", "Couldn't get levels", "Ok");
+                await this.DisplayAlert("Error", "Couldn't get quizzes", "Ok");
             }
         }
 
         private async Task Search()
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
-            chunk = SearchUtils.GetLevelsByAuthorChunked("BizQuiz", this.currentChunk);
+            chunk = SearchUtils.GetQuizsByAuthorChunked("BizQuiz", this.currentChunk);
             if (chunk.Count < 20)
-                this.levelsRemaining = false;
-            await Task.Run(() => this.AddLevels(chunk));
+                this.quizzesRemaining = false;
+            await Task.Run(() => this.AddQuizzes(chunk));
         }
 
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
@@ -71,7 +71,7 @@ namespace appFBLA2019
             ScrollView scrollView = sender as ScrollView;
             double scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
 
-            if (scrollingSpace <= e.ScrollY && this.levelsRemaining)
+            if (scrollingSpace <= e.ScrollY && this.quizzesRemaining)
             {
                 try
                 {
@@ -80,23 +80,23 @@ namespace appFBLA2019
                 }
                 catch
                 {
-                    await this.DisplayAlert("Error", "Couldn't get levels", "Ok");
+                    await this.DisplayAlert("Error", "Couldn't get quizzes", "Ok");
                 }
             }
         }
 
         /// <summary>
-        /// Adds a level to the search stack given a LevelInfo
+        /// Adds a quiz to the search stack given a QuizInfo
         /// </summary>
-        /// <param name="level"></param>
-        private void AddLevels(List<SearchInfo> levels)
+        /// <param name="quizzes"></param>
+        private void AddQuizzes(List<SearchInfo> quizzes)
         {
-            foreach (SearchInfo level in levels)
+            foreach (SearchInfo quiz in quizzes)
             {
-                if (this.category == "All" || level.Category == this.category) // Only add level if the category is what user picked
+                if (this.category == "All" || quiz.Category == this.category) // Only add quiz if the category is what user picked
                 {
-                    this.levelsFeatured.Add(level);
-                    Frame levelFrame = new Frame
+                    this.quizzesFeatured.Add(quiz);
+                    Frame quizFrame = new Frame
                     {
                         VerticalOptions = LayoutOptions.Start,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -115,18 +115,18 @@ namespace appFBLA2019
                         Orientation = StackOrientation.Horizontal
                     };
 
-                    Label levelName = new Label
+                    Label quizName = new Label
                     {
-                        Text = level.LevelName,
+                        Text = quiz.QuizName,
                         FontAttributes = FontAttributes.Bold,
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         HorizontalOptions = LayoutOptions.StartAndExpand
                     };
-                    topStack.Children.Add(levelName);
+                    topStack.Children.Add(quizName);
 
                     ImageButton ImageButtonSubscribe = new ImageButton
                     {
-                        StyleId = level.DBId,
+                        StyleId = quiz.DBId,
                         HeightRequest = 30,
                         BackgroundColor = Color.White,
                         HorizontalOptions = LayoutOptions.End
@@ -140,24 +140,24 @@ namespace appFBLA2019
 
                     frameStack.Children.Add(topStack);
 
-                    Label levelAuthor = new Label
+                    Label quizAuthor = new Label
                     {
-                        Text = "Created by: " + level.Author,
+                        Text = "Created by: " + quiz.Author,
                     };
-                    frameStack.Children.Add(levelAuthor);
+                    frameStack.Children.Add(quizAuthor);
 
-                    Label levelCategory = new Label
+                    Label quizCategory = new Label
                     {
-                        Text = "Category: " + level.Category,
+                        Text = "Category: " + quiz.Category,
                     };
-                    frameStack.Children.Add(levelCategory);
+                    frameStack.Children.Add(quizCategory);
 
-                    levelFrame.Content = frameStack;
+                    quizFrame.Content = frameStack;
                     Device.BeginInvokeOnMainThread(() =>
-                    this.SearchedStack.Children.Add(levelFrame));
+                    this.SearchedStack.Children.Add(quizFrame));
                 }
             }
-            if (this.levelsFeatured.Count() == 0)   
+            if (this.quizzesFeatured.Count() == 0)   
             {
                 Label FeaturedMessage = new Label
                 {
@@ -171,7 +171,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// When a user wants to subscribe to a level
+        /// When a user wants to subscribe to a quiz
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -189,13 +189,13 @@ namespace appFBLA2019
                     button.HeightRequest = 30;
 
                     await button.FadeTo(1, 150, Easing.CubicInOut);
-                    LevelInfo info = LevelRosterDatabase.GetLevelInfo(dbId);
-                    string location = App.UserPath + "/" + info.Category + "/" + info.LevelName + "`" + info.AuthorName;
+                    QuizInfo info = QuizRosterDatabase.GetQuizInfo(dbId);
+                    string location = App.UserPath + "/" + info.Category + "/" + info.QuizName + "`" + info.AuthorName;
                     if (Directory.Exists(location))
                         Directory.Delete(location, true);
 
-                    LevelRosterDatabase.DeleteLevelInfo(dbId);
-                    OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.UnsubscribeToLevel(dbId));
+                    QuizRosterDatabase.DeleteQuizInfo(dbId);
+                    OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.UnsubscribeToQuiz(dbId));
                     if (returnMessage == OperationReturnMessage.True)
                     {
                         // Show sub button
@@ -218,18 +218,18 @@ namespace appFBLA2019
                 button.HeightRequest = 30;
                 await button.FadeTo(1, 150, Easing.CubicInOut);
 
-                OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.SubscribeToLevel(dbId));
+                OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.SubscribeToQuiz(dbId));
                 if (returnMessage == OperationReturnMessage.True)
                 {
-                    SearchInfo level = this.levelsFeatured.Where(searchInfo => searchInfo.DBId == dbId).First();
-                    LevelInfo newInfo = new LevelInfo
+                    SearchInfo quiz = this.quizzesFeatured.Where(searchInfo => searchInfo.DBId == dbId).First();
+                    QuizInfo newInfo = new QuizInfo
                     {
-                        AuthorName = level.Author,
-                        LevelName = level.LevelName,
-                        Category = level.Category,
+                        AuthorName = quiz.Author,
+                        QuizName = quiz.QuizName,
+                        Category = quiz.Category,
                         SyncStatus = 4 // 4 to represent not present in local directory and need download
                     };
-                    LevelRosterDatabase.NewLevelInfo(newInfo);
+                    QuizRosterDatabase.NewQuizInfo(newInfo);
 
                     // Show finished icon
                 }
