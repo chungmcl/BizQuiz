@@ -188,9 +188,10 @@ namespace appFBLA2019
                     string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
                     QuizInfo newInfo = new QuizInfo
                     {
-                        AuthorName = level.Author,
-                        LevelName = level.LevelName,
-                        Category = level.Category,
+                        DBId = quiz.DBId,
+                        AuthorName = quiz.Author,
+                        QuizName = quiz.QuizName,
+                        Category = quiz.Category,
                         LastModifiedDate = lastModifiedDate,
                         SyncStatus = 4 // 4 to represent not present in local directory and need download
                     };
