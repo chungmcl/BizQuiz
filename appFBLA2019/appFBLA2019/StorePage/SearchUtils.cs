@@ -7,12 +7,12 @@ namespace appFBLA2019
     static class SearchUtils
     {
 
-        public static List<SearchInfo> GetQuizsByAuthorChunked(string username = "BizQuiz", int chunk = 1)
+        public static List<SearchInfo> GetQuizzesByAuthorChunked(string username = "BizQuiz", int chunk = 1)
         {
             List<SearchInfo> toReturn = new List<SearchInfo>();
-            List<string[]> quizs = ServerOperations.GetQuizsByAuthorName(username, chunk);
+            List<string[]> quizzes = ServerOperations.GetQuizzesByAuthorName(username, chunk);
 
-            foreach (string[] quizData in quizs)
+            foreach (string[] quizData in quizzes)
             {
                 toReturn.Add(new SearchInfo(quizData));
             }
@@ -21,12 +21,12 @@ namespace appFBLA2019
             //testInfo.Add(new QuizInfo { DBId = "TestDBID2", AuthorName = "TestAuthor2", QuizName = "TestQuiz2", Category = "FBLA General", Subscribers = 3 });
         }
 
-        public static List<SearchInfo> GetQuizsByQuizNameChunked(string quizName, int chunk = 1)
+        public static List<SearchInfo> GetQuizzesByQuizNameChunked(string quizName, int chunk = 1)
         {
             List<SearchInfo> toReturn = new List<SearchInfo>();
-            List<string[]> quizs = ServerOperations.GetQuizsByQuizName(quizName, chunk);
+            List<string[]> quizzes = ServerOperations.GetQuizzesByQuizName(quizName, chunk);
 
-            foreach (string[] quizData in quizs)
+            foreach (string[] quizData in quizzes)
             {
                 toReturn.Add(new SearchInfo(quizData));
             }

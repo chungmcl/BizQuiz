@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace appFBLA2019
 		private bool isLoading;
         private string category;
         private bool isStartup;
-		private List<SearchInfo> quizsSearched;
+		private List<SearchInfo> quizzesSearched;
 
 
         // either "Title" or "Author"
@@ -26,8 +27,10 @@ namespace appFBLA2019
 		public StorePage()
 		{
             this.isStartup = true;
+            this.levelsSearched = new List<SearchInfo>();
 			InitializeComponent();
 			this.searchType = "Title";
+            this.category = "All";
 		}
 
 		protected override void OnSizeAllocated(double width, double height)
@@ -43,15 +46,18 @@ namespace appFBLA2019
             this.isStartup = false;
 		}
 
+        
+
         /// <summary>
         /// Adds a quiz to the search stack given a QuizInfo
         /// </summary>
         /// <param name="quiz"></param>
         private void AddQuizs(List<SearchInfo> quizs)
 		{
-			foreach(SearchInfo quiz in quizs)
-            {// Only add quiz if the category is what user picked (we are asking the server for more then we need so this could be changed)
-                if (this.category == "All" || quiz.Category == this.category) 
+            List<LevelInfo> currentlySubscribed = LevelRosterDatabase.GetRoster();
+			foreach(SearchInfo level in levels)
+            {// Only add level if the category is what user picked (we are asking the server for more then we need so this could be changed)
+                if (this.category == "All" || level.Category == this.category) 
                 {
 
                     Frame quizFrame = new Frame
@@ -90,8 +96,23 @@ namespace appFBLA2019
                         HorizontalOptions = LayoutOptions.End
                     };
 
-                    // source is add if not subscribed and if they are then source is check
-                    ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                    if (level.Author != CredentialManager.Username)
+                    {
+                        // If already subscribed
+                        if (!(currentlySubscribed.Where(levelInfo => levelInfo.DBId == level.DBId).Count() > 0))
+                        {
+                            // source is add if not subscribed and if they are then source is check
+                            ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                        }
+                        else
+                        {
+                            ImageButtonSubscribe.Source = "ic_playlist_add_check_black_48dp.png";
+                        }
+                    }
+                    else
+                    {
+                        ImageButtonSubscribe.IsEnabled = false;
+                    }
 
                     ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
                     topStack.Children.Add(ImageButtonSubscribe);
@@ -111,44 +132,89 @@ namespace appFBLA2019
                     frameStack.Children.Add(quizCategory);
 
                     quizFrame.Content = frameStack;
+                    this.quizsSearched.Add(quiz)
                     Device.BeginInvokeOnMainThread(() =>
                     this. SearchedStack.Children.Add(quizFrame));
                 }
 			}		   
 		}
 
-		/// <summary>
-		/// When a user wants to subscribe to a quiz
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		async private void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
-		{
-			ImageButton button = (sender as ImageButton);
-			if (button.Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
-			{
-				bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
-				if (answer)
-				{
-					await button.FadeTo(0, 150, Easing.CubicInOut);
-					button.Source = "ic_playlist_add_black_48dp.png";
-					button.HeightRequest = 30;
-					await button.FadeTo(1, 150, Easing.CubicInOut);
-					// remove from device
-				}
-			}
-			else // subscribe
-			{
-				await button.FadeTo(0, 150, Easing.CubicInOut);
-				button.Source = "ic_playlist_add_check_black_48dp.png";
-				button.HeightRequest = 30;
-				await button.FadeTo(1, 150, Easing.CubicInOut);
-				// save to device
-			}
+        /// <summary>
+        /// When a user wants to subscribe to a level
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
+        {
+            ImageButton button = (sender as ImageButton);
+            string dbId = button.StyleId;
+            if (button.Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
+            {
+                bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+                if (answer)
+                {
+                    LevelInfo info = LevelRosterDatabase.GetLevelInfo(dbId);
+                    string location = App.UserPath + "/" + info.Category + "/" + info.LevelName + "`" + info.AuthorName;
+                    if (Directory.Exists(location))
+                        Directory.Delete(location, true);
 
-		}
+                    LevelRosterDatabase.DeleteLevelInfo(dbId);
+                    OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.UnsubscribeToLevel(dbId));
+                    if (returnMessage == OperationReturnMessage.True)
+                    {
+                        await button.FadeTo(0, 150, Easing.CubicInOut);
+                        button.Source = "ic_playlist_add_black_48dp.png";
+                        button.HeightRequest = 30;
+                        await button.FadeTo(1, 150, Easing.CubicInOut);
+                    }
+                    else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
+                    {
+                        await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                        CredentialManager.IsLoggedIn = false;
+                    }
+                    else
+                    {
+                        await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
+                    }
+                }
+            }
+            else // subscribe
+            {
 
-        private bool quizsRemaining;
+                OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.SubscribeToLevel(dbId));
+                if (returnMessage == OperationReturnMessage.True)
+                {
+                    SearchInfo level = this.levelsSearched.Where(searchInfo => searchInfo.DBId == dbId).First();
+                    string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
+                    LevelInfo newInfo = new LevelInfo
+                    {
+                        AuthorName = level.Author,
+                        LevelName = level.LevelName,
+                        Category = level.Category,
+                        LastModifiedDate = lastModifiedDate,
+                        SyncStatus = 4 // 4 to represent not present in local directory and need download
+                    };
+                    LevelRosterDatabase.NewLevelInfo(newInfo);
+
+                    await button.FadeTo(0, 150, Easing.CubicInOut);
+                    button.Source = "ic_playlist_add_check_black_48dp.png";
+                    button.HeightRequest = 30;
+                    await button.FadeTo(1, 150, Easing.CubicInOut);
+                }
+                else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
+                {
+                    await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                    CredentialManager.IsLoggedIn = false;
+                }
+                else
+                {
+                    await DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                }
+            }
+
+        }
+
+        private bool quizzesRemaining;
         private int currentChunk;
 
 		/// <summary>
@@ -290,10 +356,19 @@ namespace appFBLA2019
 			this.searchType = "Author";
 		}
 
-        private void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
+        private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex];
             this.currentChunk = 1;
+            try
+            {
+                await Task.Run(() => this.Search());
+            }
+            catch
+            {
+                await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+            }
         }
+
     }
 }

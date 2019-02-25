@@ -17,7 +17,7 @@ namespace appFBLA2019
         /// <summary>
         /// </summary>
         /// <param name="fileName"> Name of the database file to be selected without extension </param>
-        /// <param name="author">   The username of the author of this quiz, which is unique (Two quizs with the same name must have two unique authors) </param>
+        /// <param name="author">   The username of the author of this quiz, which is unique (Two quizzes with the same name must have two unique authors) </param>
         /// <returns> Bool representing successful database connection or not. </returns>
         public static bool SelectDatabase(string category, string quizTitle, string author)
         {

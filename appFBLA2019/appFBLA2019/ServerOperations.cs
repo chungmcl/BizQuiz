@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading.Tasks;
+using Xamarin.Essentials;
 
 namespace appFBLA2019
 {
@@ -131,7 +133,7 @@ namespace appFBLA2019
                 Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                 QuizInfo info = realm.All<QuizInfo>().First();
                 
-                if (SendRealmFile(realmFilePath) != OperationReturnMessage.True)
+                if (await SendRealmFile(realmFilePath) != OperationReturnMessage.True)
                 {
                     throw new Exception();
                 }
@@ -142,7 +144,7 @@ namespace appFBLA2019
                     //[0] = path, [1] = fileName, [2] = dBId
                     string fileName = imageFilePaths[i].Split('/').Last().Split('.').First();
                     string dbID = info.DBId;
-                    OperationReturnMessage message = SendImageFile(imageFilePaths[i], fileName, dbID);
+                    OperationReturnMessage message = await SendImageFile(imageFilePaths[i], fileName, dbID);
                     
                     if (message == OperationReturnMessage.False)
                     {
@@ -250,26 +252,26 @@ namespace appFBLA2019
             return headerData;
         }
 
-        private static byte[] GenerateRealmHeader()
+        private async static Task<byte[]> GenerateRealmHeader()
         {
             byte[] headerData = new byte[realmHeaderSize];
 
             byte[] username = Encoding.Unicode.GetBytes(CredentialManager.Username);
             Array.Copy(username, headerData, username.Length);
 
-            byte[] password = Encoding.Unicode.GetBytes(CredentialManager.Password);
+            byte[] password = Encoding.Unicode.GetBytes(await SecureStorage.GetAsync("password"));
             Array.Copy(password, 0, headerData, maxUsernameSize, password.Length);
             return headerData;
         }
 
-        private static byte[] GenerateImageHeader(string fileName, string dBId)
+        private async static Task<byte[]> GenerateImageHeader(string fileName, string dBId)
         {
             byte[] headerData = new byte[imageHeaderSize];
 
             byte[] username = Encoding.Unicode.GetBytes(CredentialManager.Username);
             Array.Copy(username, headerData, username.Length);
 
-            byte[] password = Encoding.Unicode.GetBytes(CredentialManager.Password);
+            byte[] password = Encoding.Unicode.GetBytes(await SecureStorage.GetAsync("password"));
             Array.Copy(password, 0, headerData, maxUsernameSize, password.Length);
 
             byte[] fileNameBytes = Encoding.Unicode.GetBytes(fileName);
@@ -410,10 +412,10 @@ namespace appFBLA2019
         /// Send realm file to the server.
         /// </summary>
         /// <param name="path"> Path to the realm file on local device. </param>
-        private static OperationReturnMessage SendRealmFile(string path)
+        private async static Task<OperationReturnMessage> SendRealmFile(string path)
         {
             byte[] realmBytes = File.ReadAllBytes(path);
-            byte[] realmHeader = GenerateRealmHeader();
+            byte[] realmHeader = await GenerateRealmHeader();
             byte[] header = GenerateHeaderData(ServerRequestTypes.AddRealmFile, (uint)realmBytes.Length + (uint)realmHeader.Length);
 
             byte[] toSend = new byte[header.Length + realmHeader.Length + realmBytes.Length];
@@ -429,10 +431,10 @@ namespace appFBLA2019
         /// <param name="path">     Path to JPEG image file on local device. </param>
         /// <param name="fileName"> Name of the JPEG image file. </param>
         /// <param name="dbId">     DBId of the database image is contained in. </param>
-        private static OperationReturnMessage SendImageFile(string path, string fileName, string dbId)
+        private async static Task<OperationReturnMessage> SendImageFile(string path, string fileName, string dbId)
         {
             byte[] imageBytes = File.ReadAllBytes(path);
-            byte[] imageHeader = GenerateImageHeader(fileName, dbId);
+            byte[] imageHeader = await GenerateImageHeader(fileName, dbId);
             byte[] header = GenerateHeaderData(ServerRequestTypes.AddJPEGImage, (uint)imageBytes.Length + (uint)imageHeader.Length);
 
             byte[] toSend = new byte[header.Length + imageHeader.Length + imageBytes.Length];

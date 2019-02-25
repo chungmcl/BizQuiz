@@ -13,7 +13,7 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class FeaturedPage : ContentPage
 	{
-        private string category = "All";
+        private string category;
         private List<SearchInfo> quizzesFeatured;
 
         public FeaturedPage()
@@ -26,6 +26,7 @@ namespace appFBLA2019
         protected async override void OnAppearing()
         {
             this.quizzesRemaining = true;
+            this.category = "All";
             await this.Refresh();
         }
 
@@ -34,6 +35,7 @@ namespace appFBLA2019
 
         private async Task Refresh()
         {
+            this.LabelNoQuiz.IsVisible = false;
             this.SearchedStack.Children.Clear();
             this.quizzesFeatured.Clear();
             try
@@ -43,7 +45,7 @@ namespace appFBLA2019
                     this.ActivityIndicator.IsVisible = true;
                     this.ActivityIndicator.IsRunning = true;
                 });
-                await Task.Run(() => this.AddQuizzes(SearchUtils.GetQuizsByAuthorChunked("BizQuiz", 1)));
+                await Task.Run(() => this.AddQuizzes(SearchUtils.GetQuizzesByAuthorChunked("BizQuiz", 1)));
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     this.ActivityIndicator.IsVisible = false;
@@ -60,7 +62,7 @@ namespace appFBLA2019
         private async Task Search()
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
-            chunk = SearchUtils.GetQuizsByAuthorChunked("BizQuiz", this.currentChunk);
+            chunk = SearchUtils.GetQuizzesByAuthorChunked("BizQuiz", this.currentChunk);
             if (chunk.Count < 20)
                 this.quizzesRemaining = false;
             await Task.Run(() => this.AddQuizzes(chunk));
@@ -77,6 +79,7 @@ namespace appFBLA2019
                 {
                     this.currentChunk++;
                     await Task.Run(() => this.Search());
+                    this.LabelNoQuiz.IsVisible = false;
                 }
                 catch
                 {
@@ -91,6 +94,7 @@ namespace appFBLA2019
         /// <param name="quizzes"></param>
         private void AddQuizzes(List<SearchInfo> quizzes)
         {
+            List<QuizInfo> currentlySubscribed = QuizRosterDatabase.GetRoster();
             foreach (SearchInfo quiz in quizzes)
             {
                 if (this.category == "All" || quiz.Category == this.category) // Only add quiz if the category is what user picked
@@ -132,8 +136,16 @@ namespace appFBLA2019
                         HorizontalOptions = LayoutOptions.End
                     };
 
-                    // source is add if not subscribed and if they are then source is check
-                    ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                    // If not already subscribed
+                    if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId).Count() > 0))
+                    {
+                        // source is add if not subscribed and if they are then source is check
+                        ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                    }
+                    else
+                    {
+                        ImageButtonSubscribe.Source = "ic_playlist_add_check_black_48dp.png";
+                    }
 
                     ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
                     topStack.Children.Add(ImageButtonSubscribe);
@@ -159,14 +171,8 @@ namespace appFBLA2019
             }
             if (this.quizzesFeatured.Count() == 0)   
             {
-                Label FeaturedMessage = new Label
-                {
-                    Text = "No featured quizzes here yet. Check back later!",
-                    FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-                    HorizontalOptions = LayoutOptions.CenterAndExpand
-                };
                 Device.BeginInvokeOnMainThread(() =>
-                    this.SearchedStack.Children.Add(FeaturedMessage));
+                this.LabelNoQuiz.IsVisible = true);
             }
         }
 
@@ -184,9 +190,7 @@ namespace appFBLA2019
                 bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
                 if (answer)
                 {
-                    await button.FadeTo(0, 150, Easing.CubicInOut);
-                    button.Source = "ic_playlist_add_black_48dp.png";
-                    button.HeightRequest = 30;
+
 
                     await button.FadeTo(1, 150, Easing.CubicInOut);
                     QuizInfo info = QuizRosterDatabase.GetQuizInfo(dbId);
@@ -195,10 +199,12 @@ namespace appFBLA2019
                         Directory.Delete(location, true);
 
                     QuizRosterDatabase.DeleteQuizInfo(dbId);
-                    OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.UnsubscribeToQuiz(dbId));
+                    OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.UnsubscribeToQuiz(dbId));
                     if (returnMessage == OperationReturnMessage.True)
                     {
-                        // Show sub button
+                        await button.FadeTo(0, 150, Easing.CubicInOut);
+                        button.Source = "ic_playlist_add_black_48dp.png";
+                        button.HeightRequest = 30;
                     }
                     else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                     {
@@ -213,25 +219,27 @@ namespace appFBLA2019
             }
             else // subscribe
             {
-                await button.FadeTo(0, 150, Easing.CubicInOut);
-                button.Source = "ic_playlist_add_check_black_48dp.png";
-                button.HeightRequest = 30;
-                await button.FadeTo(1, 150, Easing.CubicInOut);
 
-                OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.SubscribeToQuiz(dbId));
+                OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.SubscribeToQuiz(dbId));
                 if (returnMessage == OperationReturnMessage.True)
                 {
                     SearchInfo quiz = this.quizzesFeatured.Where(searchInfo => searchInfo.DBId == dbId).First();
+                    string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
                     QuizInfo newInfo = new QuizInfo
                     {
+                        DBId = quiz.DBId,
                         AuthorName = quiz.Author,
                         QuizName = quiz.QuizName,
                         Category = quiz.Category,
+                        LastModifiedDate = lastModifiedDate,
                         SyncStatus = 4 // 4 to represent not present in local directory and need download
                     };
                     QuizRosterDatabase.NewQuizInfo(newInfo);
 
-                    // Show finished icon
+                    await button.FadeTo(0, 150, Easing.CubicInOut);
+                    button.Source = "ic_playlist_add_check_black_48dp.png";
+                    button.HeightRequest = 30;
+                    await button.FadeTo(1, 150, Easing.CubicInOut);
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {

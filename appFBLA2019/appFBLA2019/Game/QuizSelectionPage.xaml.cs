@@ -241,7 +241,7 @@ namespace appFBLA2019
                     }), Constraint.RelativeToParent((parent) =>
                     {
                         return parent.Y;
-                    }), Constraint.Constant(90), Constraint.Constant(90));
+                    }), Constraint.Constant(95), Constraint.Constant(90));
 
                     frameStack.Children.Add(topStack);
 
@@ -291,9 +291,7 @@ namespace appFBLA2019
                             ButtonEdit.StyleId = "notLocal";
                         }
                     }
-
-
-
+                    
                     TapGestureRecognizer recognizer = new TapGestureRecognizer();
                     recognizer.Tapped += async (object sender, EventArgs e) =>
                     {
@@ -384,6 +382,8 @@ namespace appFBLA2019
                 button.Source = "ic_cloud_done_black_48dp.png";
                 button.IsEnabled = true;
                 button.Clicked += SyncNoChange_Clicked;
+                
+                ((((button.Parent as StackLayout).Parent as StackLayout).Parent as RelativeLayout).Parent as Frame).StyleId = "Local";
             }
             else
             {
@@ -414,7 +414,11 @@ namespace appFBLA2019
             {
                 question = "Are you sure you want to unsubscribe?";
                 message = "This will remove the copy from your device";
-                // Decrement subscriber count on server
+            }
+            else
+            {
+                question = "Are you sure you want to delete this level?";
+                message = "This will delete the copy on your device and in the cloud. This is not reversable.";
             }
 
             bool answer = await this.DisplayAlert(question, message, "Yes", "No");
@@ -432,16 +436,32 @@ namespace appFBLA2019
                         QuizInfo info = realm.All<QuizInfo>().First();
                         string dbId = info.DBId;
 
-                        // Acquire QuizInfo from roster
-                        QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
-                        QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                    // Acquire LevelInfo from roster
+                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                    {
+                        IsDeletedLocally = true,
+                        LastModifiedDate = DateTime.Now.ToString()
+                    };
+                    QuizRosterDatabase.EditQuizInfo(rosterInfo);
+                    if (!unsubscribe) // If delete (user owns this level)
+                    {
+                        // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
+                        if (CrossConnectivity.Current.IsConnected)
                         {
-                            IsDeletedLocally = true,
-                            LastModifiedDate = DateTime.Now.ToString()
-                        };
-                        QuizRosterDatabase.EditQuizInfo(rosterInfo);
-
-                        // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
+                            OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
+                            if (returnMessage == OperationReturnMessage.True)
+                            {
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                            }
+                        }
+                        // Clear out DBHandler.GameDatabase in case it references the level just deleted
+                        DBHandler.DisposeDatabase();
+                        Directory.Delete(path, true);
+                    }
+                    else // If unsubscribe
+                    {
+                        // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
                         if (CrossConnectivity.Current.IsConnected)
                         {
                             OperationReturnMessage returnMessage = ServerOperations.DeleteQuiz(dbId);

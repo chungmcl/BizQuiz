@@ -163,7 +163,7 @@ namespace appFBLA2019
             if (this.SetupFrameBegin(this.FrameDeleteAccount, this.StackLayoutDeleteAccountContent))
             {
                 bool confirmed = await this.DisplayAlert("Confirm Delete", "" +
-                        "Are you sure you want to delete your account? Your account cannot be recovered, and all created quizs will be deleted.",
+                        "Are you sure you want to delete your account? Your account cannot be recovered, and all created quizzes will be deleted.",
                         "Yes", "No");
                 if (confirmed)
                 {

@@ -97,7 +97,7 @@ namespace appFBLA2019
                 this.totalCount = 0;
                 this.SetupLocalQuizzes();
                 this.SetupNetworkQuizzes();
-                this.totalCount += ServerOperations.GetNumberOfQuizsByAuthorName(CredentialManager.Username);
+                this.totalCount += ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
                 if (totalCount == 0)
                 {
                     Frame frame = new Frame()
@@ -116,7 +116,7 @@ namespace appFBLA2019
                 }
                 Device.BeginInvokeOnMainThread(() =>
                     this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
-        });
+                });
 
             if (this.ToolbarItems.Count <= 0)
             {
@@ -179,7 +179,7 @@ namespace appFBLA2019
             //this will take a while it would be good to make it async
             
             this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            List<SearchInfo> chunk = SearchUtils.GetQuizsByAuthorChunked(CredentialManager.Username, this.currentChunk);
+            List<SearchInfo> chunk = SearchUtils.GetQuizzesByAuthorChunked(CredentialManager.Username, this.currentChunk);
             if (chunk.Count == 0)
             {
                 return;

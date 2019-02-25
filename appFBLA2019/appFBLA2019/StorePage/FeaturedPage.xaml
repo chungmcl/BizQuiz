@@ -27,6 +27,7 @@
             </Frame>
 
             <StackLayout>
+                <Label x:Name="LabelNoQuiz" Text="No featured quizzes here yet. Check back later!" FontSize="Large" HorizontalOptions="CenterAndExpand" IsVisible="False"/>
                 <ScrollView x:Name="ScrollSearch">
                     <StackLayout x:Name="SearchedStack"  Padding="10">
                         <!--Search Results go here-->
