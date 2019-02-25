@@ -30,6 +30,7 @@ namespace appFBLA2019
             this.levelsSearched = new List<SearchInfo>();
 			InitializeComponent();
 			this.searchType = "Title";
+            this.category = "All";
 		}
 
 		protected override void OnSizeAllocated(double width, double height)
@@ -129,34 +130,33 @@ namespace appFBLA2019
 			}		   
 		}
 
-		/// <summary>
-		/// When a user wants to subscribe to a level
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		async private void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
-		{
-			ImageButton button = (sender as ImageButton);
+        /// <summary>
+        /// When a user wants to subscribe to a level
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
+        {
+            ImageButton button = (sender as ImageButton);
             string dbId = button.StyleId;
             if (button.Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
-			{
-				bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
-				if (answer)
-				{
-					await button.FadeTo(0, 150, Easing.CubicInOut);
-					button.Source = "ic_playlist_add_black_48dp.png";
-					button.HeightRequest = 30;
-					await button.FadeTo(1, 150, Easing.CubicInOut);
-
+            {
+                bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+                if (answer)
+                {
                     LevelInfo info = LevelRosterDatabase.GetLevelInfo(dbId);
                     string location = App.UserPath + "/" + info.Category + "/" + info.LevelName + "`" + info.AuthorName;
                     if (Directory.Exists(location))
                         Directory.Delete(location, true);
+
                     LevelRosterDatabase.DeleteLevelInfo(dbId);
                     OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.UnsubscribeToLevel(dbId));
                     if (returnMessage == OperationReturnMessage.True)
                     {
-                        // show icon
+                        await button.FadeTo(0, 150, Easing.CubicInOut);
+                        button.Source = "ic_playlist_add_black_48dp.png";
+                        button.HeightRequest = 30;
+                        await button.FadeTo(1, 150, Easing.CubicInOut);
                     }
                     else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                     {
@@ -165,16 +165,13 @@ namespace appFBLA2019
                     }
                     else
                     {
-                        await DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                        await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
                     }
                 }
-			}
-			else
-			{
-				await button.FadeTo(0, 150, Easing.CubicInOut);
-				button.Source = "ic_playlist_add_check_black_48dp.png";
-				button.HeightRequest = 30;
-				await button.FadeTo(1, 150, Easing.CubicInOut);
+            }
+            else // subscribe
+            {
+
                 OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.SubscribeToLevel(dbId));
                 if (returnMessage == OperationReturnMessage.True)
                 {
@@ -182,7 +179,6 @@ namespace appFBLA2019
                     string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
                     LevelInfo newInfo = new LevelInfo
                     {
-                        DBId = level.DBId,
                         AuthorName = level.Author,
                         LevelName = level.LevelName,
                         Category = level.Category,
@@ -191,7 +187,10 @@ namespace appFBLA2019
                     };
                     LevelRosterDatabase.NewLevelInfo(newInfo);
 
-                    // Show finished icon
+                    await button.FadeTo(0, 150, Easing.CubicInOut);
+                    button.Source = "ic_playlist_add_check_black_48dp.png";
+                    button.HeightRequest = 30;
+                    await button.FadeTo(1, 150, Easing.CubicInOut);
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
@@ -200,11 +199,11 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
+                    await DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
                 }
             }
 
-		}
+        }
 
         private bool levelsRemaining;
         private int currentChunk;

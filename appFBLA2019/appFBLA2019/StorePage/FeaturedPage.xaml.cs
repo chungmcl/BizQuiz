@@ -13,7 +13,7 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class FeaturedPage : ContentPage
 	{
-        private string category = "All";
+        private string category;
         private List<SearchInfo> levelsFeatured;
 
         public FeaturedPage()
@@ -26,6 +26,7 @@ namespace appFBLA2019
         protected async override void OnAppearing()
         {
             this.levelsRemaining = true;
+            this.category = "All";
             await this.Refresh();
         }
 
@@ -34,6 +35,7 @@ namespace appFBLA2019
 
         private async Task Refresh()
         {
+            this.LabelNoQuiz.IsVisible = false;
             this.SearchedStack.Children.Clear();
             this.levelsFeatured.Clear();
             try
@@ -77,6 +79,7 @@ namespace appFBLA2019
                 {
                     this.currentChunk++;
                     await Task.Run(() => this.Search());
+                    this.LabelNoQuiz.IsVisible = false;
                 }
                 catch
                 {
@@ -166,16 +169,10 @@ namespace appFBLA2019
                     this.SearchedStack.Children.Add(levelFrame));
                 }
             }
-            if (this.levelsFeatured.Count() == 0)   
+            if (this.levelsFeatured.Count() == 0)
             {
-                Label FeaturedMessage = new Label
-                {
-                    Text = "No featured quizzes here yet. Check back later!",
-                    FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-                    HorizontalOptions = LayoutOptions.CenterAndExpand
-                };
                 Device.BeginInvokeOnMainThread(() =>
-                    this.SearchedStack.Children.Add(FeaturedMessage));
+                this.LabelNoQuiz.IsVisible = true);
             }
         }
 
@@ -193,9 +190,7 @@ namespace appFBLA2019
                 bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
                 if (answer)
                 {
-                    await button.FadeTo(0, 150, Easing.CubicInOut);
-                    button.Source = "ic_playlist_add_black_48dp.png";
-                    button.HeightRequest = 30;
+
 
                     await button.FadeTo(1, 150, Easing.CubicInOut);
                     LevelInfo info = LevelRosterDatabase.GetLevelInfo(dbId);
@@ -207,7 +202,9 @@ namespace appFBLA2019
                     OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.UnsubscribeToLevel(dbId));
                     if (returnMessage == OperationReturnMessage.True)
                     {
-                        // Show sub button
+                        await button.FadeTo(0, 150, Easing.CubicInOut);
+                        button.Source = "ic_playlist_add_black_48dp.png";
+                        button.HeightRequest = 30;
                     }
                     else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                     {
@@ -222,10 +219,7 @@ namespace appFBLA2019
             }
             else // subscribe
             {
-                await button.FadeTo(0, 150, Easing.CubicInOut);
-                button.Source = "ic_playlist_add_check_black_48dp.png";
-                button.HeightRequest = 30;
-                await button.FadeTo(1, 150, Easing.CubicInOut);
+
 
                 OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.SubscribeToLevel(dbId));
                 if (returnMessage == OperationReturnMessage.True)
@@ -243,7 +237,10 @@ namespace appFBLA2019
                     };
                     LevelRosterDatabase.NewLevelInfo(newInfo);
 
-                    // Show finished icon
+                    await button.FadeTo(0, 150, Easing.CubicInOut);
+                    button.Source = "ic_playlist_add_check_black_48dp.png";
+                    button.HeightRequest = 30;
+                    await button.FadeTo(1, 150, Easing.CubicInOut);
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
