@@ -26,8 +26,7 @@ namespace appFBLA2019
                 Directory.CreateDirectory(App.Path + "/" + value);
             }
         }
-
-        public static string Password { get; private set; }
+        
         public static bool IsLoggedIn { get; set; }
         public static bool EmailConfirmed { get; set; }
 
@@ -37,7 +36,6 @@ namespace appFBLA2019
             Task.Run(async () => await SecureStorage.SetAsync("password", password));
             
             Username = username;
-            Password = password;
 
             IsLoggedIn = true;
             EmailConfirmed = emailConfirmed;
@@ -61,14 +59,12 @@ namespace appFBLA2019
         {
             string username = await SecureStorage.GetAsync("username");
             Username = username;
-            string password = await SecureStorage.GetAsync("password");
-            Password = password;
 
             if (CrossConnectivity.Current.IsConnected)
             {
-                if (((username != null) && (password != null)) && ((username != "") && (password != "")))
+                if ((username != null) && (username != ""))
                 {
-                    OperationReturnMessage message = ServerOperations.LoginAccount(username, password);
+                    OperationReturnMessage message = ServerOperations.LoginAccount(username, await SecureStorage.GetAsync("password"));
                     if (message != OperationReturnMessage.FalseFailedConnection)
                     {
                         if (message == OperationReturnMessage.True)
@@ -92,7 +88,7 @@ namespace appFBLA2019
                     }
                     else
                     {
-                        return CannotConnectToServer(username, password);
+                        return CannotConnectToServer(username);
                     }
                 }
                 else
@@ -102,19 +98,18 @@ namespace appFBLA2019
                     IsLoggedIn = false;
                     EmailConfirmed = false;
                     Username = "dflt";
-                    Password = "";
                     return OperationReturnMessage.False;
                 }
             }
             else // If the user is offline
             {
-                return CannotConnectToServer(username, password);
+                return CannotConnectToServer(username);
             }
         }
 
-        private static OperationReturnMessage CannotConnectToServer(string username, string password)
+        private static OperationReturnMessage CannotConnectToServer(string username)
         {
-            if (((username != null) && (password != null)) && ((username != "") && (password != "")))
+            if ((username != null) && (username != ""))
             {
                 IsLoggedIn = true;
                 Username = username;
@@ -125,7 +120,6 @@ namespace appFBLA2019
                 Username = "dflt";
                 IsLoggedIn = false;
                 EmailConfirmed = false;
-                Password = "";
                 return OperationReturnMessage.False;
             }
         }

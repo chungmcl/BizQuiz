@@ -150,7 +150,7 @@ namespace appFBLA2019
                         Directory.Delete(location, true);
 
                     LevelRosterDatabase.DeleteLevelInfo(dbId);
-                    OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.UnsubscribeToLevel(dbId));
+                    OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.UnsubscribeToLevel(dbId));
                     if (returnMessage == OperationReturnMessage.True)
                     {
                         await button.FadeTo(0, 150, Easing.CubicInOut);
@@ -172,7 +172,7 @@ namespace appFBLA2019
             else // subscribe
             {
 
-                OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.SubscribeToLevel(dbId));
+                OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.SubscribeToLevel(dbId));
                 if (returnMessage == OperationReturnMessage.True)
                 {
                     SearchInfo level = this.levelsSearched.Where(searchInfo => searchInfo.DBId == dbId).First();
