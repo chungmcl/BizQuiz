@@ -32,7 +32,7 @@ namespace appFBLA2019
         private void ButtonLogout_Clicked(object sender, EventArgs e)
         {
             this.ButtonLogout.IsEnabled = false;
-            CredentialManager.Logout(false);
+            CredentialManager.Logout(true);
             this.OnSignedOut();
             this.Navigation.PopAsync();
         }
