@@ -76,14 +76,14 @@ namespace appFBLA2019
                 this.IsLoading = true;
                 this.ButtonStack.Children.Clear();
 
-                List<QuizInfo> quizs = QuizRosterDatabase.GetRoster(this.category);
-                if (quizs.Count == 0)
+                List<QuizInfo> quizzes = QuizRosterDatabase.GetRoster(this.category);
+                if (quizzes.Count == 0)
                     Device.BeginInvokeOnMainThread(() =>
                     {
                         StackLayout stack = new StackLayout();
                         stack.Children.Add(new Label
                         {
-                            Text = "You don't have any quizs in this category yet!",
+                            Text = "You don't have any quizzes in this category yet!",
                             HorizontalTextAlignment = TextAlignment.Center,
                             FontSize = 38
                         });
@@ -100,7 +100,7 @@ namespace appFBLA2019
                             (stack.Children[1] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new CreateNewQuizPage());
                             stack.Children.Add(new Button
                             {
-                                Text = "Search for quizs",
+                                Text = "Search for quizzes",
                                 CornerRadius = 25,
                                 BackgroundColor = Color.Accent,
                                 TextColor = Color.White,
@@ -116,7 +116,7 @@ namespace appFBLA2019
                         };
                         this.ButtonStack.Children.Add(frame);
                     });
-                foreach (QuizInfo quiz in quizs)
+                foreach (QuizInfo quiz in quizzes)
                 {
                     Frame frame = new Frame()
                     {
@@ -343,7 +343,7 @@ namespace appFBLA2019
             await button.FadeTo(1, 150, Easing.CubicInOut);
             button.HeightRequest = 25;
 
-            if (await Task.Run(() => ServerOperations.SendQuiz(quizPath)))
+            if (await Task.Run(async() => await ServerOperations.SendQuiz(quizPath)))
             {
                 await button.FadeTo(0, 150, Easing.CubicInOut);
                 button.Source = "ic_cloud_done_black_48dp.png";
@@ -408,8 +408,8 @@ namespace appFBLA2019
         private async void ButtonDelete_Clicked(object sender, EventArgs e)
         {
             bool unsubscribe = ((Button)sender).Text == "Unsubscribe";
-            string question = "Are you sure you want to delete this quiz?";
-            string message = "This will delete the copy on your device and in the cloud. This is not reversable.";
+            string question;
+            string message;
             if (unsubscribe)
             {
                 question = "Are you sure you want to unsubscribe?";
@@ -417,7 +417,7 @@ namespace appFBLA2019
             }
             else
             {
-                question = "Are you sure you want to delete this level?";
+                question = "Are you sure you want to delete this quiz?";
                 message = "This will delete the copy on your device and in the cloud. This is not reversable.";
             }
 
@@ -428,15 +428,13 @@ namespace appFBLA2019
 
                 if (System.IO.Directory.Exists(path))
                 {
-                    if (!unsubscribe) // If delete (user owns this quiz)
-                    {
-                        // Acquire DBId from the quiz's realm file
-                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                        QuizInfo info = realm.All<QuizInfo>().First();
-                        string dbId = info.DBId;
+                    // Acquire DBId from the quiz's realm file
+                    string realmFilePath = Directory.GetFiles(path, "*.realm").First();
+                    Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                    QuizInfo info = realm.All<QuizInfo>().First();
+                    string dbId = info.DBId;
 
-                    // Acquire LevelInfo from roster
+                    // Acquire QuizInfo from roster
                     QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
                     QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
                     {
@@ -444,9 +442,9 @@ namespace appFBLA2019
                         LastModifiedDate = DateTime.Now.ToString()
                     };
                     QuizRosterDatabase.EditQuizInfo(rosterInfo);
-                    if (!unsubscribe) // If delete (user owns this level)
+                    if (!unsubscribe) // If delete (user owns this quiz)
                     {
-                        // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
+                        // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
                         if (CrossConnectivity.Current.IsConnected)
                         {
                             OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
@@ -455,22 +453,21 @@ namespace appFBLA2019
                                 realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
                             }
                         }
-                        // Clear out DBHandler.GameDatabase in case it references the level just deleted
+                        // Clear out DBHandler.GameDatabase in case it references the quiz just deleted
                         DBHandler.DisposeDatabase();
                         Directory.Delete(path, true);
                     }
                     else // If unsubscribe
                     {
-                        // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
+                        // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
                         if (CrossConnectivity.Current.IsConnected)
                         {
-                            OperationReturnMessage returnMessage = ServerOperations.DeleteQuiz(dbId);
+                            OperationReturnMessage returnMessage = await ServerOperations.UnsubscribeToQuiz(dbId);
                             if (returnMessage == OperationReturnMessage.True)
                             {
                                 realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
                             }
                         }
-
                         // Clear out DBHandler.GameDatabase in case it references the quiz just deleted
                         DBHandler.DisposeDatabase();
                         Directory.Delete(path, true);
@@ -520,7 +517,7 @@ namespace appFBLA2019
             await this.RemoveMenu(frame);
             if (!CredentialManager.IsLoggedIn)
             {
-                await this.DisplayAlert("Hold on!", "Before you can edit any quizs, you have to login.", "Ok");
+                await this.DisplayAlert("Hold on!", "Before you can edit any quizzes, you have to login.", "Ok");
             }
             else if (((Button)sender).StyleId == "notLocal")
             {

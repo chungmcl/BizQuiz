@@ -70,22 +70,22 @@ namespace appFBLA2019
             return (string)SendStringData($"{username}/{password}/-", ServerRequestTypes.GetEmail);
         }
 
-        public static OperationReturnMessage DeleteQuiz(string DBId)
+        public async static Task<OperationReturnMessage> DeleteQuiz(string DBId)
         {
-            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{DBId}", ServerRequestTypes.DeleteQuiz);
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{await SecureStorage.GetAsync("password")}/{DBId}", ServerRequestTypes.DeleteQuiz);
         }
 
-        public static List<string[]> GetQuizsByAuthorName(string authorName, int chunk)
+        public static List<string[]> GetQuizzesByAuthorName(string authorName, int chunk)
         {
-            return (List<string[]>)SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetQuizsByAuthorName);
+            return (List<string[]>)SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetQuizzesByAuthorName);
         }
 
-        public static List<string[]> GetMissingQuizsByAuthorName(string authorName, string[] dBIdsOnDevice)
+        public static List<string[]> GetMissingQuizzesByAuthorName(string authorName, string[] dBIdsOnDevice)
         {
             string queryString = $"{authorName}";
             foreach (string dbId in dBIdsOnDevice)
                 queryString = queryString + "/" + dbId;
-            return (List<string[]>)SendStringData(queryString, ServerRequestTypes.GetMissingQuizsByAuthorName);
+            return (List<string[]>)SendStringData(queryString, ServerRequestTypes.GetMissingQuizzesByAuthorName);
         }
 
         public static List<string[]> GetUsers(string username, int chunk)
@@ -93,19 +93,19 @@ namespace appFBLA2019
             return (List<string[]>)SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
         }
 
-        public static List<string[]> GetQuizsByCategory(string category, int chunk)
+        public static List<string[]> GetQuizzesByCategory(string category, int chunk)
         {
-            return (List<string[]>)SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetQuizsByCategory);
+            return (List<string[]>)SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetQuizzesByCategory);
         }
 
-        public static List<string[]> GetQuizsByQuizName(string quizName, int chunk)
+        public static List<string[]> GetQuizzesByQuizName(string quizName, int chunk)
         {
-            return (List<string[]>)SendStringData($"{quizName}/{chunk}/-", ServerRequestTypes.GetQuizsByQuizName);
+            return (List<string[]>)SendStringData($"{quizName}/{chunk}/-", ServerRequestTypes.GetQuizzesByQuizName);
         }
         
-        public static int GetNumberOfQuizsByAuthorName(string username)
+        public static int GetNumberOfQuizzesByAuthorName(string username)
         {
-            string returnData = (string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfQuizsByAuthorName);
+            string returnData = (string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfQuizzesByAuthorName);
             if (!int.TryParse(returnData, out int result))
             {
                 result = 0;
@@ -113,19 +113,19 @@ namespace appFBLA2019
             return result;
         }
 
-        public static OperationReturnMessage SubscribeToQuiz(string dbId)
+        public static async Task<OperationReturnMessage> SubscribeToQuiz(string dbId)
         {
-            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{dbId}/-", 
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{await SecureStorage.GetAsync("password")}/{dbId}/-", 
                 ServerRequestTypes.SubscribeToQuiz);
         }
 
-        public static OperationReturnMessage UnsubscribeToQuiz(string dbId)
+        public static async Task<OperationReturnMessage> UnsubscribeToQuiz(string dbId)
         {
-            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{dbId}/-", 
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{await SecureStorage.GetAsync("password")}/{dbId}/-", 
                 ServerRequestTypes.UnsubscribeToQuiz);
         }
 
-        public static bool SendQuiz(string relativeQuizPath)
+        public async static Task<bool> SendQuiz(string relativeQuizPath)
         {
             try
             {
@@ -155,7 +155,7 @@ namespace appFBLA2019
                 // When finished, confirm with server that quiz send has completed
                 OperationReturnMessage finalizationMessage = (OperationReturnMessage)SendStringData(
                     $"{info.DBId}`{info.LastModifiedDate}`{imageFilePaths.Length + 1}`" +
-                    $"{CredentialManager.Username}`{CredentialManager.Password}`-",
+                    $"{CredentialManager.Username}`{await SecureStorage.GetAsync("password")}`-",
                     ServerRequestTypes.FinalizeQuizSend);
 
                 if (finalizationMessage == OperationReturnMessage.True)
@@ -390,13 +390,13 @@ namespace appFBLA2019
             {
                 case ServerRequestTypes.GetEmail:
                 case ServerRequestTypes.GetLastModifiedDate:
-                case ServerRequestTypes.GetNumberOfQuizsByAuthorName:
+                case ServerRequestTypes.GetNumberOfQuizzesByAuthorName:
                     return ReceiveFromServerStringData(toSend);
 
-                case ServerRequestTypes.GetQuizsByAuthorName:
-                case ServerRequestTypes.GetQuizsByQuizName:
-                case ServerRequestTypes.GetQuizsByCategory:
-                case ServerRequestTypes.GetMissingQuizsByAuthorName:
+                case ServerRequestTypes.GetQuizzesByAuthorName:
+                case ServerRequestTypes.GetQuizzesByQuizName:
+                case ServerRequestTypes.GetQuizzesByCategory:
+                case ServerRequestTypes.GetMissingQuizzesByAuthorName:
                     return ReceiveFromServerListOfStringArrays(toSend);
 
                 case ServerRequestTypes.GetRealmFile:
@@ -483,11 +483,11 @@ namespace appFBLA2019
         GetJPEGImage,
         GetRealmFile,
         GetLastModifiedDate,
-        GetQuizsByAuthorName,
-        GetMissingQuizsByAuthorName,
-        GetQuizsByQuizName,
-        GetQuizsByCategory,
+        GetQuizzesByAuthorName,
+        GetMissingQuizzesByAuthorName,
+        GetQuizzesByQuizName,
+        GetQuizzesByCategory,
         GetUsers,
-        GetNumberOfQuizsByAuthorName
+        GetNumberOfQuizzesByAuthorName
     }
 }

@@ -84,7 +84,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SubmitReport(ex, "LevelRosterDatabase.GetLevelInfo()");
+                BugReportHandler.SubmitReport(ex, "QuizRosterDatabase.GetQuizInfo()");
                 return null;
             }
         }
@@ -189,14 +189,14 @@ namespace appFBLA2019
                     }
                 }
 
-                int numberOfQuizsOnServer = ServerOperations.GetNumberOfQuizsByAuthorName(CredentialManager.Username);
+                int numberOfQuizsOnServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
                 if (numberOfQuizsOnServer > QuizInfos.Count)
                 {
                     string[] dbIds = new string[QuizInfos.Count];
                     for (int i = 0; i < dbIds.Length; i++)
                         dbIds[i] = QuizInfos[i].DBId;
 
-                    List<string[]> missingQuizs = ServerOperations.GetMissingQuizsByAuthorName(CredentialManager.Username, dbIds);
+                    List<string[]> missingQuizs = ServerOperations.GetMissingQuizzesByAuthorName(CredentialManager.Username, dbIds);
                     foreach (string[] missingQuiz in missingQuizs)
                     {
                         QuizInfo info = new QuizInfo

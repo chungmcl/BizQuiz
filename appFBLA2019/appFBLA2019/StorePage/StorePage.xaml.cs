@@ -27,7 +27,7 @@ namespace appFBLA2019
 		public StorePage()
 		{
             this.isStartup = true;
-            this.levelsSearched = new List<SearchInfo>();
+            this.quizzesSearched = new List<SearchInfo>();
 			InitializeComponent();
 			this.searchType = "Title";
             this.category = "All";
@@ -52,12 +52,12 @@ namespace appFBLA2019
         /// Adds a quiz to the search stack given a QuizInfo
         /// </summary>
         /// <param name="quiz"></param>
-        private void AddQuizs(List<SearchInfo> quizs)
+        private void AddQuizs(List<SearchInfo> quizzes)
 		{
-            List<LevelInfo> currentlySubscribed = LevelRosterDatabase.GetRoster();
-			foreach(SearchInfo level in levels)
-            {// Only add level if the category is what user picked (we are asking the server for more then we need so this could be changed)
-                if (this.category == "All" || level.Category == this.category) 
+            List<QuizInfo> currentlySubscribed = QuizRosterDatabase.GetRoster();
+			foreach(SearchInfo quiz in quizzes)
+            {// Only add quiz if the category is what user picked (we are asking the server for more then we need so this could be changed)
+                if (this.category == "All" || quiz.Category == this.category) 
                 {
 
                     Frame quizFrame = new Frame
@@ -96,10 +96,10 @@ namespace appFBLA2019
                         HorizontalOptions = LayoutOptions.End
                     };
 
-                    if (level.Author != CredentialManager.Username)
+                    if (quiz.Author != CredentialManager.Username)
                     {
                         // If already subscribed
-                        if (!(currentlySubscribed.Where(levelInfo => levelInfo.DBId == level.DBId).Count() > 0))
+                        if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId).Count() > 0))
                         {
                             // source is add if not subscribed and if they are then source is check
                             ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
@@ -132,7 +132,7 @@ namespace appFBLA2019
                     frameStack.Children.Add(quizCategory);
 
                     quizFrame.Content = frameStack;
-                    this.quizsSearched.Add(quiz)
+                    this.quizzesSearched.Add(quiz);
                     Device.BeginInvokeOnMainThread(() =>
                     this. SearchedStack.Children.Add(quizFrame));
                 }
@@ -140,7 +140,7 @@ namespace appFBLA2019
 		}
 
         /// <summary>
-        /// When a user wants to subscribe to a level
+        /// When a user wants to subscribe to a quiz
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -153,13 +153,13 @@ namespace appFBLA2019
                 bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
                 if (answer)
                 {
-                    LevelInfo info = LevelRosterDatabase.GetLevelInfo(dbId);
-                    string location = App.UserPath + "/" + info.Category + "/" + info.LevelName + "`" + info.AuthorName;
+                    QuizInfo info = QuizRosterDatabase.GetQuizInfo(dbId);
+                    string location = App.UserPath + "/" + info.Category + "/" + info.QuizName + "`" + info.AuthorName;
                     if (Directory.Exists(location))
                         Directory.Delete(location, true);
 
-                    LevelRosterDatabase.DeleteLevelInfo(dbId);
-                    OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.UnsubscribeToLevel(dbId));
+                    QuizRosterDatabase.DeleteQuizInfo(dbId);
+                    OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.UnsubscribeToQuiz(dbId));
                     if (returnMessage == OperationReturnMessage.True)
                     {
                         await button.FadeTo(0, 150, Easing.CubicInOut);
@@ -181,20 +181,20 @@ namespace appFBLA2019
             else // subscribe
             {
 
-                OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.SubscribeToLevel(dbId));
+                OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.SubscribeToQuiz(dbId));
                 if (returnMessage == OperationReturnMessage.True)
                 {
-                    SearchInfo level = this.levelsSearched.Where(searchInfo => searchInfo.DBId == dbId).First();
+                    SearchInfo quiz = this.quizzesSearched.Where(searchInfo => searchInfo.DBId == dbId).First();
                     string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
-                    LevelInfo newInfo = new LevelInfo
+                    QuizInfo newInfo = new QuizInfo
                     {
-                        AuthorName = level.Author,
-                        LevelName = level.LevelName,
-                        Category = level.Category,
+                        AuthorName = quiz.Author,
+                        QuizName = quiz.QuizName,
+                        Category = quiz.Category,
                         LastModifiedDate = lastModifiedDate,
                         SyncStatus = 4 // 4 to represent not present in local directory and need download
                     };
-                    LevelRosterDatabase.NewLevelInfo(newInfo);
+                    QuizRosterDatabase.NewQuizInfo(newInfo);
 
                     await button.FadeTo(0, 150, Easing.CubicInOut);
                     button.Source = "ic_playlist_add_check_black_48dp.png";
@@ -226,7 +226,7 @@ namespace appFBLA2019
 		{
 			// Delete what was in there previously
 			this.end = false;
-            this.quizsRemaining = true;
+            this.quizzesRemaining = true;
             this.currentChunk = 1;
 			Device.BeginInvokeOnMainThread(() => {
 			    this.SearchedStack.Children.Clear();
@@ -259,9 +259,9 @@ namespace appFBLA2019
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
             if (this.searchType == "Title")
-                chunk = SearchUtils.GetQuizsByQuizNameChunked(SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizzesByQuizNameChunked(SearchBar.Text, this.currentChunk);
             else
-                chunk = SearchUtils.GetQuizsByAuthorChunked(SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizzesByAuthorChunked(SearchBar.Text, this.currentChunk);
             if (this.currentChunk == 1 && chunk.Count == 0)
             {
                 Device.BeginInvokeOnMainThread(() =>
@@ -276,7 +276,7 @@ namespace appFBLA2019
                 );
             }
             if (chunk.Count < 20)
-                this.quizsRemaining = false;
+                this.quizzesRemaining = false;
             await Task.Run(() => this.AddQuizs(chunk));
         }
 
@@ -288,9 +288,9 @@ namespace appFBLA2019
         private List<string[]> GetQuizs(int chunk)
 		{
 			if (this.searchType == "Title")
-				return ServerOperations.GetQuizsByQuizName(this.SearchBar.Text, chunk);
+				return ServerOperations.GetQuizzesByQuizName(this.SearchBar.Text, chunk);
 			else
-				return ServerOperations.GetQuizsByAuthorName(this.SearchBar.Text, chunk);
+				return ServerOperations.GetQuizzesByAuthorName(this.SearchBar.Text, chunk);
 		}
 		
         // Impliment this if we want to conduct a search each time we press a key down.
