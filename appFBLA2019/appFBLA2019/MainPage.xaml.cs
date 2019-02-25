@@ -56,29 +56,29 @@ namespace appFBLA2019
             }
         }
 
-        private void TermsOfUse_Activated(object sender, EventArgs e)
+        private async void TermsOfUse_Activated(object sender, EventArgs e)
         {
-            this.Navigation.PushModalAsync(new TermsOfUse());
+            await this.Navigation.PushModalAsync(new TermsOfUse());
         }
 
-        private void BugReportToolbarItem_Clicked(object sender, EventArgs e)
+        private async void BugReportToolbarItem_Clicked(object sender, EventArgs e)
         {
-            this.Navigation.PushAsync(new BugReportPage());
+            await this.Navigation.PushAsync(new BugReportPage());
         }
 
-        private void AboutPageToolbarItem_Clicked(object sender, EventArgs e)
+        private async void AboutPageToolbarItem_Clicked(object sender, EventArgs e)
         {
-            this.Navigation.PushModalAsync(new AboutUsPage());
+            await this.Navigation.PushModalAsync(new AboutUsPage());
         }
 
         private async void TutorialButton_Clicked(object sender, EventArgs e)
         {
-            this.Navigation.PushAsync(new HelpPage());
+            await this.Navigation.PushAsync(new HelpPage());
         }
 
-        private void HelpButton_Clicked(object sender, EventArgs e)
+        private async void HelpButton_Clicked(object sender, EventArgs e)
         {
-            this.Navigation.PushModalAsync(new HelpPage());
+            await this.Navigation.PushModalAsync(new HelpPage());
         }
     }
 }

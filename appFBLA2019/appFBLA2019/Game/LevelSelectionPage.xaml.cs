@@ -343,7 +343,7 @@ namespace appFBLA2019
             await button.FadeTo(1, 150, Easing.CubicInOut);
             button.HeightRequest = 25;
 
-            if (await Task.Run(() => ServerOperations.SendLevel(levelPath)))
+            if (await Task.Run(async() => await ServerOperations.SendLevel(levelPath)))
             {
                 await button.FadeTo(0, 150, Easing.CubicInOut);
                 button.Source = "ic_cloud_done_black_48dp.png";
@@ -408,13 +408,17 @@ namespace appFBLA2019
         private async void ButtonDelete_Clicked(object sender, EventArgs e)
         {
             bool unsubscribe = ((Button)sender).Text == "Unsubscribe";
-            string question = "Are you sure you want to delete this level?";
-            string message = "This will delete the copy on your device and in the cloud. This is not reversable.";
+            string question;
+            string message;
             if (unsubscribe)
             {
                 question = "Are you sure you want to unsubscribe?";
                 message = "This will remove the copy from your device";
-                // Decrement subscriber count on server
+            }
+            else
+            {
+                question = "Are you sure you want to delete this level?";
+                message = "This will delete the copy on your device and in the cloud. This is not reversable.";
             }
 
             bool answer = await this.DisplayAlert(question, message, "Yes", "No");
@@ -424,33 +428,46 @@ namespace appFBLA2019
 
                 if (System.IO.Directory.Exists(path))
                 {
+                    // Acquire DBId from the level's realm file
+                    string realmFilePath = Directory.GetFiles(path, "*.realm").First();
+                    Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                    LevelInfo info = realm.All<LevelInfo>().First();
+                    string dbId = info.DBId;
+
+                    // Acquire LevelInfo from roster
+                    LevelInfo rosterInfo = LevelRosterDatabase.GetLevelInfo(dbId);
+                    LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo)
+                    {
+                        IsDeletedLocally = true,
+                        LastModifiedDate = DateTime.Now.ToString()
+                    };
+                    LevelRosterDatabase.EditLevelInfo(rosterInfo);
                     if (!unsubscribe) // If delete (user owns this level)
                     {
-                        // Acquire DBId from the level's realm file
-                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                        LevelInfo info = realm.All<LevelInfo>().First();
-                        string dbId = info.DBId;
-
-                        // Acquire LevelInfo from roster
-                        LevelInfo rosterInfo = LevelRosterDatabase.GetLevelInfo(dbId);
-                        LevelInfo rosterInfoUpdated = new LevelInfo(rosterInfo)
-                        {
-                            IsDeletedLocally = true,
-                            LastModifiedDate = DateTime.Now.ToString()
-                        };
-                        LevelRosterDatabase.EditLevelInfo(rosterInfo);
-
                         // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
                         if (CrossConnectivity.Current.IsConnected)
                         {
-                            OperationReturnMessage returnMessage = ServerOperations.DeleteLevel(dbId);
+                            OperationReturnMessage returnMessage = await ServerOperations.DeleteLevel(dbId);
                             if (returnMessage == OperationReturnMessage.True)
                             {
                                 realm.Remove(realm.All<LevelInfo>().Where(levelInfo => levelInfo.DBId == rosterInfo.DBId).First());
                             }
                         }
-
+                        // Clear out DBHandler.GameDatabase in case it references the level just deleted
+                        DBHandler.DisposeDatabase();
+                        Directory.Delete(path, true);
+                    }
+                    else // If unsubscribe
+                    {
+                        // If connected, tell server to delete this level If not, it will tell server to delete next time it is connected in LevelRosterDatabase.UpdateLocalDatabase()
+                        if (CrossConnectivity.Current.IsConnected)
+                        {
+                            OperationReturnMessage returnMessage = await ServerOperations.UnsubscribeToLevel(dbId);
+                            if (returnMessage == OperationReturnMessage.True)
+                            {
+                                realm.Remove(realm.All<LevelInfo>().Where(levelInfo => levelInfo.DBId == rosterInfo.DBId).First());
+                            }
+                        }
                         // Clear out DBHandler.GameDatabase in case it references the level just deleted
                         DBHandler.DisposeDatabase();
                         Directory.Delete(path, true);
