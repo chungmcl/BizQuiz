@@ -12,7 +12,9 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ForgotPasswordPage : ContentPage
 	{
-		public ForgotPasswordPage ()
+        private const int minLength = 5;
+
+        public ForgotPasswordPage ()
 		{
 			InitializeComponent ();
             
@@ -21,6 +23,18 @@ namespace appFBLA2019
         private void ButtonContinue_Clicked(object sender, EventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void ButtonChangePassword_Clicked(object sender, EventArgs e)
+        {
+            if (this.EntryPassword.Text == this.EntryReenterPassword.Text && this.EntryPassword.Text.Length > minLength)
+            {
+                // change password
+            }
+            else
+            {
+                // tell user, passwords aren't equal or have to be longer than 5 characters.
+            }
         }
     }
 }

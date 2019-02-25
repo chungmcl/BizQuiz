@@ -241,7 +241,7 @@ namespace appFBLA2019
                     }), Constraint.RelativeToParent((parent) =>
                     {
                         return parent.Y;
-                    }), Constraint.Constant(90), Constraint.Constant(90));
+                    }), Constraint.Constant(95), Constraint.Constant(90));
 
                     frameStack.Children.Add(topStack);
 
