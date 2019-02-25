@@ -384,6 +384,8 @@ namespace appFBLA2019
                 button.Source = "ic_cloud_done_black_48dp.png";
                 button.IsEnabled = true;
                 button.Clicked += SyncNoChange_Clicked;
+                
+                ((((button.Parent as StackLayout).Parent as StackLayout).Parent as RelativeLayout).Parent as Frame).StyleId = "Local";
             }
             else
             {
