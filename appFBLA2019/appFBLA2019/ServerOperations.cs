@@ -244,7 +244,7 @@ namespace appFBLA2019
 
         public static OperationReturnMessage ForgotPassword(string username)
         {
-            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/-", ServerRequestTypes.ForgotPassword);
+            return (OperationReturnMessage)SendStringData($"{username}/-", ServerRequestTypes.ForgotPassword);
         }
 
         public static OperationReturnMessage ForgotPasswordChangePassword(string username, string resetCode, string newPassword)
