@@ -46,6 +46,8 @@ namespace appFBLA2019
             this.isStartup = false;
 		}
 
+        
+
         /// <summary>
         /// Adds a level to the search stack given a LevelInfo
         /// </summary>
@@ -94,15 +96,22 @@ namespace appFBLA2019
                         HorizontalOptions = LayoutOptions.End
                     };
 
-                    // If already subscribed
-                    if (!(currentlySubscribed.Where(levelInfo => levelInfo.DBId == level.DBId).Count() > 0))
+                    if (level.Author != CredentialManager.Username)
                     {
-                        // source is add if not subscribed and if they are then source is check
-                        ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                        // If already subscribed
+                        if (!(currentlySubscribed.Where(levelInfo => levelInfo.DBId == level.DBId).Count() > 0))
+                        {
+                            // source is add if not subscribed and if they are then source is check
+                            ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
+                        }
+                        else
+                        {
+                            ImageButtonSubscribe.Source = "ic_playlist_add_check_black_48dp.png";
+                        }
                     }
                     else
                     {
-                        ImageButtonSubscribe.Source = "ic_playlist_add_check_black_48dp.png";
+                        ImageButtonSubscribe.IsEnabled = false;
                     }
 
                     ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
@@ -215,8 +224,9 @@ namespace appFBLA2019
 		/// <param name="e"></param>
 		private async void SearchBar_SearchButtonPressed(object sender, EventArgs e)
 		{
-			// Delete what was in there previously
-			this.end = false;
+            // Delete what was in there previously
+            this.SearchedStack.Children.Clear();
+            this.end = false;
             this.levelsRemaining = true;
             this.currentChunk = 1;
 			Device.BeginInvokeOnMainThread(() => {
@@ -347,10 +357,19 @@ namespace appFBLA2019
 			this.searchType = "Author";
 		}
 
-        private void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
+        private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex];
             this.currentChunk = 1;
+            try
+            {
+                await Task.Run(() => this.Search());
+            }
+            catch
+            {
+                await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+            }
         }
+
     }
 }
