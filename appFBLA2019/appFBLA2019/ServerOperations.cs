@@ -78,6 +78,14 @@ namespace appFBLA2019
             return (List<string[]>)SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetLevelsByAuthorName);
         }
 
+        public static List<string[]> GetMissingLevelsByAuthorName(string authorName, string[] dBIdsOnDevice)
+        {
+            string queryString = $"{authorName}";
+            foreach (string dbId in dBIdsOnDevice)
+                queryString = queryString + "/" + dbId;
+            return (List<string[]>)SendStringData(queryString, ServerRequestTypes.GetMissingLevelsByAuthorName);
+        }
+
         public static List<string[]> GetUsers(string username, int chunk)
         {
             return (List<string[]>)SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
@@ -101,6 +109,18 @@ namespace appFBLA2019
                 result = 0;
             }
             return result;
+        }
+
+        public static OperationReturnMessage SubscribeToLevel(string dbId)
+        {
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{dbId}/-", 
+                ServerRequestTypes.SubscribeToLevel);
+        }
+
+        public static OperationReturnMessage UnsubscribeToLevel(string dbId)
+        {
+            return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{CredentialManager.Password}/{dbId}/-", 
+                ServerRequestTypes.UnsubscribeToLevel);
         }
 
         public static bool SendLevel(string relativeLevelPath)
@@ -138,8 +158,10 @@ namespace appFBLA2019
 
                 if (finalizationMessage == OperationReturnMessage.True)
                 {
-                    LevelInfo infoCopy = new LevelInfo(info);
-                    infoCopy.SyncStatus = 2;
+                    LevelInfo infoCopy = new LevelInfo(info)
+                    {
+                        SyncStatus = 2
+                    };
                     LevelRosterDatabase.EditLevelInfo(infoCopy);
                     return true;
                 }
@@ -155,11 +177,11 @@ namespace appFBLA2019
             }
         }
 
-        public static bool GetLevel(string dBId, string levelName, string authorName)
+        public static bool GetLevel(string dBId, string levelName, string authorName, string category)
         {
-            string levelPath = App.UserPath + "/" + $"{levelName}`{authorName}/";
+            string levelPath = App.UserPath + "/" + category + "/" + $"{levelName}`{authorName}/";
 
-            Directory.CreateDirectory(App.UserPath + "/" + $"{levelName}`{authorName}");
+            Directory.CreateDirectory(levelPath);
             byte[] realmFile = (byte[])SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
             string realmFilePath = levelPath + "/" + levelName + realmFileExtension;
             if (realmFile.Length > 0)
@@ -172,14 +194,50 @@ namespace appFBLA2019
             foreach (Question question in questionsWithPictures)
             {
                 byte[] jpegFile = (byte[])SendStringData($"{question.QuestionId}/{dBId}/-", ServerRequestTypes.GetJPEGImage);
-                string jpegFilePath = levelPath + "/" + question.QuestionId + "/" + jpegFileExtension;
+                string jpegFilePath = levelPath + "/" + question.QuestionId + jpegFileExtension;
                 if (jpegFile.Length > 0)
                     File.WriteAllBytes(jpegFilePath, jpegFile);
                 else
                     return false;
             }
+            LevelInfo infoCopy = new LevelInfo(LevelRosterDatabase.GetLevelInfo(dBId));
+            infoCopy.SyncStatus = 2;
+            LevelRosterDatabase.EditLevelInfo(infoCopy);
 
             return true;
+        }
+        
+        public static bool SendBugReport(string report, byte[] image = null)
+        {
+            byte[] reportBytes = Encoding.Unicode.GetBytes(report);
+            byte[] imageBytes = image ?? new byte[0];
+            byte[] imageHeader = new byte[5];
+            if (image?.Length > 0)
+            {
+                imageHeader = new byte[5];
+                Array.Copy(new byte[] { Convert.ToByte(true) }, imageHeader, 1);
+                Array.Copy(BitConverter.GetBytes(imageBytes.Length), 0, imageHeader, 1, 4);
+            }
+            else { Array.Copy(new Byte[] { Convert.ToByte(false) }, imageHeader, 1); }
+            byte[] header = GenerateHeaderData(ServerRequestTypes.SendBugReport, (uint)(imageHeader.Length + imageBytes.Length + reportBytes.Length));
+
+            byte[] toSend = new byte[header.Length + imageHeader.Length + imageBytes.Length + reportBytes.Length];
+            header.CopyTo(toSend, 0);
+            imageHeader.CopyTo(toSend, header.Length);
+            imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
+            reportBytes.CopyTo(toSend, header.Length + imageHeader.Length + imageBytes.Length);
+
+            switch (ReceiveFromServerORM(toSend))
+            {
+                case OperationReturnMessage.True:
+                    return true;
+                case OperationReturnMessage.False:
+                case OperationReturnMessage.FalseFailedConnection:
+                case OperationReturnMessage.FalseNoConnection:
+                    return false;
+                default:
+                    throw new Exception("Something went wrong sending the bug report!");
+            }
         }
 
         #region Header Generators
@@ -311,7 +369,7 @@ namespace appFBLA2019
         }
         #endregion
 
-        #region Data Sends
+        #region Data Send Helper Methods
         /// <summary>
         /// Send a string (Unicode) based data request or send to the server.
         /// </summary>
@@ -336,6 +394,7 @@ namespace appFBLA2019
                 case ServerRequestTypes.GetLevelsByAuthorName:
                 case ServerRequestTypes.GetLevelsByLevelName:
                 case ServerRequestTypes.GetLevelsByCategory:
+                case ServerRequestTypes.GetMissingLevelsByAuthorName:
                     return ReceiveFromServerListOfStringArrays(toSend);
 
                 case ServerRequestTypes.GetRealmFile:
@@ -382,39 +441,6 @@ namespace appFBLA2019
             imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
             return ReceiveFromServerORM(toSend);
         }
-
-        public static bool SendBugReport(string report, byte[] image = null)
-        {
-            byte[] reportBytes = Encoding.Unicode.GetBytes(report);
-            byte[] imageBytes = image ?? new byte[0];
-            byte[] imageHeader = new byte[5];
-            if (image?.Length > 0)
-            {
-                imageHeader = new byte[5];
-                Array.Copy(new byte[] { Convert.ToByte(true) }, imageHeader, 1);
-                Array.Copy(BitConverter.GetBytes(imageBytes.Length), 0, imageHeader, 1, 4);
-            }
-            else { Array.Copy(new Byte[] { Convert.ToByte(false) }, imageHeader, 1); }
-            byte[] header = GenerateHeaderData(ServerRequestTypes.SendBugReport, (uint)(imageHeader.Length + imageBytes.Length + reportBytes.Length));
-
-            byte[] toSend = new byte[header.Length + imageHeader.Length + imageBytes.Length + reportBytes.Length];
-            header.CopyTo(toSend, 0);
-            imageHeader.CopyTo(toSend, header.Length);
-            imageBytes.CopyTo(toSend, header.Length + imageHeader.Length);
-            reportBytes.CopyTo(toSend, header.Length + imageHeader.Length + imageBytes.Length);
-            
-            switch(ReceiveFromServerORM(toSend))
-            {
-                case OperationReturnMessage.True:
-                    return true;
-                case OperationReturnMessage.False:
-                case OperationReturnMessage.FalseFailedConnection:
-                case OperationReturnMessage.FalseNoConnection:
-                    return false;
-                default:
-                    throw new Exception("Something went wrong sending the bug report!");
-            }
-        }
         #endregion
     }
 
@@ -426,6 +452,8 @@ namespace appFBLA2019
         FalseInvalidCredentials,
         FalseInvalidEmail,
         FalseUsernameAlreadyExists,
+        FalseAlreadySubscribed,
+        FalseAlreadyUnsubscribed,
         FalseNoConnection,
         FalseFailedConnection
     }
@@ -434,11 +462,11 @@ namespace appFBLA2019
     {
         // "Command" Requests
         StringData,
-
         AddJPEGImage,
         AddRealmFile,
         FinalizeLevelSend,
-
+        SubscribeToLevel,
+        UnsubscribeToLevel,
         DeleteLevel,
         LoginAccount,
         RegisterAccount,
@@ -450,11 +478,11 @@ namespace appFBLA2019
 
         // "Get" Requests
         GetEmail,
-
         GetJPEGImage,
         GetRealmFile,
         GetLastModifiedDate,
         GetLevelsByAuthorName,
+        GetMissingLevelsByAuthorName,
         GetLevelsByLevelName,
         GetLevelsByCategory,
         GetUsers,

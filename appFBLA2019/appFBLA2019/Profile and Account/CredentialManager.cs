@@ -28,7 +28,7 @@ namespace appFBLA2019
         }
 
         public static string Password { get; private set; }
-        public static bool IsLoggedIn { get; private set; }
+        public static bool IsLoggedIn { get; set; }
         public static bool EmailConfirmed { get; set; }
 
         public static void SaveCredential(string username, string password, bool emailConfirmed)

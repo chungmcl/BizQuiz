@@ -19,8 +19,9 @@ namespace appFBLA2019
         private bool isStartup;
 		private List<SearchInfo> levelsSearched;
 
-		// either "Title" or "Author"
-		private string searchType;
+
+        // either "Title" or "Author"
+        private string searchType;
 
 		public StorePage()
 		{
@@ -52,6 +53,7 @@ namespace appFBLA2019
             {// Only add level if the category is what user picked (we are asking the server for more then we need so this could be changed)
                 if (this.category == "All" || level.Category == this.category) 
                 {
+
                     Frame levelFrame = new Frame
                     {
                         VerticalOptions = LayoutOptions.Start,
@@ -200,7 +202,7 @@ namespace appFBLA2019
                 {
                     SearchedStack.Children.Add(new Label()
                     {
-                        Text = "Sorry, we couldn't find any levels matching what you searched",
+                        Text = "Sorry, we couldn't find any levels matching what you searched", 
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         HorizontalOptions = LayoutOptions.CenterAndExpand,
                     });

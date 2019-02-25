@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,15 +14,17 @@ namespace appFBLA2019
 	public partial class FeaturedPage : ContentPage
 	{
         private string category = "All";
+        private List<SearchInfo> levelsFeatured;
 
         public FeaturedPage()
         {
             InitializeComponent();
             this.currentChunk = 1;
+            levelsFeatured = new List<SearchInfo>();
         }
 
         protected async override void OnAppearing()
-            {
+        {
             this.levelsRemaining = true;
             await this.Refresh();
         }
@@ -31,7 +34,8 @@ namespace appFBLA2019
 
         private async Task Refresh()
         {
-            SearchedStack.Children.Clear();
+            this.SearchedStack.Children.Clear();
+            this.levelsFeatured.Clear();
             try
             {
                 Device.BeginInvokeOnMainThread(() => {
@@ -87,11 +91,11 @@ namespace appFBLA2019
         /// <param name="level"></param>
         private void AddLevels(List<SearchInfo> levels)
         {
-
             foreach (SearchInfo level in levels)
             {
                 if (this.category == "All" || level.Category == this.category) // Only add level if the category is what user picked
                 {
+                    this.levelsFeatured.Add(level);
                     Frame levelFrame = new Frame
                     {
                         VerticalOptions = LayoutOptions.Start,
@@ -153,7 +157,7 @@ namespace appFBLA2019
                     this.SearchedStack.Children.Add(levelFrame));
                 }
             }
-            if (this.SearchedStack.Children.Count() == 0)
+            if (this.levelsFeatured.Count() == 0)   
             {
                 Label FeaturedMessage = new Label
                 {
@@ -174,6 +178,7 @@ namespace appFBLA2019
         async private void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
         {
             ImageButton button = (sender as ImageButton);
+            string dbId = button.StyleId;
             if (button.Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
             {
                 bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
@@ -182,8 +187,28 @@ namespace appFBLA2019
                     await button.FadeTo(0, 150, Easing.CubicInOut);
                     button.Source = "ic_playlist_add_black_48dp.png";
                     button.HeightRequest = 30;
+
                     await button.FadeTo(1, 150, Easing.CubicInOut);
-                    // remove from device
+                    LevelInfo info = LevelRosterDatabase.GetLevelInfo(dbId);
+                    string location = App.UserPath + "/" + info.Category + "/" + info.LevelName + "`" + info.AuthorName;
+                    if (Directory.Exists(location))
+                        Directory.Delete(location, true);
+
+                    LevelRosterDatabase.DeleteLevelInfo(dbId);
+                    OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.UnsubscribeToLevel(dbId));
+                    if (returnMessage == OperationReturnMessage.True)
+                    {
+                        // Show sub button
+                    }
+                    else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
+                    {
+                        await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                        CredentialManager.IsLoggedIn = false;
+                    }
+                    else
+                    {
+                        await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
+                    }
                 }
             }
             else // subscribe
@@ -192,7 +217,31 @@ namespace appFBLA2019
                 button.Source = "ic_playlist_add_check_black_48dp.png";
                 button.HeightRequest = 30;
                 await button.FadeTo(1, 150, Easing.CubicInOut);
-                // save to device
+
+                OperationReturnMessage returnMessage = await Task.Run(() => ServerOperations.SubscribeToLevel(dbId));
+                if (returnMessage == OperationReturnMessage.True)
+                {
+                    SearchInfo level = this.levelsFeatured.Where(searchInfo => searchInfo.DBId == dbId).First();
+                    LevelInfo newInfo = new LevelInfo
+                    {
+                        AuthorName = level.Author,
+                        LevelName = level.LevelName,
+                        Category = level.Category,
+                        SyncStatus = 4 // 4 to represent not present in local directory and need download
+                    };
+                    LevelRosterDatabase.NewLevelInfo(newInfo);
+
+                    // Show finished icon
+                }
+                else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
+                {
+                    await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                    CredentialManager.IsLoggedIn = false;
+                }
+                else
+                {
+                    await DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                }
             }
 
         }
