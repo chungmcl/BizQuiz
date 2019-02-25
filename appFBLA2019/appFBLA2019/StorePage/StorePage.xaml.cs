@@ -94,7 +94,7 @@ namespace appFBLA2019
                     };
 
                     // If already subscribed
-                    if (currentlySubscribed.Where(levelInfo => levelInfo.DBId == level.DBId).Count() > 0)
+                    if (!(currentlySubscribed.Where(levelInfo => levelInfo.DBId == level.DBId).Count() > 0))
                     {
                         // source is add if not subscribed and if they are then source is check
                         ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";

@@ -82,8 +82,9 @@ namespace appFBLA2019
                 return realmDB.All<LevelInfo>().Where
                                  (levelInfo => levelInfo.DBId == dbId).First();
             }
-            catch
+            catch (Exception ex)
             {
+                BugReportHandler.SubmitReport(ex, "LevelRosterDatabase.GetLevelInfo()");
                 return null;
             }
         }
