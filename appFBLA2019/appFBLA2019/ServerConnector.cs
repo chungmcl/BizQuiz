@@ -159,7 +159,7 @@ namespace appFBLA2019
                             {
                                 
                                 ssl.WriteTimeout = 5000;
-                                ssl.ReadTimeout = 10000;
+                                ssl.ReadTimeout = 5000;
 
                                 ssl.AuthenticateAsClient("BizQuizServer");
                                 return true;
