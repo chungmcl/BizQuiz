@@ -23,6 +23,7 @@ namespace appFBLA2019
         public static string Server { get; set; }
         public static TcpClient client;
         public static NetworkStream netStream;
+        private static object lockObj = new object();
 
         // Raw-data stream of connection encrypted with TLS.
         public static SslStream ssl;
@@ -35,12 +36,9 @@ namespace appFBLA2019
         
         public static byte[] SendByteArray(byte[] data)
         {
-            // initialze an empty sslStream in order to lock it
-            ssl = new SslStream(new MemoryStream());
-
             // Prevent sending and receiving corrupted data
             // because of thread collisions through the lock
-            lock (ssl)
+            lock (lockObj)
             {
                 if (SetupConnection())
                 {
