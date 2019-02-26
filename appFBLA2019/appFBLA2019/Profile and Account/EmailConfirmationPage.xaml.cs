@@ -63,6 +63,7 @@ namespace appFBLA2019
         protected virtual void OnConfirmLaterSelected()
         {
             this.ConfirmLaterSelected?.Invoke(this, EventArgs.Empty);
+            this.emailConfirmed = false;
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ButtonClose_Clicked(object sender, EventArgs e)
         {
-            this.OnConfirmLaterSelected();
+            this.emailConfirmed = false;
             await this.Navigation.PopModalAsync(true);
         }
 

@@ -257,14 +257,7 @@ namespace appFBLA2019
             this.accountSettingsPage.SignedOut += OnSignedOut;
             this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            try
-            {
-                await UpdateProfilePage();
-            }
-            catch (Exception ex)
-            {
-
-            }
+            await UpdateProfilePage();
         }
 
         private string GetHello()
