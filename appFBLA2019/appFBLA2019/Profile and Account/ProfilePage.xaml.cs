@@ -32,7 +32,7 @@ namespace appFBLA2019
             if (CredentialManager.IsLoggedIn)
             {
                 CreateNewQuizPage quiz = new CreateNewQuizPage();
-                this.Navigation.PushAsync(quiz);
+                await this.Navigation.PushAsync(quiz);
             }
             else
             {
