@@ -188,6 +188,7 @@ namespace appFBLA2019
                     string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
                     QuizInfo newInfo = new QuizInfo
                     {
+                        DBId = quiz.DBId,
                         AuthorName = quiz.Author,
                         QuizName = quiz.QuizName,
                         Category = quiz.Category,
