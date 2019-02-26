@@ -56,7 +56,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="report">  </param>
         /// <returns>  </returns>
-        private static void SaveBugReport(BugReport report)
+        public static void SaveBugReport(BugReport report)
         {
             Realms.Realm bugRealm = Realms.Realm.GetInstance(new Realms.RealmConfiguration(BugRealmPath));
             //if no already saved reports have the same hash (same contents)

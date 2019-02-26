@@ -13,7 +13,14 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AccountSettingsPage : ContentPage
     {
+        /// <summary>
+        /// The currently open tab
+        /// </summary>
         private Frame currentlyOpenFrame;
+
+        /// <summary>
+        /// If the task/operation in the current tab is running.
+        /// </summary>
         private bool currentlyOpenFrameIsRunning;
 
         public delegate void SignOutEventHandler(object source, EventArgs eventArgs);
@@ -29,10 +36,15 @@ namespace appFBLA2019
             this.FrameConfirmEmail.IsVisible = !CredentialManager.EmailConfirmed;
         }
 
+        /// <summary>
+        /// Log the user out of the account.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonLogout_Clicked(object sender, EventArgs e)
         {
             this.ButtonLogout.IsEnabled = false;
-            CredentialManager.Logout(false);
+            CredentialManager.Logout(true);
             this.OnSignedOut();
             this.Navigation.PopAsync();
         }
@@ -42,6 +54,11 @@ namespace appFBLA2019
             this.SignedOut?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Change the password of the user.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonChangePassword_Clicked(object sender, EventArgs e)
         {
             if (this.SetupFrameBegin(this.FrameChangePassword, this.StackLayoutChangePasswordContent))
@@ -90,12 +107,23 @@ namespace appFBLA2019
             this.SetupFrameEnd(this.StackLayoutChangePasswordContent);
         }
 
+        /// <summary>
+        /// Run the Change Password operation in a background task.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="newPassword"></param>
+        /// <returns></returns>
         private OperationReturnMessage ChangePassword(string password, string newPassword)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelChangePasswordMessage.Text = "Waiting...");
             return ServerOperations.ChangePassword(CredentialManager.Username, password.Trim(), newPassword.Trim());
         }
 
+        /// <summary>
+        /// Change the email of the account.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonChangeEmail_Clicked(object sender, EventArgs e)
         {
             if (this.SetupFrameBegin(this.FrameChangeEmail, this.StackLayoutChangeEmailContent))
@@ -125,12 +153,23 @@ namespace appFBLA2019
             this.SetupFrameEnd(this.StackLayoutChangeEmailContent);
         }
 
+        /// <summary>
+        /// Change the user's email in a background task.
+        /// </summary>
+        /// <param name="password">The current password of the account.</param>
+        /// <param name="newEmail">The new email.</param>
+        /// <returns></returns>
         private OperationReturnMessage ChangeEmail(string password, string newEmail)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelChangeEmailMessage.Text = "Waiting...");
             return ServerOperations.ChangeEmail(CredentialManager.Username, password.Trim(), newEmail.Trim());
         }
 
+        /// <summary>
+        /// Confirm the email associated with the account.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
         {
             if (this.SetupFrameBegin(this.FrameConfirmEmail, this.StackLayoutConfirmEmailContent))
@@ -152,12 +191,22 @@ namespace appFBLA2019
             this.SetupFrameEnd(this.StackLayoutConfirmEmailContent);
         }
 
+        /// <summary>
+        /// Confirm the email associated with the account in a background task.
+        /// </summary>
+        /// <param name="token">The confirmation token sent to the user's email.</param>
+        /// <returns></returns>
         private OperationReturnMessage ConfirmEmail(string token)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelConfirmEmailMessage.Text = "Waiting...");
             return ServerOperations.ConfirmEmail(CredentialManager.Username, token.Trim());
         }
 
+        /// <summary>
+        /// Delete the user's acccount.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonDeleteAccount_Clicked(object sender, EventArgs e)
         {
             if (this.SetupFrameBegin(this.FrameDeleteAccount, this.StackLayoutDeleteAccountContent))
@@ -185,13 +234,22 @@ namespace appFBLA2019
             this.SetupFrameEnd(this.StackLayoutDeleteAccountContent);
         }
 
+        /// <summary>
+        /// Delete the user's account in a background task.
+        /// </summary>
+        /// <param name="password">the current password of the account.</param>
+        /// <returns></returns>
         private OperationReturnMessage DeleteAccount(string password)
         {
             Device.BeginInvokeOnMainThread(() => this.LabelDeleteAccountMessage.Text = "Waiting...");
             return ServerOperations.DeleteAccount(CredentialManager.Username, password.Trim());
         }
 
-
+        /// <summary>
+        /// Handle when the email is confirmed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void OnEmailConfirmed(object sender, EventArgs eventArgs)
         {
             this.FrameConfirmEmail.IsVisible = false;
@@ -199,6 +257,11 @@ namespace appFBLA2019
             this.StackLayoutChangeEmailContent.IsVisible = false;
         }
 
+        /// <summary>
+        /// Handle when the user chooses to confirm email later.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void OnConfirmLaterSelected(object sender, EventArgs eventArgs)
         {
             this.FrameConfirmEmail.IsVisible = true;

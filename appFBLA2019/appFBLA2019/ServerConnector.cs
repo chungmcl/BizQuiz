@@ -18,7 +18,7 @@ namespace appFBLA2019
         private const int headerSize = 5;
 
         // Server Release Build: 7777 Server Debug Build: 7778
-        public static int Port { get { return 7778; } }
+        public static int Port { get { return 7777; } }
 
         public static string Server { get; set; }
         public static TcpClient client;
@@ -159,7 +159,7 @@ namespace appFBLA2019
                             {
                                 
                                 ssl.WriteTimeout = 5000;
-                                ssl.ReadTimeout = 10000;
+                                ssl.ReadTimeout = 5000;
 
                                 ssl.AuthenticateAsClient("BizQuizServer");
                                 return true;

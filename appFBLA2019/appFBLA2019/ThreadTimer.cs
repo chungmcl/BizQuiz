@@ -13,7 +13,7 @@ namespace appFBLA2019
         public static async Task RunServerChecks()
         {
             await CredentialManager.CheckLoginStatus();
-            await Task.Run(() => QuizRosterDatabase.UpdateLocalDatabase());
+            await Task.Run(async() => await QuizRosterDatabase.UpdateLocalDatabase());
             var minutes = TimeSpan.FromMinutes(2);
             Device.StartTimer(minutes, () =>
             {
@@ -24,7 +24,7 @@ namespace appFBLA2019
                         await CredentialManager.CheckLoginStatus();
                     }
                     
-                    QuizRosterDatabase.UpdateLocalDatabase();
+                    await QuizRosterDatabase.UpdateLocalDatabase();
                     BugReportHandler.SubmitSavedReports();
                 });
                 // Return true to continue the timer
