@@ -125,7 +125,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SubmitReport(ex, "ServerConnector.ReadByteArray()");
+                BugReportHandler.SaveReport(ex, "ServerConnector.ReadByteArray()");
                 return new byte[0];
             }
         }

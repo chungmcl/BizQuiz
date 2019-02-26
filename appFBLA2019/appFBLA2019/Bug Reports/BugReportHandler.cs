@@ -23,32 +23,19 @@ namespace appFBLA2019
             if (File.Exists(logPath))
             {
                 var errorText = File.ReadAllText(logPath);
-                BugReportHandler.SubmitReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
+                BugReportHandler.SaveReport(new BugReport("Unhandled Exception", "Exceptions", errorText));
                 File.Delete(logPath);
             }
         }
 
-        public static bool SubmitReport(BugReport report)
+        public static void SaveReport(Exception exception, string source)
         {
-            if (SendReport(report))
-            {
-                return true;
-            }
-            else
-            {
-                SaveBugReport(report);
-                return false;
-            }
+            SaveReport(new BugReport($"Unhandled Exception from {source}", $"{source} Exceptions", exception.ToString()));
         }
 
-        public static bool SubmitReport(Exception exception, string source)
+        public static void SaveReport(Exception exception)
         {
-            return SubmitReport(new BugReport($"Unhandled Exception from {source}", $"{source} Exceptions", exception.ToString()));
-        }
-
-        public static bool SubmitReport(Exception exception)
-        {
-            return SubmitReport(exception, "Internal code");
+            SaveReport(exception, "Internal code");
         }
 
         /// <summary>
@@ -56,7 +43,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="report">  </param>
         /// <returns>  </returns>
-        public static void SaveBugReport(BugReport report)
+        public static void SaveReport(BugReport report)
         {
             Realms.Realm bugRealm = Realms.Realm.GetInstance(new Realms.RealmConfiguration(BugRealmPath));
             //if no already saved reports have the same hash (same contents)
@@ -82,7 +69,7 @@ namespace appFBLA2019
             {
                 foreach (BugReport report in bugRealm.All<BugReport>().ToList())
                 {
-                    if (SubmitReport(report))
+                    if (SendReport(report))
                     {
                         if (report.ImagePath != null)
                         {

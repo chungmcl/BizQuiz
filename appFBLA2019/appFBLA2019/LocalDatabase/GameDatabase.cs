@@ -26,7 +26,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SubmitReport(ex, nameof(GameDatabase));
+                BugReportHandler.SaveReport(ex, nameof(GameDatabase));
             }
         }
 

@@ -29,10 +29,9 @@ namespace appFBLA2019
             }
             else
             {
-                if (!BugReportHandler.SubmitReport(new BugReport(this.BugTitleEntry.Text, this.CategoryPicker.SelectedItem as string, this.BugBodyEntry.Text, this.ImagePath)))
-                {
-                    await this.DisplayAlert("No Connection", "We couldn't connect to the server, so we'll send your report as soon as we can.", "OK");
-                }
+                BugReportHandler.SaveReport(new BugReport(this.BugTitleEntry.Text, this.CategoryPicker.SelectedItem as string, this.BugBodyEntry.Text, this.ImagePath));
+                    await this.DisplayAlert("Report Saved", "We'll send your report as soon as we can, and our team will take a look at your issue. Thanks for letting us know!", "OK");
+
                 await this.Navigation.PopAsync();
             }
         }
