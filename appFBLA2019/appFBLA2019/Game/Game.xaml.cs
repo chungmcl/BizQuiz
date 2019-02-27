@@ -28,7 +28,6 @@ namespace appFBLA2019
             this.Title = quiz.Title;
 
             this.LayoutRefresh();
-            this.CycleQuestion();
         }
 
         /// <summary>
@@ -49,6 +48,7 @@ namespace appFBLA2019
         {
             await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 200);
             this.LayoutRefresh();
+            await this.CycleQuestion();
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace appFBLA2019
         /// checks the answer for multiple choice type questions
         /// </summary>
         /// <param name="answer"> the string of the button that was pressed </param>
-        private async void CheckButtonAnswer(string answer)
+        private async Task CheckButtonAnswer(string answer)
         {
             foreach (Button button in this.InputGrid.Children)
             {
@@ -122,7 +122,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="answer">    the answer that was typed </param>
         /// <param name="checkCase"> whether or not to check the case </param>
-        private async void CheckTextAnswer(string answer, bool checkCase)
+        private async Task CheckTextAnswer(string answer, bool checkCase)
         {
             ((Button)this.InputGrid.Children.Where(x => x.GetType() == typeof(Button)).First()).IsEnabled = false;
             answer = answer.Trim();
@@ -163,9 +163,9 @@ namespace appFBLA2019
             }
 
             // 2 represents 'correct'
-            DBHandler.Database.realmDB.Write(() =>
-                this.currentQuestion.Status = 2
-            );
+            Question copyQuestion = new Question(this.currentQuestion);
+            copyQuestion.Status = 2;
+            DBHandler.Database.EditQuestion(copyQuestion);
 
             await this.AnimateNextBanner();
         }
@@ -176,13 +176,13 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task CycleQuestion()
         {
-            this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
-            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
+            await this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
+            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
             if (this.quiz.QuestionsRemaining > 0)
             {
                 // Save as reference
                 this.currentQuestion = this.quiz.GetQuestion();
-                this.SetUpQuestion(this.currentQuestion);
+                await this.SetUpQuestion(this.currentQuestion);
             }
             else // Finished quiz
             {
@@ -203,9 +203,9 @@ namespace appFBLA2019
             this.NextBanner.BackgroundColor = Color.Red;
 
             // 1 represents 'failed'
-            DBHandler.Database.realmDB.Write(() =>
-                this.currentQuestion.Status = 1
-            );
+            Question copyQuestion = new Question(this.currentQuestion);
+            copyQuestion.Status = 1;
+            DBHandler.Database.EditQuestion(copyQuestion);
 
             await this.AnimateNextBanner();
         }
@@ -226,23 +226,22 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender">  </param>
         /// <param name="e">       </param>
-        private void NextButton_Clicked(object sender, EventArgs e)
+        private async void NextButton_Clicked(object sender, EventArgs e)
         {
-            this.CycleQuestion();
+            await this.CycleQuestion();
         }
 
         /// <summary>
         /// Sets up the layout and graphics for the next question
         /// </summary>
         /// <param name="question"> the question to be displayed </param>
-        private async void SetUpQuestion(Question question)
+        private async Task SetUpQuestion(Question question)
         {
             if (question.QuestionText == "" || question.CorrectAnswer == "")
             {
-                DBHandler.Database.realmDB.Write(() =>
-                {
-                    question.Status = 3;
-                });
+                Question copyQuestion = new Question(this.currentQuestion);
+                copyQuestion.Status = 3;
+                DBHandler.Database.EditQuestion(copyQuestion);
                 await this.CycleQuestion();
                 return;
             }
@@ -293,9 +292,9 @@ namespace appFBLA2019
                         VerticalOptions = LayoutOptions.FillAndExpand
                     };
 
-                    button.Clicked += (object sender, EventArgs e) =>
+                    button.Clicked += async(object sender, EventArgs e) =>
                     {
-                        this.CheckButtonAnswer(((Button)sender).Text);
+                        await this.CheckButtonAnswer(((Button)sender).Text);
                     };
 
                     this.InputGrid.Children.Add(button, 0, i);
@@ -352,10 +351,10 @@ namespace appFBLA2019
                     BackgroundColor = Color.Accent,
                     TextColor = Color.White
                 };
-                buttonCheckAnswer.Clicked += (object sender, EventArgs e) =>
+                buttonCheckAnswer.Clicked += async(object sender, EventArgs e) =>
                 {
                     // Can we do this with null-conditional operators? yes we can
-                    this.CheckTextAnswer(entry.Text ?? "", (question.QuestionType == 2));
+                    await this.CheckTextAnswer(entry.Text ?? "", (question.QuestionType == 2));
                 };
                 this.InputGrid.Children.Add(entry, 0, 0);
                 this.InputGrid.Children.Add(buttonCheckAnswer, 0, 1);

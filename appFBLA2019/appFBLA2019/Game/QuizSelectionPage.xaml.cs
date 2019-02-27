@@ -453,8 +453,6 @@ namespace appFBLA2019
                                 realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
                             }
                         }
-                        // Clear out DBHandler.GameDatabase in case it references the quiz just deleted
-                        DBHandler.DisposeDatabase();
                         Directory.Delete(path, true);
                     }
                     else // If unsubscribe
@@ -468,8 +466,6 @@ namespace appFBLA2019
                                 realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
                             }
                         }
-                        // Clear out DBHandler.GameDatabase in case it references the quiz just deleted
-                        DBHandler.DisposeDatabase();
                         Directory.Delete(path, true);
                     }
                     this.Setup();
