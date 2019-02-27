@@ -221,7 +221,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
 			{
-				BugReportHandler.SubmitReport(ex, "StorePage_SearchBar");
+				BugReportHandler.SaveReport(ex, "StorePage_SearchBar");
 				await this.DisplayAlert("Search Failed", "Try again later", "Ok");
 			}
 			Device.BeginInvokeOnMainThread(() =>
