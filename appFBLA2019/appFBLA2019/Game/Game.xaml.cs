@@ -28,7 +28,6 @@ namespace appFBLA2019
             this.Title = quiz.Title;
 
             this.LayoutRefresh();
-            Task.Run(() => this.CycleQuestion());
         }
 
 
@@ -48,8 +47,9 @@ namespace appFBLA2019
         /// </summary>
         protected override async void OnAppearing()
         {
-            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 200);
+            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
             this.LayoutRefresh();
+            await this.CycleQuestion();
         }
 
         /// <summary>
@@ -219,7 +219,6 @@ namespace appFBLA2019
         private void LayoutRefresh()
         {
             this.QuestionImage.Aspect = Aspect.AspectFit;
-            this.LabelQuestion.WidthRequest = this.Width;
             this.UpdateChildrenLayout();
             this.ForceLayout();
         }
