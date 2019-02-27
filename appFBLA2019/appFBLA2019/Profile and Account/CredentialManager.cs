@@ -13,7 +13,15 @@ namespace appFBLA2019
 {
     public static class CredentialManager
     {
+        /// <summary>
+        /// private field for Username property.
+        /// </summary>
         private static string username;
+
+        /// <summary>
+        /// The username of the currently logged in user.
+        /// Username is set to "dflt" if user is not logged in.
+        /// </summary>
         public static string Username
         {
             get
@@ -23,13 +31,26 @@ namespace appFBLA2019
             set
             {
                 username = value;
+                // Create a directory for the user locally for saved quizzes.
                 Directory.CreateDirectory(App.Path + "/" + value);
             }
         }
         
+        /// <summary>
+        /// Whether the user is logged in or not.
+        /// </summary>
         public static bool IsLoggedIn { get; set; }
+        /// <summary>
+        /// Whether the user has had their email confirmed.
+        /// </summary>
         public static bool EmailConfirmed { get; set; }
 
+        /// <summary>
+        /// Save the user's credentials securely to app Keystore.
+        /// </summary>
+        /// <param name="username">The username of the account.</param>
+        /// <param name="password">The password of the account.</param>
+        /// <param name="emailConfirmed">Whether the user has had their email confirmed or not.</param>
         public static void SaveCredential(string username, string password, bool emailConfirmed)
         {
             Task.Run(async () => await SecureStorage.SetAsync("username", username));
@@ -41,6 +62,10 @@ namespace appFBLA2019
             EmailConfirmed = emailConfirmed;
         }
 
+        /// <summary>
+        /// Log the user out of the account.
+        /// </summary>
+        /// <param name="clearUsername">Whether to clear the username field in the Keystore or not.</param>
         public static void Logout(bool clearUsername)
         {
             Task.Run(async () => await SecureStorage.SetAsync("password", ""));
@@ -55,6 +80,11 @@ namespace appFBLA2019
             EmailConfirmed = false;
         }
 
+        /// <summary>
+        /// Check if the current user credentials are valid with the server or not
+        /// in a background task.
+        /// </summary>
+        /// <returns>The OperationReturnMessage from the server.</returns>
         public static async Task<OperationReturnMessage> CheckLoginStatus()
         {
             string username = await SecureStorage.GetAsync("username");
@@ -107,6 +137,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Handle credentials if the app could not connect to server.
+        /// </summary>
+        /// <param name="username">The username</param>
+        /// <returns></returns>
         private static OperationReturnMessage CannotConnectToServer(string username)
         {
             if ((username != null) && (username != ""))

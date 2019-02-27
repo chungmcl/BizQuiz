@@ -18,11 +18,12 @@ namespace appFBLA2019
         private const int headerSize = 5;
 
         // Server Release Build: 7777 Server Debug Build: 7778
-        public static int Port { get { return 7778; } }
+        public static int Port { get { return 7777; } }
 
         public static string Server { get; set; }
         public static TcpClient client;
         public static NetworkStream netStream;
+        private static object lockObj = new object();
 
         // Raw-data stream of connection encrypted with TLS.
         public static SslStream ssl;
@@ -35,12 +36,9 @@ namespace appFBLA2019
         
         public static byte[] SendByteArray(byte[] data)
         {
-            // initialze an empty sslStream in order to lock it
-            ssl = new SslStream(new MemoryStream());
-
             // Prevent sending and receiving corrupted data
             // because of thread collisions through the lock
-            lock (ssl)
+            lock (lockObj)
             {
                 if (SetupConnection())
                 {
@@ -159,7 +157,7 @@ namespace appFBLA2019
                             {
                                 
                                 ssl.WriteTimeout = 5000;
-                                ssl.ReadTimeout = 10000;
+                                ssl.ReadTimeout = 5000;
 
                                 ssl.AuthenticateAsClient("BizQuizServer");
                                 return true;

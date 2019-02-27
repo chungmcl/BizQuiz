@@ -4,7 +4,6 @@ using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace appFBLA2019
@@ -27,6 +26,11 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Create a new account.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonCreateAccount_Clicked(object sender, EventArgs e)
         {
             this.ButtonCreateAccount.IsEnabled = false;
@@ -40,6 +44,7 @@ namespace appFBLA2019
             string password = this.EntryPassword.Text.Trim();
             string email = this.EntryEmail.Text.Trim();
 
+            // Connect to the server in a background task and await a response.
             OperationReturnMessage response = await Task.Run(() => ServerOperations.RegisterAccount(username, password, email));
 
             if (response != OperationReturnMessage.FalseFailedConnection)
@@ -72,29 +77,41 @@ namespace appFBLA2019
             {
                 this.LabelMessage.Text = "Connection failed: Please try again.";
             }
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                this.ButtonCreateAccount.IsEnabled = true;
-                this.EntryEmail.IsEnabled = true;
-                this.EntryPassword.IsEnabled = true;
-                this.EntryUsername.IsEnabled = true;
-                this.ActivityIndicator.IsVisible = false;
-                this.ActivityIndicator.IsRunning = false;   
-            });
+
+            this.ButtonCreateAccount.IsEnabled = true;
+            this.EntryEmail.IsEnabled = true;
+            this.EntryPassword.IsEnabled = true;
+            this.EntryUsername.IsEnabled = true;
+            this.ActivityIndicator.IsVisible = false;
+            this.ActivityIndicator.IsRunning = false;
         }
 
+        /// <summary>
+        /// Handle when the user successfully confirms email.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         private async void OnEmailConfirmed(object source, EventArgs eventArgs)
         {
             this.OnAccountCreated(true);
             await this.Navigation.PopAsync();
         }
 
+        /// <summary>
+        /// Handle when user chooses to confirm email later.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         private async void OnConfirmLaterSelected(object source, EventArgs eventArgs)
         {
             this.OnAccountCreated(false);
             await this.Navigation.PopAsync();
         }
 
+        /// <summary>
+        /// Handle when the account is successfully created.
+        /// </summary>
+        /// <param name="emailConfirmed"></param>
         protected void OnAccountCreated(bool emailConfirmed)
         {
             CredentialManager.SaveCredential(this.username, this.password, emailConfirmed);
@@ -112,10 +129,26 @@ namespace appFBLA2019
             public string Username { get; set; }
         }
 
+        /// <summary>
+        /// If the username length fits the requirements.
+        /// </summary>
         private bool usernameLength;
+        /// <summary>
+        /// If the password length fits the requirements.
+        /// </summary>
         private bool passwordLength;
+        /// <summary>
+        /// If the email is a valid address.
+        /// </summary>
         private bool emailCorrect;
 
+        /// <summary>
+        /// Show a "check" or "X" in UI to specify whether if the field is valid.
+        /// </summary>
+        /// <param name="newIcon">Name of the resource to change icon to.</param>
+        /// <param name="oldIcon">Name of the resource the icon was.</param>
+        /// <param name="image">Reference to the icon object.</param>
+        /// <returns></returns>
         private async Task CheckIconAsync(string newIcon, string oldIcon, Image image)
         {
             if (image.Source.ToString().Split(':')[1].Trim() == oldIcon)
@@ -128,11 +161,19 @@ namespace appFBLA2019
                 await image.FadeTo(1, 250, Easing.CubicInOut);
         }
 
+        /// <summary>
+        /// Check if entries are valid and enable or disable create account button accordingly.
+        /// </summary>
         private void CheckEntries()
         {
             this.ButtonCreateAccount.IsEnabled = this.usernameLength && this.passwordLength && this.emailCorrect;
         }
 
+        /// <summary>
+        /// Handle when text in username entry is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void EntryUsername_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (EntryUsername.Text.Length > minLength && EntryUsername.Text.Length <= maxLength)
@@ -148,6 +189,11 @@ namespace appFBLA2019
             this.CheckEntries();
         }
 
+        /// <summary>
+        /// Handle when text in password entry is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void EntryPassword_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (EntryPassword.Text.Length > minLength && EntryPassword.Text.Length <= maxLength)
@@ -163,11 +209,19 @@ namespace appFBLA2019
             this.CheckEntries();
         }
 
+        /// <summary>
+        /// Regex string to check if email is in valid format.
+        /// </summary>
         private string ComplexEmailPattern = @"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" // local-part
             + "@"
             + @"((([\w]+([-\w]*[\w]+)*\.)+[a-zA-Z]+)|" // domain
             + @"((([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]).){3}[01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]))\z"; // or IP Address
-
+        
+        /// <summary>
+        /// Handle when text in email entry is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void EntryEmail_TextChanged(object sender, TextChangedEventArgs e)
         {
             if(Regex.IsMatch(EntryEmail.Text, ComplexEmailPattern))

@@ -118,7 +118,7 @@ namespace appFBLA2019
             }
         }
 
-        public static void UpdateLocalDatabase()
+        public static async Task UpdateLocalDatabase()
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm threadInstance = Realm.GetInstance(threadConfig);

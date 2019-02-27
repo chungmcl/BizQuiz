@@ -32,7 +32,7 @@ namespace appFBLA2019
             if (CredentialManager.IsLoggedIn)
             {
                 CreateNewQuizPage quiz = new CreateNewQuizPage();
-                this.Navigation.PushAsync(quiz);
+                await this.Navigation.PushAsync(quiz);
             }
             else
             {
@@ -88,6 +88,7 @@ namespace appFBLA2019
         private async Task UpdateProfileContent()
         {
             this.QuizStack.Children.Clear();
+            this.QuizStack.IsVisible = false;
             this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
@@ -96,7 +97,7 @@ namespace appFBLA2019
             {
                 this.totalCount = 0;
                 this.SetupLocalQuizzes();
-                this.SetupNetworkQuizzes();
+                //this.SetupNetworkQuizzes();
                 this.totalCount += ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
                 if (totalCount == 0)
                 {
@@ -116,7 +117,7 @@ namespace appFBLA2019
                 }
                 Device.BeginInvokeOnMainThread(() =>
                     this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
-                });
+            });
 
             if (this.ToolbarItems.Count <= 0)
             {
@@ -176,9 +177,6 @@ namespace appFBLA2019
         private int totalCount = 0;
         private void SetupNetworkQuizzes()
         {
-            //this will take a while it would be good to make it async
-            
-            this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             List<SearchInfo> chunk = SearchUtils.GetQuizzesByAuthorChunked(CredentialManager.Username, this.currentChunk);
             if (chunk.Count == 0)
             {

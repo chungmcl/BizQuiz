@@ -10,7 +10,16 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EmailConfirmationPage : ContentPage
     {
+        /// <summary>
+        /// If the email is confirmed.
+        /// </summary>
         private bool emailConfirmed;
+
+        /// <summary>
+        /// Construct the confirmation page based on the username and password.
+        /// </summary>
+        /// <param name="username">Username</param>
+        /// <param name="password">Password</param>
         public EmailConfirmationPage(string username, string password)
         {
             this.InitializeComponent();
@@ -18,13 +27,21 @@ namespace appFBLA2019
             this.password = password;
         }
 
+        /// <summary>
+        /// Setup page elements when the page appears.
+        /// </summary>
         protected async override void OnAppearing()
         {
             base.OnAppearing();
             this.LabelTitle.Text = "Loading...";
+
+            // Load the user's email into top text
             await Task.Run(() => this.GetEmail());
         }
 
+        /// <summary>
+        /// Handle when the page dissappears
+        /// </summary>
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
@@ -40,11 +57,18 @@ namespace appFBLA2019
 
         public event EmailConfirmedEventHandler EmailConfirmed;
 
+        /// <summary>
+        /// Handle when user chooses to confirm email later.
+        /// </summary>
         protected virtual void OnConfirmLaterSelected()
         {
             this.ConfirmLaterSelected?.Invoke(this, EventArgs.Empty);
+            this.emailConfirmed = false;
         }
 
+        /// <summary>
+        /// Handle when the email is successfully confirmed.
+        /// </summary>
         protected virtual void OnEmailConfirmed()
         {
             this.emailConfirmed = true;
@@ -56,9 +80,14 @@ namespace appFBLA2019
         private string username;
         private string password;
 
+        /// <summary>
+        /// Handle when the close button is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonClose_Clicked(object sender, EventArgs e)
         {
-            this.OnConfirmLaterSelected();
+            this.emailConfirmed = false;
             await this.Navigation.PopModalAsync(true);
         }
 
