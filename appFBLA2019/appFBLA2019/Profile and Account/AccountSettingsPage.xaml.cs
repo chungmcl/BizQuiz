@@ -404,7 +404,9 @@ namespace appFBLA2019
         private async Task OpenFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
         {
             ((frame.Content as StackLayout).Children[0] as StackLayout).IsEnabled = false;
+#pragma warning disable CS4014
             contentStack.FadeTo(1, 250, Easing.CubicInOut);
+#pragma warning restore CS4014
 
             contentStack.IsVisible = true;
 
@@ -419,7 +421,9 @@ namespace appFBLA2019
         private async Task CloseFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
         {
             ((frame.Content as StackLayout).Children[0] as StackLayout).IsEnabled = false;
+#pragma warning disable CS4014
             contentStack.FadeTo(0, 175, Easing.CubicInOut);
+#pragma warning restore CS4014
             await imageButton.RelRotateTo(180);
             await frame.LayoutTo(new Rectangle(frame.X,
                 frame.Y,

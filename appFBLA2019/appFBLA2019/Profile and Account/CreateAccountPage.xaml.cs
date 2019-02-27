@@ -130,13 +130,13 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// If the username length fits the requirements.
+        /// If the username length fits the requirements and contains no whitespace.
         /// </summary>
-        private bool usernameLength;
+        private bool usernameCorrect;
         /// <summary>
-        /// If the password length fits the requirements.
+        /// If the password length fits the requirements and contains no whitespace.
         /// </summary>
-        private bool passwordLength;
+        private bool passwordCorrect;
         /// <summary>
         /// If the email is a valid address.
         /// </summary>
@@ -166,7 +166,7 @@ namespace appFBLA2019
         /// </summary>
         private void CheckEntries()
         {
-            this.ButtonCreateAccount.IsEnabled = this.usernameLength && this.passwordLength && this.emailCorrect;
+            this.ButtonCreateAccount.IsEnabled = this.usernameCorrect && this.passwordCorrect && this.emailCorrect;
         }
 
         /// <summary>
@@ -176,14 +176,15 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void EntryUsername_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (EntryUsername.Text.Length > minLength && EntryUsername.Text.Length <= maxLength)
+            // Check if username is a viable length and if it doesn't have a space
+            if (this.EntryUsername.Text.Length > minLength && this.EntryUsername.Text.Length <= maxLength && !this.EntryUsername.Text.Contains(" "))
             {
-                this.usernameLength = true;
+                this.usernameCorrect = true;
                 await this.CheckIconAsync("ic_check_green_48dp.png", "ic_bad_red_48dp.png", this.checkUsername);
             }
             else
             {
-                this.usernameLength = false;
+                this.usernameCorrect = false;
                 await this.CheckIconAsync("ic_bad_red_48dp.png", "ic_check_green_48dp.png", this.checkUsername);
             }
             this.CheckEntries();
@@ -196,14 +197,14 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void EntryPassword_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (EntryPassword.Text.Length > minLength && EntryPassword.Text.Length <= maxLength)
+            if (this.EntryPassword.Text.Length > minLength && this.EntryPassword.Text.Length <= maxLength && !this.EntryPassword.Text.Contains(" "))
             {
-                this.passwordLength = true;
+                this.passwordCorrect = true;
                 await this.CheckIconAsync("ic_check_green_48dp.png", "ic_bad_red_48dp.png", this.checkPassword);
             }
             else
             {
-                this.passwordLength = false;
+                this.passwordCorrect = false;
                 await this.CheckIconAsync("ic_bad_red_48dp.png", "ic_check_green_48dp.png", this.checkPassword);
             }
             this.CheckEntries();
@@ -224,7 +225,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void EntryEmail_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(Regex.IsMatch(EntryEmail.Text, ComplexEmailPattern))
+            if(Regex.IsMatch(this.EntryEmail.Text, this.ComplexEmailPattern))
             {
                 this.emailCorrect = true;
                 await this.CheckIconAsync("ic_check_green_48dp.png", "ic_bad_red_48dp.png", this.checkEmail);

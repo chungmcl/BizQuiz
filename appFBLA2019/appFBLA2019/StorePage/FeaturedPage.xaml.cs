@@ -18,9 +18,9 @@ namespace appFBLA2019
 
         public FeaturedPage()
         {
-            InitializeComponent();
+            this.InitializeComponent();
             this.currentChunk = 1;
-            quizzesFeatured = new List<SearchInfo>();
+            this.quizzesFeatured = new List<SearchInfo>();
         }
 
         protected async override void OnAppearing()
@@ -54,7 +54,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SubmitReport(ex, nameof(FeaturedPage));
+                BugReportHandler.SaveReport(ex, nameof(FeaturedPage));
                 await this.DisplayAlert("Error", "Couldn't get quizzes", "Ok");
             }
         }
@@ -200,11 +200,11 @@ namespace appFBLA2019
                     }
                     else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                     {
-                        await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                        await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
                     }
                     else
                     {
-                        await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
+                        await this.DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
                     }
                 }
             }
@@ -220,11 +220,11 @@ namespace appFBLA2019
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
-                    await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                    await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
                 }
                 else
                 {
-                    await DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                    await this.DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
                 }
             }
 

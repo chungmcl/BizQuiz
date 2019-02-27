@@ -84,7 +84,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SubmitReport(ex, "QuizRosterDatabase.GetQuizInfo()");
+                BugReportHandler.SaveReport(ex, "QuizRosterDatabase.GetQuizInfo()");
                 return null;
             }
         }
@@ -132,7 +132,7 @@ namespace appFBLA2019
                     {
                         if (QuizInfos[i].IsDeletedLocally)
                         {
-                            ServerOperations.DeleteQuiz(QuizInfos[i].DBId);
+                            await ServerOperations.DeleteQuiz(QuizInfos[i].DBId);
                         }
                         else if (QuizInfos[i].SyncStatus != 4)
                         {

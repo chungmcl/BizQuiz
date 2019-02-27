@@ -17,7 +17,7 @@ namespace appFBLA2019
 
         public ForgotPasswordPage ()
 		{
-			InitializeComponent ();
+			this.InitializeComponent ();
             this.username = "";
 
         }
@@ -46,7 +46,7 @@ namespace appFBLA2019
             }
             else
             {
-                await DisplayAlert("Empty Field", "Username cannot be empty.", "Ok");
+                await this.DisplayAlert("Empty Field", "Username cannot be empty.", "Ok");
             }
             this.ActivityIndicator.IsVisible = false;
             this.ActivityIndicator.IsRunning = false;
@@ -62,21 +62,21 @@ namespace appFBLA2019
                     ServerOperations.ForgotPasswordChangePassword(this.username, this.EntryCode.Text.Trim(), this.EntryPassword.Text.Trim());
                 if (message == OperationReturnMessage.True)
                 {
-                    await DisplayAlert("Password Changed", "Your password was sucessfully changed.", "Ok");
+                    await this.DisplayAlert("Password Changed", "Your password was sucessfully changed.", "Ok");
                     await this.Navigation.PopModalAsync();
                 }
                 else if (message == OperationReturnMessage.FalseInvalidCredentials)
                 {
-                    await DisplayAlert("Incorrect Code", "Your code was incorrect. Please try again.", "Ok");
+                    await this.DisplayAlert("Incorrect Code", "Your code was incorrect. Please try again.", "Ok");
                 }
                 else
                 {
-                    await DisplayAlert("Failed", "Your password change was failed. Please try again.", "Ok");
+                    await this.DisplayAlert("Failed", "Your password change was failed. Please try again.", "Ok");
                 }
             }
             else
             {
-                await DisplayAlert("Invalid fields", "Passwords do not match or are not greater than five characters or less than 32 characters", "Ok");
+                await this.DisplayAlert("Invalid fields", "Passwords do not match or are not greater than five characters or less than 32 characters", "Ok");
             }
             this.ActivityIndicator.IsVisible = false;
             this.ActivityIndicator.IsRunning = false;

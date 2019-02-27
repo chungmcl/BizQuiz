@@ -65,6 +65,7 @@ namespace appFBLA2019
             //ServerConnector.Server = "73.254.202.205";
 
             await ThreadTimer.RunServerChecks();
+            BugReportHandler.ProcessCrashLog();
         }
 
         private static void HandleUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
