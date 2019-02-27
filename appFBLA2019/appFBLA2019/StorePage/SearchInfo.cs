@@ -4,7 +4,7 @@ using System.Text;
 
 namespace appFBLA2019
 {
-    internal class SearchInfo
+    public class SearchInfo
     {
         public string Title { get; set; }
         public string DBId { get; set; }

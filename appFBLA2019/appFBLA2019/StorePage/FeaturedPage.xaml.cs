@@ -18,9 +18,9 @@ namespace appFBLA2019
 
         public FeaturedPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             this.currentChunk = 1;
-            this.quizzesFeatured = new List<SearchInfo>();
+            quizzesFeatured = new List<SearchInfo>();
         }
 
         protected async override void OnAppearing()
@@ -54,7 +54,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SaveReport(ex, nameof(FeaturedPage));
+                BugReportHandler.SubmitReport(ex, nameof(FeaturedPage));
                 await this.DisplayAlert("Error", "Couldn't get quizzes", "Ok");
             }
         }
@@ -190,15 +190,7 @@ namespace appFBLA2019
                 bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
                 if (answer)
                 {
-
-
                     await button.FadeTo(1, 150, Easing.CubicInOut);
-                    QuizInfo info = QuizRosterDatabase.GetQuizInfo(dbId);
-                    string location = App.UserPath + "/" + info.Category + "/" + info.QuizName + "`" + info.AuthorName;
-                    if (Directory.Exists(location))
-                        Directory.Delete(location, true);
-
-                    QuizRosterDatabase.DeleteQuizInfo(dbId);
                     OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.UnsubscribeToQuiz(dbId));
                     if (returnMessage == OperationReturnMessage.True)
                     {
@@ -208,34 +200,19 @@ namespace appFBLA2019
                     }
                     else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                     {
-                        await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
-                        CredentialManager.IsLoggedIn = false;
+                        await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
                     }
                     else
                     {
-                        await this.DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
+                        await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
                     }
                 }
             }
             else // subscribe
             {
-
-                OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.SubscribeToQuiz(dbId));
+                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToLevel(dbId, this.quizzesFeatured);
                 if (returnMessage == OperationReturnMessage.True)
                 {
-                    SearchInfo quiz = this.quizzesFeatured.Where(searchInfo => searchInfo.DBId == dbId).First();
-                    string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
-                    QuizInfo newInfo = new QuizInfo
-                    {
-                        DBId = quiz.DBId,
-                        AuthorName = quiz.Author,
-                        QuizName = quiz.QuizName,
-                        Category = quiz.Category,
-                        LastModifiedDate = lastModifiedDate,
-                        SyncStatus = 4 // 4 to represent not present in local directory and need download
-                    };
-                    QuizRosterDatabase.NewQuizInfo(newInfo);
-
                     await button.FadeTo(0, 150, Easing.CubicInOut);
                     button.Source = "ic_playlist_add_check_black_48dp.png";
                     button.HeightRequest = 30;
@@ -243,12 +220,11 @@ namespace appFBLA2019
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
-                    await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
-                    CredentialManager.IsLoggedIn = false;
+                    await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
                 }
                 else
                 {
-                    await this.DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                    await DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
                 }
             }
 

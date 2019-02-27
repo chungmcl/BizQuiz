@@ -84,14 +84,12 @@ namespace appFBLA2019
         /// </summary>
         public void ResetQuiz()
         {
-            DBHandler.Database.realmDB.Write(() =>
+            foreach (Question x in this.Questions)
             {
-                foreach (Question x in this.Questions)
-                {
-                    x.Status = 0;
-                }
+                Question copyQuestion = new Question(x);
+                copyQuestion.Status = 0;
+                DBHandler.Database.EditQuestion(copyQuestion);
             }
-               );
         }
     }
 }

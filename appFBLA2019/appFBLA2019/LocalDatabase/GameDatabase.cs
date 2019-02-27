@@ -14,20 +14,16 @@ namespace appFBLA2019
     /// </summary>
     public class GameDatabase
     {
+        private const string realmExtension = ".realm";
+        public readonly string DBFolderPath;
+        private readonly string dbPath;
+        public readonly string fileName;
+
         public GameDatabase(string dbFolderPath, string quizTitle)
         {
-            try
-            {
-                this.dbPath = dbFolderPath + $"/{quizTitle}{realmExtension}";
-                this.DBFolderPath = dbFolderPath + "/";
-                RealmConfiguration rC = new RealmConfiguration(this.dbPath);
-                this.realmDB = Realm.GetInstance(rC);
-                this.fileName = $"/{quizTitle}{realmExtension}";
-            }
-            catch (Exception ex)
-            {
-                BugReportHandler.SaveReport(ex, nameof(GameDatabase));
-            }
+            this.dbPath = dbFolderPath + $"/{quizTitle}{realmExtension}";
+            this.DBFolderPath = dbFolderPath + "/";
+            this.fileName = $"/{quizTitle}{realmExtension}";
         }
 
         /// <summary>
@@ -36,19 +32,8 @@ namespace appFBLA2019
         /// <param name="fullPath"></param>
         public GameDatabase(string fullPath)
         {
-            try
-            {
-                RealmConfiguration rC = new RealmConfiguration(fullPath);
-                this.realmDB = Realm.GetInstance(rC);
-            }
-            catch
-            {
-
-            }
+            this.dbPath = fullPath;
         }
-
-        public readonly string fileName;
-        public Realm realmDB;
 
         public void AddQuestions(List<Question> questions)
         {
@@ -65,6 +50,7 @@ namespace appFBLA2019
 
         public void DeleteQuestions(params Question[] questions)
         {
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
             foreach (Question question in questions)
             {
                 if (question.NeedsPicture)
@@ -72,18 +58,19 @@ namespace appFBLA2019
                     File.Delete(this.DBFolderPath + "/" + question.QuestionId + ".jpg");
                 }
 
-                this.realmDB.Write(() =>
+                realmDB.Write(() =>
                 {
-                    this.realmDB.Remove(question);
+                    realmDB.Remove(question);
                 });
             }
         }
 
         public void EditQuestion(Question updatedQuestion)
         {
-            this.realmDB.Write(() =>
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            realmDB.Write(() =>
             {
-                this.realmDB.Add(updatedQuestion, update: true);
+                realmDB.Add(updatedQuestion, update: true);
             });
 
             if (updatedQuestion.NeedsPicture)
@@ -95,7 +82,8 @@ namespace appFBLA2019
 
         public List<Question> GetQuestions()
         {
-            IQueryable<Question> queryable = this.realmDB.All<Question>();
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            IQueryable<Question> queryable = realmDB.All<Question>();
             List<Question> questions = new List<Question>(queryable);
             for (int i = 0; i < queryable.Count(); i++)
             {
@@ -107,12 +95,9 @@ namespace appFBLA2019
             return questions;
         }
 
-        private const string realmExtension = ".realm";
-        public readonly string DBFolderPath;
-        private readonly string dbPath;
-
         private void SaveQuestion(Question question)
         {
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
             string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
             question.QuestionId = dbPrimaryKey;
 
@@ -140,28 +125,30 @@ namespace appFBLA2019
                 File.WriteAllBytes(this.DBFolderPath + "/" + dbPrimaryKey + ".jpg", imageByteArray);
             }
 
-            this.realmDB.Write(() =>
+            realmDB.Write(() =>
             {
-                this.realmDB.Add(question);
+                realmDB.Add(question);
             });
         }
 
         public QuizInfo GetQuizInfo()
         {
-            return this.realmDB.All<QuizInfo>().First();
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            return realmDB.All<QuizInfo>().First();
         }
 
         public void NewQuizInfo(string authorName, string quizName, string category)
         {
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
             QuizInfo newQuizInfo = new QuizInfo(authorName, quizName, category)
             {
                 // Sync status is irrelevant in a Quiz Database's copy of the QuizInfo
                 SyncStatus = -1
             };
 
-            this.realmDB.Write(() =>
+            realmDB.Write(() =>
             {
-                this.realmDB.Add(newQuizInfo);
+                realmDB.Add(newQuizInfo);
             });
 
             QuizInfo rosterCopy = new QuizInfo(newQuizInfo)
@@ -173,9 +160,10 @@ namespace appFBLA2019
 
         public void EditQuizInfo(QuizInfo editedQuizInfo)
         {
-            this.realmDB.Write(() =>
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            realmDB.Write(() =>
             {
-                this.realmDB.Add(editedQuizInfo, update: true);
+                realmDB.Add(editedQuizInfo, update: true);
             });
 
             QuizInfo rosterCopy = new QuizInfo(editedQuizInfo)

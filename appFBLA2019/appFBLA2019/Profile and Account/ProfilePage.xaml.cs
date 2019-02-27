@@ -64,11 +64,12 @@ namespace appFBLA2019
         /// <returns></returns>
         public async Task UpdateProfilePage()
         {
+            this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
+            this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
+
             this.IsLoading = true;
             this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-            this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
-            this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
             if (this.StackLayoutProfilePageContent.IsVisible)
                 await UpdateProfileContent();
             else
