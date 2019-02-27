@@ -21,6 +21,7 @@ namespace appFBLA2019
         /// </param>
         public Quiz(string category, string quizTitle, string author)
         {
+            this.Title = quizTitle;
             DBHandler.SelectDatabase(category, quizTitle, author);
         }
 

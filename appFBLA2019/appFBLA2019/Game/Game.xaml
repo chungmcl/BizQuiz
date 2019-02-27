@@ -13,16 +13,17 @@
                 </StackLayout>
             </Frame>
             <RelativeLayout x:Name="RelativeLayoutMain" Padding="10, 10, 10, 10">
-                <ProgressBar x:Name="ProgressBar" VerticalOptions="Start" Progress = "0" HeightRequest="10" ProgressColor="Accent" Margin="10"
+                <ProgressBar x:Name="ProgressBar" VerticalOptions="Start" Progress = "0" HeightRequest="10" ProgressColor="Accent"
                         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}"
-                        RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.6, Property=Height, Constant=-10}"/>
+                        RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Factor=0, Property=Height}"/>
                 <!--<ScrollView RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}"
                             RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.6, Property=Height}">-->
                 <StackLayout RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.6, Property=Height}"
-                             RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}">
-                        <Label x:Name="LabelQuestion" FontAttributes="bold" FontSize="25" VerticalTextAlignment="Center" Margin="5"></Label>
+                             RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}"
+                             RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToView, Factor=0, Property=X, ElementName=ProgressBar, Constant=5}">
+                        <Label x:Name="LabelQuestion" FontSize="40" VerticalTextAlignment="Center" Margin="5"></Label>
                         <Image x:Name="QuestionImage" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="False" Grid.Row="0"></Image>
-                    </StackLayout>
+                </StackLayout>
                 <!--</ScrollView>-->
                 <Grid x:Name="InputGrid" Padding="10"
                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.4, Property=Height}"
@@ -36,4 +37,7 @@
             </RelativeLayout>
         </RelativeLayout>
     </ContentPage.Content>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="ScoreLabel" Order="Primary"/>
+    </ContentPage.ToolbarItems>
 </ContentPage>
