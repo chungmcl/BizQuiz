@@ -47,6 +47,8 @@ namespace appFBLA2019
             base.OnDisappearing();
             if (!this.emailConfirmed)
                 OnConfirmLaterSelected();
+            else
+                OnEmailConfirmed();
         }
 
         public delegate void ConfirmLaterSelectedEventHandler(object source, EventArgs eventArgs);
@@ -97,7 +99,7 @@ namespace appFBLA2019
 
             if (result == OperationReturnMessage.True)
             {
-                this.OnEmailConfirmed();
+                this.emailConfirmed = true;
                 await this.Navigation.PopModalAsync(true);
             }
             else
