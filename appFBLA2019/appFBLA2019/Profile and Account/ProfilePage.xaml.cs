@@ -66,6 +66,8 @@ namespace appFBLA2019
         {
             this.LocalLoginPage.LoggedIn -= this.OnLoggedIn;
             this.IsLoading = true;
+            this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
+            await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
             this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
             if (this.StackLayoutProfilePageContent.IsVisible)
@@ -89,7 +91,6 @@ namespace appFBLA2019
         {
             this.QuizStack.Children.Clear();
             this.QuizStack.IsVisible = false;
-            this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
 
