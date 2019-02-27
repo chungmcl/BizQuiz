@@ -82,6 +82,10 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task AnimateNextBanner()
         {
+            while (this.LabelFeedback.FontSize / 2 * LabelFeedback.Text.Length > (NextBanner.Width - 5))
+            {
+                this.LabelFeedback.FontSize--;
+            }
             this.NextBanner.ForceLayout();
             await this.NextBanner.TranslateTo((this.Width - 300) / 2, this.Height * 2 / 3, 500, Easing.SpringOut);
         }
@@ -150,23 +154,25 @@ namespace appFBLA2019
         private async Task CorrectAnswer()
         {
             this.LabelFeedback.Text = "Correct!";
+            this.LabelFeedback.FontSize = 40;
             this.NextBanner.BackgroundColor = Color.Green;
             this.LabelFeedback.TextColor = Color.White;
             //add 2 points for getting it right first time, 1 point for getting it right a second time or later
             if (this.currentQuestion.Status == 0)
             {
-                this.score += 2; this.LabelFeedback.Text += " First try!";
+                this.score += 2;
+                this.LabelFeedback.Text += " First try! + 2 points";
             }
             else
             {
                 this.score++;
+                this.LabelFeedback.Text += " + 1 point";
             }
 
             // 2 represents 'correct'
             Question copyQuestion = new Question(this.currentQuestion);
             copyQuestion.Status = 2;
             DBHandler.Database.EditQuestion(copyQuestion);
-
             await this.AnimateNextBanner();
         }
 
@@ -181,6 +187,7 @@ namespace appFBLA2019
             if (this.quiz.QuestionsRemaining > 0)
             {
                 // Save as reference
+                this.ScoreLabel.Text = $"{this.score}/{this.quiz.Questions.Count * 2}";
                 this.currentQuestion = this.quiz.GetQuestion();
                 await this.SetUpQuestion(this.currentQuestion);
             }
@@ -245,6 +252,7 @@ namespace appFBLA2019
                 return;
             }
 
+            int fontSize = 30;
             this.LabelQuestion.Text = question.QuestionText;
             this.LabelQuestion.VerticalTextAlignment = TextAlignment.Center;
             this.LabelQuestion.VerticalOptions = LayoutOptions.Center;
@@ -283,14 +291,12 @@ namespace appFBLA2019
                     Button button = new Button
                     {
                         Text = answer,
-                        FontSize = 30,
                         CornerRadius = 25,
                         Padding = 10,
                         BackgroundColor = Color.Accent,
                         TextColor = Color.White,
                         VerticalOptions = LayoutOptions.FillAndExpand
                     };
-
                     button.Clicked += async(object sender, EventArgs e) =>
                     {
                         await this.CheckButtonAnswer(((Button)sender).Text);
@@ -326,6 +332,16 @@ namespace appFBLA2019
                     {
                         Grid.SetColumnSpan(button, 2);
                     }
+                    while (fontSize / 2 * button.Text.Length > (button.Width - 10) * 3.5)
+                    {
+                        double testSize = fontSize / 2 * button.Text.Length ;
+                        double buttonWidth = (button.Width - 10) * 3.5;
+                        fontSize--;
+                    }
+                }
+                foreach(View button in this.InputGrid.Children)
+                {
+                    (button as Button).FontSize = fontSize;
                 }
             }
             else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
