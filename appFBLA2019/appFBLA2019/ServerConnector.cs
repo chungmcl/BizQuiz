@@ -23,7 +23,7 @@ namespace appFBLA2019
         public static string Server { get; set; }
         public static TcpClient client;
         public static NetworkStream netStream;
-        private static object lockObj = new object();
+        private static readonly object lockObj = new object();
 
         // Raw-data stream of connection encrypted with TLS.
         public static SslStream ssl;
