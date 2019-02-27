@@ -273,10 +273,10 @@ namespace appFBLA2019
 
                     Question addThis;
                     //The answers to the question
-                    string[] answers = {((Editor)children[2]).Text, //Correct answer
-								((Editor)children[3]).Text, // Incorect answer
-								((Editor)children[4]).Text, // Incorect answer
-								((Editor)children[5]).Text}; // Incorect answer
+                    string[] answers = {((Editor)children[2]).Text.Trim(), //Correct answer
+								((Editor)children[3]).Text.Trim(), // Incorect answer
+								((Editor)children[4]).Text.Trim(), // Incorect answer
+								((Editor)children[5]).Text.Trim()}; // Incorect answer
 
                     // Checks if there is a question set
                     if (string.IsNullOrWhiteSpace(((Editor)children[1]).Text))
@@ -285,18 +285,18 @@ namespace appFBLA2019
                         goto exit;
                     }
 
-                    if (((ImageButton)children[6]).IsVisible) // if needs image
+                    if (((ImageButton)children[6]).IsVisible) // if the question needs an image
                     {
                         addThis = new Question(
-                                ((Editor)children[1]).Text, // The Question
+                                ((Editor)children[1]).Text.Trim(), // The Question
                                 ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
                                 answers)
                         { NeedsPicture = true };
                     }
-                    else // if not needs picture
+                    else // if the question does not need an image
                     {
                         addThis = new Question(
-                                ((Editor)children[1]).Text,
+                                ((Editor)children[1]).Text.Trim(),
                                 answers);
                     }
 
@@ -365,6 +365,7 @@ namespace appFBLA2019
                     };
                     DBHandler.Database.EditQuizInfo(updatedQuizInfo);
 
+                    // Logic for how to save each question.
                     for (int i = 0; i <= previousQuestions.Count() - 1; i++)
                     {
                         bool DBIdSame = true;
