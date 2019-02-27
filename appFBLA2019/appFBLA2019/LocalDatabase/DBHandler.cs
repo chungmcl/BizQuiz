@@ -51,7 +51,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)// If the database failed to connect
             {
-                BugReportHandler.SubmitReport(ex, nameof(DBHandler));
+                BugReportHandler.SaveReport(ex, nameof(DBHandler));
                 return false;
             }
         }

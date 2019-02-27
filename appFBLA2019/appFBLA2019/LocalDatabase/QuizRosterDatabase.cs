@@ -84,7 +84,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SubmitReport(ex, "QuizRosterDatabase.GetQuizInfo()");
+                BugReportHandler.SaveReport(ex, "QuizRosterDatabase.GetQuizInfo()");
                 return null;
             }
         }

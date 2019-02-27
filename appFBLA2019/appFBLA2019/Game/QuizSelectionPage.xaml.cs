@@ -349,7 +349,7 @@ namespace appFBLA2019
                 button.Source = "ic_cloud_done_black_48dp.png";
                 await button.FadeTo(1, 150, Easing.CubicInOut);
                 button.IsEnabled = true;
-                button.Clicked += SyncNoChange_Clicked;
+                button.Clicked += this.SyncNoChange_Clicked;
                 
             }
             else
@@ -358,7 +358,7 @@ namespace appFBLA2019
                 button.Source = "ic_cloud_upload_black_48dp.png";
                 await button.FadeTo(1, 150, Easing.CubicInOut);
                 button.IsEnabled = true;
-                await DisplayAlert("Quiz Upload Failed.", 
+                await this.DisplayAlert("Quiz Upload Failed.", 
                     "This quiz could not be uploaded to the server. Please try again.", 
                     "OK");
             }
@@ -381,7 +381,7 @@ namespace appFBLA2019
             {
                 button.Source = "ic_cloud_done_black_48dp.png";
                 button.IsEnabled = true;
-                button.Clicked += SyncNoChange_Clicked;
+                button.Clicked += this.SyncNoChange_Clicked;
                 
                 ((((button.Parent as StackLayout).Parent as StackLayout).Parent as RelativeLayout).Parent as Frame).StyleId = "Local";
             }
@@ -389,7 +389,7 @@ namespace appFBLA2019
             {
                 button.Source = "ic_cloud_download_black_48dp.png";
                 button.IsEnabled = true;
-                await DisplayAlert("Quiz Upload Failed.",
+                await this.DisplayAlert("Quiz Upload Failed.",
                     "This quiz could not be downloaded from the server. Please try again.",
                     "OK");
             }
