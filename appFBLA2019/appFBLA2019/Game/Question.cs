@@ -27,6 +27,24 @@ namespace appFBLA2019
         }
 
         /// <summary>
+        /// Creates a question based on another question - copy constructor
+        /// </summary>
+        /// <param name="question"></param>
+        public Question(Question question)
+        {
+            this.AnswerOne = question.AnswerOne;
+            this.AnswerTwo = question.AnswerTwo;
+            this.AnswerThree = question.AnswerThree;
+            this.CorrectAnswer = question.CorrectAnswer;
+            this.ImagePath = question.ImagePath;
+            this.NeedsPicture = question.NeedsPicture;
+            this.QuestionId = question.QuestionId;
+            this.QuestionType = question.QuestionType;
+            this.Status = question.Status;
+            this.QuestionText = question.QuestionText;
+        }
+
+        /// <summary>
         /// Creates a question that doesn't need an image
         /// </summary>
         /// <param name="question">  </param>

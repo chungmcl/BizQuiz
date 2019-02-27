@@ -28,7 +28,7 @@ namespace appFBLA2019
 		{
             this.isStartup = true;
             this.quizzesSearched = new List<SearchInfo>();
-            this.InitializeComponent();
+			InitializeComponent();
 			this.searchType = "Title";
             this.category = "All";
 		}
@@ -150,7 +150,7 @@ namespace appFBLA2019
             string dbId = button.StyleId;
             if (button.Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
             {
-                bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+                bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
                 if (answer)
                 {
                     await button.FadeTo(1, 150, Easing.CubicInOut);
@@ -168,7 +168,7 @@ namespace appFBLA2019
                     }
                     else
                     {
-                        await this.DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
+                        await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
                     }
                 }
             }
@@ -189,12 +189,13 @@ namespace appFBLA2019
                 }
                 else
                 {
-                    await this.DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                    await DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
                 }
             }
             
         }
 
+        private bool quizzesRemaining;
         private int currentChunk;
 
 		/// <summary>
@@ -206,6 +207,7 @@ namespace appFBLA2019
 		{
 			// Delete what was in there previously
 			this.end = false;
+            this.quizzesRemaining = true;
             this.currentChunk = 1;
 			Device.BeginInvokeOnMainThread(() => {
 			    this.SearchedStack.Children.Clear();
@@ -238,14 +240,14 @@ namespace appFBLA2019
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
             if (this.searchType == "Title")
-                chunk = SearchUtils.GetQuizzesByQuizNameChunked(this.SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizzesByQuizNameChunked(SearchBar.Text, this.currentChunk);
             else
-                chunk = SearchUtils.GetQuizzesByAuthorChunked(this.SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizzesByAuthorChunked(SearchBar.Text, this.currentChunk);
             if (this.currentChunk == 1 && chunk.Count == 0)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    this.SearchedStack.Children.Add(new Label()
+                    SearchedStack.Children.Add(new Label()
                     {
                         Text = "Sorry, we couldn't find any quizzes matching what you searched", 
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
@@ -255,7 +257,7 @@ namespace appFBLA2019
                 );
             }
             if (chunk.Count < 20)
-                this.end = true;
+                this.quizzesRemaining = false;
             await Task.Run(() => this.AddQuizs(chunk));
         }
 
