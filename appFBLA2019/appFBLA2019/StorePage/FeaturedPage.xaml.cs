@@ -190,15 +190,7 @@ namespace appFBLA2019
                 bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
                 if (answer)
                 {
-
-
                     await button.FadeTo(1, 150, Easing.CubicInOut);
-                    QuizInfo info = QuizRosterDatabase.GetQuizInfo(dbId);
-                    string location = App.UserPath + "/" + info.Category + "/" + info.QuizName + "`" + info.AuthorName;
-                    if (Directory.Exists(location))
-                        Directory.Delete(location, true);
-
-                    QuizRosterDatabase.DeleteQuizInfo(dbId);
                     OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.UnsubscribeToQuiz(dbId));
                     if (returnMessage == OperationReturnMessage.True)
                     {
@@ -209,7 +201,6 @@ namespace appFBLA2019
                     else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                     {
                         await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
-                        CredentialManager.IsLoggedIn = false;
                     }
                     else
                     {
@@ -219,23 +210,9 @@ namespace appFBLA2019
             }
             else // subscribe
             {
-
-                OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.SubscribeToQuiz(dbId));
+                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToLevel(dbId, this.quizzesFeatured);
                 if (returnMessage == OperationReturnMessage.True)
                 {
-                    SearchInfo quiz = this.quizzesFeatured.Where(searchInfo => searchInfo.DBId == dbId).First();
-                    string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
-                    QuizInfo newInfo = new QuizInfo
-                    {
-                        DBId = quiz.DBId,
-                        AuthorName = quiz.Author,
-                        QuizName = quiz.QuizName,
-                        Category = quiz.Category,
-                        LastModifiedDate = lastModifiedDate,
-                        SyncStatus = 4 // 4 to represent not present in local directory and need download
-                    };
-                    QuizRosterDatabase.NewQuizInfo(newInfo);
-
                     await button.FadeTo(0, 150, Easing.CubicInOut);
                     button.Source = "ic_playlist_add_check_black_48dp.png";
                     button.HeightRequest = 30;
@@ -244,7 +221,6 @@ namespace appFBLA2019
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
                     await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
-                    CredentialManager.IsLoggedIn = false;
                 }
                 else
                 {
