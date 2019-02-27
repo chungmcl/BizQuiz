@@ -20,6 +20,7 @@ namespace appFBLA2019
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         public bool IsLoading { get; set; }
         public bool isSetup;
+        public bool serverConnected;
 
         public QuizSelectionPage(string category)
         {
@@ -28,16 +29,7 @@ namespace appFBLA2019
             Directory.CreateDirectory(App.UserPath + $"{category}/");
             this.IsLoading = false;
             this.isSetup = false;
-            // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
-            //this.Setup();
         }
-
-        //public QuizSelectionPage()
-        //{
-        //    this.InitializeComponent();
-        //    Directory.CreateDirectory(App.Path + $"/{category}");
-        //    this.IsLoading = false;
-        //}
 
         protected override void OnSizeAllocated(double width, double height)
         {
@@ -60,7 +52,7 @@ namespace appFBLA2019
 
         private void CheckSetup()
         {
-            if (Application.Current.MainPage.Width >= 0 && !this.isSetup)
+            if (Application.Current.MainPage.Width >= 0 && !this.isSetup && !this.serverConnected)
             {
                 this.Setup();                
             }
@@ -335,6 +327,7 @@ namespace appFBLA2019
 
         private async void SyncUpload_Clicked(object sender, EventArgs e)
         {
+            this.serverConnected = true;
             ImageButton button = (sender as ImageButton);
             string quizPath = button.StyleId;
             button.IsEnabled = false;
@@ -362,10 +355,12 @@ namespace appFBLA2019
                     "This quiz could not be uploaded to the server. Please try again.", 
                     "OK");
             }
+            this.serverConnected = false;
         }
 
         private async void SyncDownload_Clicked(object sender, EventArgs e)
         {
+            this.serverConnected = true;
             ImageButton button = sender as ImageButton;
             string dbId = button.ClassId.Split('/')[0];
             string authorName = button.ClassId.Split('/')[1];
@@ -393,6 +388,7 @@ namespace appFBLA2019
                     "This quiz could not be downloaded from the server. Please try again.",
                     "OK");
             }
+            this.serverConnected = false;
         }
 
         private void SyncNoChange_Clicked(object sender, EventArgs e)
