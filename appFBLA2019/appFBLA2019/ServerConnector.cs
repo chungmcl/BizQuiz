@@ -23,6 +23,10 @@ namespace appFBLA2019
         public static string Server { get; set; }
         public static TcpClient client;
         public static NetworkStream netStream;
+
+        /// <summary>
+        /// An empty to object to serve as a thread lock
+        /// </summary>
         private static object lockObj = new object();
 
         // Raw-data stream of connection encrypted with TLS.
@@ -94,13 +98,9 @@ namespace appFBLA2019
                     {
                         int toRead = 0;
                         if ((size - bytesRead) > buffer.Length)
-                        {
                             toRead = buffer.Length;
-                        }
                         else
-                        {
                             toRead = size - bytesRead;
-                        }
 
                         bytes = ssl.Read(buffer, 0, toRead);
                         bytesRead += bytes;
