@@ -50,23 +50,27 @@ namespace appFBLA2019
                     {
                         if (ssl != null)
                         {
-                            if (CrossConnectivity.Current.IsConnected)
+                            lock (ssl)
                             {
-                                ssl.Write(data, 0, data.Length);
-                                ssl.Flush();
 
-                                byte[] header = ReadByteArray(headerSize);
-                                int size = BitConverter.ToInt32(header, 1);
-                                if (header.Length >= 5)
+                                if (CrossConnectivity.Current.IsConnected)
                                 {
-                                    byte[] returnedData = ReadByteArray(size);
-                                    return returnedData;
+                                    ssl.Write(data, 0, data.Length);
+                                    ssl.Flush();
+
+                                    byte[] header = ReadByteArray(headerSize);
+                                    int size = BitConverter.ToInt32(header, 1);
+                                    if (header.Length >= 5)
+                                    {
+                                        byte[] returnedData = ReadByteArray(size);
+                                        return returnedData;
+                                    }
+                                    else
+                                        return new byte[0];
                                 }
                                 else
                                     return new byte[0];
                             }
-                            else
-                                return new byte[0];
                         }
                         else
                             return new byte[0];

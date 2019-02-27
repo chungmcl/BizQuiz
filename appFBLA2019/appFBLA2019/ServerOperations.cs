@@ -181,6 +181,7 @@ namespace appFBLA2019
 
         public static bool GetQuiz(string dBId, string quizName, string authorName, string category)
         {
+            // TO DO: CHECK IF quizName or category changed and save accordingly
             string quizPath = App.UserPath + "/" + category + "/" + $"{quizName}`{authorName}/";
 
             Directory.CreateDirectory(quizPath);
@@ -206,6 +207,7 @@ namespace appFBLA2019
             {
                 SyncStatus = 2
             };
+            // TO DO: UPDATE LAST MODIFIED DATE AND SAVE ACCORDINGLY
             QuizRosterDatabase.EditQuizInfo(infoCopy);
 
             return true;
