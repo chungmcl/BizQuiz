@@ -542,7 +542,10 @@ namespace appFBLA2019
                             OperationReturnMessage returnMessage = await ServerOperations.UnsubscribeToQuiz(dbId);
                             if (returnMessage == OperationReturnMessage.True)
                             {
-                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                                realm.Write(() =>
+                                {
+                                    realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                                });
                             }
                         }
                         
