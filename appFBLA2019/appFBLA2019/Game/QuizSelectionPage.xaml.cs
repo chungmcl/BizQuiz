@@ -22,7 +22,7 @@ namespace appFBLA2019
         public bool IsLoading { get; set; }
         public bool isSetup;
 
-        private enum syncType { Offline = 1, Upload, Download, NoChange, Syncing };
+        private enum SyncType { Offline = 1, Upload, Download, NoChange, Syncing };
 
 
         public QuizSelectionPage(string category)
@@ -413,7 +413,7 @@ namespace appFBLA2019
         private async void SyncUpload_Clicked(object sender, EventArgs e)
         {
             ImageButton button = (sender as ImageButton);
-            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)syncType.Syncing] as ImageButton;
+            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ImageButton;
             string quizPath = button.StyleId;
             button.IsVisible = false;
             buttonSyncing.IsVisible = true;
@@ -422,8 +422,7 @@ namespace appFBLA2019
 #pragma warning restore
             if (await Task.Run(async () => await ServerOperations.SendQuiz(quizPath)))
             {
- 
-                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)syncType.NoChange] as ImageButton;
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
                 buttonSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
             }
@@ -446,7 +445,7 @@ namespace appFBLA2019
             string quizName = button.ClassId.Split('/')[2];
             string category = button.ClassId.Split('/')[3];
 
-            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)syncType.Syncing] as ImageButton;
+            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ImageButton;
             string quizPath = button.StyleId;
             button.IsVisible = false;
             buttonSyncing.IsVisible = true;
@@ -455,7 +454,7 @@ namespace appFBLA2019
 #pragma warning restore
             if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
             {
-                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)syncType.NoChange] as ImageButton;
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
                 buttonSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
 
