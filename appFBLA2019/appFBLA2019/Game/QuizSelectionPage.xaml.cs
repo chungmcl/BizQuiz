@@ -14,12 +14,16 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
+    
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class QuizSelectionPage : ContentPage
     {
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         public bool IsLoading { get; set; }
         public bool isSetup;
+
+        private enum syncType { Offline = 1, Upload, Download, NoChange, Syncing };
+
 
         public QuizSelectionPage(string category)
         {
@@ -32,12 +36,6 @@ namespace appFBLA2019
             //this.Setup();
         }
 
-        //public QuizSelectionPage()
-        //{
-        //    this.InitializeComponent();
-        //    Directory.CreateDirectory(App.Path + $"/{category}");
-        //    this.IsLoading = false;
-        //}
 
         protected override void OnSizeAllocated(double width, double height)
         {
@@ -62,13 +60,15 @@ namespace appFBLA2019
         {
             if (Application.Current.MainPage.Width >= 0 && !this.isSetup)
             {
-                this.Setup();                
+                this.Setup();
             }
         }
 
         private readonly string category;
 
-        // TO DO: Display author name of quiz
+        /// <summary>
+        /// Sets up the page with levels the user has subscribed to from the category of the page
+        /// </summary>
         internal void Setup()
         {
             if (!this.IsLoading)
@@ -157,8 +157,41 @@ namespace appFBLA2019
                     };
                     topStack.Children.Add(title);
 
-                    ImageButton Sync = new ImageButton
+#region SyncButtons
+
+                    // Add the sync buttons, We create one for each sync action to keep correct formatting and fix a sizing bug.
+                    ImageButton SyncOffline = new ImageButton // 1
                     {
+                        IsVisible = false,
+                        Source = "ic_cloud_off_black_48dp.png",
+                        HeightRequest = 25,
+                        WidthRequest = 25,
+                        BackgroundColor = Color.White,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.End,
+                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                    };
+                    SyncOffline.Clicked += this.SyncOffline_Clicked;
+                    topStack.Children.Add(SyncOffline);
+
+                    ImageButton SyncUpload = new ImageButton // 2
+                    {
+                        IsVisible = false,
+                        Source = "ic_cloud_upload_black_48dp.png",
+                        HeightRequest = 25,
+                        WidthRequest = 25,
+                        BackgroundColor = Color.White,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.End,
+                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                    };
+                    SyncUpload.Clicked += this.SyncUpload_Clicked;
+                    topStack.Children.Add(SyncUpload);
+
+                    ImageButton SyncDownload = new ImageButton // 3
+                    {
+                        IsVisible = false,
+                        Source = "ic_cloud_download_black_48dp.png",
                         HeightRequest = 25,
                         WidthRequest = 25,
                         BackgroundColor = Color.White,
@@ -167,10 +200,38 @@ namespace appFBLA2019
                         StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
                         ClassId = quiz.DBId + "/" + quiz.AuthorName + "/" + quiz.QuizName + "/" + quiz.Category
                     };
-                    
-                    topStack.Children.Add(Sync);
+                    SyncDownload.Clicked += this.SyncDownload_Clicked;
+                    topStack.Children.Add(SyncDownload);
 
-                    ImageButton imageButtonMenu = new ImageButton
+                    ImageButton SyncNoChange = new ImageButton // 4
+                    {
+                        IsVisible = false,
+                        Source = "ic_cloud_done_black_48dp.png",
+                        HeightRequest = 25,
+                        WidthRequest = 25,
+                        BackgroundColor = Color.White,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.End,
+                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                    };
+                    SyncNoChange.Clicked += this.SyncNoChange_Clicked;
+                    topStack.Children.Add(SyncNoChange);
+
+                    ImageButton Syncing = new ImageButton // 5
+                    {
+                        IsVisible = false,
+                        Source = "ic_autorenew_black_48dp.png",
+                        HeightRequest = 25,
+                        WidthRequest = 25,
+                        BackgroundColor = Color.White,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.End,
+                    };
+                    topStack.Children.Add(Syncing);
+
+                    #endregion SyncButtons
+                    #region Menu
+                    ImageButton imageButtonMenu = new ImageButton // 6
                     {
                         Source = "ic_more_vert_black_48dp.png",
                         HeightRequest = 35,
@@ -179,9 +240,7 @@ namespace appFBLA2019
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End
                     };
-
                     imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
-
                     topStack.Children.Add(imageButtonMenu);
 
                     Frame frameMenu = new Frame // Child of frameLayout
@@ -189,6 +248,7 @@ namespace appFBLA2019
                         Padding = 0,
                         IsVisible = false,
                     };
+
                     StackLayout menuStack = new StackLayout
                     {
                         FlowDirection = FlowDirection.LeftToRight,
@@ -243,6 +303,8 @@ namespace appFBLA2019
                         return parent.Y;
                     }), Constraint.Constant(95), Constraint.Constant(90));
 
+#endregion Menu
+
                     frameStack.Children.Add(topStack);
 
                     BoxView Seperator = new BoxView // 1
@@ -266,32 +328,42 @@ namespace appFBLA2019
                     };
                     frameStack.Children.Add(Author);
 
-                    if (quiz.SyncStatus == 3)
+#region SyncSetup
+                    // The sync button thats active in the current frame
+                    ImageButton ActiveSync;
+
+                    if (quiz.SyncStatus == 3) // SyncOffline
                     {
-                        Sync.Source = "ic_cloud_off_black_48dp.png";
-                        Sync.Clicked += this.SyncOffline_Clicked;
+                        SyncOffline.IsVisible = true;
+                        ActiveSync = SyncOffline;
                     }
-                    else if (quiz.SyncStatus == 2)
+                    else if (quiz.SyncStatus == 2) // SyncNoChange
                     {
-                        Sync.Source = "ic_cloud_done_black_48dp.png";
-                        Sync.Clicked += this.SyncNoChange_Clicked;
+                        SyncNoChange.IsVisible = true;
+                        ActiveSync = SyncNoChange;
                     }
-                    else if (quiz.SyncStatus == 1)
+                    else if (quiz.SyncStatus == 1) // SyncUpload
                     {
-                        Sync.Source = "ic_cloud_upload_black_48dp.png";
-                        Sync.Clicked += this.SyncUpload_Clicked;
+                        SyncUpload.IsVisible = true;
+                        ActiveSync = SyncUpload;
                     }
-                    else if (quiz.SyncStatus == 0 || quiz.SyncStatus == 4)
+                    else if (quiz.SyncStatus == 0 || quiz.SyncStatus == 4) // SyncDownload
                     {
-                        Sync.Source = "ic_cloud_download_black_48dp.png";
-                        Sync.Clicked += this.SyncDownload_Clicked;
-                        if (quiz.SyncStatus == 4)
+                        SyncDownload.IsVisible = true;
+                        ActiveSync = SyncDownload;
+                        if (quiz.SyncStatus == 4) // Sync Download & notLocal yet
                         {
                             frame.StyleId = "notLocal";
                             ButtonEdit.StyleId = "notLocal";
                         }
                     }
-                    
+                    else
+                    {
+                        SyncOffline.IsVisible = true;
+                        ActiveSync = SyncOffline;
+                    }
+#endregion SyncSetup
+
                     TapGestureRecognizer recognizer = new TapGestureRecognizer();
                     recognizer.Tapped += async (object sender, EventArgs e) =>
                     {
@@ -301,7 +373,7 @@ namespace appFBLA2019
                             frame.BackgroundColor = Color.LightGray;
                             Seperator.Color = Color.Gray;
                             imageButtonMenu.BackgroundColor = Color.LightGray;
-                            Sync.BackgroundColor = Color.LightGray;
+                            ActiveSync.BackgroundColor = Color.LightGray;
                             Quiz newQuiz = new Quiz(this.category, quiz.QuizName, quiz.AuthorName);
                             newQuiz.LoadQuestions();
                             await this.RemoveMenu(frameMenu);
@@ -309,7 +381,7 @@ namespace appFBLA2019
                             frame.BackgroundColor = Color.Default;
                             Seperator.Color = Color.LightGray;
                             imageButtonMenu.BackgroundColor = Color.White;
-                            Sync.BackgroundColor = Color.White;
+                            ActiveSync.BackgroundColor = Color.White;
                             frame.GestureRecognizers.Add(recognizer);
                         }
                         else
@@ -333,33 +405,34 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Called when the user tries to upload a quiz
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void SyncUpload_Clicked(object sender, EventArgs e)
         {
             ImageButton button = (sender as ImageButton);
+            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)syncType.Syncing] as ImageButton;
             string quizPath = button.StyleId;
-            button.IsEnabled = false;
-            await button.FadeTo(0, 150, Easing.CubicInOut);
-            button.Source = "ic_autorenew_black_48dp.png";
-            await button.FadeTo(1, 150, Easing.CubicInOut);
-            button.HeightRequest = 25;
-
-            if (await Task.Run(async() => await ServerOperations.SendQuiz(quizPath)))
+            button.IsVisible = false;
+            buttonSyncing.IsVisible = true;
+#pragma warning disable
+            buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
+#pragma warning restore
+            if (await Task.Run(async () => await ServerOperations.SendQuiz(quizPath)))
             {
-                await button.FadeTo(0, 150, Easing.CubicInOut);
-                button.Source = "ic_cloud_done_black_48dp.png";
-                await button.FadeTo(1, 150, Easing.CubicInOut);
-                button.IsEnabled = true;
-                button.Clicked += this.SyncNoChange_Clicked;
-                
+ 
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)syncType.NoChange] as ImageButton;
+                buttonSyncing.IsVisible = false;
+                buttonSyncNoChange.IsVisible = true;
             }
-            else
+            else // if it failed to upload
             {
-                await button.FadeTo(0, 150, Easing.CubicInOut);
-                button.Source = "ic_cloud_upload_black_48dp.png";
-                await button.FadeTo(1, 150, Easing.CubicInOut);
-                button.IsEnabled = true;
-                await this.DisplayAlert("Quiz Upload Failed.", 
-                    "This quiz could not be uploaded to the server. Please try again.", 
+                buttonSyncing.IsVisible = false;
+                button.IsVisible = true;
+                await this.DisplayAlert("Quiz Upload Failed.",
+                    "This quiz could not be uploaded to the server. Please try again.",
                     "OK");
             }
         }
@@ -367,28 +440,31 @@ namespace appFBLA2019
         private async void SyncDownload_Clicked(object sender, EventArgs e)
         {
             ImageButton button = sender as ImageButton;
+
             string dbId = button.ClassId.Split('/')[0];
             string authorName = button.ClassId.Split('/')[1];
             string quizName = button.ClassId.Split('/')[2];
             string category = button.ClassId.Split('/')[3];
-            button.IsEnabled = false;
-            await button.FadeTo(0, 150, Easing.CubicInOut);
-            button.Source = "ic_autorenew_black_48dp.png";
-            await button.FadeTo(1, 150, Easing.CubicInOut);
-            button.HeightRequest = 25;
 
+            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)syncType.Syncing] as ImageButton;
+            string quizPath = button.StyleId;
+            button.IsVisible = false;
+            buttonSyncing.IsVisible = true;
+#pragma warning disable
+            buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
+#pragma warning restore
             if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
             {
-                button.Source = "ic_cloud_done_black_48dp.png";
-                button.IsEnabled = true;
-                button.Clicked += this.SyncNoChange_Clicked;
-                
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)syncType.NoChange] as ImageButton;
+                buttonSyncing.IsVisible = false;
+                buttonSyncNoChange.IsVisible = true;
+
                 ((((button.Parent as StackLayout).Parent as StackLayout).Parent as RelativeLayout).Parent as Frame).StyleId = "Local";
             }
-            else
+            else // If it failed to download
             {
-                button.Source = "ic_cloud_download_black_48dp.png";
-                button.IsEnabled = true;
+                buttonSyncing.IsVisible = false;
+                button.IsVisible = true;
                 await this.DisplayAlert("Quiz Upload Failed.",
                     "This quiz could not be downloaded from the server. Please try again.",
                     "OK");
@@ -450,10 +526,12 @@ namespace appFBLA2019
                             OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
                             if (returnMessage == OperationReturnMessage.True)
                             {
-                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                                realm.Write(() =>
+                                {
+                                    realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                                });
                             }
                         }
-                        Directory.Delete(path, true);
                     }
                     else // If unsubscribe
                     {
@@ -466,8 +544,10 @@ namespace appFBLA2019
                                 realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
                             }
                         }
-                        Directory.Delete(path, true);
+                        
                     }
+                    // Need to remove from the roaster
+                    Directory.Delete(path, true);
                     this.Setup();
                 }
                 else

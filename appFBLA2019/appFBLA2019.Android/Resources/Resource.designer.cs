@@ -4495,173 +4495,173 @@ namespace appFBLA2019.Droid
 			// aapt resource value: 0x7f020053
 			public const int avd_hide_password = 2130837587;
 			
+			// aapt resource value: 0x7f020172
+			public const int avd_hide_password_1 = 2130837874;
+			
+			// aapt resource value: 0x7f020173
+			public const int avd_hide_password_2 = 2130837875;
+			
 			// aapt resource value: 0x7f020174
-			public const int avd_hide_password_1 = 2130837876;
-			
-			// aapt resource value: 0x7f020175
-			public const int avd_hide_password_2 = 2130837877;
-			
-			// aapt resource value: 0x7f020176
-			public const int avd_hide_password_3 = 2130837878;
+			public const int avd_hide_password_3 = 2130837876;
 			
 			// aapt resource value: 0x7f020054
 			public const int avd_show_password = 2130837588;
 			
+			// aapt resource value: 0x7f020175
+			public const int avd_show_password_1 = 2130837877;
+			
+			// aapt resource value: 0x7f020176
+			public const int avd_show_password_2 = 2130837878;
+			
 			// aapt resource value: 0x7f020177
-			public const int avd_show_password_1 = 2130837879;
-			
-			// aapt resource value: 0x7f020178
-			public const int avd_show_password_2 = 2130837880;
-			
-			// aapt resource value: 0x7f020179
-			public const int avd_show_password_3 = 2130837881;
+			public const int avd_show_password_3 = 2130837879;
 			
 			// aapt resource value: 0x7f020055
 			public const int BizQuizLogo = 2130837589;
 			
 			// aapt resource value: 0x7f020056
-			public const int BothellSoftware = 2130837590;
+			public const int com_facebook_auth_dialog_background = 2130837590;
 			
 			// aapt resource value: 0x7f020057
-			public const int com_facebook_auth_dialog_background = 2130837591;
+			public const int com_facebook_auth_dialog_cancel_background = 2130837591;
 			
 			// aapt resource value: 0x7f020058
-			public const int com_facebook_auth_dialog_cancel_background = 2130837592;
+			public const int com_facebook_auth_dialog_header_background = 2130837592;
 			
 			// aapt resource value: 0x7f020059
-			public const int com_facebook_auth_dialog_header_background = 2130837593;
+			public const int com_facebook_button_background = 2130837593;
 			
 			// aapt resource value: 0x7f02005a
-			public const int com_facebook_button_background = 2130837594;
+			public const int com_facebook_button_icon = 2130837594;
 			
 			// aapt resource value: 0x7f02005b
-			public const int com_facebook_button_icon = 2130837595;
+			public const int com_facebook_button_icon_blue = 2130837595;
 			
 			// aapt resource value: 0x7f02005c
-			public const int com_facebook_button_icon_blue = 2130837596;
+			public const int com_facebook_button_icon_white = 2130837596;
 			
 			// aapt resource value: 0x7f02005d
-			public const int com_facebook_button_icon_white = 2130837597;
+			public const int com_facebook_button_like_background = 2130837597;
 			
 			// aapt resource value: 0x7f02005e
-			public const int com_facebook_button_like_background = 2130837598;
+			public const int com_facebook_button_like_icon_selected = 2130837598;
 			
 			// aapt resource value: 0x7f02005f
-			public const int com_facebook_button_like_icon_selected = 2130837599;
+			public const int com_facebook_button_login_background = 2130837599;
 			
 			// aapt resource value: 0x7f020060
-			public const int com_facebook_button_login_background = 2130837600;
+			public const int com_facebook_button_login_logo = 2130837600;
 			
 			// aapt resource value: 0x7f020061
-			public const int com_facebook_button_login_logo = 2130837601;
+			public const int com_facebook_button_login_silver_background = 2130837601;
 			
 			// aapt resource value: 0x7f020062
-			public const int com_facebook_button_login_silver_background = 2130837602;
+			public const int com_facebook_button_send_background = 2130837602;
 			
 			// aapt resource value: 0x7f020063
-			public const int com_facebook_button_send_background = 2130837603;
+			public const int com_facebook_button_send_icon_blue = 2130837603;
 			
 			// aapt resource value: 0x7f020064
-			public const int com_facebook_button_send_icon_blue = 2130837604;
+			public const int com_facebook_button_send_icon_white = 2130837604;
 			
 			// aapt resource value: 0x7f020065
-			public const int com_facebook_button_send_icon_white = 2130837605;
+			public const int com_facebook_close = 2130837605;
 			
 			// aapt resource value: 0x7f020066
-			public const int com_facebook_close = 2130837606;
+			public const int com_facebook_favicon_blue = 2130837606;
 			
 			// aapt resource value: 0x7f020067
-			public const int com_facebook_favicon_blue = 2130837607;
+			public const int com_facebook_profile_picture_blank_portrait = 2130837607;
 			
 			// aapt resource value: 0x7f020068
-			public const int com_facebook_profile_picture_blank_portrait = 2130837608;
+			public const int com_facebook_profile_picture_blank_square = 2130837608;
 			
 			// aapt resource value: 0x7f020069
-			public const int com_facebook_profile_picture_blank_square = 2130837609;
+			public const int com_facebook_send_button_icon = 2130837609;
 			
 			// aapt resource value: 0x7f02006a
-			public const int com_facebook_send_button_icon = 2130837610;
+			public const int com_facebook_tooltip_black_background = 2130837610;
 			
 			// aapt resource value: 0x7f02006b
-			public const int com_facebook_tooltip_black_background = 2130837611;
+			public const int com_facebook_tooltip_black_bottomnub = 2130837611;
 			
 			// aapt resource value: 0x7f02006c
-			public const int com_facebook_tooltip_black_bottomnub = 2130837612;
+			public const int com_facebook_tooltip_black_topnub = 2130837612;
 			
 			// aapt resource value: 0x7f02006d
-			public const int com_facebook_tooltip_black_topnub = 2130837613;
+			public const int com_facebook_tooltip_black_xout = 2130837613;
 			
 			// aapt resource value: 0x7f02006e
-			public const int com_facebook_tooltip_black_xout = 2130837614;
+			public const int com_facebook_tooltip_blue_background = 2130837614;
 			
 			// aapt resource value: 0x7f02006f
-			public const int com_facebook_tooltip_blue_background = 2130837615;
+			public const int com_facebook_tooltip_blue_bottomnub = 2130837615;
 			
 			// aapt resource value: 0x7f020070
-			public const int com_facebook_tooltip_blue_bottomnub = 2130837616;
+			public const int com_facebook_tooltip_blue_topnub = 2130837616;
 			
 			// aapt resource value: 0x7f020071
-			public const int com_facebook_tooltip_blue_topnub = 2130837617;
+			public const int com_facebook_tooltip_blue_xout = 2130837617;
 			
 			// aapt resource value: 0x7f020072
-			public const int com_facebook_tooltip_blue_xout = 2130837618;
+			public const int design_bottom_navigation_item_background = 2130837618;
 			
 			// aapt resource value: 0x7f020073
-			public const int design_bottom_navigation_item_background = 2130837619;
+			public const int design_fab_background = 2130837619;
 			
 			// aapt resource value: 0x7f020074
-			public const int design_fab_background = 2130837620;
+			public const int design_ic_visibility = 2130837620;
 			
 			// aapt resource value: 0x7f020075
-			public const int design_ic_visibility = 2130837621;
+			public const int design_ic_visibility_off = 2130837621;
 			
 			// aapt resource value: 0x7f020076
-			public const int design_ic_visibility_off = 2130837622;
+			public const int design_password_eye = 2130837622;
 			
 			// aapt resource value: 0x7f020077
-			public const int design_password_eye = 2130837623;
+			public const int design_snackbar_background = 2130837623;
 			
 			// aapt resource value: 0x7f020078
-			public const int design_snackbar_background = 2130837624;
+			public const int DropShadow = 2130837624;
 			
 			// aapt resource value: 0x7f020079
-			public const int DropShadow = 2130837625;
+			public const int DropShadowTop = 2130837625;
 			
 			// aapt resource value: 0x7f02007a
-			public const int DropShadowTop = 2130837626;
+			public const int ic_arrow_drop_down_black_48dp = 2130837626;
 			
 			// aapt resource value: 0x7f02007b
-			public const int ic_arrow_drop_down_black_48dp = 2130837627;
+			public const int ic_audiotrack_dark = 2130837627;
 			
 			// aapt resource value: 0x7f02007c
-			public const int ic_audiotrack_dark = 2130837628;
+			public const int ic_audiotrack_light = 2130837628;
 			
 			// aapt resource value: 0x7f02007d
-			public const int ic_audiotrack_light = 2130837629;
+			public const int ic_autorenew_black_48dp = 2130837629;
 			
 			// aapt resource value: 0x7f02007e
-			public const int ic_autorenew_black_48dp = 2130837630;
+			public const int ic_bad_red_48dp = 2130837630;
 			
 			// aapt resource value: 0x7f02007f
-			public const int ic_bad_red_48dp = 2130837631;
+			public const int ic_check_green_48dp = 2130837631;
 			
 			// aapt resource value: 0x7f020080
-			public const int ic_check_green_48dp = 2130837632;
+			public const int ic_close_black_48dp = 2130837632;
 			
 			// aapt resource value: 0x7f020081
-			public const int ic_close_black_48dp = 2130837633;
+			public const int ic_cloud_done_black_48dp = 2130837633;
 			
 			// aapt resource value: 0x7f020082
-			public const int ic_cloud_done_black_48dp = 2130837634;
+			public const int ic_cloud_download_black_48dp = 2130837634;
 			
 			// aapt resource value: 0x7f020083
-			public const int ic_cloud_download_black_48dp = 2130837635;
+			public const int ic_cloud_off_black_48dp = 2130837635;
 			
 			// aapt resource value: 0x7f020084
-			public const int ic_cloud_off_black_48dp = 2130837636;
+			public const int ic_cloud_upload_black_48dp = 2130837636;
 			
 			// aapt resource value: 0x7f020085
-			public const int ic_cloud_upload_black_48dp = 2130837637;
+			public const int ic_delete_red_48dp = 2130837637;
 			
 			// aapt resource value: 0x7f020086
 			public const int ic_delete_white_48dp = 2130837638;
@@ -5324,58 +5324,52 @@ namespace appFBLA2019.Droid
 			public const int mr_vol_type_audiotrack_light = 2130837857;
 			
 			// aapt resource value: 0x7f020162
-			public const int Multiple_Choice_Example = 2130837858;
+			public const int navigation_empty_icon = 2130837858;
 			
 			// aapt resource value: 0x7f020163
-			public const int navigation_empty_icon = 2130837859;
+			public const int notification_action_background = 2130837859;
 			
 			// aapt resource value: 0x7f020164
-			public const int notification_action_background = 2130837860;
+			public const int notification_bg = 2130837860;
 			
 			// aapt resource value: 0x7f020165
-			public const int notification_bg = 2130837861;
+			public const int notification_bg_low = 2130837861;
 			
 			// aapt resource value: 0x7f020166
-			public const int notification_bg_low = 2130837862;
+			public const int notification_bg_low_normal = 2130837862;
 			
 			// aapt resource value: 0x7f020167
-			public const int notification_bg_low_normal = 2130837863;
+			public const int notification_bg_low_pressed = 2130837863;
 			
 			// aapt resource value: 0x7f020168
-			public const int notification_bg_low_pressed = 2130837864;
+			public const int notification_bg_normal = 2130837864;
 			
 			// aapt resource value: 0x7f020169
-			public const int notification_bg_normal = 2130837865;
+			public const int notification_bg_normal_pressed = 2130837865;
 			
 			// aapt resource value: 0x7f02016a
-			public const int notification_bg_normal_pressed = 2130837866;
-			
-			// aapt resource value: 0x7f02016b
-			public const int notification_icon_background = 2130837867;
-			
-			// aapt resource value: 0x7f020172
-			public const int notification_template_icon_bg = 2130837874;
-			
-			// aapt resource value: 0x7f020173
-			public const int notification_template_icon_low_bg = 2130837875;
-			
-			// aapt resource value: 0x7f02016c
-			public const int notification_tile_bg = 2130837868;
-			
-			// aapt resource value: 0x7f02016d
-			public const int notify_panel_notification_icon_bg = 2130837869;
-			
-			// aapt resource value: 0x7f02016e
-			public const int splash_screen = 2130837870;
-			
-			// aapt resource value: 0x7f02016f
-			public const int Text_Answer_Example = 2130837871;
+			public const int notification_icon_background = 2130837866;
 			
 			// aapt resource value: 0x7f020170
-			public const int tooltip_frame_dark = 2130837872;
+			public const int notification_template_icon_bg = 2130837872;
 			
 			// aapt resource value: 0x7f020171
-			public const int tooltip_frame_light = 2130837873;
+			public const int notification_template_icon_low_bg = 2130837873;
+			
+			// aapt resource value: 0x7f02016b
+			public const int notification_tile_bg = 2130837867;
+			
+			// aapt resource value: 0x7f02016c
+			public const int notify_panel_notification_icon_bg = 2130837868;
+			
+			// aapt resource value: 0x7f02016d
+			public const int splash_screen = 2130837869;
+			
+			// aapt resource value: 0x7f02016e
+			public const int tooltip_frame_dark = 2130837870;
+			
+			// aapt resource value: 0x7f02016f
+			public const int tooltip_frame_light = 2130837871;
 			
 			static Drawable()
 			{
