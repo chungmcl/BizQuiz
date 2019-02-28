@@ -389,6 +389,7 @@ namespace appFBLA2019
                     "OK");
             }
             this.serverConnected = false;
+            this.CheckSetup();
         }
 
         private void SyncNoChange_Clicked(object sender, EventArgs e)
