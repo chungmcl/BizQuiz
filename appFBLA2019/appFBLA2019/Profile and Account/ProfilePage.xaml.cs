@@ -26,6 +26,19 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
+
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            this.LabelUsername.FadeTo(0, 500, Easing.CubicInOut);
+        }
+
         /// <summary>
         /// When the user wants to create a brand new quiz
         /// </summary>
@@ -70,8 +83,8 @@ namespace appFBLA2019
         {
             this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
             this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
-
             this.IsLoading = true;
+            this.QuizStack.Children.Clear();
             this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             if (this.StackLayoutProfilePageContent.IsVisible)
@@ -94,7 +107,6 @@ namespace appFBLA2019
         /// <returns></returns>
         private async Task UpdateProfileContent()
         {
-            this.QuizStack.Children.Clear();
             this.QuizStack.IsVisible = false;
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;

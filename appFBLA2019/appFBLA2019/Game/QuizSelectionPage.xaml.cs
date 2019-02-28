@@ -21,6 +21,7 @@ namespace appFBLA2019
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         public bool IsLoading { get; set; }
         public bool isSetup;
+        public bool serverConnected;
 
         private enum SyncType { Offline = 1, Upload, Download, NoChange, Syncing };
 
@@ -32,10 +33,7 @@ namespace appFBLA2019
             Directory.CreateDirectory(App.UserPath + $"{category}/");
             this.IsLoading = false;
             this.isSetup = false;
-            // TO DO: Replace "DependencyService... .GetStorage()" with the location where the databases are being stored WHEN the app is is RELEASED (See DBHandler)
-            //this.Setup();
         }
-
 
         protected override void OnSizeAllocated(double width, double height)
         {
@@ -58,7 +56,7 @@ namespace appFBLA2019
 
         private void CheckSetup()
         {
-            if (Application.Current.MainPage.Width >= 0 && !this.isSetup)
+            if (Application.Current.MainPage.Width >= 0 && !this.isSetup && !this.serverConnected)
             {
                 this.Setup();
             }
@@ -412,6 +410,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void SyncUpload_Clicked(object sender, EventArgs e)
         {
+            this.serverConnected = true;
             ImageButton button = (sender as ImageButton);
             ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ImageButton;
             string quizPath = button.StyleId;
@@ -434,10 +433,12 @@ namespace appFBLA2019
                     "This quiz could not be uploaded to the server. Please try again.",
                     "OK");
             }
+            this.serverConnected = false;
         }
 
         private async void SyncDownload_Clicked(object sender, EventArgs e)
         {
+            this.serverConnected = true;
             ImageButton button = sender as ImageButton;
 
             string dbId = button.ClassId.Split('/')[0];
@@ -468,6 +469,7 @@ namespace appFBLA2019
                     "This quiz could not be downloaded from the server. Please try again.",
                     "OK");
             }
+            this.serverConnected = false;
         }
 
         private void SyncNoChange_Clicked(object sender, EventArgs e)
