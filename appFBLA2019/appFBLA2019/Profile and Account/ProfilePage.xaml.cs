@@ -1,7 +1,11 @@
 ﻿//BizQuiz App 2019
 
+using Plugin.Connectivity;
+using Realms;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -84,7 +88,7 @@ namespace appFBLA2019
             this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             if (this.StackLayoutProfilePageContent.IsVisible)
-                await UpdateProfileContent();
+                await this.UpdateProfileContent();
             else
             {
                 if (this.ToolbarItems.Count > 0)
@@ -160,9 +164,10 @@ namespace appFBLA2019
                     this.currentChunk++;
                     await Task.Run(() => this.SetupNetworkQuizzes());
                 }
-                catch
+                catch (Exception ex)
                 {
-                    await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+                    BugReportHandler.SaveReport(ex);
+                    await this.DisplayAlert("Oops, network falure", "Try again later", "Ok");
                 }
             }
         }
@@ -199,6 +204,11 @@ namespace appFBLA2019
             AddQuizzes(chunk, true);
         }
 
+        /// <summary>
+        /// Adds user's quizzes to the login page
+        /// </summary>
+        /// <param name="quizzes"> a list of quizzes to dislay</param>
+        /// <param name="isNetworkQuiz">if the incoming quiz is a networkQuiz </param>
         private void AddQuizzes(List<SearchInfo> quizzes, bool isNetworkQuiz)
         {
             
@@ -224,6 +234,14 @@ namespace appFBLA2019
                         Orientation = StackOrientation.Vertical
                     };
 
+                    StackLayout topStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Horizontal,
+                        Padding = 0
+                    };
+
+
                     Label quizName = new Label
                     {
                         Text = quiz.QuizName,
@@ -231,7 +249,20 @@ namespace appFBLA2019
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         HorizontalOptions = LayoutOptions.StartAndExpand
                     };
-                    frameStack.Children.Add(quizName);
+                    topStack.Children.Add(quizName);
+
+                    ImageButton buttonDelete = new ImageButton();
+                    {
+                        buttonDelete.HorizontalOptions = LayoutOptions.End;
+                        buttonDelete.Source = "ic_delete_red_48dp.png";
+                        buttonDelete.StyleId = "/" + quiz.Category + "/" + quiz.QuizName + "`" + quiz.Author;
+                        buttonDelete.Clicked += this.ButtonDelete_Clicked;
+                        buttonDelete.BackgroundColor = Color.White;
+                        buttonDelete.HeightRequest = 35;
+                    }
+                    topStack.Children.Add(buttonDelete);
+
+                    frameStack.Children.Add(topStack);                   
 
                     Label Category = new Label
                     {
@@ -250,6 +281,52 @@ namespace appFBLA2019
 
                     Device.BeginInvokeOnMainThread(() =>
                     QuizStack.Children.Add(frame));
+                }
+            }
+        }
+
+        private async void ButtonDelete_Clicked(object sender, EventArgs e)
+        {
+
+            bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud.This is not reversable.", "Yes", "No");
+            if (answer)
+            {
+                string path = App.UserPath + ((ImageButton)sender).StyleId;
+
+                if (System.IO.Directory.Exists(path))
+                {
+                    // Acquire DBId from the quiz's realm file
+                    string realmFilePath = Directory.GetFiles(path, "*.realm").First();
+                    Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                    QuizInfo info = realm.All<QuizInfo>().First();
+                    string dbId = info.DBId;
+
+                    // Acquire QuizInfo from roster
+                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                    {
+                        IsDeletedLocally = true,
+                        LastModifiedDate = DateTime.Now.ToString()
+                    };
+                    QuizRosterDatabase.EditQuizInfo(rosterInfo);
+                    // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
+                    if (CrossConnectivity.Current.IsConnected)
+                    {
+                        OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
+                        if (returnMessage == OperationReturnMessage.True)
+                        {
+                            realm.Write(() =>
+                            {
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                            });
+                        }
+                    }
+                    Directory.Delete(path, true);
+                   
+                }
+                else
+                {
+                    await this.DisplayAlert("Quiz not Found", "This quiz is not downloaded. Press download to download the quiz.", "OK");
                 }
             }
         }

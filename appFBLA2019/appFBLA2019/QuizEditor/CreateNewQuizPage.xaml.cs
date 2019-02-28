@@ -264,7 +264,7 @@ namespace appFBLA2019
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
 
                 // Now open the database the user just made, might be the same as the one already open
-                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EditorQuizName.Text.Trim(), CredentialManager.Username);
+                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EditorQuizName.Text?.Trim(), CredentialManager.Username);
                 // Loops through each question frame on the screen
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
@@ -273,10 +273,10 @@ namespace appFBLA2019
 
                     Question addThis;
                     //The answers to the question
-                    string[] answers = {((Editor)children[2]).Text.Trim(), //Correct answer
-								((Editor)children[3]).Text.Trim(), // Incorect answer
-								((Editor)children[4]).Text.Trim(), // Incorect answer
-								((Editor)children[5]).Text.Trim()}; // Incorect answer
+                    string[] answers = {((Editor)children[2]).Text?.Trim(), //Correct answer
+								((Editor)children[3]).Text?.Trim(), // Incorect answer
+								((Editor)children[4]).Text?.Trim(), // Incorect answer
+								((Editor)children[5]).Text?.Trim()}; // Incorect answer
 
                     // Checks if there is a question set
                     if (string.IsNullOrWhiteSpace(((Editor)children[1]).Text))
@@ -288,7 +288,7 @@ namespace appFBLA2019
                     if (((ImageButton)children[6]).IsVisible) // if the question needs an image
                     {
                         addThis = new Question(
-                                ((Editor)children[1]).Text.Trim(), // The Question
+                                ((Editor)children[1]).Text?.Trim(), // The Question
                                 ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
                                 answers)
                         { NeedsPicture = true };
@@ -296,7 +296,7 @@ namespace appFBLA2019
                     else // if the question does not need an image
                     {
                         addThis = new Question(
-                                ((Editor)children[1]).Text.Trim(),
+                                ((Editor)children[1]).Text?.Trim(),
                                 answers);
                     }
 
@@ -352,7 +352,7 @@ namespace appFBLA2019
 
                     // Save a new QuizInfo into the quiz database, which also adds this QuizInfo to the device quiz roster
                     DBHandler.Database.NewQuizInfo(CredentialManager.Username,
-                        this.EditorQuizName.Text.Trim(),
+                        this.EditorQuizName.Text?.Trim(),
                         this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
                     DBHandler.Database.AddQuestions(NewQuestions);
                 }
@@ -360,7 +360,7 @@ namespace appFBLA2019
                 {
                     QuizInfo updatedQuizInfo = new QuizInfo(DBHandler.Database.GetQuizInfo())
                     {
-                        QuizName = this.EditorQuizName.Text.Trim(),
+                        QuizName = this.EditorQuizName.Text?.Trim(),
                         LastModifiedDate = DateTime.Now.ToString()
                     };
                     DBHandler.Database.EditQuizInfo(updatedQuizInfo);
@@ -399,7 +399,7 @@ namespace appFBLA2019
                 File.Create(DBHandler.Database.DBFolderPath + ".nomedia");
 
                 // If they renamed the quiz, delete the old one
-                if (this.originalName != this.EditorQuizName.Text.Trim() && this.originalAuthor == CredentialManager.Username)
+                if (this.originalName != this.EditorQuizName.Text?.Trim() && this.originalAuthor == CredentialManager.Username)
                 {
                     Directory.Delete(App.UserPath + "/" + this.originalName + "`" + this.originalAuthor, true);
                 }
