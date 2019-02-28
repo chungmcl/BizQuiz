@@ -182,37 +182,97 @@ namespace appFBLA2019
         public static bool GetQuiz(string dBId, string quizName, string authorName, string category)
         {
             // TO DO: CHECK IF quizName or category changed and save accordingly
-            string quizPath = App.UserPath + "/" + category + "/" + $"{quizName}`{authorName}/";
-
-            Directory.CreateDirectory(quizPath);
+            string tempPath = App.UserPath + "/" + "temp" + "/" + dBId + "/";
+            string tempFilePath = tempPath + "/" + realmFileExtension;
+            
+            Directory.CreateDirectory(tempPath);
             byte[] realmFile = (byte[])SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
-            string realmFilePath = quizPath + "/" + quizName + realmFileExtension;
             if (realmFile.Length > 0)
-                File.WriteAllBytes(realmFilePath, realmFile);
+                File.WriteAllBytes(tempFilePath, realmFile);
             else
                 return false;
 
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(tempFilePath));
             IQueryable<Question> questionsWithPictures = realmDB.All<Question>().Where(question => question.NeedsPicture);
             foreach (Question question in questionsWithPictures)
             {
                 byte[] jpegFile = (byte[])SendStringData($"{question.QuestionId}/{dBId}/-", ServerRequestTypes.GetJPEGImage);
-                string jpegFilePath = quizPath + "/" + question.QuestionId + jpegFileExtension;
+                string jpegFilePath = tempPath + "/" + question.QuestionId + jpegFileExtension;
                 if (jpegFile.Length > 0)
                     File.WriteAllBytes(jpegFilePath, jpegFile);
                 else
                     return false;
             }
+            QuizInfo info = realmDB.All<QuizInfo>().First();
+            string newQuizName = info.QuizName;
+            string newCategory = info.Category;
+            string newLastModfiedDate = info.LastModifiedDate;
+
+            string quizPath = App.UserPath + "/" + newCategory + "/" + $"{newQuizName}`{info.AuthorName}/";
+            string realmFilePath = quizPath + "/" + newQuizName + realmFileExtension;
+            Directory.CreateDirectory(quizPath);
+
+            string[] imageFilePaths = Directory.GetFiles(tempPath, "*.jpg");
+            string[] realmFilePaths = Directory.GetFiles(tempPath, "*.realm");
+            foreach (string path in realmFilePaths)
+                File.Copy(path, quizPath + "/" + info.DBId + realmFileExtension, true);
+
+            foreach (string path in imageFilePaths)
+            {
+                string imageName = path.Split('/').Last();
+                File.Copy(path, quizPath + "/" + imageName, true);
+            }
+
+            if (quizName != newQuizName || category != newCategory)
+                DeleteDirectory(App.UserPath + "/" + category + "/" + $"{quizName}`{authorName}", true);
+
+            DeleteDirectory(tempPath, true);
+
             QuizInfo infoCopy = new QuizInfo(QuizRosterDatabase.GetQuizInfo(dBId))
             {
-                SyncStatus = 2
+                SyncStatus = 2,
+                QuizName = newQuizName,
+                Category = newCategory,
+                LastModifiedDate = newLastModfiedDate
             };
-            // TO DO: UPDATE LAST MODIFIED DATE AND SAVE ACCORDINGLY
             QuizRosterDatabase.EditQuizInfo(infoCopy);
 
             return true;
         }
-        
+
+        private static void DeleteDirectory(string path, bool recursive)
+        {
+            if (recursive)
+            {
+                var subfolders = Directory.GetDirectories(path);
+                foreach (var s in subfolders)
+                {
+                    DeleteDirectory(s, recursive);
+                }
+            }
+            var files = Directory.GetFiles(path);
+            foreach (var f in files)
+            {
+                try
+                {
+                    var attr = File.GetAttributes(f);
+                    if ((attr & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        File.SetAttributes(f, attr ^ FileAttributes.ReadOnly);
+                    }
+                    File.Delete(f);
+                }
+                catch (IOException)
+                {
+                    Debug.WriteLine("failed delete");
+                }
+            }
+
+            // At this point, all the files and sub-folders have been deleted.
+            // So we delete the empty folder using the OOTB  DeleteDirectory method.
+            Directory.Delete(path);
+        }
+
         public static bool SendBugReport(string report, byte[] image = null)
         {
             byte[] reportBytes = Encoding.Unicode.GetBytes(report);

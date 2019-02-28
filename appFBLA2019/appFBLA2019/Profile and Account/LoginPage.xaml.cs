@@ -65,11 +65,11 @@ namespace appFBLA2019
                 this.LabelMessage.Text = "Connection failed: Please try again.";
             }
 
-            this.ButtonLogin.IsEnabled = true;
             this.ButtonToCreateAccountPage.IsEnabled = true;
             this.ActivityIndicator.IsRunning = false;
             this.ActivityIndicator.IsVisible = false;
             this.EntryPassword.Text = "";
+            this.ButtonLogin.IsEnabled = true;
         }
 
         private async void ButtonToCreateAccountPage_Clicked(object sender, EventArgs e)
