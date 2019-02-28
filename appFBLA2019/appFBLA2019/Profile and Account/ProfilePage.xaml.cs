@@ -115,26 +115,30 @@ namespace appFBLA2019
             {
                 this.totalCount = 0;
                 this.SetupLocalQuizzes();
-                //this.SetupNetworkQuizzes();
-                this.totalCount += ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
-                if (totalCount == 0)
+                this.SetupNetworkQuizzes();
+                int createdCountFromServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
+                if (createdCountFromServer >= 0)
                 {
-                    Frame frame = new Frame()
+                    this.totalCount += createdCountFromServer;
+                    if (totalCount == 0)
                     {
-                        CornerRadius = 10,
-                        HorizontalOptions = LayoutOptions.CenterAndExpand,
-                        Content = new Label
+                        Frame frame = new Frame()
                         {
-                            Text = "You haven't made any quizzes yet!",
-                            HorizontalTextAlignment = TextAlignment.Center,
-                            FontSize = 38
-                        }
-                    };
+                            CornerRadius = 10,
+                            HorizontalOptions = LayoutOptions.CenterAndExpand,
+                            Content = new Label
+                            {
+                                Text = "You haven't made any quizzes yet!",
+                                HorizontalTextAlignment = TextAlignment.Center,
+                                FontSize = 38
+                            }
+                        };
+                        Device.BeginInvokeOnMainThread(() =>
+                            this.QuizStack.Children.Add(frame));
+                    }
                     Device.BeginInvokeOnMainThread(() =>
-                        this.QuizStack.Children.Add(frame));
+                        this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
                 }
-                Device.BeginInvokeOnMainThread(() =>
-                    this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
             });
 
             if (this.ToolbarItems.Count <= 0)
@@ -167,7 +171,7 @@ namespace appFBLA2019
                 catch (Exception ex)
                 {
                     BugReportHandler.SaveReport(ex);
-                    await this.DisplayAlert("Oops, network falure", "Try again later", "Ok");
+                    await this.DisplayAlert("Oops, network failure", "Try again later", "Ok");
                 }
             }
         }
