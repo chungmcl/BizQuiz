@@ -84,7 +84,7 @@ namespace appFBLA2019
             this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
             this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
             this.IsLoading = true;
-            this.QuizStack.Children.Clear();
+            this.StackLayoutQuizStack.Children.Clear();
             this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             if (this.StackLayoutProfilePageContent.IsVisible)
@@ -107,7 +107,7 @@ namespace appFBLA2019
         /// <returns></returns>
         private async Task UpdateProfileContent()
         {
-            this.QuizStack.IsVisible = false;
+            this.StackLayoutQuizStack.IsVisible = false;
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
 
@@ -134,7 +134,7 @@ namespace appFBLA2019
                             }
                         };
                         Device.BeginInvokeOnMainThread(() =>
-                            this.QuizStack.Children.Add(frame));
+                            this.StackLayoutQuizStack.Children.Add(frame));
                     }
                     Device.BeginInvokeOnMainThread(() =>
                         this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
@@ -153,7 +153,7 @@ namespace appFBLA2019
 
             this.ActivityIndicator.IsRunning = false;
             this.ActivityIndicator.IsVisible = false;
-            this.QuizStack.IsVisible = true;
+            this.StackLayoutQuizStack.IsVisible = true;
         }
 
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
@@ -244,8 +244,7 @@ namespace appFBLA2019
                         Orientation = StackOrientation.Horizontal,
                         Padding = 0
                     };
-
-
+                    
                     Label quizName = new Label
                     {
                         Text = quiz.QuizName,
@@ -284,7 +283,7 @@ namespace appFBLA2019
                     frame.Content = frameStack;
 
                     Device.BeginInvokeOnMainThread(() =>
-                    QuizStack.Children.Add(frame));
+                    this.StackLayoutQuizStack.Children.Add(frame));
                 }
             }
         }
