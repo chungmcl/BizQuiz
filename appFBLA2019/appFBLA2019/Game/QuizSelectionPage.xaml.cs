@@ -215,13 +215,11 @@ namespace appFBLA2019
                     SyncNoChange.Clicked += this.SyncNoChange_Clicked;
                     topStack.Children.Add(SyncNoChange);
 
-                    ImageButton Syncing = new ImageButton // 5
+                    ActivityIndicator Syncing = new ActivityIndicator // 5
                     {
                         IsVisible = false,
-                        Source = "ic_autorenew_black_48dp.png",
                         HeightRequest = 25,
                         WidthRequest = 25,
-                        BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
                     };
@@ -412,22 +410,19 @@ namespace appFBLA2019
         {
             this.serverConnected = true;
             ImageButton button = (sender as ImageButton);
-            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ImageButton;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
             string quizPath = button.StyleId;
             button.IsVisible = false;
-            buttonSyncing.IsVisible = true;
-#pragma warning disable
-            buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
-#pragma warning restore
+            indicatorSyncing.IsVisible = true;
             if (await Task.Run(async () => await ServerOperations.SendQuiz(quizPath)))
             {
                 ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
-                buttonSyncing.IsVisible = false;
+                indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
             }
             else // if it failed to upload
             {
-                buttonSyncing.IsVisible = false;
+                indicatorSyncing.IsVisible = false;
                 button.IsVisible = true;
                 await this.DisplayAlert("Quiz Upload Failed",
                     "This quiz could not be uploaded to the server. Please try again.",
@@ -446,24 +441,21 @@ namespace appFBLA2019
             string quizName = button.ClassId.Split('/')[2];
             string category = button.ClassId.Split('/')[3];
 
-            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ImageButton;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
             string quizPath = button.StyleId;
             button.IsVisible = false;
-            buttonSyncing.IsVisible = true;
-#pragma warning disable
-            buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
-#pragma warning restore
+            indicatorSyncing.IsVisible = true;
             if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
             {
                 ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
-                buttonSyncing.IsVisible = false;
+                indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
 
                 ((((button.Parent as StackLayout).Parent as StackLayout).Parent as RelativeLayout).Parent as Frame).StyleId = "Local";
             }
             else // If it failed to download
             {
-                buttonSyncing.IsVisible = false;
+                indicatorSyncing.IsVisible = false;
                 button.IsVisible = true;
                 await this.DisplayAlert("Quiz Download Failed",
                     "This quiz could not be downloaded from the server. Please try again.",
