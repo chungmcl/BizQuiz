@@ -300,7 +300,7 @@ namespace appFBLA2019
 
         private void Search_Activated(object sender, EventArgs e)
         {
-            this.Navigation.PushModalAsync(new StorePage());
+            this.Navigation.PushModalAsync(new SearchPage());
         }
 
         private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
