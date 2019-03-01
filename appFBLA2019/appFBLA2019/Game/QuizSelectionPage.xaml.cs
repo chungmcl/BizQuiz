@@ -218,6 +218,7 @@ namespace appFBLA2019
                     ActivityIndicator Syncing = new ActivityIndicator // 5
                     {
                         IsVisible = false,
+                        Color = Color.Accent,
                         HeightRequest = 25,
                         WidthRequest = 25,
                         VerticalOptions = LayoutOptions.StartAndExpand,
@@ -414,6 +415,7 @@ namespace appFBLA2019
             string quizPath = button.StyleId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
+            indicatorSyncing.IsRunning = true;
             if (await Task.Run(async () => await ServerOperations.SendQuiz(quizPath)))
             {
                 ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
@@ -428,6 +430,7 @@ namespace appFBLA2019
                     "This quiz could not be uploaded to the server. Please try again.",
                     "OK");
             }
+            indicatorSyncing.IsRunning = false;
             this.serverConnected = false;
         }
 
@@ -445,6 +448,7 @@ namespace appFBLA2019
             string quizPath = button.StyleId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
+            indicatorSyncing.IsRunning = true;
             if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
             {
                 ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
@@ -461,6 +465,7 @@ namespace appFBLA2019
                     "This quiz could not be downloaded from the server. Please try again.",
                     "OK");
             }
+            indicatorSyncing.IsRunning = false;
             this.serverConnected = false;
             this.CheckSetup();
         }

@@ -113,13 +113,12 @@ namespace appFBLA2019
                     ImageButtonUnsubscribe.Clicked += this.ImageButtonUnsubscribe_Clicked;
                     topStack.Children.Add(ImageButtonUnsubscribe);
 
-                    ImageButton Syncing = new ImageButton // 3
+                    ActivityIndicator Syncing = new ActivityIndicator // 3
                     {
                         IsVisible = false,
-                        Source = "ic_autorenew_black_48dp.png",
+                        Color = Color.Accent,
                         HeightRequest = 25,
                         WidthRequest = 25,
-                        BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
                     };
@@ -175,12 +174,9 @@ namespace appFBLA2019
             bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
             if (answer)
             {
-                ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ImageButton;
+                ActivityIndicator buttonSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
                 button.IsVisible = false;
                 buttonSyncing.IsVisible = true;
-#pragma warning disable
-                buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
-#pragma warning restore
 
                 // get rosterInfo
                 QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
@@ -223,12 +219,10 @@ namespace appFBLA2019
             ImageButton button = (sender as ImageButton);
             string dbId = button.StyleId;
 
-            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ImageButton;
+            ActivityIndicator buttonSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
             button.IsVisible = false;
             buttonSyncing.IsVisible = true;
-#pragma warning disable
-            buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
-#pragma warning restore
+
             OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToLevel(dbId, this.quizzesSearched);
             if (returnMessage == OperationReturnMessage.True)
             {
