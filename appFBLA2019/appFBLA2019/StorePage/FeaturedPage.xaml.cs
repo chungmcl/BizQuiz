@@ -10,30 +10,36 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class FeaturedPage : ContentPage
-	{
-        private string category;
-        private List<SearchInfo> quizzesFeatured;
-        private enum SubscribeType { Subscribe = 1, Unsubscribe, Syncing };
-
-        public FeaturedPage()
+        /// <summary>
+        /// The page that displays featured levels, Created by the BizQuizTeam. To be displayed in the middle bottom tab
+        /// </summary>
+        [XamlCompilation(XamlCompilationOptions.Compile)]
+        public partial class FeaturedPage : ContentPage
         {
-            this.InitializeComponent();
-            this.currentChunk = 1;
-            this.quizzesFeatured = new List<SearchInfo>();
-        }
+            private string category;
+            private List<SearchInfo> quizzesFeatured;
+            private enum SubscribeType { Subscribe = 1, Unsubscribe, Syncing };
 
-        protected async override void OnAppearing()
-        {
-            this.quizzesRemaining = true;
-            this.category = "All";
-            await this.Refresh();
-        }
+            public FeaturedPage()
+            {
+                this.InitializeComponent();
+                this.currentChunk = 1;
+                this.quizzesFeatured = new List<SearchInfo>();
+            }
+
+            protected async override void OnAppearing()
+            {
+                this.quizzesRemaining = true;
+                this.category = "All";
+                await this.Refresh();
+            }
 
         private bool quizzesRemaining;
         private int currentChunk;
 
+        /// <summary>
+        /// Refreshes the page's quiz content
+        /// </summary>
         private async Task Refresh()
         {
             this.LabelNoQuiz.IsVisible = false;
@@ -60,6 +66,9 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Searches the server for featured levels and sets the chunk equal to the servers response
+        /// </summary>
         private async Task Search()
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
@@ -69,6 +78,9 @@ namespace appFBLA2019
             await Task.Run(() => this.AddQuizzes(chunk));
         }
 
+        /// <summary>
+        /// fires when the page is scrolled. If scrolled all the way, it will search the server for the next chunk
+        /// </summary>
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
         {
             ScrollView scrollView = sender as ScrollView;
