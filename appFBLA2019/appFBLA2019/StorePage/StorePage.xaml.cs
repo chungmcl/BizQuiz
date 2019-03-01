@@ -174,10 +174,10 @@ namespace appFBLA2019
             bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
             if (answer)
             {
-                ActivityIndicator buttonSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
+                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
                 button.IsVisible = false;
-                buttonSyncing.IsVisible = true;
-
+                indicatorSyncing.IsVisible = true;
+                indicatorSyncing.IsRunning = true;
                 // get rosterInfo
                 QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
                 // tell the roster that the level is deleted
@@ -192,7 +192,6 @@ namespace appFBLA2019
 
                 if (returnMessage == OperationReturnMessage.True)
                 {
-                    buttonSyncing.IsVisible = false;
                     (button.Parent as StackLayout).Children[(int)SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
@@ -205,6 +204,9 @@ namespace appFBLA2019
                     button.IsVisible = true;
                     await this.DisplayAlert("Unsubscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
                 }
+                indicatorSyncing.IsVisible = false;
+                indicatorSyncing.IsRunning = false;
+
             }
         }
 
@@ -219,14 +221,15 @@ namespace appFBLA2019
             ImageButton button = (sender as ImageButton);
             string dbId = button.StyleId;
 
-            ActivityIndicator buttonSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
             button.IsVisible = false;
-            buttonSyncing.IsVisible = true;
+            indicatorSyncing.IsVisible = true;
+            indicatorSyncing.IsRunning = true;
 
             OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToLevel(dbId, this.quizzesSearched);
             if (returnMessage == OperationReturnMessage.True)
             {
-                buttonSyncing.IsVisible = false; // remove subscribe button
+
                 (button.Parent as StackLayout).Children[2].IsVisible = true; // add in unsubscribe button
             }
             else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
@@ -239,7 +242,8 @@ namespace appFBLA2019
                 button.IsVisible = true;
                 await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
             }
-            
+            indicatorSyncing.IsVisible = false;
+            indicatorSyncing.IsRunning = false;
         }
 
         private bool quizzesRemaining;
