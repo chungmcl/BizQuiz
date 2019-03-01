@@ -170,7 +170,7 @@ namespace appFBLA2019
                     if (quiz.Author != CredentialManager.Username)
                     {
                         // If already subscribed
-                        if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId).Count() > 0))
+                        if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId && !quizInfo.IsDeletedLocally).Count() > 0))
                         {
                             ImageButtonSubscribe.IsVisible = true;
                         }

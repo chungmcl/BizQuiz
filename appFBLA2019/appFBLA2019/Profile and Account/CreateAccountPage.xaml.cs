@@ -177,7 +177,7 @@ namespace appFBLA2019
         private async void EntryUsername_TextChanged(object sender, TextChangedEventArgs e)
         {
             // Check if username is a viable length and if it doesn't have a space
-            if (this.EntryUsername.Text.Length > minLength && this.EntryUsername.Text.Length <= maxLength && !this.EntryUsername.Text.Contains(" "))
+            if (this.CredentialRestrictions(this.EntryUsername.Text))
             {
                 this.usernameCorrect = true;
                 await this.CheckIconAsync("ic_check_green_48dp.png", "ic_bad_red_48dp.png", this.checkUsername);
@@ -197,8 +197,8 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void EntryPassword_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (this.EntryPassword.Text.Length > minLength && this.EntryPassword.Text.Length <= maxLength && !this.EntryPassword.Text.Contains(" "))
-            {
+            if (this.CredentialRestrictions(this.EntryPassword.Text))
+            { 
                 this.passwordCorrect = true;
                 await this.CheckIconAsync("ic_check_green_48dp.png", "ic_bad_red_48dp.png", this.checkPassword);
             }
@@ -208,6 +208,21 @@ namespace appFBLA2019
                 await this.CheckIconAsync("ic_bad_red_48dp.png", "ic_check_green_48dp.png", this.checkPassword);
             }
             this.CheckEntries();
+        }
+
+        /// <summary>
+        /// The limits to what usernames and passwords can contain.
+        /// </summary>
+        /// <param name="checkMe">the string, username or password, to check</param>
+        /// <returns></returns>
+        private bool CredentialRestrictions(string checkMe)
+        {
+            return checkMe.Length > minLength 
+                && checkMe.Length <= maxLength 
+                && !checkMe.Contains(" ")
+                && !checkMe.Contains("`")
+                && !checkMe.Contains("\\")
+                && !checkMe.Contains("/");
         }
 
         /// <summary>
