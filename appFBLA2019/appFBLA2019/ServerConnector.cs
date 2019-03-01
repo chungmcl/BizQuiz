@@ -97,6 +97,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Read byte array of what the server returns.
+        /// </summary>
+        /// <param name="size">Size of the file to read</param>
+        /// <returns>Byte array of data that the server returns</returns>
         private static byte[] ReadByteArray(int size)
         {
             try
@@ -142,6 +147,10 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Setup connection between client and server
+        /// </summary>
+        /// <returns></returns>
         private static bool SetupConnection()
         {
             try
@@ -190,6 +199,9 @@ namespace appFBLA2019
             }
         }
         
+        /// <summary>
+        /// Close and dispose of network objects.
+        /// </summary>
         public static void CloseConn() // Close connection.
         {
             if (ssl != null)

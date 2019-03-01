@@ -30,56 +30,124 @@ namespace appFBLA2019
 
         private const int headerSize = 5;
 
+        /// <summary>
+        /// Attempt to login to account through server.
+        /// </summary>
+        /// <param name="username">The username of the account.</param>
+        /// <param name="password">The password of the account.</param>
+        /// <returns>The OperationReturnMessage the server returns.</returns>
         public static OperationReturnMessage LoginAccount(string username, string password)
         {
             return (OperationReturnMessage)SendStringData($"{username}/{password}/-", ServerRequestTypes.LoginAccount);
         }
 
+        /// <summary>
+        /// Attempt to register account through server.
+        /// </summary>
+        /// <param name="username">The username of the account</param>
+        /// <param name="password">The password of the account.</param>
+        /// <param name="email">The email of the account.</param>
+        /// <returns>The OperationReturnMessage the server returns.</returns>
         public static OperationReturnMessage RegisterAccount(string username, string password, string email)
         {
             return (OperationReturnMessage)SendStringData($"{username}/{password}/{email}/-", ServerRequestTypes.RegisterAccount);
         }
 
+        /// <summary>
+        /// Change the password of an account through server.
+        /// </summary>
+        /// <param name="username">The current username.</param>
+        /// <param name="currentPassword">The current password.</param>
+        /// <param name="newPassword">The new password to change password to.</param>
+        /// <returns>The OperationReturnMessage the server returns.</returns>
         public static OperationReturnMessage ChangePassword(string username, string currentPassword, string newPassword)
         {
             return (OperationReturnMessage)SendStringData($"{username}/{currentPassword}/{newPassword}/-", ServerRequestTypes.ChangePassword);
         }
 
+        /// <summary>
+        /// Confirm an email through server.
+        /// </summary>
+        /// <param name="username">The username of the account to confirm.</param>
+        /// <param name="confirmationToken">The token sent to the associated email to confirm email.</param>
+        /// <returns>The OperationReturnMessage the server returns.</returns>
         public static OperationReturnMessage ConfirmEmail(string username, string confirmationToken)
         {
             return (OperationReturnMessage)SendStringData($"{username}/{confirmationToken}/-", ServerRequestTypes.ConfirmEmail);
         }
 
+        /// <summary>
+        /// Change an email through server.
+        /// </summary>
+        /// <param name="username">The username of the account associated with the email.</param>
+        /// <param name="password">The password of the account.</param>
+        /// <param name="newEmail">The new email to change email to.</param>
+        /// <returns>The OperationReturnMessage the server returns.</returns>
         public static OperationReturnMessage ChangeEmail(string username, string password, string newEmail)
         {
             return (OperationReturnMessage)SendStringData($"{username}/{password}/{newEmail}/-", ServerRequestTypes.ChangeEmail);
         }
 
+        /// <summary>
+        /// Delete an account through server.
+        /// </summary>
+        /// <param name="username">The username fo the account to delete.</param>
+        /// <param name="password">The password of the account to delete.</param>
+        /// <returns>The OperationReturnMessage the server returns.</returns>
         public static OperationReturnMessage DeleteAccount(string username, string password)
         {
             return (OperationReturnMessage)SendStringData($"{username}/{password}/-", ServerRequestTypes.DeleteAccount);
         }
 
+        /// <summary>
+        /// Get the last modified date of a quiz given the level's DBId.
+        /// </summary>
+        /// <param name="DBId">The DBId of the quiz to check.</param>
+        /// <returns>The DateTime of the last modified date of a quiz as a string.</returns>
         public static string GetLastModifiedDate(string DBId)
         {
             return (string)SendStringData($"{DBId}/-", ServerRequestTypes.GetLastModifiedDate);
         }
 
+        /// <summary>
+        /// Get the email of an account.
+        /// </summary>
+        /// <param name="username">The username of the account.</param>
+        /// <param name="password">The password of the account</param>
+        /// <returns>The email of the account as a string.</returns>
         public static string GetEmail(string username, string password)
         {
             return (string)SendStringData($"{username}/{password}/-", ServerRequestTypes.GetEmail);
         }
 
+        /// <summary>
+        /// Delete a quiz on the server.
+        /// Uses current logged in credentials to authenticate permissions.
+        /// </summary>
+        /// <param name="DBId">The DBId of the quiz to delete.</param>
+        /// <returns>The OperationReturnMessage the server returns.</returns>
         public async static Task<OperationReturnMessage> DeleteQuiz(string DBId)
         {
             return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{await SecureStorage.GetAsync("password")}/{DBId}", ServerRequestTypes.DeleteQuiz);
         }
 
+        /// <summary>
+        /// Get quiz information based on a query string associated with the authorname.
+        /// </summary>
+        /// <param name="authorName">The author name to query for.</param>
+        /// <param name="chunk">The section of data to retrieve from server - server returns 20 quiz data at a time.</param>
+        /// <returns>A list of string arrays detailing quiz data based on the query string.</returns>
         public static List<string[]> GetQuizzesByAuthorName(string authorName, int chunk)
         {
             return (List<string[]>)SendStringData($"{authorName}/{chunk}/-", ServerRequestTypes.GetQuizzesByAuthorName);
         }
 
+        /// <summary>
+        /// Get quiz information of quizzes not on device of current account based on a query string associated with the authorname.
+        /// </summary>
+        /// <param name="authorName">The author name to query for.</param>
+        /// <param name="dBIdsOnDevice">The total number of quizzes currently on device.</param>
+        /// <returns>A list of string arrays detailing quiz data based on the query string.</returns>
         public static List<string[]> GetMissingQuizzesByAuthorName(string authorName, string[] dBIdsOnDevice)
         {
             string queryString = $"{authorName}";
@@ -88,16 +156,34 @@ namespace appFBLA2019
             return (List<string[]>)SendStringData(queryString, ServerRequestTypes.GetMissingQuizzesByAuthorName);
         }
 
+        /// <summary>
+        /// Get a list of users based on query string of username.
+        /// </summary>
+        /// <param name="username">The username to query for.</param>
+        /// <param name="chunk">The section of data to retrieve from server - server returns 20 quiz data at a time.</param>
+        /// <returns>A list of string arrays user data based on the query string.</returns>
         public static List<string[]> GetUsers(string username, int chunk)
         {
             return (List<string[]>)SendStringData($"{username}/{chunk}/-", ServerRequestTypes.GetUsers);
         }
 
+        /// <summary>
+        /// Get quiz data of quizzes by category.
+        /// </summary>
+        /// <param name="category">The category name to query for.</param>
+        /// <param name="chunk">The section of data to retrieve from server - server returns 20 quiz data at a time.</param>
+        /// <returns>A list of string arrays detailing quiz data based on the query string.</returns>
         public static List<string[]> GetQuizzesByCategory(string category, int chunk)
         {
             return (List<string[]>)SendStringData($"{category}/{chunk}/-", ServerRequestTypes.GetQuizzesByCategory);
         }
 
+        /// <summary>
+        /// Get quiz data of quizzes by quiz name.
+        /// </summary>
+        /// <param name="quizName">The quiz name to query for.</param>
+        /// <param name="chunk">The section of data to retrieve from server - server returns 20 quiz data at a time.</param>
+        /// <returns></returns>
         public static List<string[]> GetQuizzesByQuizName(string quizName, int chunk)
         {
             return (List<string[]>)SendStringData($"{quizName}/{chunk}/-", ServerRequestTypes.GetQuizzesByQuizName);
@@ -107,8 +193,8 @@ namespace appFBLA2019
         /// Requests server for a count of how many quizzes the user has created.
         /// Returns -1 if fails to convert to server.
         /// </summary>
-        /// <param name="username"></param>
-        /// <returns></returns>
+        /// <param name="username">The author name to query for.</param>
+        /// <returns>An integer detailing the number of quizzes by an author.</returns>
         public static int GetNumberOfQuizzesByAuthorName(string username)
         {
             string returnData = (string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfQuizzesByAuthorName);
@@ -119,12 +205,23 @@ namespace appFBLA2019
             return result;
         }
 
+        /// <summary>
+        /// Subscribe to a quiz given the quiz's DBId.
+        /// Utilizes current logged in credentials to authenticate permissions.
+        /// </summary>
+        /// <param name="dbId">The DBId of the quiz to subscribe to.</param>
+        /// <returns>The OperationReturnMessage the server returns.</returns>
         public static async Task<OperationReturnMessage> SubscribeToQuiz(string dbId)
         {
             return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{await SecureStorage.GetAsync("password")}/{dbId}/-", 
                 ServerRequestTypes.SubscribeToQuiz);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dbId"></param>
+        /// <returns>The OperationReturnMessage the server returns.</returns>
         public static async Task<OperationReturnMessage> UnsubscribeToQuiz(string dbId)
         {
             return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{await SecureStorage.GetAsync("password")}/{dbId}/-", 
