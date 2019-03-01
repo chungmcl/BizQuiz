@@ -15,12 +15,16 @@ namespace appFBLA2019
 {
     public static class ServerConnector
     {
+        // The byte length of the header in transmissions
         private const int headerSize = 5;
 
         // Server Release Build: 7777 Server Debug Build: 7778
         public static int Port { get { return 7778; } }
 
+        // The address of the server
         public static string Server { get; set; }
+
+        // The TcpClient on to of the TLS (SSL) stream
         public static TcpClient client;
         public static NetworkStream netStream;
 
@@ -32,12 +36,18 @@ namespace appFBLA2019
         // Raw-data stream of connection encrypted with TLS.
         public static SslStream ssl;
         
+        // Delegate for SslStream to validate certificate
         public static bool ValidateCert(object sender, X509Certificate certificate,
               X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            return true; // Allow untrusted certificates.
+            return true;
         }
         
+        /// <summary>
+        /// Send byte data to server and read what the server returns
+        /// </summary>
+        /// <param name="data">The byte data to send to server.</param>
+        /// <returns>A byte array of what the server returns</returns>
         public static byte[] SendByteArray(byte[] data)
         {
             // Prevent sending and receiving corrupted data
