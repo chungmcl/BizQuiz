@@ -109,11 +109,15 @@ namespace appFBLA2019
             {
                 RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
                 Realm realmDB = Realm.GetInstance(threadConfig);
-                realmDB.Remove(realmDB.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
+                realmDB.Write(() =>
+                {
+                    realmDB.Remove(realmDB.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
+                });
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                BugReportHandler.SaveReport(ex, "QuizRosterDatabase.DeleteQuizInfo(string dbId)");
                 return false;
             }
         }

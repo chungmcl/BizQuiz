@@ -533,6 +533,7 @@ namespace appFBLA2019
                         Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                         if (returnMessage == OperationReturnMessage.True)
                         {
+                            QuizRosterDatabase.DeleteQuizInfo(dbId);
                             realm.Write(() =>
                             {
                                 realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());

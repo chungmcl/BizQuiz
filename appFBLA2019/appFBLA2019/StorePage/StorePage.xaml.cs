@@ -193,6 +193,7 @@ namespace appFBLA2019
                 if (returnMessage == OperationReturnMessage.True)
                 {
                     (button.Parent as StackLayout).Children[(int)SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
+                    QuizRosterDatabase.DeleteQuizInfo(dbId);
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
@@ -209,7 +210,6 @@ namespace appFBLA2019
 
             }
         }
-
 
         /// <summary>
         /// When a user wants to subscribe to a quiz

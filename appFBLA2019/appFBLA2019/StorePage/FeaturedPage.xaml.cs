@@ -235,6 +235,7 @@ namespace appFBLA2019
 
                 if (returnMessage == OperationReturnMessage.True)
                 {
+                    QuizRosterDatabase.DeleteQuizInfo(dbId);
                     (button.Parent as StackLayout).Children[(int)SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
