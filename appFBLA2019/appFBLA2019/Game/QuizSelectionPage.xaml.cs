@@ -72,7 +72,7 @@ namespace appFBLA2019
             if (!this.IsLoading)
             {
                 this.IsLoading = true;
-                this.ButtonStack.Children.Clear();
+                this.StackLayoutButtonStack.Children.Clear();
 
                 List<QuizInfo> quizzes = QuizRosterDatabase.GetRoster(this.category);
                 if (quizzes.Count == 0)
@@ -112,7 +112,7 @@ namespace appFBLA2019
                             HorizontalOptions = LayoutOptions.CenterAndExpand,
                             Content = stack
                         };
-                        this.ButtonStack.Children.Add(frame);
+                        this.StackLayoutButtonStack.Children.Add(frame);
                     });
                 foreach (QuizInfo quiz in quizzes)
                 {
@@ -397,7 +397,7 @@ namespace appFBLA2019
 
 
                     frame.Content = frameLayout;
-                    this.ButtonStack.Children.Add(frame);
+                    this.StackLayoutButtonStack.Children.Add(frame);
                 }
                 this.IsLoading = false;
             }
@@ -577,10 +577,10 @@ namespace appFBLA2019
             globalRecognizer.Tapped += async (s, a) =>
             {
                 await this.RemoveMenu(menu);
-                this.ButtonStack.GestureRecognizers.Remove(globalRecognizer);
+                this.StackLayoutButtonStack.GestureRecognizers.Remove(globalRecognizer);
                 frame.GestureRecognizers.Add(this.recognizer);
             };
-            this.ButtonStack.GestureRecognizers.Add(globalRecognizer);
+            this.StackLayoutButtonStack.GestureRecognizers.Add(globalRecognizer);
         }
 
         private async Task RemoveMenu(Frame frame)
@@ -615,6 +615,21 @@ namespace appFBLA2019
                 }
                 await this.Navigation.PushAsync(quizPage);
             }
+        }
+
+        private async void ToolbarItemRefresh_Activated(object sender, EventArgs e)
+        {
+            await this.StackLayoutButtonStack.FadeTo(0, 1);
+            this.ActivityIndicator.IsVisible = true;
+            this.ActivityIndicator.IsRunning = true;
+            this.isSetup = false;
+
+            await Task.Run(() => QuizRosterDatabase.UpdateLocalDatabase());
+            this.CheckSetup();
+
+            this.ActivityIndicator.IsVisible = false;
+            this.ActivityIndicator.IsRunning = false;
+            await this.StackLayoutButtonStack.FadeTo(1, 1);
         }
     }
 }

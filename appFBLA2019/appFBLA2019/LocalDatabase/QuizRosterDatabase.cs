@@ -137,9 +137,18 @@ namespace appFBLA2019
                         else if (QuizInfos[i].SyncStatus != 4)
                         {
                             string lastModifiedDate = ServerOperations.GetLastModifiedDate(QuizInfos[i].DBId);
-                            if (lastModifiedDate != null) // returns null if could not reach server
+                            if (lastModifiedDate == "") // returns empty string could not reach server
                             {
-                                if (lastModifiedDate == "" || lastModifiedDate == null)
+                                QuizInfo copy = new QuizInfo(QuizInfos[i])
+                                {
+                                    SyncStatus = 3 // 3 represents offline
+                                };
+                                EditQuizInfo(threadInstance, copy);
+                            }
+                            else
+                            {
+                                // Server returns "false" if level is not already on the server
+                                if (lastModifiedDate == "false" || lastModifiedDate == null)
                                 {
                                     QuizInfo copy = new QuizInfo(QuizInfos[i])
                                     {
@@ -176,14 +185,6 @@ namespace appFBLA2019
                                         EditQuizInfo(threadInstance, copy);
                                     }
                                 }
-                            }
-                            else
-                            {
-                                QuizInfo copy = new QuizInfo(QuizInfos[i])
-                                {
-                                    SyncStatus = 3 // 3 represents offline
-                                };
-                                EditQuizInfo(threadInstance, copy);
                             }
                         }
                     }
