@@ -52,8 +52,8 @@ namespace appFBLA2019
         /// <summary>
         /// Adds a quiz to the search stack given a QuizInfo
         /// </summary>
-        /// <param name="quiz"></param>
-        private void AddQuizs(List<SearchInfo> quizzes)
+        /// <param name="quizzes"></param>
+        private void AddQuizzes(List<SearchInfo> quizzes)
 		{
             List<QuizInfo> currentlySubscribed = QuizRosterDatabase.GetRoster();
 			foreach(SearchInfo quiz in quizzes)
@@ -129,7 +129,7 @@ namespace appFBLA2019
                     if (quiz.Author != CredentialManager.Username)
                     {
                         // If already subscribed
-                        if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId).Count() > 0))
+                        if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId && !quizInfo.IsDeletedLocally).Count() > 0))
                         {
                             ImageButtonSubscribe.IsVisible = true;
                         }
@@ -181,6 +181,17 @@ namespace appFBLA2019
 #pragma warning disable
                 buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
 #pragma warning restore
+
+                // get rosterInfo
+                QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+                // tell the roster that the level is deleted
+                QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                {
+                    IsDeletedLocally = true,
+                    LastModifiedDate = DateTime.Now.ToString()
+                };
+                QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+
                 OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeToLevel(dbId);
 
                 if (returnMessage == OperationReturnMessage.True)
@@ -300,7 +311,7 @@ namespace appFBLA2019
             }
             if (chunk.Count < 20)
                 this.quizzesRemaining = false;
-            await Task.Run(() => this.AddQuizs(chunk));
+            await Task.Run(() => this.AddQuizzes(chunk));
         }
 
         /// <summary>
