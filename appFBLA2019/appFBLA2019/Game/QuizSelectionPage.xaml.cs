@@ -228,7 +228,7 @@ namespace appFBLA2019
                     topStack.Children.Add(Syncing);
 
                     #endregion SyncButtons
-                    #region Menu
+#region Menu
                     ImageButton imageButtonMenu = new ImageButton // 6
                     {
                         Source = "ic_more_vert_black_48dp.png",
@@ -503,61 +503,47 @@ namespace appFBLA2019
             {
                 string path = App.UserPath + ((Button)sender).StyleId;
 
-                if (System.IO.Directory.Exists(path))
-                {
-                    // Acquire DBId from the quiz's realm file
-                    string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                    Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                    QuizInfo info = realm.All<QuizInfo>().First();
-                    string dbId = info.DBId;
+                // StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
 
-                    // Acquire QuizInfo from roster
-                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
-                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
-                    {
-                        IsDeletedLocally = true,
-                        LastModifiedDate = DateTime.Now.ToString()
-                    };
-                    QuizRosterDatabase.EditQuizInfo(rosterInfo);
-                    if (!unsubscribe) // If delete (user owns this quiz)
-                    {
-                        // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
-                        if (CrossConnectivity.Current.IsConnected)
-                        {
-                            OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
-                            if (returnMessage == OperationReturnMessage.True)
-                            {
-                                realm.Write(() =>
-                                {
-                                    realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
-                                });
-                            }
-                        }
-                    }
-                    else // If unsubscribe
-                    {
-                        // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
-                        if (CrossConnectivity.Current.IsConnected)
-                        {
-                            OperationReturnMessage returnMessage = await ServerOperations.UnsubscribeToQuiz(dbId);
-                            if (returnMessage == OperationReturnMessage.True)
-                            {
-                                realm.Write(() =>
-                                {
-                                    realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
-                                });
-                            }
-                        }
-                        
-                    }
-                    // Need to remove from the roaster
-                    Directory.Delete(path, true);
-                    this.Setup();
-                }
-                else
+                // Acquire QuizInfo from roster
+                QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
+                    ((Button)sender).StyleId.Split('/').Last().Split('`').First(), // Quiz Name
+                    ((Button)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
+                string dbId = rosterInfo.DBId;
+
+                // tell the roster that the level is deleted
+                QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
                 {
-                    await this.DisplayAlert("Quiz not Found", "This quiz is not downloaded. Press download to download the quiz.", "OK");
-                }
+                    IsDeletedLocally = true,
+                    LastModifiedDate = DateTime.Now.ToString()
+                };
+                QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+
+                // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
+                if (CrossConnectivity.Current.IsConnected)
+                {
+                    OperationReturnMessage returnMessage;
+                    if (unsubscribe)
+                        returnMessage = await ServerOperations.UnsubscribeToQuiz(dbId);
+                    else               
+                        returnMessage = await ServerOperations.DeleteQuiz(dbId);
+
+                    if (System.IO.Directory.Exists(path))
+                    {
+                        // Get the Realm File   
+                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
+                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                        if (returnMessage == OperationReturnMessage.True)
+                        {
+                            realm.Write(() =>
+                            {
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                            });
+                        }
+                        Directory.Delete(path, true);
+                    }          
+                    this.Setup();
+                }            
             }
             else
             {
