@@ -132,7 +132,8 @@ namespace appFBLA2019
                     {
                         if (QuizInfos[i].IsDeletedLocally)
                         {
-                            await ServerOperations.DeleteQuiz(QuizInfos[i].DBId);
+                            if (await ServerOperations.DeleteQuiz(QuizInfos[i].DBId) == OperationReturnMessage.True)
+                                DeleteQuizInfo(QuizInfos[i].DBId);
                         }
                         else if (QuizInfos[i].SyncStatus != 4)
                         {
