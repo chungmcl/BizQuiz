@@ -221,7 +221,7 @@ namespace appFBLA2019
             string[] imageFilePaths = Directory.GetFiles(tempPath, "*.jpg");
             string[] realmFilePaths = Directory.GetFiles(tempPath, "*.realm");
             foreach (string path in realmFilePaths)
-                File.Copy(path, quizPath + "/" + info.DBId + realmFileExtension, true);
+                File.Copy(path, quizPath + "/" + newQuizName + realmFileExtension, true);
 
             foreach (string path in imageFilePaths)
             {
