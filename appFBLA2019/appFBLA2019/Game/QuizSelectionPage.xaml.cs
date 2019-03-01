@@ -429,7 +429,7 @@ namespace appFBLA2019
             {
                 buttonSyncing.IsVisible = false;
                 button.IsVisible = true;
-                await this.DisplayAlert("Quiz Upload Failed.",
+                await this.DisplayAlert("Quiz Upload Failed",
                     "This quiz could not be uploaded to the server. Please try again.",
                     "OK");
             }
@@ -465,11 +465,12 @@ namespace appFBLA2019
             {
                 buttonSyncing.IsVisible = false;
                 button.IsVisible = true;
-                await this.DisplayAlert("Quiz Upload Failed.",
+                await this.DisplayAlert("Quiz Download Failed",
                     "This quiz could not be downloaded from the server. Please try again.",
                     "OK");
             }
             this.serverConnected = false;
+            this.CheckSetup();
         }
 
         private void SyncNoChange_Clicked(object sender, EventArgs e)

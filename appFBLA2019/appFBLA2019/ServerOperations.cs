@@ -103,12 +103,18 @@ namespace appFBLA2019
             return (List<string[]>)SendStringData($"{quizName}/{chunk}/-", ServerRequestTypes.GetQuizzesByQuizName);
         }
         
+        /// <summary>
+        /// Requests server for a count of how many quizzes the user has created.
+        /// Returns -1 if fails to convert to server.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         public static int GetNumberOfQuizzesByAuthorName(string username)
         {
             string returnData = (string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfQuizzesByAuthorName);
             if (!int.TryParse(returnData, out int result))
             {
-                result = 0;
+                result = -1;
             }
             return result;
         }
@@ -396,7 +402,7 @@ namespace appFBLA2019
                 else
                 {
                     ServerConnector.CloseConn();
-                    return "";
+                    return null;
                 }
             }
             else
