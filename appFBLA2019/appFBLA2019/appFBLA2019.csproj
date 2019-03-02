@@ -53,6 +53,9 @@
     <Compile Update="StorePage\FeaturedPage.xaml.cs">
       <DependentUpon>FeaturedPagexaml</DependentUpon>
     </Compile>
+    <Compile Update="StorePage\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -102,7 +105,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="StorePage\StorePage.xaml">
+    <EmbeddedResource Update="StorePage\SearchPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="TermsOfUse.xaml">

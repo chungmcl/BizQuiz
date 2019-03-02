@@ -170,8 +170,10 @@ namespace appFBLA2019
             }
 
             // 2 represents 'correct'
-            Question copyQuestion = new Question(this.currentQuestion);
-            copyQuestion.Status = 2;
+            Question copyQuestion = new Question(this.currentQuestion)
+            {
+                Status = 2
+            };
             DBHandler.Database.EditQuestion(copyQuestion);
             await this.AnimateNextBanner();
         }
@@ -210,8 +212,10 @@ namespace appFBLA2019
             this.NextBanner.BackgroundColor = Color.Red;
 
             // 1 represents 'failed'
-            Question copyQuestion = new Question(this.currentQuestion);
-            copyQuestion.Status = 1;
+            Question copyQuestion = new Question(this.currentQuestion)
+            {
+                Status = 1
+            };
             DBHandler.Database.EditQuestion(copyQuestion);
 
             await this.AnimateNextBanner();
@@ -245,8 +249,10 @@ namespace appFBLA2019
         {
             if (question.QuestionText == "" || question.CorrectAnswer == "")
             {
-                Question copyQuestion = new Question(this.currentQuestion);
-                copyQuestion.Status = 3;
+                Question copyQuestion = new Question(this.currentQuestion)
+                {
+                    Status = 3
+                };
                 DBHandler.Database.EditQuestion(copyQuestion);
                 await this.CycleQuestion();
                 return;

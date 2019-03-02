@@ -104,7 +104,7 @@ namespace appFBLA2019
                                 TextColor = Color.White,
                                 FontSize = 26
                             });
-                            (stack.Children[2] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new StorePage());
+                            (stack.Children[2] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new SearchPage());
                         }
                         Frame frame = new Frame()
                         {
@@ -536,7 +536,7 @@ namespace appFBLA2019
                             QuizRosterDatabase.DeleteQuizInfo(dbId);
                             realm.Write(() =>
                             {
-                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
                             });
                         }
                         Directory.Delete(path, true);

@@ -87,8 +87,10 @@ namespace appFBLA2019
         {
             foreach (Question x in this.Questions)
             {
-                Question copyQuestion = new Question(x);
-                copyQuestion.Status = 0;
+                Question copyQuestion = new Question(x)
+                {
+                    Status = 0
+                };
                 DBHandler.Database.EditQuestion(copyQuestion);
             }
         }
