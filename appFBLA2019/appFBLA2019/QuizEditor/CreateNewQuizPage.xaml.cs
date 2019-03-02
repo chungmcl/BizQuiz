@@ -20,6 +20,7 @@ namespace appFBLA2019
         private string originalAuthor;
         private string originalName;
         private string originalCategory;
+        private object callerType;
 
         private ToolbarItem Done = new ToolbarItem
         {
@@ -89,7 +90,12 @@ namespace appFBLA2019
             }
         }
 
-        private async Task PickImage(object sender)
+        /// <summary>
+        /// Allows the user to pick an image to display for a question 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        private async Task PickImageAsync(object sender)
         {
             await CrossMedia.Current.Initialize();
             Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
@@ -122,7 +128,6 @@ namespace appFBLA2019
             }
         }
 
-        private object x;
 
         /// <summary>
         /// Called when the user presses the Add Image button on a question eiditor
@@ -134,14 +139,15 @@ namespace appFBLA2019
             if (sender is Button)
             {
                 ((Button)sender).IsEnabled = false;
-                await this.PickImage(sender);
+                await this.PickImageAsync(sender);
                 ((Button)sender).IsEnabled = true;
             }
             else
             {
                 ((ImageButton)sender).IsEnabled = false;
                 await this.Navigation.PushAsync(new PhotoPage(((ImageButton)sender)));
-                this.x = sender;
+                // set callerType to be sender, which is an imagebutton so we can set up the next page correctly
+                this.callerType = sender;
                 ((ImageButton)sender).IsEnabled = true;
             }
         }
@@ -155,16 +161,16 @@ namespace appFBLA2019
             this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
             this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
 #pragma warning restore CS4014
-            if (this.x is ImageButton)
+            if (this.callerType is ImageButton)
             {
-                if (((ImageButton)this.x).StyleId == "change")
+                if (((ImageButton)this.callerType).StyleId == "change")
                 {
-                    await this.PickImage(this.x);
+                    await this.PickImageAsync(this.callerType);
                 }
-                else if (((ImageButton)this.x).StyleId == "delete")
+                else if (((ImageButton)this.callerType).StyleId == "delete")
                 {
-                    ((ImageButton)this.x).IsVisible = false;
-                    ((StackLayout)((ImageButton)this.x).Parent).Children[7].IsVisible = true;
+                    ((ImageButton)this.callerType).IsVisible = false;
+                    ((StackLayout)((ImageButton)this.callerType).Parent).Children[7].IsVisible = true;
                 }
             }
         }
