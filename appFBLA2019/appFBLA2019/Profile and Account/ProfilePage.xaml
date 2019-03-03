@@ -16,7 +16,7 @@
                                Color="Accent" 
                                VerticalOptions="CenterAndExpand"
                                IsVisible="False"/>
-                        <StackLayout x:Name="QuizStack">
+                        <StackLayout x:Name="StackLayoutQuizStack">
                             <!--Quizzes user created goes here!-->
                         </StackLayout>
                     </StackLayout>

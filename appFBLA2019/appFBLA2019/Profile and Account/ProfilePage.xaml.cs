@@ -1,7 +1,11 @@
 ﻿//BizQuiz App 2019
 
+using Plugin.Connectivity;
+using Realms;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -20,6 +24,19 @@ namespace appFBLA2019
         public ProfilePage()
         {
             this.InitializeComponent();
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
+
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            this.LabelUsername.FadeTo(0, 500, Easing.CubicInOut);
         }
 
         /// <summary>
@@ -66,12 +83,12 @@ namespace appFBLA2019
         {
             this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
             this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
-
             this.IsLoading = true;
+            this.StackLayoutQuizStack.Children.Clear();
             this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             if (this.StackLayoutProfilePageContent.IsVisible)
-                await UpdateProfileContent();
+                await this.UpdateProfileContent();
             else
             {
                 if (this.ToolbarItems.Count > 0)
@@ -90,8 +107,7 @@ namespace appFBLA2019
         /// <returns></returns>
         private async Task UpdateProfileContent()
         {
-            this.QuizStack.Children.Clear();
-            this.QuizStack.IsVisible = false;
+            this.StackLayoutQuizStack.IsVisible = false;
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
 
@@ -99,26 +115,30 @@ namespace appFBLA2019
             {
                 this.totalCount = 0;
                 this.SetupLocalQuizzes();
-                //this.SetupNetworkQuizzes();
-                this.totalCount += ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
-                if (totalCount == 0)
+                this.SetupNetworkQuizzes();
+                int createdCountFromServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
+                if (createdCountFromServer >= 0)
                 {
-                    Frame frame = new Frame()
+                    this.totalCount += createdCountFromServer;
+                    if (totalCount == 0)
                     {
-                        CornerRadius = 10,
-                        HorizontalOptions = LayoutOptions.CenterAndExpand,
-                        Content = new Label
+                        Frame frame = new Frame()
                         {
-                            Text = "You haven't made any quizzes yet!",
-                            HorizontalTextAlignment = TextAlignment.Center,
-                            FontSize = 38
-                        }
-                    };
+                            CornerRadius = 10,
+                            HorizontalOptions = LayoutOptions.CenterAndExpand,
+                            Content = new Label
+                            {
+                                Text = "You haven't made any quizzes yet!",
+                                HorizontalTextAlignment = TextAlignment.Center,
+                                FontSize = 38
+                            }
+                        };
+                        Device.BeginInvokeOnMainThread(() =>
+                            this.StackLayoutQuizStack.Children.Add(frame));
+                    }
                     Device.BeginInvokeOnMainThread(() =>
-                        this.QuizStack.Children.Add(frame));
+                        this.QuizNumber.Text = "You have created a total of " + this.totalCount + " quizzes!");
                 }
-                Device.BeginInvokeOnMainThread(() =>
-                    this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
             });
 
             if (this.ToolbarItems.Count <= 0)
@@ -130,10 +150,10 @@ namespace appFBLA2019
             }
             
             this.IsOnLoginPage = false;
-
+            this.totalCount = 0;
             this.ActivityIndicator.IsRunning = false;
             this.ActivityIndicator.IsVisible = false;
-            this.QuizStack.IsVisible = true;
+            this.StackLayoutQuizStack.IsVisible = true;
         }
 
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
@@ -148,9 +168,10 @@ namespace appFBLA2019
                     this.currentChunk++;
                     await Task.Run(() => this.SetupNetworkQuizzes());
                 }
-                catch
+                catch (Exception ex)
                 {
-                    await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+                    BugReportHandler.SaveReport(ex);
+                    await this.DisplayAlert("Oops, network failure", "Try again later", "Ok");
                 }
             }
         }
@@ -187,6 +208,11 @@ namespace appFBLA2019
             AddQuizzes(chunk, true);
         }
 
+        /// <summary>
+        /// Adds user's quizzes to the login page
+        /// </summary>
+        /// <param name="quizzes"> a list of quizzes to dislay</param>
+        /// <param name="isNetworkQuiz">if the incoming quiz is a networkQuiz </param>
         private void AddQuizzes(List<SearchInfo> quizzes, bool isNetworkQuiz)
         {
             
@@ -212,6 +238,13 @@ namespace appFBLA2019
                         Orientation = StackOrientation.Vertical
                     };
 
+                    StackLayout topStack = new StackLayout
+                    {
+                        FlowDirection = FlowDirection.LeftToRight,
+                        Orientation = StackOrientation.Horizontal,
+                        Padding = 0
+                    };
+                    
                     Label quizName = new Label
                     {
                         Text = quiz.QuizName,
@@ -219,7 +252,20 @@ namespace appFBLA2019
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         HorizontalOptions = LayoutOptions.StartAndExpand
                     };
-                    frameStack.Children.Add(quizName);
+                    topStack.Children.Add(quizName);
+
+                    ImageButton buttonDelete = new ImageButton();
+                    {
+                        buttonDelete.HorizontalOptions = LayoutOptions.End;
+                        buttonDelete.Source = "ic_delete_red_48dp.png";
+                        buttonDelete.StyleId = "/" + quiz.Category + "/" + quiz.QuizName + "`" + quiz.Author;
+                        buttonDelete.Clicked += this.ButtonDelete_Clicked;
+                        buttonDelete.BackgroundColor = Color.White;
+                        buttonDelete.HeightRequest = 35;
+                    }
+                    topStack.Children.Add(buttonDelete);
+
+                    frameStack.Children.Add(topStack);                   
 
                     Label Category = new Label
                     {
@@ -237,7 +283,110 @@ namespace appFBLA2019
                     frame.Content = frameStack;
 
                     Device.BeginInvokeOnMainThread(() =>
-                    QuizStack.Children.Add(frame));
+                    this.StackLayoutQuizStack.Children.Add(frame));
+                }
+            }
+        }
+
+        private async void ButtonDelete_Clicked(object sender, EventArgs e)
+        {
+            bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud.This is not reversable.", "Yes", "No");
+            if (answer)
+            {
+                string path = App.UserPath + ((ImageButton)sender).StyleId;
+
+                // StyleId = "/" + quiz.Category + "/" + quiz.QuizName + "`" + quiz.Author;
+
+                // Acquire QuizInfo from roster
+                QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
+                    ((ImageButton)sender).StyleId.Split('/').Last().Split('`').First(), // Quiz Name
+                    ((ImageButton)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
+                string dbId = rosterInfo.DBId;
+
+                // tell the roster that the level is deleted
+                QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                {
+                    IsDeletedLocally = true,
+                    LastModifiedDate = DateTime.Now.ToString()
+                };
+                QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+
+                // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
+                if (CrossConnectivity.Current.IsConnected)
+                {
+                    OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
+
+                    if (System.IO.Directory.Exists(path))
+                    {
+                        // Get the Realm File   
+                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
+                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                        if (returnMessage == OperationReturnMessage.True)
+                        {
+                            QuizRosterDatabase.DeleteQuizInfo(dbId);
+                            realm.Write(() =>
+                            {
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
+                            });
+                        }
+                        Directory.Delete(path, true);
+                    }
+                    else
+                    {
+                        await this.DisplayAlert("Quiz not Found", "Is this quiz already deleted?", "Back");
+                    }
+                }
+                // Setup Page again after deletion
+                this.StackLayoutProfilePageContent.Children.Clear();
+                await this.UpdateProfileContent();
+            }
+        }
+
+
+
+        private async void ButtonDelete_ClickedNope(object sender, EventArgs e)
+        {
+
+            bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud.This is not reversable.", "Yes", "No");
+            if (answer)
+            {
+                string path = App.UserPath + ((ImageButton)sender).StyleId;
+
+                if (System.IO.Directory.Exists(path))
+                {
+                    // Acquire DBId from the quiz's realm file
+                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
+                       ((Button)sender).StyleId.Split('/').Last().Split('`').First(), // Quiz Name
+                       ((Button)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
+                    string dbId = rosterInfo.DBId;
+
+                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                    {
+                        IsDeletedLocally = true,
+                        LastModifiedDate = DateTime.Now.ToString()
+                    };
+                    QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+                    // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
+                    if (CrossConnectivity.Current.IsConnected)
+                    {
+                        // Get the Realm File   
+                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
+                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                        OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
+                        if (returnMessage == OperationReturnMessage.True)
+                        {
+                            realm.Write(() =>
+                            {
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
+                            });
+                        }
+                    }
+                    Directory.Delete(path, true);
+                   
+                }
+                else
+                {
+                    await this.DisplayAlert("Quiz not Found", "Is this quiz already deleted?", "Back");
                 }
             }
         }

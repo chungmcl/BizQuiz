@@ -10,11 +10,15 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class FeaturedPage : ContentPage
-	{
+    /// <summary>
+    /// The page that displays featured levels, Created by the BizQuizTeam. To be displayed in the middle bottom tab
+    /// </summary>
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class FeaturedPage : ContentPage
+    {
         private string category;
         private List<SearchInfo> quizzesFeatured;
+        private enum SubscribeType { Subscribe = 1, Unsubscribe, Syncing };
 
         public FeaturedPage()
         {
@@ -33,6 +37,9 @@ namespace appFBLA2019
         private bool quizzesRemaining;
         private int currentChunk;
 
+        /// <summary>
+        /// Refreshes the page's quiz content
+        /// </summary>
         private async Task Refresh()
         {
             this.LabelNoQuiz.IsVisible = false;
@@ -59,6 +66,9 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Searches the server for featured levels and sets the chunk equal to the servers response
+        /// </summary>
         private async Task Search()
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
@@ -68,6 +78,9 @@ namespace appFBLA2019
             await Task.Run(() => this.AddQuizzes(chunk));
         }
 
+        /// <summary>
+        /// fires when the page is scrolled. If scrolled all the way, it will search the server for the next chunk
+        /// </summary>
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
         {
             ScrollView scrollView = sender as ScrollView;
@@ -128,27 +141,55 @@ namespace appFBLA2019
                     };
                     topStack.Children.Add(quizName);
 
-                    ImageButton ImageButtonSubscribe = new ImageButton
+                    ImageButton ImageButtonSubscribe = new ImageButton // 1
                     {
+                        IsVisible = false,
+                        Source = "ic_playlist_add_black_48dp.png",
                         StyleId = quiz.DBId,
                         HeightRequest = 30,
                         BackgroundColor = Color.White,
                         HorizontalOptions = LayoutOptions.End
                     };
-
-                    // If not already subscribed
-                    if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId).Count() > 0))
-                    {
-                        // source is add if not subscribed and if they are then source is check
-                        ImageButtonSubscribe.Source = "ic_playlist_add_black_48dp.png";
-                    }
-                    else
-                    {
-                        ImageButtonSubscribe.Source = "ic_playlist_add_check_black_48dp.png";
-                    }
-
                     ImageButtonSubscribe.Clicked += this.ImageButtonSubscribe_Clicked;
                     topStack.Children.Add(ImageButtonSubscribe);
+
+                    ImageButton ImageButtonUnsubscribe = new ImageButton // 2
+                    {
+                        IsVisible = false,
+                        Source = "ic_playlist_add_check_black_48dp.png",
+                        StyleId = quiz.DBId,
+                        HeightRequest = 30,
+                        BackgroundColor = Color.White,
+                        HorizontalOptions = LayoutOptions.End
+                    };
+                    ImageButtonUnsubscribe.Clicked += this.ImageButtonUnsubscribe_Clicked;
+                    topStack.Children.Add(ImageButtonUnsubscribe);
+
+                    ActivityIndicator Syncing = new ActivityIndicator // 3
+                    {
+                        IsVisible = false,
+                        Color = Color.Accent,
+                        HeightRequest = 25,
+                        WidthRequest = 25,
+                        VerticalOptions = LayoutOptions.StartAndExpand,
+                        HorizontalOptions = LayoutOptions.End,
+                    };
+                    topStack.Children.Add(Syncing);
+
+
+
+                    if (quiz.Author != CredentialManager.Username)
+                    {
+                        // If already subscribed
+                        if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId && !quizInfo.IsDeletedLocally).Count() > 0))
+                        {
+                            ImageButtonSubscribe.IsVisible = true;
+                        }
+                        else
+                        {
+                            ImageButtonUnsubscribe.IsVisible = true;
+                        }
+                    }
 
                     frameStack.Children.Add(topStack);
 
@@ -177,62 +218,97 @@ namespace appFBLA2019
         }
 
         /// <summary>
+        /// Called when the user wants to unsubscribe from a quiz
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ImageButtonUnsubscribe_Clicked(object sender, EventArgs e)
+        {
+            ImageButton button = (sender as ImageButton);
+            string dbId = button.StyleId;
+            bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+            if (answer)
+            {
+                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
+                button.IsVisible = false;
+                indicatorSyncing.IsVisible = true;
+                indicatorSyncing.IsRunning = true;
+                // get rosterInfo
+                QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+                // tell the roster that the level is deleted
+                QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                {
+                    IsDeletedLocally = true,
+                    LastModifiedDate = DateTime.Now.ToString()
+                };
+                QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+
+                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeToLevel(dbId);
+
+                if (returnMessage == OperationReturnMessage.True)
+                {
+                    QuizRosterDatabase.DeleteQuizInfo(dbId);
+                    (button.Parent as StackLayout).Children[(int)SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
+                }
+                else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
+                {
+                    button.IsVisible = true;
+                    await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please log in and try again.", "OK");
+                }
+                else
+                {
+                    button.IsVisible = true;
+                    await this.DisplayAlert("Unsubscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                }
+                indicatorSyncing.IsVisible = false;
+                indicatorSyncing.IsRunning = false;
+            }
+        }
+
+        /// <summary>
         /// When a user wants to subscribe to a quiz
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         async private void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
         {
-            ImageButton button = (sender as ImageButton);
-            string dbId = button.StyleId;
-            if (button.Source.ToString() == "File: ic_playlist_add_check_black_48dp.png") // unsubscribe
+            if (CredentialManager.IsLoggedIn)
             {
-                bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
-                if (answer)
-                {
-                    await button.FadeTo(1, 150, Easing.CubicInOut);
-                    OperationReturnMessage returnMessage = await Task.Run(async() => await ServerOperations.UnsubscribeToQuiz(dbId));
-                    if (returnMessage == OperationReturnMessage.True)
-                    {
-                        await button.FadeTo(0, 150, Easing.CubicInOut);
-                        button.Source = "ic_playlist_add_black_48dp.png";
-                        button.HeightRequest = 30;
-                    }
-                    else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
-                    {
-                        await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
-                    }
-                    else
-                    {
-                        await this.DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
-                    }
-                }
-            }
-            else // subscribe
-            {
+                ImageButton button = (sender as ImageButton);
+                string dbId = button.StyleId;
+
+                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
+                button.IsVisible = false;
+                indicatorSyncing.IsVisible = true;
+                indicatorSyncing.IsRunning = true;
                 OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToLevel(dbId, this.quizzesFeatured);
                 if (returnMessage == OperationReturnMessage.True)
                 {
-                    await button.FadeTo(0, 150, Easing.CubicInOut);
-                    button.Source = "ic_playlist_add_check_black_48dp.png";
-                    button.HeightRequest = 30;
-                    await button.FadeTo(1, 150, Easing.CubicInOut);
+                    (button.Parent as StackLayout).Children[2].IsVisible = true; // add in unsubscribe button
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
-                    await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                    button.IsVisible = true;
+                    await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
                 }
                 else
                 {
-                    await this.DisplayAlert("Subscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                    button.IsVisible = true;
+                    await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
                 }
+                indicatorSyncing.IsVisible = false; // remove activity indicator
+                indicatorSyncing.IsRunning = false;
             }
-
+            else
+            {
+                await this.DisplayAlert("Hold on!", "Before you can subscribe to any quizzes, you have to login.", "Ok");
+            }
+            
         }
 
         private void Search_Activated(object sender, EventArgs e)
         {
-            this.Navigation.PushModalAsync(new StorePage());
+            this.Navigation.PushModalAsync(new SearchPage());
         }
 
         private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)

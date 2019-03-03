@@ -103,12 +103,18 @@ namespace appFBLA2019
             return (List<string[]>)SendStringData($"{quizName}/{chunk}/-", ServerRequestTypes.GetQuizzesByQuizName);
         }
         
+        /// <summary>
+        /// Requests server for a count of how many quizzes the user has created.
+        /// Returns -1 if fails to convert to server.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         public static int GetNumberOfQuizzesByAuthorName(string username)
         {
             string returnData = (string)SendStringData($"{username}/-", ServerRequestTypes.GetNumberOfQuizzesByAuthorName);
             if (!int.TryParse(returnData, out int result))
             {
-                result = 0;
+                result = -1;
             }
             return result;
         }
@@ -181,36 +187,98 @@ namespace appFBLA2019
 
         public static bool GetQuiz(string dBId, string quizName, string authorName, string category)
         {
-            string quizPath = App.UserPath + "/" + category + "/" + $"{quizName}`{authorName}/";
-
-            Directory.CreateDirectory(quizPath);
+            // TO DO: CHECK IF quizName or category changed and save accordingly
+            string tempPath = App.UserPath + "/" + "temp" + "/" + dBId + "/";
+            string tempFilePath = tempPath + "/" + realmFileExtension;
+            
+            Directory.CreateDirectory(tempPath);
             byte[] realmFile = (byte[])SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
-            string realmFilePath = quizPath + "/" + quizName + realmFileExtension;
             if (realmFile.Length > 0)
-                File.WriteAllBytes(realmFilePath, realmFile);
+                File.WriteAllBytes(tempFilePath, realmFile);
             else
                 return false;
 
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(tempFilePath));
             IQueryable<Question> questionsWithPictures = realmDB.All<Question>().Where(question => question.NeedsPicture);
             foreach (Question question in questionsWithPictures)
             {
                 byte[] jpegFile = (byte[])SendStringData($"{question.QuestionId}/{dBId}/-", ServerRequestTypes.GetJPEGImage);
-                string jpegFilePath = quizPath + "/" + question.QuestionId + jpegFileExtension;
+                string jpegFilePath = tempPath + "/" + question.QuestionId + jpegFileExtension;
                 if (jpegFile.Length > 0)
                     File.WriteAllBytes(jpegFilePath, jpegFile);
                 else
                     return false;
             }
+            QuizInfo info = realmDB.All<QuizInfo>().First();
+            string newQuizName = info.QuizName;
+            string newCategory = info.Category;
+            string newLastModfiedDate = info.LastModifiedDate;
+
+            string quizPath = App.UserPath + "/" + newCategory + "/" + $"{newQuizName}`{info.AuthorName}/";
+            string realmFilePath = quizPath + "/" + newQuizName + realmFileExtension;
+            Directory.CreateDirectory(quizPath);
+
+            string[] imageFilePaths = Directory.GetFiles(tempPath, "*.jpg");
+            string[] realmFilePaths = Directory.GetFiles(tempPath, "*.realm");
+            foreach (string path in realmFilePaths)
+                File.Copy(path, quizPath + "/" + newQuizName + realmFileExtension, true);
+
+            foreach (string path in imageFilePaths)
+            {
+                string imageName = path.Split('/').Last();
+                File.Copy(path, quizPath + "/" + imageName, true);
+            }
+
+            if (quizName != newQuizName || category != newCategory)
+                DeleteDirectory(App.UserPath + "/" + category + "/" + $"{quizName}`{authorName}", true);
+
+            DeleteDirectory(tempPath, true);
+
             QuizInfo infoCopy = new QuizInfo(QuizRosterDatabase.GetQuizInfo(dBId))
             {
-                SyncStatus = 2
+                SyncStatus = 2,
+                QuizName = newQuizName,
+                Category = newCategory,
+                LastModifiedDate = newLastModfiedDate
             };
             QuizRosterDatabase.EditQuizInfo(infoCopy);
 
             return true;
         }
-        
+
+        private static void DeleteDirectory(string path, bool recursive)
+        {
+            if (recursive)
+            {
+                var subfolders = Directory.GetDirectories(path);
+                foreach (var s in subfolders)
+                {
+                    DeleteDirectory(s, recursive);
+                }
+            }
+            var files = Directory.GetFiles(path);
+            foreach (var f in files)
+            {
+                try
+                {
+                    var attr = File.GetAttributes(f);
+                    if ((attr & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        File.SetAttributes(f, attr ^ FileAttributes.ReadOnly);
+                    }
+                    File.Delete(f);
+                }
+                catch (IOException)
+                {
+                    Debug.WriteLine("failed delete");
+                }
+            }
+
+            // At this point, all the files and sub-folders have been deleted.
+            // So we delete the empty folder using the OOTB  DeleteDirectory method.
+            Directory.Delete(path);
+        }
+
         public static bool SendBugReport(string report, byte[] image = null)
         {
             byte[] reportBytes = Encoding.Unicode.GetBytes(report);
@@ -334,7 +402,7 @@ namespace appFBLA2019
                 else
                 {
                     ServerConnector.CloseConn();
-                    return "";
+                    return null;
                 }
             }
             else

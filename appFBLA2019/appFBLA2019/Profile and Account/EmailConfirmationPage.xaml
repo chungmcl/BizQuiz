@@ -11,7 +11,7 @@
                    XAlign="Center" HorizontalOptions="Center" />
 
             <Entry x:Name="EntryConfirmationCode"
-                       HorizontalOptions="FillAndExpand" />
+                       HorizontalOptions="FillAndExpand" Placeholder="Code"/>
 
             <Button x:Name="ButtonConfirmEmail"
                     Text="Confirm Email with Code"

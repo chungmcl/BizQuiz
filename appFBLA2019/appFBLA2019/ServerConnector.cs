@@ -18,7 +18,7 @@ namespace appFBLA2019
         private const int headerSize = 5;
 
         // Server Release Build: 7777 Server Debug Build: 7778
-        public static int Port { get { return 7778; } }
+        public static int Port { get { return 7777; } }
 
         public static string Server { get; set; }
         public static TcpClient client;
@@ -27,7 +27,7 @@ namespace appFBLA2019
         /// <summary>
         /// An empty to object to serve as a thread lock
         /// </summary>
-        private static object lockObj = new object();
+        private static readonly object lockObj = new object();
 
         // Raw-data stream of connection encrypted with TLS.
         public static SslStream ssl;
@@ -50,23 +50,27 @@ namespace appFBLA2019
                     {
                         if (ssl != null)
                         {
-                            if (CrossConnectivity.Current.IsConnected)
+                            lock (ssl)
                             {
-                                ssl.Write(data, 0, data.Length);
-                                ssl.Flush();
 
-                                byte[] header = ReadByteArray(headerSize);
-                                int size = BitConverter.ToInt32(header, 1);
-                                if (header.Length >= 5)
+                                if (CrossConnectivity.Current.IsConnected)
                                 {
-                                    byte[] returnedData = ReadByteArray(size);
-                                    return returnedData;
+                                    ssl.Write(data, 0, data.Length);
+                                    ssl.Flush();
+
+                                    byte[] header = ReadByteArray(headerSize);
+                                    int size = BitConverter.ToInt32(header, 1);
+                                    if (header.Length >= 5)
+                                    {
+                                        byte[] returnedData = ReadByteArray(size);
+                                        return returnedData;
+                                    }
+                                    else
+                                        return new byte[0];
                                 }
                                 else
                                     return new byte[0];
                             }
-                            else
-                                return new byte[0];
                         }
                         else
                             return new byte[0];

@@ -14,13 +14,20 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// Users can create their own quizzes with this page.
+    /// </summary>
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CreateNewQuizPage : ContentPage
     {
         private string originalAuthor;
         private string originalName;
         private string originalCategory;
+        private object callerType;
 
+        /// <summary>
+        /// Toolbar Item so users can save and finish the quiz
+        /// </summary>
         private ToolbarItem Done = new ToolbarItem
         {
             Icon = "ic_done_white_48dp.png",
@@ -89,7 +96,12 @@ namespace appFBLA2019
             }
         }
 
-        private async Task PickImage(object sender)
+        /// <summary>
+        /// Allows the user to pick an image to display for a question 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        private async Task PickImageAsync(object sender)
         {
             await CrossMedia.Current.Initialize();
             Plugin.Media.Abstractions.MediaFile file = await CrossMedia.Current.PickPhotoAsync();
@@ -122,7 +134,6 @@ namespace appFBLA2019
             }
         }
 
-        private object x;
 
         /// <summary>
         /// Called when the user presses the Add Image button on a question eiditor
@@ -134,14 +145,15 @@ namespace appFBLA2019
             if (sender is Button)
             {
                 ((Button)sender).IsEnabled = false;
-                await this.PickImage(sender);
+                await this.PickImageAsync(sender);
                 ((Button)sender).IsEnabled = true;
             }
             else
             {
                 ((ImageButton)sender).IsEnabled = false;
                 await this.Navigation.PushAsync(new PhotoPage(((ImageButton)sender)));
-                this.x = sender;
+                // set callerType to be sender, which is an imagebutton so we can set up the next page correctly
+                this.callerType = sender;
                 ((ImageButton)sender).IsEnabled = true;
             }
         }
@@ -155,16 +167,16 @@ namespace appFBLA2019
             this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
             this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
 #pragma warning restore CS4014
-            if (this.x is ImageButton)
+            if (this.callerType is ImageButton)
             {
-                if (((ImageButton)this.x).StyleId == "change")
+                if (((ImageButton)this.callerType).StyleId == "change")
                 {
-                    await this.PickImage(this.x);
+                    await this.PickImageAsync(this.callerType);
                 }
-                else if (((ImageButton)this.x).StyleId == "delete")
+                else if (((ImageButton)this.callerType).StyleId == "delete")
                 {
-                    ((ImageButton)this.x).IsVisible = false;
-                    ((StackLayout)((ImageButton)this.x).Parent).Children[7].IsVisible = true;
+                    ((ImageButton)this.callerType).IsVisible = false;
+                    ((StackLayout)((ImageButton)this.callerType).Parent).Children[7].IsVisible = true;
                 }
             }
         }
@@ -264,7 +276,7 @@ namespace appFBLA2019
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
 
                 // Now open the database the user just made, might be the same as the one already open
-                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EditorQuizName.Text.Trim(), CredentialManager.Username);
+                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EditorQuizName.Text?.Trim(), CredentialManager.Username);
                 // Loops through each question frame on the screen
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
@@ -273,10 +285,10 @@ namespace appFBLA2019
 
                     Question addThis;
                     //The answers to the question
-                    string[] answers = {((Editor)children[2]).Text.Trim(), //Correct answer
-								((Editor)children[3]).Text.Trim(), // Incorect answer
-								((Editor)children[4]).Text.Trim(), // Incorect answer
-								((Editor)children[5]).Text.Trim()}; // Incorect answer
+                    string[] answers = {((Editor)children[2]).Text?.Trim(), //Correct answer
+								((Editor)children[3]).Text?.Trim(), // Incorect answer
+								((Editor)children[4]).Text?.Trim(), // Incorect answer
+								((Editor)children[5]).Text?.Trim()}; // Incorect answer
 
                     // Checks if there is a question set
                     if (string.IsNullOrWhiteSpace(((Editor)children[1]).Text))
@@ -288,7 +300,7 @@ namespace appFBLA2019
                     if (((ImageButton)children[6]).IsVisible) // if the question needs an image
                     {
                         addThis = new Question(
-                                ((Editor)children[1]).Text.Trim(), // The Question
+                                ((Editor)children[1]).Text?.Trim(), // The Question
                                 ((ImageButton)children[6]).Source.ToString().Substring(6), // adds image using the image source
                                 answers)
                         { NeedsPicture = true };
@@ -296,7 +308,7 @@ namespace appFBLA2019
                     else // if the question does not need an image
                     {
                         addThis = new Question(
-                                ((Editor)children[1]).Text.Trim(),
+                                ((Editor)children[1]).Text?.Trim(),
                                 answers);
                     }
 
@@ -352,7 +364,7 @@ namespace appFBLA2019
 
                     // Save a new QuizInfo into the quiz database, which also adds this QuizInfo to the device quiz roster
                     DBHandler.Database.NewQuizInfo(CredentialManager.Username,
-                        this.EditorQuizName.Text.Trim(),
+                        this.EditorQuizName.Text?.Trim(),
                         this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
                     DBHandler.Database.AddQuestions(NewQuestions);
                 }
@@ -360,7 +372,7 @@ namespace appFBLA2019
                 {
                     QuizInfo updatedQuizInfo = new QuizInfo(DBHandler.Database.GetQuizInfo())
                     {
-                        QuizName = this.EditorQuizName.Text.Trim(),
+                        QuizName = this.EditorQuizName.Text?.Trim(),
                         LastModifiedDate = DateTime.Now.ToString()
                     };
                     DBHandler.Database.EditQuizInfo(updatedQuizInfo);
@@ -399,7 +411,7 @@ namespace appFBLA2019
                 File.Create(DBHandler.Database.DBFolderPath + ".nomedia");
 
                 // If they renamed the quiz, delete the old one
-                if (this.originalName != this.EditorQuizName.Text.Trim() && this.originalAuthor == CredentialManager.Username)
+                if (this.originalName != this.EditorQuizName.Text?.Trim() && this.originalAuthor == CredentialManager.Username)
                 {
                     Directory.Delete(App.UserPath + "/" + this.originalName + "`" + this.originalAuthor, true);
                 }

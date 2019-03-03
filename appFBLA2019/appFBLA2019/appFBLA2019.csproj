@@ -9,34 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Resources\testLevel`testAuthor\**" />
-    <EmbeddedResource Remove="Resources\testLevel`testAuthor\**" />
-    <None Remove="Resources\testLevel`testAuthor\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Resources\ic_close_black_48dp.png" />
-    <None Remove="Resources\ic_done_white_48dp.png" />
-    <None Remove="Resources\ic_edit_black_48dp.png" />
-    <None Remove="Resources\ic_group_black_48dp.png" />
-    <None Remove="Resources\ic_help_black_48dp.png" />
-    <None Remove="Resources\ic_landscape_black_48dp.png" />
-    <None Remove="Resources\ic_person_black_48dp.png" />
-    <None Remove="Resources\ic_settings_black_48dp.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\ic_close_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_done_white_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_edit_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_group_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_help_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_landscape_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_person_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_settings_black_48dp.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Plugin.FacebookClient" Version="1.4.0" />
     <PackageReference Include="Plugin.Share" Version="7.1.1" />
     <PackageReference Include="Realm" Version="3.4.0" />
@@ -80,6 +52,9 @@
     </Compile>
     <Compile Update="StorePage\FeaturedPage.xaml.cs">
       <DependentUpon>FeaturedPagexaml</DependentUpon>
+    </Compile>
+    <Compile Update="StorePage\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -130,7 +105,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="StorePage\StorePage.xaml">
+    <EmbeddedResource Update="StorePage\SearchPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="TermsOfUse.xaml">
