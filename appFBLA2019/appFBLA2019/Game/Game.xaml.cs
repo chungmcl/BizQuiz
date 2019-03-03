@@ -46,6 +46,7 @@ namespace appFBLA2019
         protected override async void OnAppearing()
         {
             await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
+            await this.ActivityBanner.TranslateTo(this.ActivityBanner.Width * -2, this.Height * 2 / 3, 0);
             await this.CycleQuestion();
         }
 
@@ -177,8 +178,8 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task CycleQuestion()
         {
-            await this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
-            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
+            this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
+            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
             if (this.quiz.QuestionsRemaining > 0)
             {
                 // Save as reference
@@ -188,7 +189,7 @@ namespace appFBLA2019
             }
             else // Finished quiz
             {
-                QuizEndPage quizEndPage = (new QuizEndPage(this.score, this.quiz.Questions.Count));
+                QuizEndPage quizEndPage = (new QuizEndPage(this.score, this.quiz.Questions.Count, this.quiz.Title));
                 quizEndPage.Finished += this.OnFinished;
                 await this.Navigation.PushModalAsync(quizEndPage);
             }
@@ -225,7 +226,6 @@ namespace appFBLA2019
             this.ForceLayout();
         }
 
-
         /// <summary>
         /// Triggered when the next question button is clicked
         /// </summary>
@@ -242,6 +242,8 @@ namespace appFBLA2019
         /// <param name="question"> the question to be displayed </param>
         private async Task SetUpQuestion(Question question)
         {
+            await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.CubicOut);
+            this.ActivityIndicatorLoading.IsRunning = true;
             if (question.QuestionText == "" || question.CorrectAnswer == "")
             {
                 Question copyQuestion = new Question(this.currentQuestion)
@@ -253,7 +255,6 @@ namespace appFBLA2019
                 return;
             }
 
-            
             this.LabelQuestion.Text = question.QuestionText;
             this.LabelQuestion.VerticalTextAlignment = TextAlignment.Center;
             this.LabelQuestion.VerticalOptions = LayoutOptions.Center;
@@ -305,7 +306,7 @@ namespace appFBLA2019
                         TextColor = Color.White,
                         VerticalOptions = LayoutOptions.FillAndExpand
                     };
-                    button.Clicked += async(object sender, EventArgs e) =>
+                    button.Clicked += async (object sender, EventArgs e) =>
                     {
                         await this.CheckButtonAnswer(((Button)sender).Text);
                     };
@@ -342,12 +343,12 @@ namespace appFBLA2019
                     }
                     while (buttonFontSize / 2 * button.Text.Length > (button.Width - 10) * 3.5)
                     {
-                        double testSize = buttonFontSize / 2 * button.Text.Length ;
+                        double testSize = buttonFontSize / 2 * button.Text.Length;
                         double buttonWidth = (button.Width - 10) * 3.5;
                         buttonFontSize--;
                     }
                 }
-                foreach(View button in this.InputGrid.Children)
+                foreach (View button in this.InputGrid.Children)
                 {
                     (button as Button).FontSize = buttonFontSize;
                 }
@@ -363,12 +364,12 @@ namespace appFBLA2019
                 {
                     FontSize = 35,
                     FontAttributes = FontAttributes.Italic,
-                    TextColor = Color.Gray, 
+                    TextColor = Color.Gray,
                     HorizontalTextAlignment = TextAlignment.Center,
                     WidthRequest = this.Width,
                     Placeholder = "Answer Here",
                     PlaceholderColor = Color.LightGray,
-                    Margin=0,
+                    Margin = 0,
                 };
                 entry.HeightRequest = entry.FontSize * 3;
                 Button buttonCheckAnswer = new Button
@@ -380,7 +381,7 @@ namespace appFBLA2019
                     BackgroundColor = Color.Accent,
                     TextColor = Color.White
                 };
-                buttonCheckAnswer.Clicked += async(object sender, EventArgs e) =>
+                buttonCheckAnswer.Clicked += async (object sender, EventArgs e) =>
                 {
                     // Can we do this with null-conditional operators? yes we can
                     await this.CheckTextAnswer(entry.Text ?? "", (question.QuestionType == 2));
@@ -398,6 +399,8 @@ namespace appFBLA2019
             // The image will ALWAYS be named after the DBId
 
             this.LayoutRefresh();
+            await this.ActivityBanner.TranslateTo(this.Width + this.ActivityBanner.Width * 2, this.Height * 2 / 3, 500, Easing.CubicIn);
+            await this.ActivityBanner.TranslateTo(this.ActivityBanner.Width * -2, this.Height * 2 / 3, 0);
         }
 
         /// <summary>

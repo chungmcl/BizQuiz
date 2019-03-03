@@ -6,6 +6,12 @@
              NavigationPage.BackButtonTitle="true">
     <ContentPage.Content>
         <RelativeLayout x:Name="RelativeLayoutTop" Padding="10">
+            <Frame x:Name="ActivityBanner" Padding="10" CornerRadius="10">
+                <ActivityIndicator x:Name="ActivityIndicatorLoading" IsRunning="True"
+                               WidthRequest="100"
+                               HeightRequest="100">
+                </ActivityIndicator>
+            </Frame>
             <Frame x:Name="NextBanner" Padding="10" CornerRadius="10">
                 <StackLayout>
                     <Label x:Name="LabelFeedback" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="Italic" FontSize="40" />
@@ -13,12 +19,12 @@
                 </StackLayout>
             </Frame>
             <StackLayout x:Name="StackLayoutMain" Padding="10" Spacing="0">
-                <Label x:Name="LabelQuestion" FontSize="40" VerticalTextAlignment="Center" Margin="5"/>
+                <Label x:Name="LabelQuestion" FontSize="40" VerticalTextAlignment="Center" Margin="5" />
                 <ProgressBar x:Name="ProgressBar" VerticalOptions="Start" Progress="0" HeightRequest="10" ProgressColor="Accent" />
                 <RelativeLayout x:Name="RelativeLayoutImageAnswer" Padding="10">
                     <Image x:Name="QuestionImage" IsEnabled="False"
                             RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.6, Property=Height, Constant=-20}"
-                           RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}"/>
+                           RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}" />
                     <Grid x:Name="InputGrid" Padding="10"
                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.4, Property=Height}"
                         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}"

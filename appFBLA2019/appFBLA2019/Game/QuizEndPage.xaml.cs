@@ -6,6 +6,8 @@ using Plugin.Share;
 using Plugin.Share.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -17,16 +19,19 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class QuizEndPage : ContentPage
     {
+        private double percentScore;
+        private string quizName;
         /// <summary>
         /// Constructs the page and sets the score
         /// </summary>
         /// <param name="score">           </param>
         /// <param name="totalQuestions">  </param>
-        public QuizEndPage(int score, int totalQuestions)
+        public QuizEndPage(int score, int totalQuestions, string quizName)
         {
             this.InitializeComponent();
-            this.percentscore = score / (totalQuestions * 2.0) * 100;
-            switch (this.percentscore)
+            this.quizName = quizName;
+            this.percentScore = score / (totalQuestions * 2.0) * 100;
+            switch (this.percentScore)
             {
                 case double x when (x < 60):
                     this.LabelFeedback.Text = "Uh oh, looks like you need to practice some more...";
@@ -88,8 +93,6 @@ namespace appFBLA2019
             this.Finished?.Invoke(this, EventArgs.Empty);
         }
 
-        private double percentscore;
-
         /// <summary>
         /// closes this page and the page below it
         /// </summary>
@@ -111,7 +114,10 @@ namespace appFBLA2019
         private async void ButtonShareToFacebook_Clicked(object sender, EventArgs e)
         {
             this.ButtonShareToFacebook.IsEnabled = false;
-            FacebookShareLinkContent linkContent = new FacebookShareLinkContent("Check out my score!", new Uri("https://github.com/chungmcl"));
+
+            FacebookShareLinkContent linkContent = 
+                new FacebookShareLinkContent($"I got {this.percentScore}% correct studying {this.quizName} on BizQuiz!", 
+                new Uri("https://chungmcl.visualstudio.com/appFBLA2019"));
             var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
             this.ButtonShareToFacebook.IsEnabled = true;
         }

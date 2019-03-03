@@ -114,9 +114,9 @@ namespace appFBLA2019
             OperationReturnMessage result = await Task.Run(() => ServerOperations.ChangeEmail(this.username, 
                 this.password, newEmail));
 
-            if (result == OperationReturnMessage.True)
+            if (result == OperationReturnMessage.TrueConfirmEmail)
             {
-                this.LabelMessage.Text = $"Enter the confirmation code sent to {newEmail}";
+                this.LabelTitle.Text = $"Enter the confirmation code sent to {newEmail}";
             }
             else
             {

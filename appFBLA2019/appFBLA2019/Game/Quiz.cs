@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+
 namespace appFBLA2019
 {
     /// <summary>
@@ -13,12 +14,8 @@ namespace appFBLA2019
         /// <summary>
         /// Select/create database file for the current game/topic, Load the questions from file
         /// </summary>
-        /// <param name="quizTitle">
-        /// The name of the database file - if one does not yet exist, it will create one based on the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME.
-        /// </param>
-        /// <param name="author">
-        /// The username of the author of the quiz
-        /// </param>
+        /// <param name="quizTitle"> The name of the database file - if one does not yet exist, it will create one based on the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME. </param>
+        /// <param name="author">    The username of the author of the quiz </param>
         public Quiz(string category, string quizTitle, string author)
         {
             this.Title = quizTitle;
@@ -55,9 +52,7 @@ namespace appFBLA2019
         /// <summary>
         /// Gets a question from the pool of available questions
         /// </summary>
-        /// <returns>
-        /// a question that the user hasn't got right yet
-        /// </returns>
+        /// <returns> a question that the user hasn't got right yet </returns>
         public Question GetQuestion()
         {
             if (this.Questions != null && this.Questions.Count > 0)

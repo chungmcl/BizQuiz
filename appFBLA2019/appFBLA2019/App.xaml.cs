@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
@@ -40,10 +39,10 @@ namespace appFBLA2019
         /// </summary>
         public static Random random;
 
-
         public static string debugFolder = "/FBLADebug/";
 
         public static string Path;
+
         public static string UserPath
         {
             get
@@ -53,7 +52,6 @@ namespace appFBLA2019
                 return path;
             }
         }
-
 
         protected override void OnResume()
         {
@@ -72,7 +70,6 @@ namespace appFBLA2019
             ServerConnector.Server = "50.106.17.86";
             //ServerConnector.Server = "73.254.202.205";
             //ServerConnector.Server = "50.35.90.220";
-
 
             await ThreadTimer.RunServerChecks();
             BugReportHandler.ProcessCrashLog();

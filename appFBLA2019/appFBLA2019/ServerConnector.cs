@@ -15,12 +15,16 @@ namespace appFBLA2019
 {
     public static class ServerConnector
     {
+        // The byte length of the header in transmissions
         private const int headerSize = 5;
 
         // Server Release Build: 7777 Server Debug Build: 7778
         public static int Port { get { return 7777; } }
 
+        // The address of the server
         public static string Server { get; set; }
+
+        // The TcpClient on to of the TLS (SSL) stream
         public static TcpClient client;
         public static NetworkStream netStream;
 
@@ -32,12 +36,18 @@ namespace appFBLA2019
         // Raw-data stream of connection encrypted with TLS.
         public static SslStream ssl;
         
+        // Delegate for SslStream to validate certificate
         public static bool ValidateCert(object sender, X509Certificate certificate,
               X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            return true; // Allow untrusted certificates.
+            return true;
         }
         
+        /// <summary>
+        /// Send byte data to server and read what the server returns
+        /// </summary>
+        /// <param name="data">The byte data to send to server.</param>
+        /// <returns>A byte array of what the server returns</returns>
         public static byte[] SendByteArray(byte[] data)
         {
             // Prevent sending and receiving corrupted data
@@ -87,6 +97,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Read byte array of what the server returns.
+        /// </summary>
+        /// <param name="size">Size of the file to read</param>
+        /// <returns>Byte array of data that the server returns</returns>
         private static byte[] ReadByteArray(int size)
         {
             try
@@ -132,6 +147,10 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Setup connection between client and server
+        /// </summary>
+        /// <returns></returns>
         private static bool SetupConnection()
         {
             try
@@ -180,6 +199,9 @@ namespace appFBLA2019
             }
         }
         
+        /// <summary>
+        /// Close and dispose of network objects.
+        /// </summary>
         public static void CloseConn() // Close connection.
         {
             if (ssl != null)

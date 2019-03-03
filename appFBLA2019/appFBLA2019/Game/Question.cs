@@ -29,7 +29,7 @@ namespace appFBLA2019
         /// <summary>
         /// Creates a question based on another question - copy constructor
         /// </summary>
-        /// <param name="question"></param>
+        /// <param name="question">  </param>
         public Question(Question question)
         {
             this.AnswerOne = question.AnswerOne;
