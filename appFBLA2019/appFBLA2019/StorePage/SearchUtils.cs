@@ -14,7 +14,7 @@ namespace appFBLA2019
 
             foreach (string[] quizData in quizzes)
             {
-                toReturn.Add(new SearchInfo(quizData[0], quizData[1], quizData[3], quizData[4], quizData[5]));
+                toReturn.Add(new SearchInfo(quizData[0], quizData[1], quizData[2], quizData[3], quizData[4]));
             }
             return toReturn;
             //testInfo.Add(new QuizInfo { DBId = "TestDBID", AuthorName = "TestAuthor", QuizName = "TestQuiz", Category = "FBLA General", Subscribers = 12 });
@@ -28,7 +28,7 @@ namespace appFBLA2019
 
             foreach (string[] quizData in quizzes)
             {
-                toReturn.Add(new SearchInfo(quizData[0], quizData[1], quizData[3], quizData[4], quizData[5]));
+                toReturn.Add(new SearchInfo(quizData[0], quizData[1], quizData[2], quizData[3], quizData[4]));
             }
             return toReturn;
             //testInfo.Add(new QuizInfo { DBId = "TestDBID", AuthorName = "TestAuthor", QuizName = "TestQuiz", Category = "FBLA General", Subscribers = 12 });

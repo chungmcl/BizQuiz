@@ -137,7 +137,7 @@ namespace appFBLA2019
                             this.StackLayoutQuizStack.Children.Add(frame));
                     }
                     Device.BeginInvokeOnMainThread(() =>
-                        this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
+                        this.QuizNumber.Text = "You have created a total of " + this.totalCount + " quizzes!");
                 }
             });
 
@@ -150,7 +150,7 @@ namespace appFBLA2019
             }
             
             this.IsOnLoginPage = false;
-
+            this.totalCount = 0;
             this.ActivityIndicator.IsRunning = false;
             this.ActivityIndicator.IsVisible = false;
             this.StackLayoutQuizStack.IsVisible = true;
@@ -336,6 +336,8 @@ namespace appFBLA2019
                         await this.DisplayAlert("Quiz not Found", "Is this quiz already deleted?", "Back");
                     }
                 }
+                // Setup Page again after deletion
+                this.StackLayoutProfilePageContent.Children.Clear();
                 await this.UpdateProfileContent();
             }
         }
