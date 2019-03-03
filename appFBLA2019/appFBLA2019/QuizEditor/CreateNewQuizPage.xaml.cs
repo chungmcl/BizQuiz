@@ -14,6 +14,9 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// Users can create their own quizzes with this page.
+    /// </summary>
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CreateNewQuizPage : ContentPage
     {
@@ -22,6 +25,9 @@ namespace appFBLA2019
         private string originalCategory;
         private object callerType;
 
+        /// <summary>
+        /// Toolbar Item so users can save and finish the quiz
+        /// </summary>
         private ToolbarItem Done = new ToolbarItem
         {
             Icon = "ic_done_white_48dp.png",

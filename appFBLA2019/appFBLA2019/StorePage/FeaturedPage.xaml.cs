@@ -10,29 +10,29 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-        /// <summary>
-        /// The page that displays featured levels, Created by the BizQuizTeam. To be displayed in the middle bottom tab
-        /// </summary>
-        [XamlCompilation(XamlCompilationOptions.Compile)]
-        public partial class FeaturedPage : ContentPage
+    /// <summary>
+    /// The page that displays featured levels, Created by the BizQuizTeam. To be displayed in the middle bottom tab
+    /// </summary>
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class FeaturedPage : ContentPage
+    {
+        private string category;
+        private List<SearchInfo> quizzesFeatured;
+        private enum SubscribeType { Subscribe = 1, Unsubscribe, Syncing };
+
+        public FeaturedPage()
         {
-            private string category;
-            private List<SearchInfo> quizzesFeatured;
-            private enum SubscribeType { Subscribe = 1, Unsubscribe, Syncing };
+            this.InitializeComponent();
+            this.currentChunk = 1;
+            this.quizzesFeatured = new List<SearchInfo>();
+        }
 
-            public FeaturedPage()
-            {
-                this.InitializeComponent();
-                this.currentChunk = 1;
-                this.quizzesFeatured = new List<SearchInfo>();
-            }
-
-            protected async override void OnAppearing()
-            {
-                this.quizzesRemaining = true;
-                this.category = "All";
-                await this.Refresh();
-            }
+        protected async override void OnAppearing()
+        {
+            this.quizzesRemaining = true;
+            this.category = "All";
+            await this.Refresh();
+        }
 
         private bool quizzesRemaining;
         private int currentChunk;

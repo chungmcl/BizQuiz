@@ -10,6 +10,9 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// A page so users can search for quizzes on the server and subscribe/download it for themselves.
+    /// </summary>
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class SearchPage : ContentPage
 	{
@@ -245,8 +248,6 @@ namespace appFBLA2019
             indicatorSyncing.IsVisible = false;
             indicatorSyncing.IsRunning = false;
         }
-
-        private bool quizzesRemaining;
         private int currentChunk;
 
 		/// <summary>
@@ -258,7 +259,6 @@ namespace appFBLA2019
 		{
 			// Delete what was in there previously
 			this.end = false;
-            this.quizzesRemaining = true;
             this.currentChunk = 1;
 			Device.BeginInvokeOnMainThread(() => {
 			    this.SearchedStack.Children.Clear();
@@ -308,7 +308,6 @@ namespace appFBLA2019
                 );
             }
             if (chunk.Count < 20)
-                this.quizzesRemaining = false;
             await Task.Run(() => this.AddQuizzes(chunk));
         }
 
