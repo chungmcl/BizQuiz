@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.AdvancedSettingsPage">
+    <ContentPage.Content>
+        <StackLayout Padding="20">
+            <Label Text="The server IP might change at some point. If it does, we will let you know and you can input the correct IP here."
+                VerticalOptions="Start" 
+                HorizontalOptions="CenterAndExpand"/>
+            <Entry x:Name="EntryIP" Placeholder="IP override" TextChanged="EntryIP_TextChanged"/>
+            <Button x:Name="ButtonConfirm"  Text="Confirm Override" CornerRadius="25" Clicked="ButtonConfirm_ClickedAsync" IsEnabled="False"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
