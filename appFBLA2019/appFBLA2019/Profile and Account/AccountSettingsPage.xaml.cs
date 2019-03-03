@@ -82,6 +82,10 @@ namespace appFBLA2019
                             {
                                 this.LabelChangePasswordMessage.Text = "Incorrect current password.";
                             }
+                            else if (message == OperationReturnMessage.FalseNoConnection)
+                            {
+                                this.LabelDeleteAccountMessage.Text = "Failed to connect to server. Please try again.";
+                            }
                             else
                             {
                                 this.LabelChangePasswordMessage.Text = "Password change failed - Please try again.";
@@ -149,6 +153,10 @@ namespace appFBLA2019
                 {
                     this.LabelChangeEmailMessage.Text = "Invalid email. Please check the email and try again.";
                 }
+                else if (message == OperationReturnMessage.FalseNoConnection)
+                {
+                    this.LabelDeleteAccountMessage.Text = "Failed to connect to server. Please try again.";
+                }
             }
             this.SetupFrameEnd(this.StackLayoutChangeEmailContent);
         }
@@ -182,6 +190,10 @@ namespace appFBLA2019
                     CredentialManager.EmailConfirmed = true;
                     this.FrameConfirmEmail.IsVisible = false;
                     await this.DisplayAlert("Email Confirmation", "Email was confirmed", "OK");
+                }
+                else if (message == OperationReturnMessage.FalseNoConnection)
+                {
+                    this.LabelDeleteAccountMessage.Text = "Failed to connect to server. Please try again.";
                 }
                 else
                 {
@@ -224,6 +236,10 @@ namespace appFBLA2019
                         await this.DisplayAlert("Account Deletion", "Account successfully deleted", "OK");
                         this.OnSignedOut();
                         await this.Navigation.PopAsync();
+                    }
+                    else if (message == OperationReturnMessage.FalseNoConnection)
+                    {
+                        this.LabelDeleteAccountMessage.Text = "Failed to connect to server. Please try again.";
                     }
                     else
                     {

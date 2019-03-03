@@ -123,7 +123,7 @@ namespace appFBLA2019
                 if (createdCountFromServer >= 0)
                 {
                     this.totalCount += createdCountFromServer;
-                    if (this.totalCount == 0)
+                    if (this.totalCount == 0 && this.StackLayoutQuizStack.Children.Count < 1)
                     {
                         Frame frame = new Frame()
                         {
@@ -292,7 +292,7 @@ namespace appFBLA2019
 
         private async void ButtonDelete_Clicked(object sender, EventArgs e)
         {
-            bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud.This is not reversable.", "Yes", "No");
+            bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud. This is not reversable.", "Yes", "No");
             if (answer)
             {
                 string path = App.UserPath + ((ImageButton)sender).StyleId;
