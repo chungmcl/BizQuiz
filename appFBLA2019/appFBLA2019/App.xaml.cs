@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -66,10 +67,13 @@ namespace appFBLA2019
         {
             // Handle when your app starts
 
-            /*REMOVE DURING RELEASE*/
-            ServerConnector.Server = "50.106.17.86";
-            //ServerConnector.Server = "73.254.202.205";
-            //ServerConnector.Server = "50.35.90.220";
+            // If app's server IP has not been changed, default to IP in else statement.
+            // If it has been changed, use the new IP.
+            string serverIp = await SecureStorage.GetAsync("serverIP");
+            if (serverIp != null)
+                ServerConnector.Server = serverIp;
+            else
+                ServerConnector.Server = "50.106.17.86"; // Valid as of March 3rd, 2019
 
             await ThreadTimer.RunServerChecks();
             BugReportHandler.ProcessCrashLog();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -20,13 +21,14 @@ namespace appFBLA2019
 
         private async void ButtonConfirm_ClickedAsync(object sender, EventArgs e)
         {
-            string newIP = this.EntryIP.Text;
+            string newIP = this.EntryIP.Text.Trim();
             if (!string.IsNullOrWhiteSpace(newIP))
             {
-                bool answer = await this.DisplayAlert("WARNING", "THIS ACTION WILL OVERRIDE THE CONNECTION TO THE SERVER.ONLY CONTINUE IF YOU KNOW WHAT YOU ARE DOING",  "Continue", "Cancel");
+                bool answer = await this.DisplayAlert("WARNING", "THIS ACTION WILL OVERRIDE THE DEFAULT IP ADDRESS TO THE SERVER. ONLY CONTINUE IF YOU KNOW WHAT YOU ARE DOING",  "Continue", "Cancel");
                 if (answer)
                 {
-                    // change IP
+                    await SecureStorage.SetAsync("serverIP", newIP);
+                    ServerConnector.Server = newIP;
                 }
             }
         }
