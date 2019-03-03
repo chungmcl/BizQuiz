@@ -24,10 +24,9 @@ namespace appFBLA2019
             this.InitializeComponent();
             this.quiz = quiz;
             this.score = 0;
-            this.random = new Random();
             this.Title = quiz.Title;
 
-            this.LayoutRefresh();
+            this.LabelQuestion.SizeChanged += (object sender, EventArgs e) => { this.RelativeLayoutImageAnswer.HeightRequest = this.StackLayoutMain.Height - this.LabelQuestion.Height - 75; };
         }
 
         /// <summary>
@@ -47,7 +46,6 @@ namespace appFBLA2019
         protected override async void OnAppearing()
         {
             await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
-            this.LayoutRefresh();
             await this.CycleQuestion();
         }
 
@@ -67,11 +65,6 @@ namespace appFBLA2019
         private Quiz quiz;
 
         /// <summary>
-        /// a random to be used for shuffling
-        /// </summary>
-        private Random random;
-
-        /// <summary>
         /// the current score of the user
         /// </summary>
         private int score;
@@ -82,7 +75,7 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task AnimateNextBanner()
         {
-            while (this.LabelFeedback.FontSize / 2 * LabelFeedback.Text.Length > (NextBanner.Width - 5))
+            while (this.LabelFeedback.FontSize / 2 * this.LabelFeedback.Text.Length > (this.NextBanner.Width - 5))
             {
                 this.LabelFeedback.FontSize--;
             }
@@ -227,9 +220,11 @@ namespace appFBLA2019
         private void LayoutRefresh()
         {
             this.QuestionImage.Aspect = Aspect.AspectFit;
+            this.StackLayoutMain.HeightRequest = this.Height;
             this.UpdateChildrenLayout();
             this.ForceLayout();
         }
+
 
         /// <summary>
         /// Triggered when the next question button is clicked
@@ -258,10 +253,17 @@ namespace appFBLA2019
                 return;
             }
 
-            int fontSize = 30;
+            
             this.LabelQuestion.Text = question.QuestionText;
             this.LabelQuestion.VerticalTextAlignment = TextAlignment.Center;
             this.LabelQuestion.VerticalOptions = LayoutOptions.Center;
+
+            this.LabelQuestion.FontSize = 40;
+            while (this.LabelQuestion.FontSize / 2 * this.LabelQuestion.Text.Length > (this.Width - 10) * 3.5)
+            {
+                this.LabelQuestion.FontSize--;
+            }
+
             this.correct = question.CorrectAnswer;
             List<string> answers = question.Answers;
 
@@ -290,7 +292,7 @@ namespace appFBLA2019
                         };
                 }
                 this.Shuffle(answers);
-
+                int buttonFontSize = 30;
                 for (int i = 0; i < answers.Count(); i++)
                 {
                     string answer = answers[i];
@@ -338,20 +340,25 @@ namespace appFBLA2019
                     {
                         Grid.SetColumnSpan(button, 2);
                     }
-                    while (fontSize / 2 * button.Text.Length > (button.Width - 10) * 3.5)
+                    while (buttonFontSize / 2 * button.Text.Length > (button.Width - 10) * 3.5)
                     {
-                        double testSize = fontSize / 2 * button.Text.Length ;
+                        double testSize = buttonFontSize / 2 * button.Text.Length ;
                         double buttonWidth = (button.Width - 10) * 3.5;
-                        fontSize--;
+                        buttonFontSize--;
                     }
                 }
                 foreach(View button in this.InputGrid.Children)
                 {
-                    (button as Button).FontSize = fontSize;
+                    (button as Button).FontSize = buttonFontSize;
                 }
             }
             else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
             {
+                this.InputGrid.RowDefinitions = new RowDefinitionCollection
+            {
+                new RowDefinition() { Height = Xamarin.Forms.GridLength.Auto },
+                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
+            };
                 Entry entry = new Entry()
                 {
                     FontSize = 35,
@@ -360,9 +367,10 @@ namespace appFBLA2019
                     HorizontalTextAlignment = TextAlignment.Center,
                     WidthRequest = this.Width,
                     Placeholder = "Answer Here",
-                    PlaceholderColor = Color.LightGray
-                }
-                ;
+                    PlaceholderColor = Color.LightGray,
+                    Margin=0,
+                };
+                entry.HeightRequest = entry.FontSize * 3;
                 Button buttonCheckAnswer = new Button
                 {
                     Text = "Check Answer",
@@ -402,7 +410,7 @@ namespace appFBLA2019
             while (n > 1)
             {
                 n--;
-                int k = this.random.Next(n + 1);
+                int k = App.random.Next(n + 1);
                 String value = answers[k];
                 answers[k] = answers[n];
                 answers[n] = value;

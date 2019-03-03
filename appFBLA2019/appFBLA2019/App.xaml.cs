@@ -21,6 +21,8 @@ namespace appFBLA2019
             Xamarin.Forms.DependencyService.Register<IErrorLogger>();
             Xamarin.Forms.DependencyService.Register<IGetImage>();
 
+            App.random = new Random();
+
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
             CredentialManager.Username = "dflt";
@@ -32,6 +34,12 @@ namespace appFBLA2019
 
             this.MainPage = new NavigationPage(new MainPage());
         }
+
+        /// <summary>
+        /// a random to be used for shuffling and other functions
+        /// </summary>
+        public static Random random;
+
 
         public static string debugFolder = "/FBLADebug/";
 

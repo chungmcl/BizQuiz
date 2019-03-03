@@ -226,7 +226,7 @@ namespace appFBLA2019
         {
             ImageButton button = (sender as ImageButton);
             string dbId = button.StyleId;
-            bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+            bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
             if (answer)
             {
                 ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
@@ -289,12 +289,12 @@ namespace appFBLA2019
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
                     button.IsVisible = true;
-                    await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                    await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
                 }
                 else
                 {
                     button.IsVisible = true;
-                    await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
+                    await this.DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
                 }
                 indicatorSyncing.IsVisible = false; // remove activity indicator
                 indicatorSyncing.IsRunning = false;

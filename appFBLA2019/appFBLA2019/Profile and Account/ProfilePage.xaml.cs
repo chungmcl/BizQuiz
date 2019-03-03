@@ -95,7 +95,7 @@ namespace appFBLA2019
                     this.ToolbarItems.Clear();
 
                 this.IsOnLoginPage = true;
-                this.LocalLoginPage.LoggedIn += OnLoggedIn;
+                this.LocalLoginPage.LoggedIn += this.OnLoggedIn;
             }
 
             this.IsLoading = false;
@@ -120,7 +120,7 @@ namespace appFBLA2019
                 if (createdCountFromServer >= 0)
                 {
                     this.totalCount += createdCountFromServer;
-                    if (totalCount == 0)
+                    if (this.totalCount == 0)
                     {
                         Frame frame = new Frame()
                         {
@@ -144,7 +144,7 @@ namespace appFBLA2019
             if (this.ToolbarItems.Count <= 0)
             {
                 ToolbarItem accountSettingsButton = new ToolbarItem();
-                accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
+                accountSettingsButton.Clicked += this.ToolbarItemAccountSettings_Clicked;
                 accountSettingsButton.Icon = ImageSource.FromFile("ic_settings_white_48dp.png") as FileImageSource;
                 this.ToolbarItems.Add(accountSettingsButton);
             }
@@ -205,7 +205,7 @@ namespace appFBLA2019
             {
                 return;
             }
-            AddQuizzes(chunk, true);
+            this.AddQuizzes(chunk, true);
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace appFBLA2019
             if (this.accountSettingsPage == null)
             {
                 this.accountSettingsPage = new AccountSettingsPage();
-                this.accountSettingsPage.SignedOut += OnSignedOut;
+                this.accountSettingsPage.SignedOut += this.OnSignedOut;
                 this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             }
             await this.Navigation.PushAsync(this.accountSettingsPage);
@@ -405,22 +405,21 @@ namespace appFBLA2019
         public async void OnLoggedIn(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = new AccountSettingsPage();
-            this.accountSettingsPage.SignedOut += OnSignedOut;
+            this.accountSettingsPage.SignedOut += this.OnSignedOut;
             this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
-            await UpdateProfilePage();
+            await this.UpdateProfilePage();
         }
 
         private string GetHello()
         {
             List<string> hello = new List<string> { "Hello, ", "Hola, ", "你好, ", "Aloha, ", "こんにちは, ", "Guten Tag, ", "Ciao, ", "Bonjour, "};
-            Random rand = new Random();
-            return hello[rand.Next(8)];
+            return hello[App.random.Next(8)];
         }
 
         public async void OnSignedOut(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = null;
-            await UpdateProfilePage();
+            await this.UpdateProfilePage();
         }
     }
 }

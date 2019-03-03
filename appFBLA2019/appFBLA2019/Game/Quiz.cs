@@ -66,7 +66,7 @@ namespace appFBLA2019
 
                 //randomly selects from questions that haven't been correct yet (includes unanswered)
 
-                return this.Questions[new Random().Next(0, this.QuestionsRemaining)];
+                return this.Questions[App.random.Next(0, this.QuestionsRemaining)];
             }
             return null;
         }
