@@ -14,6 +14,7 @@
         <ToolbarItem Priority="0" Name="Terms Of Use" Order="Secondary"  Activated="TermsOfUse_Activated" />
         <ToolbarItem Priority="0" Name="Report a Problem" Order="Secondary" Activated="BugReportToolbarItem_Clicked"/>
         <ToolbarItem Order="Secondary"  Priority="0" Text="Help" Clicked="HelpButton_Clicked"/>
+        <ToolbarItem Order="Secondary"  Priority="0" Text="Advanced Settings" Clicked="AdvancedSettings_Clicked"/>
     </TabbedPage.ToolbarItems>
     <local:QuizCategoriesPage x:Name="quizsPage" Title="Play" Icon="ic_landscape_black_48dp.png" />
     <local:FeaturedPage Title="Explore" Icon="ic_search_black_48dp.png" />
