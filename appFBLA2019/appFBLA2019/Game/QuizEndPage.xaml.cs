@@ -133,9 +133,8 @@ namespace appFBLA2019
             IShare shareinfo = CrossShare.Current;
             await CrossShare.Current.Share(new ShareMessage
             {
-                Text = "Check out my github",
-                Title = "Title",
-                Url = "https://github.com/chungmcl",
+                Text = $"I got { this.percentScore }% correct studying { this.quizName } on BizQuiz!",
+                Title = "Loving BizQuiz!",
             });
             this.ButtonShareToOtherMedia.IsEnabled = true;
         }

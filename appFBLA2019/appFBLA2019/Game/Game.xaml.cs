@@ -25,6 +25,7 @@ namespace appFBLA2019
             this.quiz = quiz;
             this.score = 0;
             this.Title = quiz.Title;
+            this.inGame = false;
 
             this.LabelQuestion.SizeChanged += (object sender, EventArgs e) => { this.RelativeLayoutImageAnswer.HeightRequest = this.StackLayoutMain.Height - this.LabelQuestion.Height - 75; };
         }
@@ -43,13 +44,19 @@ namespace appFBLA2019
         /// <summary>
         /// triggered right before the page appears, sets the next question banner to offscreen and updates layout
         /// </summary>
-        protected override async void OnSizeAllocated(double width, double height)
+        protected override async void OnAppearing()
         {
-            base.OnSizeAllocated(width, height);
-            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
-            await this.ActivityBanner.TranslateTo(this.ActivityBanner.Width * -2, this.Height * 2 / 3, 0);
-            await this.CycleQuestion();
+            base.OnAppearing();
+            if (!this.inGame)
+            {
+                await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
+                await this.ActivityBanner.TranslateTo(this.ActivityBanner.Width * -2, this.Height * 2 / 3, 0);
+                this.inGame = true;
+                await this.CycleQuestion();
+            }
         }
+
+        private bool inGame;
 
         /// <summary>
         /// the correct answer
