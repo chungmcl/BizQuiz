@@ -222,9 +222,13 @@ namespace appFBLA2019
         /// </summary>
         private void LayoutRefresh()
         {
+            this.ActivityIndicatorLoading.IsVisible = true;
+            this.ActivityIndicatorLoading.IsRunning = true;
             this.QuestionImage.Aspect = Aspect.AspectFit;
             this.UpdateChildrenLayout();
             this.ForceLayout();
+            this.ActivityIndicatorLoading.IsVisible = false;
+            this.ActivityIndicatorLoading.IsRunning = false;
         }
 
         /// <summary>

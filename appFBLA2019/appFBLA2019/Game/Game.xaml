@@ -6,6 +6,14 @@
              NavigationPage.BackButtonTitle="true">
     <ContentPage.Content>
         <RelativeLayout x:Name="RelativeLayout" Padding="10">
+            <ActivityIndicator x:Name="ActivityIndicatorLoading"
+                               IsVisible="False"
+                               RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=1}"
+                               RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=1}"
+                               WidthRequest="25"
+                               HeightRequest="25">
+            </ActivityIndicator>
+            
             <Frame x:Name="NextBanner" Padding="10" CornerRadius="10">
                 <StackLayout>
                     <Label x:Name="LabelFeedback" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="Italic" FontSize="40" />
