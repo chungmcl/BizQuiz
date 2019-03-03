@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
@@ -21,6 +20,8 @@ namespace appFBLA2019
             Xamarin.Forms.DependencyService.Register<IErrorLogger>();
             Xamarin.Forms.DependencyService.Register<IGetImage>();
 
+            App.random = new Random();
+
             Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
             CredentialManager.Username = "dflt";
@@ -33,9 +34,15 @@ namespace appFBLA2019
             this.MainPage = new NavigationPage(new MainPage());
         }
 
+        /// <summary>
+        /// a random to be used for shuffling and other functions
+        /// </summary>
+        public static Random random;
+
         public static string debugFolder = "/FBLADebug/";
 
         public static string Path;
+
         public static string UserPath
         {
             get
@@ -45,7 +52,6 @@ namespace appFBLA2019
                 return path;
             }
         }
-
 
         protected override void OnResume()
         {
@@ -64,7 +70,6 @@ namespace appFBLA2019
             ServerConnector.Server = "50.106.17.86";
             //ServerConnector.Server = "73.254.202.205";
             //ServerConnector.Server = "50.35.90.220";
-
 
             await ThreadTimer.RunServerChecks();
             BugReportHandler.ProcessCrashLog();

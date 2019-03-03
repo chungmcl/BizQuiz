@@ -10,8 +10,11 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// A page so users can search for quizzes on the server and subscribe/download it for themselves.
+    /// </summary>
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class StorePage : ContentPage
+	public partial class SearchPage : ContentPage
 	{
 		private int chunkNum;
 		private bool end;
@@ -25,11 +28,11 @@ namespace appFBLA2019
         // either "Title" or "Author"
         private string searchType;
 
-		public StorePage()
+		public SearchPage()
 		{
             this.isStartup = true;
             this.quizzesSearched = new List<SearchInfo>();
-			InitializeComponent();
+			this.InitializeComponent();
 			this.searchType = "Title";
             this.category = "All";
 		}
@@ -37,7 +40,6 @@ namespace appFBLA2019
 		protected override void OnSizeAllocated(double width, double height)
 		{
 			base.OnSizeAllocated(width, height);
-			base.OnAppearing();
             if (this.isStartup)
             {
                 this.SearchBar.Focus();
@@ -113,13 +115,12 @@ namespace appFBLA2019
                     ImageButtonUnsubscribe.Clicked += this.ImageButtonUnsubscribe_Clicked;
                     topStack.Children.Add(ImageButtonUnsubscribe);
 
-                    ImageButton Syncing = new ImageButton // 3
+                    ActivityIndicator Syncing = new ActivityIndicator // 3
                     {
                         IsVisible = false,
-                        Source = "ic_autorenew_black_48dp.png",
+                        Color = Color.Accent,
                         HeightRequest = 25,
                         WidthRequest = 25,
-                        BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
                     };
@@ -172,16 +173,13 @@ namespace appFBLA2019
         {
             ImageButton button = (sender as ImageButton);
             string dbId = button.StyleId;
-            bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+            bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
             if (answer)
             {
-                ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ImageButton;
+                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
                 button.IsVisible = false;
-                buttonSyncing.IsVisible = true;
-#pragma warning disable
-                buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
-#pragma warning restore
-
+                indicatorSyncing.IsVisible = true;
+                indicatorSyncing.IsRunning = true;
                 // get rosterInfo
                 QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
                 // tell the roster that the level is deleted
@@ -196,8 +194,8 @@ namespace appFBLA2019
 
                 if (returnMessage == OperationReturnMessage.True)
                 {
-                    buttonSyncing.IsVisible = false;
                     (button.Parent as StackLayout).Children[(int)SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
+                    QuizRosterDatabase.DeleteQuizInfo(dbId);
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
@@ -209,9 +207,11 @@ namespace appFBLA2019
                     button.IsVisible = true;
                     await this.DisplayAlert("Unsubscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
                 }
+                indicatorSyncing.IsVisible = false;
+                indicatorSyncing.IsRunning = false;
+
             }
         }
-
 
         /// <summary>
         /// When a user wants to subscribe to a quiz
@@ -220,35 +220,40 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ImageButtonSubscribe_Clicked(object sender, EventArgs e)
         {
-            ImageButton button = (sender as ImageButton);
-            string dbId = button.StyleId;
+            if (CredentialManager.IsLoggedIn)
+            {
+                ImageButton button = (sender as ImageButton);
+                string dbId = button.StyleId;
 
-            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ImageButton;
-            button.IsVisible = false;
-            buttonSyncing.IsVisible = true;
-#pragma warning disable
-            buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
-#pragma warning restore
-            OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToLevel(dbId, this.quizzesSearched);
-            if (returnMessage == OperationReturnMessage.True)
-            {
-                buttonSyncing.IsVisible = false; // remove subscribe button
-                (button.Parent as StackLayout).Children[2].IsVisible = true; // add in unsubscribe button
-            }
-            else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
-            {
-                button.IsVisible = true;
-                await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
+                button.IsVisible = false;
+                indicatorSyncing.IsVisible = true;
+                indicatorSyncing.IsRunning = true;
+
+                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToLevel(dbId, this.quizzesSearched);
+                if (returnMessage == OperationReturnMessage.True)
+                {
+
+                    (button.Parent as StackLayout).Children[2].IsVisible = true; // add in unsubscribe button
+                }
+                else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
+                {
+                    button.IsVisible = true;
+                    await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                }
+                else
+                {
+                    button.IsVisible = true;
+                    await this.DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
+                }
+                indicatorSyncing.IsVisible = false;
+                indicatorSyncing.IsRunning = false;
             }
             else
             {
-                button.IsVisible = true;
-                await DisplayAlert("Subscribe Failed", "The subscription request could not be completed. Please try again.", "OK");
+                await this.DisplayAlert("Hold on!", "Before you can subscribe to any quizzes, you have to login.", "Ok");
             }
-            
         }
-
-        private bool quizzesRemaining;
         private int currentChunk;
 
 		/// <summary>
@@ -260,7 +265,6 @@ namespace appFBLA2019
 		{
 			// Delete what was in there previously
 			this.end = false;
-            this.quizzesRemaining = true;
             this.currentChunk = 1;
 			Device.BeginInvokeOnMainThread(() => {
 			    this.SearchedStack.Children.Clear();
@@ -274,7 +278,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
 			{
-				BugReportHandler.SaveReport(ex, "StorePage_SearchBar");
+				BugReportHandler.SaveReport(ex, "SearchPage_SearchBar");
 				await this.DisplayAlert("Search Failed", "Try again later", "Ok");
 			}
 			Device.BeginInvokeOnMainThread(() =>
@@ -293,14 +297,14 @@ namespace appFBLA2019
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
             if (this.searchType == "Title")
-                chunk = SearchUtils.GetQuizzesByQuizNameChunked(SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizzesByQuizNameChunked(this.SearchBar.Text, this.currentChunk);
             else
-                chunk = SearchUtils.GetQuizzesByAuthorChunked(SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizzesByAuthorChunked(this.SearchBar.Text, this.currentChunk);
             if (this.currentChunk == 1 && chunk.Count == 0)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    SearchedStack.Children.Add(new Label()
+                    this.SearchedStack.Children.Add(new Label()
                     {
                         Text = "Sorry, we couldn't find any quizzes matching what you searched", 
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
@@ -310,7 +314,6 @@ namespace appFBLA2019
                 );
             }
             if (chunk.Count < 20)
-                this.quizzesRemaining = false;
             await Task.Run(() => this.AddQuizzes(chunk));
         }
 

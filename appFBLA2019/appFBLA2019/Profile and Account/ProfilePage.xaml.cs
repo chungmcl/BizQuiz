@@ -30,7 +30,6 @@ namespace appFBLA2019
         {
             base.OnAppearing();
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
-
         }
 
         protected override void OnDisappearing()
@@ -42,8 +41,8 @@ namespace appFBLA2019
         /// <summary>
         /// When the user wants to create a brand new quiz
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private async void New_Activated(object sender, EventArgs e)
         {
             if (CredentialManager.IsLoggedIn)
@@ -71,14 +70,14 @@ namespace appFBLA2019
             this.LocalLoginPage.LoggedIn -= this.OnLoggedIn;
             this.LocalLoginPage.LoggedIn += (object sender, EventArgs e) =>
             {
-                this.Navigation.PopAsync(); 
+                this.Navigation.PopAsync();
             };
         }
 
         /// <summary>
         /// Update the Profile Tab Page to either show profile info or the login page if not logged in.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>  </returns>
         public async Task UpdateProfilePage()
         {
             this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
@@ -88,14 +87,18 @@ namespace appFBLA2019
             this.LabelUsername.Text = this.GetHello() + CredentialManager.Username + "!";
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             if (this.StackLayoutProfilePageContent.IsVisible)
+            {
                 await this.UpdateProfileContent();
+            }
             else
             {
                 if (this.ToolbarItems.Count > 0)
+                {
                     this.ToolbarItems.Clear();
+                }
 
                 this.IsOnLoginPage = true;
-                this.LocalLoginPage.LoggedIn += OnLoggedIn;
+                this.LocalLoginPage.LoggedIn += this.OnLoggedIn;
             }
 
             this.IsLoading = false;
@@ -104,7 +107,7 @@ namespace appFBLA2019
         /// <summary>
         /// Loads the profile content if the user is logged in.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>  </returns>
         private async Task UpdateProfileContent()
         {
             this.StackLayoutQuizStack.IsVisible = false;
@@ -120,7 +123,7 @@ namespace appFBLA2019
                 if (createdCountFromServer >= 0)
                 {
                     this.totalCount += createdCountFromServer;
-                    if (totalCount == 0)
+                    if (this.totalCount == 0)
                     {
                         Frame frame = new Frame()
                         {
@@ -137,20 +140,20 @@ namespace appFBLA2019
                             this.StackLayoutQuizStack.Children.Add(frame));
                     }
                     Device.BeginInvokeOnMainThread(() =>
-                        this.QuizNumber.Text = "You have created a total of " + totalCount + " quizzes!");
+                        this.QuizNumber.Text = "You have created a total of " + this.totalCount + " quizzes!");
                 }
             });
 
             if (this.ToolbarItems.Count <= 0)
             {
                 ToolbarItem accountSettingsButton = new ToolbarItem();
-                accountSettingsButton.Clicked += ToolbarItemAccountSettings_Clicked;
+                accountSettingsButton.Clicked += this.ToolbarItemAccountSettings_Clicked;
                 accountSettingsButton.Icon = ImageSource.FromFile("ic_settings_white_48dp.png") as FileImageSource;
                 this.ToolbarItems.Add(accountSettingsButton);
             }
-            
-            this.IsOnLoginPage = false;
 
+            this.IsOnLoginPage = false;
+            this.totalCount = 0;
             this.ActivityIndicator.IsRunning = false;
             this.ActivityIndicator.IsVisible = false;
             this.StackLayoutQuizStack.IsVisible = true;
@@ -198,6 +201,7 @@ namespace appFBLA2019
         }
 
         private int totalCount = 0;
+
         private void SetupNetworkQuizzes()
         {
             List<SearchInfo> chunk = SearchUtils.GetQuizzesByAuthorChunked(CredentialManager.Username, this.currentChunk);
@@ -205,17 +209,16 @@ namespace appFBLA2019
             {
                 return;
             }
-            AddQuizzes(chunk, true);
+            this.AddQuizzes(chunk, true);
         }
 
         /// <summary>
         /// Adds user's quizzes to the login page
         /// </summary>
-        /// <param name="quizzes"> a list of quizzes to dislay</param>
-        /// <param name="isNetworkQuiz">if the incoming quiz is a networkQuiz </param>
+        /// <param name="quizzes">       a list of quizzes to dislay </param>
+        /// <param name="isNetworkQuiz"> if the incoming quiz is a networkQuiz </param>
         private void AddQuizzes(List<SearchInfo> quizzes, bool isNetworkQuiz)
         {
-            
             foreach (SearchInfo quiz in quizzes)
             {
                 //if its not already stored locally (only applies to network quizzess)
@@ -226,11 +229,11 @@ namespace appFBLA2019
                 else
                 {
                     Frame frame = new Frame()
-                {
-                    VerticalOptions = LayoutOptions.Start,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    CornerRadius = 10
-                };
+                    {
+                        VerticalOptions = LayoutOptions.Start,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        CornerRadius = 10
+                    };
 
                     StackLayout frameStack = new StackLayout
                     {
@@ -244,7 +247,7 @@ namespace appFBLA2019
                         Orientation = StackOrientation.Horizontal,
                         Padding = 0
                     };
-                    
+
                     Label quizName = new Label
                     {
                         Text = quiz.QuizName,
@@ -265,14 +268,13 @@ namespace appFBLA2019
                     }
                     topStack.Children.Add(buttonDelete);
 
-                    frameStack.Children.Add(topStack);                   
+                    frameStack.Children.Add(topStack);
 
                     Label Category = new Label
                     {
                         Text = "Category: " + quiz.Category
                     };
                     frameStack.Children.Add(Category);
-
 
                     Label Subscribers = new Label
                     {
@@ -290,7 +292,60 @@ namespace appFBLA2019
 
         private async void ButtonDelete_Clicked(object sender, EventArgs e)
         {
+            bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud.This is not reversable.", "Yes", "No");
+            if (answer)
+            {
+                string path = App.UserPath + ((ImageButton)sender).StyleId;
 
+                // StyleId = "/" + quiz.Category + "/" + quiz.QuizName + "`" + quiz.Author;
+
+                // Acquire QuizInfo from roster
+                QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
+                    ((ImageButton)sender).StyleId.Split('/').Last().Split('`').First(), // Quiz Name
+                    ((ImageButton)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
+                string dbId = rosterInfo.DBId;
+
+                // tell the roster that the level is deleted
+                QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                {
+                    IsDeletedLocally = true,
+                    LastModifiedDate = DateTime.Now.ToString()
+                };
+                QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+
+                // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
+                if (CrossConnectivity.Current.IsConnected)
+                {
+                    OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
+
+                    if (System.IO.Directory.Exists(path))
+                    {
+                        // Get the Realm File
+                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
+                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                        if (returnMessage == OperationReturnMessage.True)
+                        {
+                            QuizRosterDatabase.DeleteQuizInfo(dbId);
+                            realm.Write(() =>
+                            {
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
+                            });
+                        }
+                        Directory.Delete(path, true);
+                    }
+                    else
+                    {
+                        await this.DisplayAlert("Quiz not Found", "Is this quiz already deleted?", "Back");
+                    }
+                }
+                // Setup Page again after deletion
+                this.StackLayoutProfilePageContent.Children.Clear();
+                await this.UpdateProfileContent();
+            }
+        }
+
+        private async void ButtonDelete_ClickedNope(object sender, EventArgs e)
+        {
             bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud.This is not reversable.", "Yes", "No");
             if (answer)
             {
@@ -299,37 +354,37 @@ namespace appFBLA2019
                 if (System.IO.Directory.Exists(path))
                 {
                     // Acquire DBId from the quiz's realm file
-                    string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                    Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                    QuizInfo info = realm.All<QuizInfo>().First();
-                    string dbId = info.DBId;
+                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
+                       ((Button)sender).StyleId.Split('/').Last().Split('`').First(), // Quiz Name
+                       ((Button)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
+                    string dbId = rosterInfo.DBId;
 
-                    // Acquire QuizInfo from roster
-                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
                     QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
                     {
                         IsDeletedLocally = true,
                         LastModifiedDate = DateTime.Now.ToString()
                     };
-                    QuizRosterDatabase.EditQuizInfo(rosterInfo);
+                    QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
                     // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
                     if (CrossConnectivity.Current.IsConnected)
                     {
+                        // Get the Realm File
+                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
+                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                         OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
                         if (returnMessage == OperationReturnMessage.True)
                         {
                             realm.Write(() =>
                             {
-                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
                             });
                         }
                     }
                     Directory.Delete(path, true);
-                   
                 }
                 else
                 {
-                    await this.DisplayAlert("Quiz not Found", "This quiz is not downloaded. Press download to download the quiz.", "OK");
+                    await this.DisplayAlert("Quiz not Found", "Is this quiz already deleted?", "Back");
                 }
             }
         }
@@ -339,7 +394,7 @@ namespace appFBLA2019
             if (this.accountSettingsPage == null)
             {
                 this.accountSettingsPage = new AccountSettingsPage();
-                this.accountSettingsPage.SignedOut += OnSignedOut;
+                this.accountSettingsPage.SignedOut += this.OnSignedOut;
                 this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             }
             await this.Navigation.PushAsync(this.accountSettingsPage);
@@ -348,22 +403,21 @@ namespace appFBLA2019
         public async void OnLoggedIn(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = new AccountSettingsPage();
-            this.accountSettingsPage.SignedOut += OnSignedOut;
+            this.accountSettingsPage.SignedOut += this.OnSignedOut;
             this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
-            await UpdateProfilePage();
+            await this.UpdateProfilePage();
         }
 
         private string GetHello()
         {
-            List<string> hello = new List<string> { "Hello, ", "Hola, ", "你好, ", "Aloha, ", "こんにちは, ", "Guten Tag, ", "Ciao, ", "Bonjour, "};
-            Random rand = new Random();
-            return hello[rand.Next(8)];
+            List<string> hello = new List<string> { "Hello, ", "Hola, ", "你好, ", "Aloha, ", "こんにちは, ", "Guten Tag, ", "Ciao, ", "Bonjour, " };
+            return hello[App.random.Next(8)];
         }
 
         public async void OnSignedOut(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = null;
-            await UpdateProfilePage();
+            await this.UpdateProfilePage();
         }
     }
 }

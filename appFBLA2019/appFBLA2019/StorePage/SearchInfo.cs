@@ -4,6 +4,9 @@ using System.Text;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// Data usefull to the Search and Featured Pages
+    /// </summary>
     public class SearchInfo
     {
         public string Title { get; set; }
@@ -13,13 +16,13 @@ namespace appFBLA2019
         public string Category { get; set; }
         public int SubCount { get; set; }
 
-        public SearchInfo(params string[] data)
+        public SearchInfo(string dbId, string author, string quizName, string category, string subCount)
         {
-            this.DBId = data[0];
-            this.Author = data[1];
-            this.QuizName = data[2];
-            this.Category = data[3];
-            this.SubCount = int.Parse(data[4]);
+            this.DBId = dbId;
+            this.Author = author;
+            this.QuizName = quizName;
+            this.Category = category;
+            this.SubCount = int.Parse(subCount);
         }
 
         public SearchInfo()

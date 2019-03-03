@@ -8,11 +8,15 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
+
+
+    /// Displays the photo a user adds to a question, they can either delete or change the image from here.
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class PhotoPage : ContentPage
     {
         private ImageButton imageButton;
-        private int currentAction = 0;
+        private enum PhotoAction { back, change, delete }
+        private PhotoAction currentAction;
 
         public PhotoPage(ImageButton image)
         {
@@ -27,30 +31,36 @@ namespace appFBLA2019
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            if (currentAction == 0)
+            if (this.currentAction == PhotoAction.back)
             {
-                imageButton.StyleId = "back";
+                this.imageButton.StyleId = "back";
             }
-            else if (currentAction == 1)
+            else if (this.currentAction == PhotoAction.change)
             {
-                imageButton.StyleId = "change";
+                this.imageButton.StyleId = "change";
             }
-            else if (currentAction == 2)
+            else if (this.currentAction == PhotoAction.delete)
             {
-                imageButton.StyleId = "delete";
+                this.imageButton.StyleId = "delete";
             }
-        }
+        }   
 
+        /// <summary>
+        /// Event handler for when the user wants to change the image from the qustion
+        /// </summary>
         private void ChangePhoto_Activated(object sender, EventArgs e)
         {
-            currentAction = 1;
-            Navigation.PopAsync();
+            this.currentAction = PhotoAction.change;
+            this.Navigation.PopAsync();
         }
 
+        /// <summary>
+        /// Event handler for when the user wants to delete the image from the qustion
+        /// </summary>
         private void Remove_Activated(object sender, EventArgs e)
         {
-            currentAction = 2;
-            Navigation.PopAsync();
+            this.currentAction = PhotoAction.delete;
+            this.Navigation.PopAsync();
         }
     }
 }

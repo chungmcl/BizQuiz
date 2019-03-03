@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -14,7 +13,6 @@ using Xamarin.Forms.Xaml;
 
 namespace appFBLA2019
 {
-    
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class QuizSelectionPage : ContentPage
     {
@@ -24,7 +22,6 @@ namespace appFBLA2019
         public bool serverConnected;
 
         private enum SyncType { Offline = 1, Upload, Download, NoChange, Syncing };
-
 
         public QuizSelectionPage(string category)
         {
@@ -76,6 +73,7 @@ namespace appFBLA2019
 
                 List<QuizInfo> quizzes = QuizRosterDatabase.GetRoster(this.category);
                 if (quizzes.Count == 0)
+                {
                     Device.BeginInvokeOnMainThread(() =>
                     {
                         StackLayout stack = new StackLayout();
@@ -104,7 +102,7 @@ namespace appFBLA2019
                                 TextColor = Color.White,
                                 FontSize = 26
                             });
-                            (stack.Children[2] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new StorePage());
+                            (stack.Children[2] as Button).Clicked += (object sender, EventArgs e) => this.Navigation.PushAsync(new SearchPage());
                         }
                         Frame frame = new Frame()
                         {
@@ -114,6 +112,8 @@ namespace appFBLA2019
                         };
                         this.StackLayoutButtonStack.Children.Add(frame);
                     });
+                }
+
                 foreach (QuizInfo quiz in quizzes)
                 {
                     Frame frame = new Frame()
@@ -154,8 +154,6 @@ namespace appFBLA2019
                         HeightRequest = 45
                     };
                     topStack.Children.Add(title);
-
-#region SyncButtons
 
                     // Add the sync buttons, We create one for each sync action to keep correct formatting and fix a sizing bug.
                     ImageButton SyncOffline = new ImageButton // 1
@@ -215,20 +213,17 @@ namespace appFBLA2019
                     SyncNoChange.Clicked += this.SyncNoChange_Clicked;
                     topStack.Children.Add(SyncNoChange);
 
-                    ImageButton Syncing = new ImageButton // 5
+                    ActivityIndicator Syncing = new ActivityIndicator // 5
                     {
                         IsVisible = false,
-                        Source = "ic_autorenew_black_48dp.png",
+                        Color = Color.Accent,
                         HeightRequest = 25,
                         WidthRequest = 25,
-                        BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
                     };
                     topStack.Children.Add(Syncing);
 
-                    #endregion SyncButtons
-#region Menu
                     ImageButton imageButtonMenu = new ImageButton // 6
                     {
                         Source = "ic_more_vert_black_48dp.png",
@@ -301,8 +296,6 @@ namespace appFBLA2019
                         return parent.Y;
                     }), Constraint.Constant(95), Constraint.Constant(90));
 
-#endregion Menu
-
                     frameStack.Children.Add(topStack);
 
                     BoxView Seperator = new BoxView // 1
@@ -326,7 +319,6 @@ namespace appFBLA2019
                     };
                     frameStack.Children.Add(Author);
 
-#region SyncSetup
                     // The sync button thats active in the current frame
                     ImageButton ActiveSync;
 
@@ -360,7 +352,6 @@ namespace appFBLA2019
                         SyncOffline.IsVisible = true;
                         ActiveSync = SyncOffline;
                     }
-#endregion SyncSetup
 
                     TapGestureRecognizer recognizer = new TapGestureRecognizer();
                     recognizer.Tapped += async (object sender, EventArgs e) =>
@@ -395,7 +386,6 @@ namespace appFBLA2019
                         return 0;
                     }));
 
-
                     frame.Content = frameLayout;
                     this.StackLayoutButtonStack.Children.Add(frame);
                 }
@@ -406,33 +396,32 @@ namespace appFBLA2019
         /// <summary>
         /// Called when the user tries to upload a quiz
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
         private async void SyncUpload_Clicked(object sender, EventArgs e)
         {
             this.serverConnected = true;
             ImageButton button = (sender as ImageButton);
-            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ImageButton;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
             string quizPath = button.StyleId;
             button.IsVisible = false;
-            buttonSyncing.IsVisible = true;
-#pragma warning disable
-            buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
-#pragma warning restore
+            indicatorSyncing.IsVisible = true;
+            indicatorSyncing.IsRunning = true;
             if (await Task.Run(async () => await ServerOperations.SendQuiz(quizPath)))
             {
                 ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
-                buttonSyncing.IsVisible = false;
+                indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
             }
             else // if it failed to upload
             {
-                buttonSyncing.IsVisible = false;
+                indicatorSyncing.IsVisible = false;
                 button.IsVisible = true;
                 await this.DisplayAlert("Quiz Upload Failed",
                     "This quiz could not be uploaded to the server. Please try again.",
                     "OK");
             }
+            indicatorSyncing.IsRunning = false;
             this.serverConnected = false;
         }
 
@@ -446,29 +435,28 @@ namespace appFBLA2019
             string quizName = button.ClassId.Split('/')[2];
             string category = button.ClassId.Split('/')[3];
 
-            ImageButton buttonSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ImageButton;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
             string quizPath = button.StyleId;
             button.IsVisible = false;
-            buttonSyncing.IsVisible = true;
-#pragma warning disable
-            buttonSyncing.RotateTo(360, 1000, Easing.CubicInOut);
-#pragma warning restore
+            indicatorSyncing.IsVisible = true;
+            indicatorSyncing.IsRunning = true;
             if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
             {
                 ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
-                buttonSyncing.IsVisible = false;
+                indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
 
                 ((((button.Parent as StackLayout).Parent as StackLayout).Parent as RelativeLayout).Parent as Frame).StyleId = "Local";
             }
             else // If it failed to download
             {
-                buttonSyncing.IsVisible = false;
+                indicatorSyncing.IsVisible = false;
                 button.IsVisible = true;
                 await this.DisplayAlert("Quiz Download Failed",
                     "This quiz could not be downloaded from the server. Please try again.",
                     "OK");
             }
+            indicatorSyncing.IsRunning = false;
             this.serverConnected = false;
             this.CheckSetup();
         }
@@ -525,26 +513,31 @@ namespace appFBLA2019
                 {
                     OperationReturnMessage returnMessage;
                     if (unsubscribe)
+                    {
                         returnMessage = await ServerOperations.UnsubscribeToQuiz(dbId);
-                    else               
+                    }
+                    else
+                    {
                         returnMessage = await ServerOperations.DeleteQuiz(dbId);
+                    }
 
                     if (System.IO.Directory.Exists(path))
                     {
-                        // Get the Realm File   
+                        // Get the Realm File
                         string realmFilePath = Directory.GetFiles(path, "*.realm").First();
                         Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
                         if (returnMessage == OperationReturnMessage.True)
                         {
+                            QuizRosterDatabase.DeleteQuizInfo(dbId);
                             realm.Write(() =>
                             {
-                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == rosterInfo.DBId).First());
+                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
                             });
                         }
                         Directory.Delete(path, true);
-                    }          
+                    }
                     this.Setup();
-                }            
+                }
             }
             else
             {
@@ -566,10 +559,10 @@ namespace appFBLA2019
             globalRecognizer.Tapped += async (s, a) =>
             {
                 await this.RemoveMenu(menu);
-                this.StackLayoutButtonStack.GestureRecognizers.Remove(globalRecognizer);
+                this.StackLayoutGlobalStack.GestureRecognizers.Remove(globalRecognizer);
                 frame.GestureRecognizers.Add(this.recognizer);
             };
-            this.StackLayoutButtonStack.GestureRecognizers.Add(globalRecognizer);
+            this.StackLayoutGlobalStack.GestureRecognizers.Add(globalRecognizer);
         }
 
         private async Task RemoveMenu(Frame frame)

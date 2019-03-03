@@ -69,7 +69,7 @@ namespace appFBLA2019
         /// <summary>
         /// some nifty animations to make this page more interesting
         /// </summary>
-        protected override async void OnAppearing()
+        protected override async void OnSizeAllocated(double width, double height)
         {
             this.LabelFeedback.Scale = 0.00001;
             this.LabelScore.Scale = 0.00001;
@@ -133,9 +133,8 @@ namespace appFBLA2019
             IShare shareinfo = CrossShare.Current;
             await CrossShare.Current.Share(new ShareMessage
             {
-                Text = "Check out my github",
-                Title = "Title",
-                Url = "https://github.com/chungmcl",
+                Text = $"I got { this.percentScore }% correct studying { this.quizName } on BizQuiz!",
+                Title = "Loving BizQuiz!",
             });
             this.ButtonShareToOtherMedia.IsEnabled = true;
         }

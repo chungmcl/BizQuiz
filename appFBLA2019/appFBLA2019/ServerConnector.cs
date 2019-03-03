@@ -31,7 +31,7 @@ namespace appFBLA2019
         /// <summary>
         /// An empty to object to serve as a thread lock
         /// </summary>
-        private static object lockObj = new object();
+        private static readonly object lockObj = new object();
 
         // Raw-data stream of connection encrypted with TLS.
         public static SslStream ssl;

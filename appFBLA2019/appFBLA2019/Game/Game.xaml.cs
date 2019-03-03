@@ -24,10 +24,10 @@ namespace appFBLA2019
             this.InitializeComponent();
             this.quiz = quiz;
             this.score = 0;
-            this.random = new Random();
             this.Title = quiz.Title;
+            this.inGame = false;
 
-            this.LayoutRefresh();
+            this.LabelQuestion.SizeChanged += (object sender, EventArgs e) => { this.RelativeLayoutImageAnswer.HeightRequest = this.StackLayoutMain.Height - this.LabelQuestion.Height - 75; };
         }
 
         /// <summary>
@@ -46,10 +46,17 @@ namespace appFBLA2019
         /// </summary>
         protected override async void OnAppearing()
         {
-            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
-            this.LayoutRefresh();
-            await this.CycleQuestion();
+            base.OnAppearing();
+            if (!this.inGame)
+            {
+                await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
+                await this.ActivityBanner.TranslateTo(this.ActivityBanner.Width * -2, this.Height * 2 / 3, 0);
+                this.inGame = true;
+                await this.CycleQuestion();
+            }
         }
+
+        private bool inGame;
 
         /// <summary>
         /// the correct answer
@@ -67,11 +74,6 @@ namespace appFBLA2019
         private Quiz quiz;
 
         /// <summary>
-        /// a random to be used for shuffling
-        /// </summary>
-        private Random random;
-
-        /// <summary>
         /// the current score of the user
         /// </summary>
         private int score;
@@ -82,7 +84,7 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task AnimateNextBanner()
         {
-            while (this.LabelFeedback.FontSize / 2 * LabelFeedback.Text.Length > (NextBanner.Width - 5))
+            while (this.LabelFeedback.FontSize / 2 * this.LabelFeedback.Text.Length > (this.NextBanner.Width - 5))
             {
                 this.LabelFeedback.FontSize--;
             }
@@ -170,8 +172,10 @@ namespace appFBLA2019
             }
 
             // 2 represents 'correct'
-            Question copyQuestion = new Question(this.currentQuestion);
-            copyQuestion.Status = 2;
+            Question copyQuestion = new Question(this.currentQuestion)
+            {
+                Status = 2
+            };
             DBHandler.Database.EditQuestion(copyQuestion);
             await this.AnimateNextBanner();
         }
@@ -182,8 +186,8 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task CycleQuestion()
         {
-            await this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
-            await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
+            this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
+            this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
             if (this.quiz.QuestionsRemaining > 0)
             {
                 // Save as reference
@@ -210,8 +214,10 @@ namespace appFBLA2019
             this.NextBanner.BackgroundColor = Color.Red;
 
             // 1 represents 'failed'
-            Question copyQuestion = new Question(this.currentQuestion);
-            copyQuestion.Status = 1;
+            Question copyQuestion = new Question(this.currentQuestion)
+            {
+                Status = 1
+            };
             DBHandler.Database.EditQuestion(copyQuestion);
 
             await this.AnimateNextBanner();
@@ -222,13 +228,10 @@ namespace appFBLA2019
         /// </summary>
         private void LayoutRefresh()
         {
-            this.ActivityIndicatorLoading.IsVisible = true;
-            this.ActivityIndicatorLoading.IsRunning = true;
             this.QuestionImage.Aspect = Aspect.AspectFit;
+            this.StackLayoutMain.HeightRequest = this.Height;
             this.UpdateChildrenLayout();
             this.ForceLayout();
-            this.ActivityIndicatorLoading.IsVisible = false;
-            this.ActivityIndicatorLoading.IsRunning = false;
         }
 
         /// <summary>
@@ -247,19 +250,29 @@ namespace appFBLA2019
         /// <param name="question"> the question to be displayed </param>
         private async Task SetUpQuestion(Question question)
         {
+            await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.CubicOut);
+            this.ActivityIndicatorLoading.IsRunning = true;
             if (question.QuestionText == "" || question.CorrectAnswer == "")
             {
-                Question copyQuestion = new Question(this.currentQuestion);
-                copyQuestion.Status = 3;
+                Question copyQuestion = new Question(this.currentQuestion)
+                {
+                    Status = 3
+                };
                 DBHandler.Database.EditQuestion(copyQuestion);
                 await this.CycleQuestion();
                 return;
             }
 
-            int fontSize = 30;
             this.LabelQuestion.Text = question.QuestionText;
             this.LabelQuestion.VerticalTextAlignment = TextAlignment.Center;
             this.LabelQuestion.VerticalOptions = LayoutOptions.Center;
+
+            this.LabelQuestion.FontSize = 40;
+            while (this.LabelQuestion.FontSize / 2 * this.LabelQuestion.Text.Length > (this.Width - 10) * 3.5)
+            {
+                this.LabelQuestion.FontSize--;
+            }
+
             this.correct = question.CorrectAnswer;
             List<string> answers = question.Answers;
 
@@ -288,7 +301,7 @@ namespace appFBLA2019
                         };
                 }
                 this.Shuffle(answers);
-
+                int buttonFontSize = 30;
                 for (int i = 0; i < answers.Count(); i++)
                 {
                     string answer = answers[i];
@@ -301,7 +314,7 @@ namespace appFBLA2019
                         TextColor = Color.White,
                         VerticalOptions = LayoutOptions.FillAndExpand
                     };
-                    button.Clicked += async(object sender, EventArgs e) =>
+                    button.Clicked += async (object sender, EventArgs e) =>
                     {
                         await this.CheckButtonAnswer(((Button)sender).Text);
                     };
@@ -336,31 +349,37 @@ namespace appFBLA2019
                     {
                         Grid.SetColumnSpan(button, 2);
                     }
-                    while (fontSize / 2 * button.Text.Length > (button.Width - 10) * 3.5)
+                    while (buttonFontSize / 2 * button.Text.Length > (button.Width - 10) * 3.5)
                     {
-                        double testSize = fontSize / 2 * button.Text.Length ;
+                        double testSize = buttonFontSize / 2 * button.Text.Length;
                         double buttonWidth = (button.Width - 10) * 3.5;
-                        fontSize--;
+                        buttonFontSize--;
                     }
                 }
-                foreach(View button in this.InputGrid.Children)
+                foreach (View button in this.InputGrid.Children)
                 {
-                    (button as Button).FontSize = fontSize;
+                    (button as Button).FontSize = buttonFontSize;
                 }
             }
             else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
             {
+                this.InputGrid.RowDefinitions = new RowDefinitionCollection
+            {
+                new RowDefinition() { Height = Xamarin.Forms.GridLength.Auto },
+                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
+            };
                 Entry entry = new Entry()
                 {
                     FontSize = 35,
                     FontAttributes = FontAttributes.Italic,
-                    TextColor = Color.Gray, 
+                    TextColor = Color.Gray,
                     HorizontalTextAlignment = TextAlignment.Center,
                     WidthRequest = this.Width,
                     Placeholder = "Answer Here",
-                    PlaceholderColor = Color.LightGray
-                }
-                ;
+                    PlaceholderColor = Color.LightGray,
+                    Margin = 0,
+                };
+                entry.HeightRequest = entry.FontSize * 3;
                 Button buttonCheckAnswer = new Button
                 {
                     Text = "Check Answer",
@@ -370,7 +389,7 @@ namespace appFBLA2019
                     BackgroundColor = Color.Accent,
                     TextColor = Color.White
                 };
-                buttonCheckAnswer.Clicked += async(object sender, EventArgs e) =>
+                buttonCheckAnswer.Clicked += async (object sender, EventArgs e) =>
                 {
                     // Can we do this with null-conditional operators? yes we can
                     await this.CheckTextAnswer(entry.Text ?? "", (question.QuestionType == 2));
@@ -388,6 +407,8 @@ namespace appFBLA2019
             // The image will ALWAYS be named after the DBId
 
             this.LayoutRefresh();
+            await this.ActivityBanner.TranslateTo(this.Width + this.ActivityBanner.Width * 2, this.Height * 2 / 3, 500, Easing.CubicIn);
+            await this.ActivityBanner.TranslateTo(this.ActivityBanner.Width * -2, this.Height * 2 / 3, 0);
         }
 
         /// <summary>
@@ -400,7 +421,7 @@ namespace appFBLA2019
             while (n > 1)
             {
                 n--;
-                int k = this.random.Next(n + 1);
+                int k = App.random.Next(n + 1);
                 String value = answers[k];
                 answers[k] = answers[n];
                 answers[n] = value;

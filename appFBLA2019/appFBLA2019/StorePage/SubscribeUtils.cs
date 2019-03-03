@@ -11,32 +11,40 @@ namespace appFBLA2019
     {
         public static async Task<OperationReturnMessage> SubscribeToLevel(string dbId, List<SearchInfo> quizzesSearched)
         {
-            OperationReturnMessage returnMessage = await Task.Run(async () => await ServerOperations.SubscribeToQuiz(dbId));
-            if (returnMessage == OperationReturnMessage.True)
+            if (QuizRosterDatabase.GetQuizInfo(dbId) == null) // make sure it isn't in yet
             {
-                SearchInfo quiz = quizzesSearched.Where(searchInfo => searchInfo.DBId == dbId).First();
-                string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
-                QuizInfo newInfo = new QuizInfo
+                OperationReturnMessage returnMessage = await Task.Run(async () => await ServerOperations.SubscribeToQuiz(dbId));
+                if (returnMessage == OperationReturnMessage.True)
                 {
-                    DBId = quiz.DBId,
-                    AuthorName = quiz.Author,
-                    QuizName = quiz.QuizName,
-                    Category = quiz.Category,
-                    LastModifiedDate = lastModifiedDate,
-                    SyncStatus = 4 // 4 to represent not present in local directory and need download
-                };
-                QuizRosterDatabase.NewQuizInfo(newInfo);
-                return returnMessage;
-            }
-            else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
-            {
-                CredentialManager.IsLoggedIn = false;
-                return returnMessage;
+                    SearchInfo quiz = quizzesSearched.Where(searchInfo => searchInfo.DBId == dbId).First();
+                    string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
+                    QuizInfo newInfo = new QuizInfo
+                    {
+                        DBId = quiz.DBId,
+                        AuthorName = quiz.Author,
+                        QuizName = quiz.QuizName,
+                        Category = quiz.Category,
+                        LastModifiedDate = lastModifiedDate,
+                        SyncStatus = 4 // 4 to represent not present in local directory and need download
+                    };
+                    QuizRosterDatabase.NewQuizInfo(newInfo);
+                    return returnMessage;
+                }
+                else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
+                {
+                    CredentialManager.IsLoggedIn = false;
+                    return returnMessage;
+                }
+                else
+                {
+                    return returnMessage;
+                }
             }
             else
             {
-                return returnMessage;
+                return OperationReturnMessage.False;
             }
+            
         }
 
         public static async Task<OperationReturnMessage> UnsubscribeToLevel(string dbId)
