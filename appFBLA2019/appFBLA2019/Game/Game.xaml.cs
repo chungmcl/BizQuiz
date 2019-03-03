@@ -193,7 +193,7 @@ namespace appFBLA2019
             }
             else // Finished quiz
             {
-                QuizEndPage quizEndPage = (new QuizEndPage(this.score, this.quiz.Questions.Count));
+                QuizEndPage quizEndPage = (new QuizEndPage(this.score, this.quiz.Questions.Count, this.quiz.Title));
                 quizEndPage.Finished += this.OnFinished;
                 await this.Navigation.PushModalAsync(quizEndPage);
             }
