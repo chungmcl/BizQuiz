@@ -559,10 +559,10 @@ namespace appFBLA2019
             globalRecognizer.Tapped += async (s, a) =>
             {
                 await this.RemoveMenu(menu);
-                this.StackLayoutButtonStack.GestureRecognizers.Remove(globalRecognizer);
+                this.StackLayoutGlobalStack.GestureRecognizers.Remove(globalRecognizer);
                 frame.GestureRecognizers.Add(this.recognizer);
             };
-            this.StackLayoutButtonStack.GestureRecognizers.Add(globalRecognizer);
+            this.StackLayoutGlobalStack.GestureRecognizers.Add(globalRecognizer);
         }
 
         private async Task RemoveMenu(Frame frame)

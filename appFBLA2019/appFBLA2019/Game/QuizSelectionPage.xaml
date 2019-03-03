@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:appFBLA2019">
     <!--Titles should be implemented by the containing XAMl (QuizCategoriesPage.xaml) -->
     <ContentPage.Content>
-        <StackLayout>
+        <StackLayout x:Name="StackLayoutGlobalStack">
             <ActivityIndicator x:Name="ActivityIndicator" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" IsVisible="False" />
             <ScrollView>
                 <StackLayout x:Name="StackLayoutButtonStack" Padding="10">
