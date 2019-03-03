@@ -32,7 +32,7 @@ namespace appFBLA2019
 		{
             this.isStartup = true;
             this.quizzesSearched = new List<SearchInfo>();
-			InitializeComponent();
+			this.InitializeComponent();
 			this.searchType = "Title";
             this.category = "All";
 		}
@@ -40,7 +40,6 @@ namespace appFBLA2019
 		protected override void OnSizeAllocated(double width, double height)
 		{
 			base.OnSizeAllocated(width, height);
-			base.OnAppearing();
             if (this.isStartup)
             {
                 this.SearchBar.Focus();
@@ -174,7 +173,7 @@ namespace appFBLA2019
         {
             ImageButton button = (sender as ImageButton);
             string dbId = button.StyleId;
-            bool answer = await DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+            bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
             if (answer)
             {
                 ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
@@ -240,7 +239,7 @@ namespace appFBLA2019
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
                     button.IsVisible = true;
-                    await DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
+                    await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please try logging in again.", "OK");
                 }
                 else
                 {
@@ -298,14 +297,14 @@ namespace appFBLA2019
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
             if (this.searchType == "Title")
-                chunk = SearchUtils.GetQuizzesByQuizNameChunked(SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizzesByQuizNameChunked(this.SearchBar.Text, this.currentChunk);
             else
-                chunk = SearchUtils.GetQuizzesByAuthorChunked(SearchBar.Text, this.currentChunk);
+                chunk = SearchUtils.GetQuizzesByAuthorChunked(this.SearchBar.Text, this.currentChunk);
             if (this.currentChunk == 1 && chunk.Count == 0)
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    SearchedStack.Children.Add(new Label()
+                    this.SearchedStack.Children.Add(new Label()
                     {
                         Text = "Sorry, we couldn't find any quizzes matching what you searched", 
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),

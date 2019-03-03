@@ -69,7 +69,7 @@ namespace appFBLA2019
         /// <summary>
         /// some nifty animations to make this page more interesting
         /// </summary>
-        protected override async void OnAppearing()
+        protected override async void OnSizeAllocated(double width, double height)
         {
             this.LabelFeedback.Scale = 0.00001;
             this.LabelScore.Scale = 0.00001;

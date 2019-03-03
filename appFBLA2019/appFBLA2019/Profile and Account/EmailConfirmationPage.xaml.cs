@@ -46,9 +46,9 @@ namespace appFBLA2019
         {
             base.OnDisappearing();
             if (!this.emailConfirmed)
-                OnConfirmLaterSelected();
+                this.OnConfirmLaterSelected();
             else
-                OnEmailConfirmed();
+                this.OnEmailConfirmed();
         }
 
         public delegate void ConfirmLaterSelectedEventHandler(object source, EventArgs eventArgs);

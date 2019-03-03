@@ -43,8 +43,9 @@ namespace appFBLA2019
         /// <summary>
         /// triggered right before the page appears, sets the next question banner to offscreen and updates layout
         /// </summary>
-        protected override async void OnAppearing()
+        protected override async void OnSizeAllocated(double width, double height)
         {
+            base.OnSizeAllocated(width, height);
             await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
             await this.ActivityBanner.TranslateTo(this.ActivityBanner.Width * -2, this.Height * 2 / 3, 0);
             await this.CycleQuestion();
