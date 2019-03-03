@@ -5,9 +5,6 @@ using Plugin.FacebookClient.Abstractions;
 using Plugin.Share;
 using Plugin.Share.Abstractions;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
