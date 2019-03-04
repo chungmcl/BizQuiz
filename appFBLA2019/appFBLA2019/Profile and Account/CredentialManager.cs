@@ -1,13 +1,9 @@
 ﻿//BizQuiz App 2019
 
 using Plugin.Connectivity;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace appFBLA2019
 {

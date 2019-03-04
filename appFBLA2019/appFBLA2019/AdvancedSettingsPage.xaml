@@ -4,9 +4,12 @@
              x:Class="appFBLA2019.AdvancedSettingsPage">
     <ContentPage.Content>
         <StackLayout Padding="20">
-            <Label Text="The server IP might change at some point. If it does, we will let you know and you can input the correct IP here."
+            <Label Text="The server IP might change at some point. If it does, you shall be informed and you can input the correct IP here."
                 VerticalOptions="Start" 
                 HorizontalOptions="CenterAndExpand"/>
+            <Label Text="The button will not be enabled unless you enter an IP in correct format."
+                   VerticalOptions="Start"
+                   HorizontalOptions="CenterAndExpand"/>
             <Entry x:Name="EntryIP" Placeholder="IP override" TextChanged="EntryIP_TextChanged"/>
             <Button x:Name="ButtonConfirm"  Text="Confirm Override" CornerRadius="25" Clicked="ButtonConfirm_ClickedAsync" IsEnabled="False"/>
         </StackLayout>

@@ -1,7 +1,6 @@
 ﻿//BizQuiz App 2019
 
 using System;
-using System.Collections.Generic;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
