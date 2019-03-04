@@ -1,5 +1,6 @@
 //BizQuiz App 2019
 
+using Plugin.Permissions;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -19,10 +20,12 @@ namespace appFBLA2019
             Xamarin.Forms.DependencyService.Register<IGetStorage>();
             Xamarin.Forms.DependencyService.Register<IErrorLogger>();
             Xamarin.Forms.DependencyService.Register<IGetImage>();
+            Xamarin.Forms.DependencyService.Register<ICloseApplication>();
 
             App.random = new Random();
 
-            
+
+            App.Path = DependencyService.Get<IGetStorage>().GetStorage();
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
@@ -60,7 +63,7 @@ namespace appFBLA2019
         protected override async void OnStart()
         {
             // Handle when your app starts
-            App.Path = DependencyService.Get<IGetStorage>().GetStorage();
+            await CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
 
             string tempPicturesDir = App.Path + "/" + "Pictures";
             if (Directory.Exists(tempPicturesDir))

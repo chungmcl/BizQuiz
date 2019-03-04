@@ -1,9 +1,13 @@
 ﻿//BizQuiz App 2019
 
+using Android;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Support.V4.App;
 using Android.Support.V7.App;
+using Plugin.Permissions;
+using Plugin.Permissions.Abstractions;
 using System;
 using System.Collections.Generic;
 

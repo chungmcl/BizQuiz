@@ -1,16 +1,24 @@
 ﻿//BizQuiz App 2019
 
+using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Graphics;
 using Android.OS;
+using Android.Runtime;
+using Android.Support.V4.App;
+using Android.Widget;
 using appFBLA2019.Droid;
+using Plugin.CurrentActivity;
 using Plugin.FacebookClient;
+using Plugin.Permissions;
+using Plugin.Permissions.Abstractions;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using static Android.Manifest;
 
 [assembly: Dependency(typeof(MainActivity))]
 
@@ -22,7 +30,7 @@ namespace appFBLA2019.Droid
     [Activity(Label = "appFBLA2019", Icon = "@mipmap/icon", Theme = "@style/MainTheme", 
         MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, 
         WindowSoftInputMode =Android.Views.SoftInput.AdjustResize, ScreenOrientation =ScreenOrientation.Portrait)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger, ICloseApplication
     {
         private Android.Views.Window currentWindow;
         private static string fileDirectory;
@@ -36,10 +44,13 @@ namespace appFBLA2019.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
-            fileDirectory = this.GetExternalFilesDir(null).ToString();
+
             //Stream input = this.Assets.Open("my_asset.txt");
 
-
+            CrossCurrentActivity.Current.Init(this, bundle);
+            CrossCurrentActivity.Current.Activity = this;
+            
+            fileDirectory = this.GetExternalFilesDir(null).ToString();
 
             FacebookClientManager.Initialize(this);
 
@@ -77,9 +88,33 @@ namespace appFBLA2019.Droid
         /// <param name="requestCode"></param>
         /// <param name="permissions"></param>
         /// <param name="grantResults"></param>
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
+        public async override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
         {
             Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            PermissionStatus status = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+            if (status != PermissionStatus.Granted)
+            {
+                await AlertAsync();
+                CloseApplication();
+            }
+        }
+
+        private Task<bool> AlertAsync()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            using (var dialog = new AlertDialog.Builder(this))
+            {
+                dialog.SetTitle("Storage Permissions Required");
+                dialog.SetMessage("Please enable storage permissions for BizQuiz to function. " +
+                        "Storage is needed to save and download levels.");
+                dialog.SetNeutralButton("OK", (sender, args) => { tcs.TrySetResult(true); });
+                dialog.SetCancelable(false);
+                dialog.Show();
+            }
+
+            return tcs.Task;
         }
 
         /// <summary>
@@ -98,6 +133,14 @@ namespace appFBLA2019.Droid
             MemoryStream outStream = new MemoryStream();
             resultBitmap.Compress(Bitmap.CompressFormat.Jpeg, 100, outStream);
             return outStream;
+        }
+
+        /// <summary>
+        /// Close BizQuiz
+        /// </summary>
+        public void CloseApplication()
+        {
+            Android.OS.Process.KillProcess(Android.OS.Process.MyPid());
         }
 
         /// <summary>

@@ -75,7 +75,7 @@ namespace appFBLA2019
                 !this.isSetup && 
                 !this.serverConnected && 
                 !this.IsLoading && 
-                App.UserPath.Length > 2)
+                App.Path != null)
             {
                 Directory.CreateDirectory(App.UserPath + $"{category}/");
                 this.Setup();

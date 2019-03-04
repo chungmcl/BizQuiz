@@ -1,5 +1,7 @@
 ﻿//BizQuiz App 2019
 
+using Plugin.Permissions;
+using Plugin.Permissions.Abstractions;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Plugin.FacebookClient" Version="1.4.0" />
+    <PackageReference Include="Plugin.Permissions" Version="3.0.0.12" />
     <PackageReference Include="Plugin.Share" Version="7.1.1" />
     <PackageReference Include="Realm" Version="3.4.0" />
     <PackageReference Include="Realm.Database" Version="3.4.0" />

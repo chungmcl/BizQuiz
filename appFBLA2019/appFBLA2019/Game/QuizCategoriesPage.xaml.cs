@@ -3,6 +3,7 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using System.Threading.Tasks;
 
 namespace appFBLA2019
 {
@@ -28,12 +29,12 @@ namespace appFBLA2019
         /// <summary>
         /// Triggered when MainPage changes tab, refreshes all the pages within
         /// </summary>
-        public void RefreshChildren()
+        public async Task RefreshChildren()
         {
             this.IsLoading = true;
             foreach (Page page in this.Children)
             {
-                (page as QuizSelectionPage).Setup();
+                await (page as QuizSelectionPage).RefreshPage();
             }
             this.IsLoading = false;
         }
