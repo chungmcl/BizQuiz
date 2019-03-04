@@ -5,9 +5,6 @@ using Plugin.FacebookClient.Abstractions;
 using Plugin.Share;
 using Plugin.Share.Abstractions;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -71,6 +68,7 @@ namespace appFBLA2019
         /// </summary>
         protected override async void OnSizeAllocated(double width, double height)
         {
+            base.OnSizeAllocated(width, height);
             this.LabelFeedback.Scale = 0.00001;
             this.LabelScore.Scale = 0.00001;
             this.ButtonShareToFacebook.Scale = 0.00001;

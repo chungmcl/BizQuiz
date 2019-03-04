@@ -1,9 +1,9 @@
 //BizQuiz App 2019
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -21,22 +21,16 @@ namespace appFBLA2019
             Xamarin.Forms.DependencyService.Register<IGetImage>();
 
             App.random = new Random();
+            //broken cause of userpath moving
+            ////if there's nothing in the user's folder
+            //if (Directory.GetFiles(UserPath).Length == 0)
+            //{
+            //    Task.WaitAll(Task.Run(() => DependencyService.Get<IGetStorage>().SetupDefaultLevels(App.UserPath)));
+            //}
 
-            Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
-            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
-            CredentialManager.Username = "dflt";
-            Directory.CreateDirectory(UserPath);
-
-            //if there's nothing in the user's folder
-            if (Directory.GetFiles(UserPath).Length == 0)
-            {
-                Task.WaitAll(Task.Run(() => DependencyService.Get<IGetStorage>().SetupDefaultLevels(App.UserPath)));
-            }
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
-            BugReportHandler.Setup();
-
             this.MainPage = new NavigationPage(new MainPage());
         }
 
@@ -71,11 +65,24 @@ namespace appFBLA2019
         protected override async void OnStart()
         {
             // Handle when your app starts
+            App.Path = DependencyService.Get<IGetStorage>().GetStorage();
 
-            /*REMOVE DURING RELEASE*/
-            ServerConnector.Server = "50.106.17.86";
-            //ServerConnector.Server = "73.254.202.205";
-            //ServerConnector.Server = "50.35.90.220";
+            string tempPicturesDir = App.Path + "/" + "Pictures";
+            if (Directory.Exists(tempPicturesDir))
+                Directory.Delete(App.Path + "/" + "Pictures", true);
+
+            CredentialManager.Username = "dflt";
+            Directory.CreateDirectory(App.Path + $"dflt");
+            
+            BugReportHandler.Setup();
+
+            // If app's server IP has not been changed, default to IP in else statement.
+            // If it has been changed, use the new IP.
+            string serverIp = await SecureStorage.GetAsync("serverIP");
+            if (serverIp != null)
+                ServerConnector.Server = serverIp;
+            else
+                ServerConnector.Server = "50.106.17.86"; // Valid as of March 3rd, 2019
 
             await ThreadTimer.RunServerChecks();
             BugReportHandler.ProcessCrashLog();

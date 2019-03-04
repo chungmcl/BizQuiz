@@ -1,10 +1,6 @@
 ﻿//BizQuiz App 2019
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -19,11 +15,6 @@ namespace appFBLA2019
             this.InitializeComponent();
         }
 
-        private void GithubButton_Clicked(object sender, EventArgs e)
-        {
-            Device.OpenUri(new Uri("https://github.com/chungmcl"));
-        }
-
         private async void EmailButton_Clicked(object sender, EventArgs e)
         {
             try
@@ -34,16 +25,6 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Couldn't email", "You don't have an email app installed!", "OK");
             }
-        }
-
-        private void FacebookButton_Clicked(object sender, EventArgs e)
-        {
-            Device.OpenUri(new Uri("https://www.facebook.com/appdev.bhs.1"));
-        }
-
-        private void BugReportButton_Clicked(object sender, EventArgs e)
-        {
-            this.Navigation.PushAsync(new BugReportPage());
         }
     }
 }

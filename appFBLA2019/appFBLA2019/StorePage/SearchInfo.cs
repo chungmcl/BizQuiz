@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace appFBLA2019
+﻿namespace appFBLA2019
 {
     /// <summary>
     /// Data usefull to the Search and Featured Pages

@@ -17,17 +17,31 @@ namespace appFBLA2019
     public partial class QuizSelectionPage : ContentPage
     {
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
+        
+        /// <summary>
+        /// Whether the selection page is loading or not
+        /// </summary>
         public bool IsLoading { get; set; }
+
+        /// <summary>
+        /// Whether the selection page is completely setup or not
+        /// </summary>
         public bool isSetup;
+
+        /// <summary>
+        /// Whether something on the page is making use of the server
+        /// </summary>
         public bool serverConnected;
 
+        /// <summary>
+        /// The sync status of a level
+        /// </summary>
         private enum SyncType { Offline = 1, Upload, Download, NoChange, Syncing };
 
         public QuizSelectionPage(string category)
         {
             this.InitializeComponent();
             this.category = category;
-            Directory.CreateDirectory(App.UserPath + $"{category}/");
             this.IsLoading = false;
             this.isSetup = false;
         }
@@ -51,20 +65,32 @@ namespace appFBLA2019
             this.isSetup = false;
         }
 
+        /// <summary>
+        /// Check if setup can be performed at the time the method is called. If true,
+        /// setup the page.
+        /// </summary>
         private void CheckSetup()
         {
-            if (Application.Current.MainPage.Width >= 0 && !this.isSetup && !this.serverConnected)
+            if (Application.Current.MainPage.Width >= 0 && 
+                !this.isSetup && 
+                !this.serverConnected && 
+                !this.IsLoading && 
+                App.UserPath.Length > 2)
             {
+                Directory.CreateDirectory(App.UserPath + $"{category}/");
                 this.Setup();
             }
         }
 
+        /// <summary>
+        /// The category of the selectionpage
+        /// </summary>
         private readonly string category;
 
         /// <summary>
         /// Sets up the page with levels the user has subscribed to from the category of the page
         /// </summary>
-        internal void Setup()
+        public void Setup()
         {
             if (!this.IsLoading)
             {
@@ -320,27 +346,27 @@ namespace appFBLA2019
                     frameStack.Children.Add(Author);
 
                     // The sync button thats active in the current frame
-                    ImageButton ActiveSync;
+                    ImageButton activeSync;
 
                     if (quiz.SyncStatus == 3) // SyncOffline
                     {
                         SyncOffline.IsVisible = true;
-                        ActiveSync = SyncOffline;
+                        activeSync = SyncOffline;
                     }
                     else if (quiz.SyncStatus == 2) // SyncNoChange
                     {
                         SyncNoChange.IsVisible = true;
-                        ActiveSync = SyncNoChange;
+                        activeSync = SyncNoChange;
                     }
                     else if (quiz.SyncStatus == 1) // SyncUpload
                     {
                         SyncUpload.IsVisible = true;
-                        ActiveSync = SyncUpload;
+                        activeSync = SyncUpload;
                     }
                     else if (quiz.SyncStatus == 0 || quiz.SyncStatus == 4) // SyncDownload
                     {
                         SyncDownload.IsVisible = true;
-                        ActiveSync = SyncDownload;
+                        activeSync = SyncDownload;
                         if (quiz.SyncStatus == 4) // Sync Download & notLocal yet
                         {
                             frame.StyleId = "notLocal";
@@ -350,7 +376,7 @@ namespace appFBLA2019
                     else
                     {
                         SyncOffline.IsVisible = true;
-                        ActiveSync = SyncOffline;
+                        activeSync = SyncOffline;
                     }
 
                     TapGestureRecognizer recognizer = new TapGestureRecognizer();
@@ -362,7 +388,7 @@ namespace appFBLA2019
                             frame.BackgroundColor = Color.LightGray;
                             Seperator.Color = Color.Gray;
                             imageButtonMenu.BackgroundColor = Color.LightGray;
-                            ActiveSync.BackgroundColor = Color.LightGray;
+                            activeSync.BackgroundColor = Color.LightGray;
                             Quiz newQuiz = new Quiz(this.category, quiz.QuizName, quiz.AuthorName);
                             newQuiz.LoadQuestions();
                             await this.RemoveMenu(frameMenu);
@@ -370,7 +396,7 @@ namespace appFBLA2019
                             frame.BackgroundColor = Color.Default;
                             Seperator.Color = Color.LightGray;
                             imageButtonMenu.BackgroundColor = Color.White;
-                            ActiveSync.BackgroundColor = Color.White;
+                            activeSync.BackgroundColor = Color.White;
                             frame.GestureRecognizers.Add(recognizer);
                         }
                         else
@@ -425,6 +451,11 @@ namespace appFBLA2019
             this.serverConnected = false;
         }
 
+        /// <summary>
+        /// Called when the user tries to download a quiz
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void SyncDownload_Clicked(object sender, EventArgs e)
         {
             this.serverConnected = true;
@@ -461,16 +492,31 @@ namespace appFBLA2019
             this.CheckSetup();
         }
 
+        /// <summary>
+        /// Called when a user clicks on the "already synced" icon
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SyncNoChange_Clicked(object sender, EventArgs e)
         {
             this.DisplayAlert("Already Synchronized", "This quiz is already up to date with the server version!", "OK");
         }
 
+        /// <summary>
+        /// Called when the user clicks on the "offline" icon
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SyncOffline_Clicked(object sender, EventArgs e)
         {
             this.DisplayAlert("Offline", "This quiz cannot be synced because you are offline.", "OK");
         }
 
+        /// <summary>
+        /// Handle event when user clicks delete level button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonDelete_Clicked(object sender, EventArgs e)
         {
             bool unsubscribe = ((Button)sender).Text == "Unsubscribe";
@@ -545,6 +591,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Handle when user presses "three dot" icon on the level tab
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ImageButtonMenu_Clicked(object sender, EventArgs e)
         {
             Frame menu = ((Frame)((RelativeLayout)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent).Children[0]);
@@ -559,18 +610,28 @@ namespace appFBLA2019
             globalRecognizer.Tapped += async (s, a) =>
             {
                 await this.RemoveMenu(menu);
-                this.StackLayoutButtonStack.GestureRecognizers.Remove(globalRecognizer);
+                this.StackLayoutGlobalStack.GestureRecognizers.Remove(globalRecognizer);
                 frame.GestureRecognizers.Add(this.recognizer);
             };
-            this.StackLayoutButtonStack.GestureRecognizers.Add(globalRecognizer);
+            this.StackLayoutGlobalStack.GestureRecognizers.Add(globalRecognizer);
         }
 
+        /// <summary>
+        /// Remove the drop down menu of the "three dot" button given the containing parent Frame
+        /// </summary>
+        /// <param name="frame">The containing parent Frame</param>
+        /// <returns></returns>
         private async Task RemoveMenu(Frame frame)
         {
             await frame.FadeTo(0, 200, Easing.CubicInOut);
             frame.IsVisible = false;
         }
 
+        /// <summary>
+        /// Handle when user clicks edit button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonEdit_Clicked(object sender, EventArgs e)
         {
             Frame frame = ((Frame)((StackLayout)((Button)sender).Parent).Parent);
@@ -599,7 +660,21 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Handle when user presses refresh button at top.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ToolbarItemRefresh_Activated(object sender, EventArgs e)
+        {
+            await RefreshPage();
+        }
+
+        /// <summary>
+        /// Show an activity indicator and refresh the page in the background.
+        /// </summary>
+        /// <returns></returns>
+        public async Task RefreshPage()
         {
             await this.StackLayoutButtonStack.FadeTo(0, 1);
             this.ActivityIndicator.IsVisible = true;

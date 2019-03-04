@@ -1,13 +1,8 @@
 ﻿//BizQuiz App 2019
 
-using System.Collections.Generic;
-using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using static Xamarin.Forms.Application;
-using System.Threading.Tasks;
-using Plugin.Connectivity;
 
 namespace appFBLA2019
 {

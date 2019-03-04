@@ -1,12 +1,6 @@
 ﻿//BizQuiz App 2019
 
-using Plugin.Connectivity;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Xaml;
@@ -39,19 +33,13 @@ namespace appFBLA2019
             switch (index)
             {
                 case TabID.profilePage:
-                {
-                    ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[(int)TabID.profilePage];
-                    if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                     {
-                        await profilePage.UpdateProfilePage();
+                        ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[(int)TabID.profilePage];
+                        if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
+                        {
+                            await profilePage.UpdateProfilePage();
+                        }
                     }
-                }
-                break;
-
-                case TabID.quizCategoriesPage:
-                {
-                    //this.quizsPage.RefreshChildren();
-                }
                 break;
             }
         }
@@ -79,6 +67,11 @@ namespace appFBLA2019
         private async void HelpButton_Clicked(object sender, EventArgs e)
         {
             await this.Navigation.PushModalAsync(new HelpPage());
+        }
+
+        private async void AdvancedSettings_Clicked(object sender, EventArgs e)
+        {
+            await this.Navigation.PushModalAsync(new AdvancedSettingsPage());
         }
     }
 }
