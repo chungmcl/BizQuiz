@@ -25,8 +25,9 @@ namespace appFBLA2019.Droid
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger
     {
         private Android.Views.Window currentWindow;
+        private static string fileDirectory;
         /// <summary>
-        /// Called when the app is lauched
+        /// Called when the app is launched
         /// </summary>
         /// <param name="bundle"></param>
         protected override void OnCreate(Bundle bundle)
@@ -35,6 +36,11 @@ namespace appFBLA2019.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
+            fileDirectory = this.GetExternalFilesDir(null).ToString();
+            //Stream input = this.Assets.Open("my_asset.txt");
+
+
+
             FacebookClientManager.Initialize(this);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
@@ -62,7 +68,7 @@ namespace appFBLA2019.Droid
         /// <returns></returns>
         public string GetStorage()
         {
-            return Android.OS.Environment.ExternalStorageDirectory.ToString();
+            return fileDirectory;
         }
 
         /// <summary>
@@ -88,19 +94,6 @@ namespace appFBLA2019.Droid
                 InMutable = true
             };
             Bitmap resultBitmap = BitmapFactory.DecodeByteArray(image, 0, image.Length, bitopt);
-            //int width = resultBitmap.Width;
-            //int height = resultBitmap.Height;
-            //for (int x = 0; x < width; x++)
-            //{
-            //    for (int y = 0; y < height; y++)
-            //    {
-            //        int argb = resultBitmap.GetPixel(x, y);
-            //        if (argb == Android.Graphics.Color.Transparent)
-            //        {
-            //            resultBitmap.SetPixel(x, y, Android.Graphics.Color.White);
-            //        }
-            //    }
-            //}
 
             MemoryStream outStream = new MemoryStream();
             resultBitmap.Compress(Bitmap.CompressFormat.Jpeg, 100, outStream);

@@ -31,9 +31,4 @@
             <x:String>Officers</x:String>
         </x:Arguments>
     </local:QuizSelectionPage>
-    <local:QuizSelectionPage Title="Parliamentary Procedure">
-        <x:Arguments>
-            <x:String>Parliamentary Procedure</x:String>
-        </x:Arguments>
-    </local:QuizSelectionPage>
 </TabbedPage>

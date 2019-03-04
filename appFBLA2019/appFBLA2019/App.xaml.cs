@@ -22,15 +22,10 @@ namespace appFBLA2019
 
             App.random = new Random();
 
-            Directory.CreateDirectory(DependencyService.Get<IGetStorage>().GetStorage() + debugFolder);
-            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + debugFolder;
-            CredentialManager.Username = "dflt";
-            Directory.CreateDirectory(App.Path + $"dflt");
+            
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
-            BugReportHandler.Setup();
-
             this.MainPage = new NavigationPage(new MainPage());
         }
 
@@ -65,6 +60,16 @@ namespace appFBLA2019
         protected override async void OnStart()
         {
             // Handle when your app starts
+            App.Path = DependencyService.Get<IGetStorage>().GetStorage();
+
+            string tempPicturesDir = App.Path + "/" + "Pictures";
+            if (Directory.Exists(tempPicturesDir))
+                Directory.Delete(App.Path + "/" + "Pictures", true);
+
+            CredentialManager.Username = "dflt";
+            Directory.CreateDirectory(App.Path + $"dflt");
+            
+            BugReportHandler.Setup();
 
             // If app's server IP has not been changed, default to IP in else statement.
             // If it has been changed, use the new IP.
