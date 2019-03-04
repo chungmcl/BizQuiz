@@ -14,6 +14,8 @@
     <PackageReference Include="Realm" Version="3.4.0" />
     <PackageReference Include="Realm.Database" Version="3.4.0" />
     <PackageReference Include="Realm.DataBinding" Version="1.2.0" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+    <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     <PackageReference Include="Xam.Plugin.Connectivity" Version="3.2.0" />
     <PackageReference Include="Xam.Plugin.Media" Version="4.0.1.5" />
     <PackageReference Include="Xamarin.Essentials" Version="1.0.1" />
@@ -44,11 +46,6 @@
     </Compile>
     <Compile Update="QuizEditor\CreateNewQuizPage.xaml.cs">
       <DependentUpon>CreateNewQuizPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Update="StorePage\FeaturedPage.xaml.cs">
       <DependentUpon>FeaturedPagexaml</DependentUpon>
@@ -100,10 +97,6 @@
     </EmbeddedResource>
     <EmbeddedResource Update="Profile and Account\ProfileLoggedIn.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="StorePage\SearchPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

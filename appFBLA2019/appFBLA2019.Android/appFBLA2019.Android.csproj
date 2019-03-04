@@ -54,6 +54,7 @@
     <Reference Include="Mono.Android" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -63,6 +64,12 @@
     </PackageReference>
     <PackageReference Include="Realm">
       <Version>3.4.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.IO.Compression">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.IO.Compression.ZipFile">
+      <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Compat">
       <Version>28.0.0.1</Version>
@@ -163,6 +170,7 @@
     </AndroidResource>
     <None Include="appFBLA2019Keystore.keystore" />
     <None Include="Assets\AboutAssets.txt" />
+    <AndroidAsset Include="Assets\dflt.zip" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Resources\AboutResources.txt" />
   </ItemGroup>
@@ -289,5 +297,6 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_cached_white_48dp.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>
