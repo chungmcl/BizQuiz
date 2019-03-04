@@ -42,7 +42,6 @@ namespace appFBLA2019
         {
             this.InitializeComponent();
             this.category = category;
-            Directory.CreateDirectory(App.UserPath + $"{category}/");
             this.IsLoading = false;
             this.isSetup = false;
         }
@@ -72,8 +71,13 @@ namespace appFBLA2019
         /// </summary>
         private void CheckSetup()
         {
-            if (Application.Current.MainPage.Width >= 0 && !this.isSetup && !this.serverConnected)
+            if (Application.Current.MainPage.Width >= 0 && 
+                !this.isSetup && 
+                !this.serverConnected && 
+                !this.IsLoading && 
+                App.UserPath.Length > 2)
             {
+                Directory.CreateDirectory(App.UserPath + $"{category}/");
                 this.Setup();
             }
         }
@@ -86,7 +90,7 @@ namespace appFBLA2019
         /// <summary>
         /// Sets up the page with levels the user has subscribed to from the category of the page
         /// </summary>
-        internal void Setup()
+        public void Setup()
         {
             if (!this.IsLoading)
             {
@@ -662,6 +666,15 @@ namespace appFBLA2019
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private async void ToolbarItemRefresh_Activated(object sender, EventArgs e)
+        {
+            await RefreshPage();
+        }
+
+        /// <summary>
+        /// Show an activity indicator and refresh the page in the background.
+        /// </summary>
+        /// <returns></returns>
+        public async Task RefreshPage()
         {
             await this.StackLayoutButtonStack.FadeTo(0, 1);
             this.ActivityIndicator.IsVisible = true;

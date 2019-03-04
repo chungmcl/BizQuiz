@@ -121,48 +121,38 @@ namespace appFBLA2019
 
         public static async Task UpdateLocalDatabase()
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
-            Realm threadInstance = Realm.GetInstance(threadConfig);
-
-            List<QuizInfo> QuizInfos = new List<QuizInfo>(threadInstance.All<QuizInfo>());
-            if (CrossConnectivity.Current.IsConnected)
+            if (App.Path != null && App.UserPath.Length > 2)
             {
-                for (int i = 0; i < QuizInfos.Count(); i++)
+                RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+                Realm threadInstance = Realm.GetInstance(threadConfig);
+
+                List<QuizInfo> QuizInfos = new List<QuizInfo>(threadInstance.All<QuizInfo>());
+                if (CrossConnectivity.Current.IsConnected)
                 {
-                    if (CredentialManager.IsLoggedIn)
+                    for (int i = 0; i < QuizInfos.Count(); i++)
                     {
-                        if (QuizInfos[i].IsDeletedLocally)
+                        if (CredentialManager.IsLoggedIn)
                         {
-                            if (await ServerOperations.DeleteQuiz(QuizInfos[i].DBId) == OperationReturnMessage.True)
-                                DeleteQuizInfo(QuizInfos[i].DBId);
-                        }
-                        else if (QuizInfos[i].SyncStatus != 4)
-                        {
-                            string lastModifiedDate = ServerOperations.GetLastModifiedDate(QuizInfos[i].DBId);
-                            if (lastModifiedDate == "") // returns empty string could not reach server
+                            if (QuizInfos[i].IsDeletedLocally)
                             {
-                                QuizInfo copy = new QuizInfo(QuizInfos[i])
-                                {
-                                    SyncStatus = 3 // 3 represents offline
-                                };
-                                EditQuizInfo(threadInstance, copy);
+                                if (await ServerOperations.DeleteQuiz(QuizInfos[i].DBId) == OperationReturnMessage.True)
+                                    DeleteQuizInfo(QuizInfos[i].DBId);
                             }
-                            else
+                            else if (QuizInfos[i].SyncStatus != 4)
                             {
-                                // Server returns "false" if level is not already on the server
-                                if (lastModifiedDate == "false" || lastModifiedDate == null)
+                                string lastModifiedDate = ServerOperations.GetLastModifiedDate(QuizInfos[i].DBId);
+                                if (lastModifiedDate == "") // returns empty string could not reach server
                                 {
                                     QuizInfo copy = new QuizInfo(QuizInfos[i])
                                     {
-                                        SyncStatus = 1 // 1 represents need upload
+                                        SyncStatus = 3 // 3 represents offline
                                     };
                                     EditQuizInfo(threadInstance, copy);
                                 }
                                 else
                                 {
-                                    DateTime localModifiedDateTime = Convert.ToDateTime(QuizInfos[i].LastModifiedDate);
-                                    DateTime serverModifiedDateTime = Convert.ToDateTime(lastModifiedDate);
-                                    if (localModifiedDateTime > serverModifiedDateTime)
+                                    // Server returns "false" if level is not already on the server
+                                    if (lastModifiedDate == "false" || lastModifiedDate == null)
                                     {
                                         QuizInfo copy = new QuizInfo(QuizInfos[i])
                                         {
@@ -170,63 +160,76 @@ namespace appFBLA2019
                                         };
                                         EditQuizInfo(threadInstance, copy);
                                     }
-                                    else if (localModifiedDateTime < serverModifiedDateTime)
+                                    else
                                     {
-                                        QuizInfo copy = new QuizInfo(QuizInfos[i])
+                                        DateTime localModifiedDateTime = Convert.ToDateTime(QuizInfos[i].LastModifiedDate);
+                                        DateTime serverModifiedDateTime = Convert.ToDateTime(lastModifiedDate);
+                                        if (localModifiedDateTime > serverModifiedDateTime)
                                         {
-                                            SyncStatus = 0 // 0 represents needs download
-                                        };
-                                        EditQuizInfo(threadInstance, copy);
-                                    }
-                                    else if (localModifiedDateTime == serverModifiedDateTime)
-                                    {
-                                        QuizInfo copy = new QuizInfo(QuizInfos[i])
+                                            QuizInfo copy = new QuizInfo(QuizInfos[i])
+                                            {
+                                                SyncStatus = 1 // 1 represents need upload
+                                            };
+                                            EditQuizInfo(threadInstance, copy);
+                                        }
+                                        else if (localModifiedDateTime < serverModifiedDateTime)
                                         {
-                                            SyncStatus = 2 // 2 represents in sync
-                                        };
-                                        EditQuizInfo(threadInstance, copy);
+                                            QuizInfo copy = new QuizInfo(QuizInfos[i])
+                                            {
+                                                SyncStatus = 0 // 0 represents needs download
+                                            };
+                                            EditQuizInfo(threadInstance, copy);
+                                        }
+                                        else if (localModifiedDateTime == serverModifiedDateTime)
+                                        {
+                                            QuizInfo copy = new QuizInfo(QuizInfos[i])
+                                            {
+                                                SyncStatus = 2 // 2 represents in sync
+                                            };
+                                            EditQuizInfo(threadInstance, copy);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                int numberOfQuizsOnServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
-                if (numberOfQuizsOnServer > QuizInfos.Count)
-                {
-                    string[] dbIds = new string[QuizInfos.Count];
-                    for (int i = 0; i < dbIds.Length; i++)
-                        dbIds[i] = QuizInfos[i].DBId;
-
-                    List<string[]> missingQuizs = ServerOperations.GetMissingQuizzesByAuthorName(CredentialManager.Username, dbIds);
-                    foreach (string[] missingQuiz in missingQuizs)
+                    int numberOfQuizsOnServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
+                    if (numberOfQuizsOnServer > QuizInfos.Count)
                     {
-                        QuizInfo info = new QuizInfo
+                        string[] dbIds = new string[QuizInfos.Count];
+                        for (int i = 0; i < dbIds.Length; i++)
+                            dbIds[i] = QuizInfos[i].DBId;
+
+                        List<string[]> missingQuizs = ServerOperations.GetMissingQuizzesByAuthorName(CredentialManager.Username, dbIds);
+                        foreach (string[] missingQuiz in missingQuizs)
                         {
-                            DBId = missingQuiz[0],
-                            AuthorName = missingQuiz[1],
-                            QuizName = missingQuiz[2],
-                            Category = missingQuiz[3],
-                            LastModifiedDate = missingQuiz[4],
-                            SyncStatus = 4
-                        };
-                        threadInstance.Write(() =>
-                        {
-                            threadInstance.Add(info);
-                        });
+                            QuizInfo info = new QuizInfo
+                            {
+                                DBId = missingQuiz[0],
+                                AuthorName = missingQuiz[1],
+                                QuizName = missingQuiz[2],
+                                Category = missingQuiz[3],
+                                LastModifiedDate = missingQuiz[4],
+                                SyncStatus = 4
+                            };
+                            threadInstance.Write(() =>
+                            {
+                                threadInstance.Add(info);
+                            });
+                        }
                     }
                 }
-            }
-            else
-            {
-                for (int i = 0; i < QuizInfos.Count; i++)
+                else
                 {
-                    QuizInfo copy = new QuizInfo(QuizInfos[i])
+                    for (int i = 0; i < QuizInfos.Count; i++)
                     {
-                        SyncStatus = 3 // 3 represents offline
-                    };
-                    EditQuizInfo(threadInstance, copy);
+                        QuizInfo copy = new QuizInfo(QuizInfos[i])
+                        {
+                            SyncStatus = 3 // 3 represents offline
+                        };
+                        EditQuizInfo(threadInstance, copy);
+                    }
                 }
             }
         }

@@ -33,19 +33,13 @@ namespace appFBLA2019
             switch (index)
             {
                 case TabID.profilePage:
-                {
-                    ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[(int)TabID.profilePage];
-                    if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                     {
-                        await profilePage.UpdateProfilePage();
+                        ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[(int)TabID.profilePage];
+                        if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
+                        {
+                            await profilePage.UpdateProfilePage();
+                        }
                     }
-                }
-                break;
-
-                case TabID.quizCategoriesPage:
-                {
-                    //this.quizsPage.RefreshChildren();
-                }
                 break;
             }
         }
