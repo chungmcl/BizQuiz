@@ -65,9 +65,12 @@ namespace appFBLA2019
         public static async Task<OperationReturnMessage> UnsubscribeFromQuizAsync(string dbId)
         {
             QuizInfo info = QuizRosterDatabase.GetQuizInfo(dbId);
-            string location = App.UserPath + "/" + info.Category + "/" + info.QuizName + "`" + info.AuthorName;
-            if (Directory.Exists(location))
-                Directory.Delete(location, true);
+            if (info.SyncStatus != 4)
+            {
+                string location = App.UserPath + "/" + info.Category + "/" + info.QuizName + "`" + info.AuthorName;
+                if (Directory.Exists(location))
+                    Directory.Delete(location, true);
+            }
 
             QuizRosterDatabase.DeleteQuizInfo(dbId);
             OperationReturnMessage returnMessage = await Task.Run(async () => await ServerOperations.UnsubscribeToQuizAsync(dbId));
