@@ -2,11 +2,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace appFBLA2019
 {
     public interface IGetStorage
     {
-        string GetStorage();
+       string GetStorage();
+
+       Task SetupDefaultLevels(string userpath);
     }
 }

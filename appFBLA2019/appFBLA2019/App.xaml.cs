@@ -23,9 +23,13 @@ namespace appFBLA2019
             Xamarin.Forms.DependencyService.Register<ICloseApplication>();
 
             App.random = new Random();
+            //broken cause of userpath moving
+            ////if there's nothing in the user's folder
+            //if (Directory.GetFiles(UserPath).Length == 0)
+            //{
+            //    Task.WaitAll(Task.Run(() => DependencyService.Get<IGetStorage>().SetupDefaultLevels(App.UserPath)));
+            //}
 
-
-            App.Path = DependencyService.Get<IGetStorage>().GetStorage();
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
@@ -45,7 +49,7 @@ namespace appFBLA2019
         {
             get
             {
-                string path = Path + "/" + CredentialManager.Username + "/";
+                string path = Path + CredentialManager.Username + "/";
                 Directory.CreateDirectory(path);
                 return path;
             }
