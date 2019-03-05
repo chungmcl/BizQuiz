@@ -57,7 +57,7 @@ namespace appFBLA2019
                 case TabID.quizCategoriesPage:
                 {
                     QuizCategoriesPage quizCategoriesPage = (QuizCategoriesPage)this.TabbedPagePage.Children[(int)TabID.quizCategoriesPage];
-                    await quizCategoriesPage.RefreshChildren();
+                    await quizCategoriesPage.RefreshChildrenAsync();
                     break;
                 }
             }
