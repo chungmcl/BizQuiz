@@ -6,6 +6,9 @@ namespace appFBLA2019
 {
     public interface ICloseApplication
     {
+        /// <summary>
+        /// Closes the application according to device guidelines
+        /// </summary>
         void CloseApplication();
     }
 }

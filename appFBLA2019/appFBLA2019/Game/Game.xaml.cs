@@ -351,8 +351,6 @@ namespace appFBLA2019
                     }
                     while (buttonFontSize / 2 * button.Text.Length > (button.Width - 10) * 3)
                     {
-                        double testSize = buttonFontSize / 2 * button.Text.Length;
-                        double buttonWidth = (button.Width - 10) * 3.5;
                         buttonFontSize--;
                     }
                 }

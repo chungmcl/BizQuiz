@@ -10,11 +10,19 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class TermsOfUse : ContentPage
     {
+        /// <summary>
+        /// default constructor
+        /// </summary>
         public TermsOfUse()
         {
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Opens the email app to email Micheal about the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void EmailButton_Clicked(object sender, EventArgs e)
         {
             try
@@ -27,6 +35,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Opens our facebook page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FacebookButton_Clicked(object sender, EventArgs e)
         {
             Device.OpenUri(new Uri("https://www.facebook.com/appdev.bhs.1"));

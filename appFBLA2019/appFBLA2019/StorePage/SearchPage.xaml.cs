@@ -16,27 +16,58 @@ namespace appFBLA2019
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class SearchPage : ContentPage
 	{
+        /// <summary>
+        /// current search chunk
+        /// </summary>
 		private int chunkNum;
+        /// <summary>
+        /// if the server is out of levels to send
+        /// </summary>
 		private bool end;
+        /// <summary>
+        /// if the page is setting up
+        /// </summary>
 		private bool isLoading;
+        /// <summary>
+        /// the current category
+        /// </summary>
         private string category;
+        /// <summary>
+        /// If the page is setting up for the first time
+        /// </summary>
         private bool isStartup;
+        /// <summary>
+        /// the quizzes being displayed
+        /// </summary>
 		private List<SearchInfo> quizzesSearched;
-        private enum SubscribeType { Subscribe = 1, Unsubscribe, Syncing };
 
+        /// <summary>
+        /// Types of search
+        /// </summary>
+        private enum SearchType { Title = 1, Author};
 
-        // either "Title" or "Author"
-        private string searchType;
+        /// <summary>
+        /// the current type of search
+        /// </summary>
+        private SearchType searchType;
 
+        /// <summary>
+        /// loads a search page
+        /// </summary>
 		public SearchPage()
 		{
             this.isStartup = true;
             this.quizzesSearched = new List<SearchInfo>();
 			this.InitializeComponent();
-			this.searchType = "Title";
+            this.searchType = SearchType.Title;
             this.category = "All";
 		}
 
+        /// <summary>
+        /// when the page is created, focus on the search bar
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
 		protected override void OnSizeAllocated(double width, double height)
 		{
 			base.OnSizeAllocated(width, height);
@@ -139,8 +170,6 @@ namespace appFBLA2019
                             ImageButtonUnsubscribe.IsVisible = true;
                         }
                     }
-                    
-
 
                     frameStack.Children.Add(topStack);
 
@@ -176,7 +205,7 @@ namespace appFBLA2019
             bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
             if (answer)
             {
-                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
+                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
                 button.IsVisible = false;
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
@@ -194,7 +223,7 @@ namespace appFBLA2019
 
                 if (returnMessage == OperationReturnMessage.True)
                 {
-                    (button.Parent as StackLayout).Children[(int)SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
+                    (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
                     QuizRosterDatabase.DeleteQuizInfo(dbId);
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
@@ -225,7 +254,7 @@ namespace appFBLA2019
                 ImageButton button = (sender as ImageButton);
                 string dbId = button.StyleId;
 
-                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
+                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
                 button.IsVisible = false;
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
@@ -296,7 +325,7 @@ namespace appFBLA2019
         private async Task Search()
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
-            if (this.searchType == "Title")
+            if (this.searchType == SearchType.Title)
                 chunk = SearchUtils.GetQuizzesByQuizNameChunked(this.SearchBar.Text, this.currentChunk);
             else
                 chunk = SearchUtils.GetQuizzesByAuthorChunked(this.SearchBar.Text, this.currentChunk);
@@ -322,18 +351,25 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="chunk"></param>
         /// <returns></returns>
-        private List<string[]> GetQuizs(int chunk)
+        private List<string[]> GetQuizzes(int chunk)
 		{
-			if (this.searchType == "Title")
+			if (this.searchType == SearchType.Title)
 				return ServerOperations.GetQuizzesByQuizName(this.SearchBar.Text, chunk);
 			else
 				return ServerOperations.GetQuizzesByAuthorName(this.SearchBar.Text, chunk);
 		}
 		
-        // Impliment this if we want to conduct a search each time we press a key down.
+        /// <summary>
+        /// Clears search when the search bar changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			this.SearchedStack.Children.Clear();
+            
+            //this searches everytime we change text, cool effect but performance issues
+
 			//if (!string.IsNullOrWhiteSpace(this.SearchBar.Text) && !this.isLoading)
 			//{
 			//    this.Search(1);
@@ -341,6 +377,9 @@ namespace appFBLA2019
 			//}    
 		}
 
+        /// <summary>
+        /// clears the page when it disappears
+        /// </summary>
 		protected override void OnDisappearing()
 		{
 			this.SearchedStack.Children.Clear();
@@ -378,7 +417,7 @@ namespace appFBLA2019
 		private void ButtonTitle_Clicked(object sender, EventArgs e)
 		{
 			this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 3), 250, Easing.CubicInOut); 
-			this.searchType = "Title";
+			this.searchType = SearchType.Title;
 		   
 		}
 
@@ -390,7 +429,7 @@ namespace appFBLA2019
 		private void ButtonAuthor_Clicked(object sender, EventArgs e)
 		{        
 			this.searchIndicator.LayoutTo(new Rectangle(this.buttonAuthor.X, this.searchIndicator.Y, this.buttonAuthor.Width, 3), 250, Easing.CubicInOut);
-			this.searchType = "Author";
+			this.searchType = SearchType.Author;
 		}
 
         private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)

@@ -10,11 +10,19 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AdvancedSettingsPage : ContentPage
 	{
+        /// <summary>
+        /// Default constructor
+        /// </summary>
 		public AdvancedSettingsPage ()
 		{
 			InitializeComponent ();
 		}
 
+        /// <summary>
+        /// Triggered when the button to change the IP is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonConfirm_ClickedAsync(object sender, EventArgs e)
         {
             string newIP = this.EntryIP.Text.Trim();
@@ -29,6 +37,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Checks if the IP in the entry is well-formed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EntryIP_TextChanged(object sender, TextChangedEventArgs e)
         {
             this.ButtonConfirm.IsEnabled = Regex.IsMatch(this.EntryIP.Text, @"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");
