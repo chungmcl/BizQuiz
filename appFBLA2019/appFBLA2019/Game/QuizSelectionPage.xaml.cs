@@ -529,7 +529,7 @@ namespace appFBLA2019
                     OperationReturnMessage returnMessage;
                     if (unsubscribe)
                     {
-                        returnMessage = await ServerOperations.UnsubscribeToQuizAsync(dbId);
+                        returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
                     }
                     else
                     {
