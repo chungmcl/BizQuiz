@@ -222,7 +222,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="dbId"></param>
         /// <returns>The OperationReturnMessage the server returns.</returns>
-        public static async Task<OperationReturnMessage> UnsubscribeToQuiz(string dbId)
+        public static async Task<OperationReturnMessage> UnsubscribeToQuizAsync(string dbId)
         {
             return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{await SecureStorage.GetAsync("password")}/{dbId}/-", 
                 ServerRequestTypes.UnsubscribeToQuiz);

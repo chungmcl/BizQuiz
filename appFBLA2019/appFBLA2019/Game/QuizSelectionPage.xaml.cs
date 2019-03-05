@@ -410,7 +410,7 @@ namespace appFBLA2019
                             activeSync.BackgroundColor = Color.LightGray;
                             Quiz newQuiz = new Quiz(this.category, quiz.QuizName, quiz.AuthorName);
                             newQuiz.LoadQuestions();
-                            await this.RemoveMenu(frameMenu);
+                            await this.RemoveMenuAsync(frameMenu);
                             await this.Navigation.PushAsync(new Game(newQuiz));
                             frame.BackgroundColor = Color.Default;
                             Seperator.Color = Color.LightGray;
@@ -579,7 +579,7 @@ namespace appFBLA2019
                     OperationReturnMessage returnMessage;
                     if (unsubscribe)
                     {
-                        returnMessage = await ServerOperations.UnsubscribeToQuiz(dbId);
+                        returnMessage = await ServerOperations.UnsubscribeToQuizAsync(dbId);
                     }
                     else
                     {
@@ -606,7 +606,7 @@ namespace appFBLA2019
             }
             else
             {
-                await this.RemoveMenu(((Frame)((StackLayout)((Button)sender).Parent).Parent));
+                await this.RemoveMenuAsync(((Frame)((StackLayout)((Button)sender).Parent).Parent));
             }
         }
 
@@ -628,7 +628,7 @@ namespace appFBLA2019
             TapGestureRecognizer globalRecognizer = new TapGestureRecognizer();
             globalRecognizer.Tapped += async (s, a) =>
             {
-                await this.RemoveMenu(menu);
+                await this.RemoveMenuAsync(menu);
                 this.StackLayoutGlobalStack.GestureRecognizers.Remove(globalRecognizer);
                 frame.GestureRecognizers.Add(this.recognizer);
             };
@@ -640,7 +640,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="frame">The containing parent Frame</param>
         /// <returns></returns>
-        private async Task RemoveMenu(Frame frame)
+        private async Task RemoveMenuAsync(Frame frame)
         {
             await frame.FadeTo(0, 200, Easing.CubicInOut);
             frame.IsVisible = false;
@@ -654,7 +654,7 @@ namespace appFBLA2019
         private async void ButtonEdit_Clicked(object sender, EventArgs e)
         {
             Frame frame = ((Frame)((StackLayout)((Button)sender).Parent).Parent);
-            await this.RemoveMenu(frame);
+            await this.RemoveMenuAsync(frame);
             if (!CredentialManager.IsLoggedIn)
             {
                 await this.DisplayAlert("Hold on!", "Before you can edit any quizzes, you have to login.", "Ok");
@@ -686,21 +686,21 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ToolbarItemRefresh_Activated(object sender, EventArgs e)
         {
-            await RefreshPage();
+            await RefreshPageAsync();
         }
 
         /// <summary>
         /// Show an activity indicator and refresh the page in the background.
         /// </summary>
         /// <returns></returns>
-        public async Task RefreshPage()
+        public async Task RefreshPageAsync()
         {
             await this.StackLayoutButtonStack.FadeTo(0, 1);
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
             this.isSetup = false;
 
-            await Task.Run(() => QuizRosterDatabase.UpdateLocalDatabase());
+            await Task.Run(() => QuizRosterDatabase.UpdateLocalDatabaseAsync());
             this.CheckSetup();
 
             this.ActivityIndicator.IsVisible = false;

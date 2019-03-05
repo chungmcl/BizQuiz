@@ -88,7 +88,7 @@ namespace appFBLA2019
         /// in a background task.
         /// </summary>
         /// <returns>The OperationReturnMessage from the server.</returns>
-        public static async Task<OperationReturnMessage> CheckLoginStatus()
+        public static async Task<OperationReturnMessage> CheckLoginStatusAsync()
         {
             string username = await SecureStorage.GetAsync("username");
             Username = username;

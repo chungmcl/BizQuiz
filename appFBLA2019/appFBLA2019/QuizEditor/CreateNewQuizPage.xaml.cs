@@ -173,10 +173,8 @@ namespace appFBLA2019
             base.OnAppearing();
             this.ButtonAddQuestion.Scale = 0;
             this.ButtonAddDrop.Scale = 0;
-#pragma warning disable CS4014
-            this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
-            this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
-#pragma warning restore CS4014
+            _ =this.ButtonAddQuestion.ScaleTo(1, 250, Easing.CubicInOut);
+            _ = this.ButtonAddDrop.ScaleTo(1.3, 250, Easing.CubicInOut);
             if (this.callerType is ImageButton)
             {
                 if (((ImageButton)this.callerType).StyleId == "change")
@@ -211,9 +209,7 @@ namespace appFBLA2019
                 double x = frame.X;
                 frame.TranslationX = this.Width;
                 // Scroll to bottom
-#pragma warning disable CS4014
-                this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
-#pragma warning restore CS4014
+                _ = this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
 
                 //animate in frame
                 await frame.TranslateTo(x - 10, 0, 500, Easing.CubicOut);

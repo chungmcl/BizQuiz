@@ -29,16 +29,6 @@ namespace appFBLA2019
                 // Backtick ( ` ) character used to seperate quiz name from author name
                 if (Database == null || Database.fileName != $"/{category}/{quizTitle}`{author}")
                 {
-                    // This path should be used when app is finished This will hide the application database and prevent it from unwanted user manipulation
-
-                    //Database = new GameDatabase(
-                    //  Path.Combine(
-                    //      Environment.GetFolderPath(
-                    //          Environment.SpecialFolder.LocalApplicationData), fileName + sqLiteExtension)
-                    //          , fileName);
-
-                    // On Android: Set appFBLA2019.Android's storage permissions to "on"
-
                     string folderPath = App.UserPath + $"{category}/{quizTitle}`{author}";
                     Directory.CreateDirectory(folderPath);
                     Database = new GameDatabase(folderPath, quizTitle);

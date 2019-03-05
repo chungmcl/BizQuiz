@@ -39,7 +39,7 @@ namespace appFBLA2019
                         ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[(int)TabID.profilePage];
                         if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                         {
-                            await profilePage.UpdateProfilePage();
+                            await profilePage.UpdateProfilePageAsync();
                         }
                     }
                 break;

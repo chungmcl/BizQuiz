@@ -386,7 +386,7 @@ namespace appFBLA2019
         /// Closes the currently open frame
         /// </summary>
         /// <returns></returns>
-        private async Task CloseCurrentlyOpenFrame()
+        private async Task CloseCurrentlyOpenFrameAsync()
         {
             if (this.currentlyOpenFrame != null)
             {
@@ -430,7 +430,7 @@ namespace appFBLA2019
         /// <param name="contentStack">The stack inside the frame</param>
         /// <param name="frame">The frame itself</param>
         /// <returns></returns>
-        private async Task AnimateFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
+        private async Task AnimateFrameAsync(ImageButton imageButton, StackLayout contentStack, Frame frame)
         {
             imageButton.IsEnabled = false;
 
@@ -450,9 +450,9 @@ namespace appFBLA2019
             }
             else // open
             {
-                await this.CloseCurrentlyOpenFrame();
+                await this.CloseCurrentlyOpenFrameAsync();
                 this.currentlyOpenFrame = frame;
-                await this.OpenFrame(imageButton, contentStack, frame);
+                await this.OpenFrameAsync(imageButton, contentStack, frame);
             }
 
             imageButton.IsEnabled = true;
@@ -465,12 +465,10 @@ namespace appFBLA2019
         /// <param name="contentStack">The stack inside the frame</param>
         /// <param name="frame">The frame itself</param>
         /// <returns></returns>
-        private async Task OpenFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
+        private async Task OpenFrameAsync(ImageButton imageButton, StackLayout contentStack, Frame frame)
         {
             ((frame.Content as StackLayout).Children[0] as StackLayout).IsEnabled = false;
-#pragma warning disable CS4014
-            contentStack.FadeTo(1, 250, Easing.CubicInOut);
-#pragma warning restore CS4014
+            _ = contentStack.FadeTo(1, 250, Easing.CubicInOut);
 
             contentStack.IsVisible = true;
 
@@ -492,9 +490,7 @@ namespace appFBLA2019
         private async Task CloseFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
         {
             ((frame.Content as StackLayout).Children[0] as StackLayout).IsEnabled = false;
-#pragma warning disable CS4014
-            contentStack.FadeTo(0, 175, Easing.CubicInOut);
-#pragma warning restore CS4014
+            _ = contentStack.FadeTo(0, 175, Easing.CubicInOut);
             await imageButton.RelRotateTo(180);
             await frame.LayoutTo(new Rectangle(frame.X,
                 frame.Y,
@@ -514,7 +510,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ChangeEmailFrame_Clicked(object sender, EventArgs e)
         {
-            await this.AnimateFrame(this.ImageButtonCloseChangeEmail, this.StackLayoutChangeEmailContent, this.FrameChangeEmail);
+            await this.AnimateFrameAsync(this.ImageButtonCloseChangeEmail, this.StackLayoutChangeEmailContent, this.FrameChangeEmail);
         }
 
         /// <summary>
@@ -524,7 +520,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ChangePasswordFrame_Clicked(object sender, EventArgs e)
         {
-            await this.AnimateFrame(this.ImageButtonCloseChangePassword, this.StackLayoutChangePasswordContent, this.FrameChangePassword);
+            await this.AnimateFrameAsync(this.ImageButtonCloseChangePassword, this.StackLayoutChangePasswordContent, this.FrameChangePassword);
         }
 
         /// <summary>
@@ -534,7 +530,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ConfirmEmailFrame_Clicked(object sender, EventArgs e)
         {
-            await this.AnimateFrame(this.ImageButtonCloseConfirmEmail, this.StackLayoutConfirmEmailContent, this.FrameConfirmEmail);
+            await this.AnimateFrameAsync(this.ImageButtonCloseConfirmEmail, this.StackLayoutConfirmEmailContent, this.FrameConfirmEmail);
         }
 
         /// <summary>
@@ -544,7 +540,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void DeleteAccountFrame_Clicked(object sender, EventArgs e)
         {
-            await this.AnimateFrame(this.ImageButtonDeleteAccount, this.StackLayoutDeleteAccountContent, this.FrameDeleteAccount);
+            await this.AnimateFrameAsync(this.ImageButtonDeleteAccount, this.StackLayoutDeleteAccountContent, this.FrameDeleteAccount);
         }
 
         #endregion

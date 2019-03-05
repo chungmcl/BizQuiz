@@ -28,7 +28,7 @@ namespace appFBLA2019
         {
             this.quizzesRemaining = true;
             this.category = "All";
-            await this.Refresh();
+            await this.RefreshAsync();
         }
 
         private bool quizzesRemaining;
@@ -37,7 +37,7 @@ namespace appFBLA2019
         /// <summary>
         /// Refreshes the page's quiz content
         /// </summary>
-        private async Task Refresh()
+        private async Task RefreshAsync()
         {
             this.LabelNoQuiz.IsVisible = false;
             this.SearchedStack.Children.Clear();
@@ -240,7 +240,7 @@ namespace appFBLA2019
                 };
                 QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
 
-                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuiz(dbId);
+                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
 
                 if (returnMessage == OperationReturnMessage.True)
                 {
@@ -278,7 +278,7 @@ namespace appFBLA2019
                 button.IsVisible = false;
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
-                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToQuiz(dbId, this.quizzesFeatured);
+                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToQuizAsync(dbId, this.quizzesFeatured);
                 if (returnMessage == OperationReturnMessage.True)
                 {
                     (button.Parent as StackLayout).Children[2].IsVisible = true; // add in unsubscribe button
@@ -312,7 +312,7 @@ namespace appFBLA2019
         {
             this.category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex];
             this.currentChunk = 1;
-            await this.Refresh();
+            await this.RefreshAsync();
         }
     }
 }
