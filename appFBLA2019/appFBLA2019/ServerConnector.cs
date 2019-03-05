@@ -20,7 +20,7 @@ namespace appFBLA2019
         /// port to use when connecting
         /// Server Release Build: 7777 Server Debug Build: 7778
         /// </summary>
-        public static int Port { get { return 7777; } }
+        public static int Port { get { return 7778; } }
 
         /// <summary>
         /// Ip address of the server
@@ -213,10 +213,9 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 CloseConn();
-                BugReportHandler.SaveReport(ex);
                 return false;
             }
         }
