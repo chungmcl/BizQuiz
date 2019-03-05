@@ -11,16 +11,44 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CreateAccountPage : ContentPage
     {
+        /// <summary>
+        /// handles the creation of accounts
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         public delegate void AccountCreatedEventHandler(object source, AccountCreatedEventArgs eventArgs);
 
+        /// <summary>
+        /// handles the creation of accounts
+        /// </summary>
         public event AccountCreatedEventHandler AccountCreated;
 
+        /// <summary>
+        /// the username to be used
+        /// </summary>
         private string username;
+        /// <summary>
+        /// the password to be used
+        /// </summary>
         private string password;
 
+        /// <summary>
+        /// min length for a username or password
+        /// </summary>
         private const int minLength = 5;
+        /// <summary>
+        /// max length for a username or password
+        /// </summary>
         private const int maxLength = 32;
 
+        /// <summary>
+        /// characters that may not be used in a username or password
+        /// </summary>
+        private const string forbiddenCharacters = " \\/`.,";
+
+        /// <summary>
+        /// default constructor
+        /// </summary>
         public CreateAccountPage()
         {
             this.InitializeComponent();
@@ -123,6 +151,9 @@ namespace appFBLA2019
                 });
         }
 
+        /// <summary>
+        /// Custom eventargs for handling account creation
+        /// </summary>
         public class AccountCreatedEventArgs : EventArgs
         {
             public bool EmailConfirmed { get; set; }
@@ -217,12 +248,15 @@ namespace appFBLA2019
         /// <returns></returns>
         private bool CredentialRestrictions(string checkMe)
         {
-            return checkMe.Length > minLength 
-                && checkMe.Length <= maxLength 
-                && !checkMe.Contains(" ")
-                && !checkMe.Contains("`")
-                && !checkMe.Contains("\\")
-                && !checkMe.Contains("/");
+            return checkMe.Length > minLength
+                && checkMe.Length <= maxLength
+                && new Func<bool>(() =>
+            {
+                foreach (char x in forbiddenCharacters)
+                    if (checkMe.Contains(Char.ToString(x)))
+                        return false;
+                return true;
+            })();
         }
 
         /// <summary>

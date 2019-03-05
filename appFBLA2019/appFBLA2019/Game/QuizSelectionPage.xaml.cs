@@ -37,7 +37,7 @@ namespace appFBLA2019
         public bool serverConnected;
 
         /// <summary>
-        /// The sync status of a level
+        /// The sync status of a quiz
         /// </summary>
         private enum SyncType { Offline = 1, Upload, Download, NoChange, Syncing };
 
@@ -107,7 +107,7 @@ namespace appFBLA2019
         private readonly string category;
 
         /// <summary>
-        /// Sets up the page with levels the user has subscribed to from the category of the page
+        /// Sets up the page with quizzes the user has subscribed to from the category of the page
         /// </summary>
         public void Setup()
         {
@@ -532,7 +532,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Handle event when user clicks delete level button.
+        /// Handle event when user clicks delete quiz button.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -565,7 +565,7 @@ namespace appFBLA2019
                     ((Button)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
                 string dbId = rosterInfo.DBId;
 
-                // tell the roster that the level is deleted
+                // tell the roster that the quiz is deleted
                 QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
                 {
                     IsDeletedLocally = true,
@@ -611,7 +611,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Handle when user presses "three dot" icon on the level tab
+        /// Handle when user presses "three dot" icon on the quiz tab
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

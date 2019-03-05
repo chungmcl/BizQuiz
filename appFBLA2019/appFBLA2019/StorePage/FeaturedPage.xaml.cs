@@ -8,7 +8,7 @@ using Xamarin.Forms.Xaml;
 namespace appFBLA2019
 {
     /// <summary>
-    /// The page that displays featured levels, Created by the BizQuizTeam. To be displayed in the middle bottom tab
+    /// The page that displays featured quizzes, Created by the BizQuizTeam. To be displayed in the middle bottom tab
     /// </summary>
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class FeaturedPage : ContentPage
@@ -64,7 +64,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Searches the server for featured levels and sets the chunk equal to the servers response
+        /// Searches the server for featured quizzes and sets the chunk equal to the servers response
         /// </summary>
         private async Task Search()
         {
@@ -232,7 +232,7 @@ namespace appFBLA2019
                 indicatorSyncing.IsRunning = true;
                 // get rosterInfo
                 QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
-                // tell the roster that the level is deleted
+                // tell the roster that the quiz is deleted
                 QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
                 {
                     IsDeletedLocally = true,
@@ -240,7 +240,7 @@ namespace appFBLA2019
                 };
                 QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
 
-                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeToLevel(dbId);
+                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuiz(dbId);
 
                 if (returnMessage == OperationReturnMessage.True)
                 {
@@ -278,7 +278,7 @@ namespace appFBLA2019
                 button.IsVisible = false;
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
-                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToLevel(dbId, this.quizzesFeatured);
+                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToQuiz(dbId, this.quizzesFeatured);
                 if (returnMessage == OperationReturnMessage.True)
                 {
                     (button.Parent as StackLayout).Children[2].IsVisible = true; // add in unsubscribe button

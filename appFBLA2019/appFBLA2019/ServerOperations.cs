@@ -100,7 +100,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Get the last modified date of a quiz given the level's DBId.
+        /// Get the last modified date of a quiz given the quizzes's DBId.
         /// </summary>
         /// <param name="DBId">The DBId of the quiz to check.</param>
         /// <returns>The DateTime of the last modified date of a quiz as a string.</returns>

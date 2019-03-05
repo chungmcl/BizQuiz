@@ -10,6 +10,9 @@ namespace appFBLA2019
     /// </summary>
     internal static class DBHandler
     {
+        /// <summary>
+        /// The gamedatabase currently selected
+        /// </summary>
         public static GameDatabase Database { get; private set; }
 
         /// <summary>

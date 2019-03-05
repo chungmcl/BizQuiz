@@ -51,12 +51,32 @@ namespace appFBLA2019
                 this.OnEmailConfirmed();
         }
 
+        /// <summary>
+        /// Handles events related to email confirmation
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         public delegate void ConfirmLaterSelectedEventHandler(object source, EventArgs eventArgs);
 
+        /// <summary>
+        /// Handles events related to email confirmation
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         public delegate void EmailConfirmedEventHandler(object source, EventArgs eventArgs);
 
+        /// <summary>
+        /// Handles events related to email confirmation
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         public event ConfirmLaterSelectedEventHandler ConfirmLaterSelected;
 
+        /// <summary>
+        /// Handles events related to email confirmation
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         public event EmailConfirmedEventHandler EmailConfirmed;
 
         /// <summary>
@@ -77,9 +97,19 @@ namespace appFBLA2019
             this.EmailConfirmed?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// the max lenght of an email
+        /// </summary>
         private const int maxEmailLengthSize = 640;
         
+        /// <summary>
+        /// current user's username
+        /// </summary>
         private string username;
+
+        /// <summary>
+        /// current user's password
+        /// </summary>
         private string password;
 
         /// <summary>
@@ -93,6 +123,11 @@ namespace appFBLA2019
             await this.Navigation.PopModalAsync(true);
         }
 
+        /// <summary>
+        /// when the button is clicked, either confirms the email and disappears or informs the user of a mistake
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonConfirmEmail_Clicked(object sender, EventArgs e)
         {
             OperationReturnMessage result = await Task.Run(() => ServerOperations.ConfirmEmail(this.username, this.EntryConfirmationCode.Text.Trim()));
@@ -108,6 +143,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// When the button to use a different email is clicked, changes the email to that one
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonFixEmail_Clicked(object sender, EventArgs e)
         {
             string newEmail = this.EntryChangeEmail.Text.Trim();
@@ -124,6 +164,10 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Gets the email associated with an account
+        /// </summary>
+        /// <returns></returns>
         private async Task GetEmail()
         {
             try

@@ -16,22 +16,43 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ProfilePage : ContentPage
     {
+        /// <summary>
+        /// If the profilepage is currently loading
+        /// </summary>
         public bool IsLoading { get; private set; }
+        /// <summary>
+        /// If the page is currently showing the login page
+        /// </summary>
         public bool IsOnLoginPage { get; private set; }
+        /// <summary>
+        /// the page that contains the account settings
+        /// </summary>
         private AccountSettingsPage accountSettingsPage;
+        /// <summary>
+        /// used for downloading levels from the server in chunks
+        /// </summary>
         private int currentChunk = 1;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public ProfilePage()
         {
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// When the page appears, animate the username
+        /// </summary>
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
         }
 
+        /// <summary>
+        /// When the page disappears, animate the username
+        /// </summary>
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
@@ -65,6 +86,9 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Sets the loginpage to temporary so that when the user is logged in, it doesnt go to the profilepage
+        /// </summary>
         public void SetTemporary()
         {
             this.LocalLoginPage.LoggedIn -= this.OnLoggedIn;
@@ -107,7 +131,7 @@ namespace appFBLA2019
         /// <summary>
         /// Loads the profile content if the user is logged in.
         /// </summary>
-        /// <returns>  </returns>
+        /// <returns> </returns>
         private async Task UpdateProfileContent()
         {
             this.StackLayoutQuizStack.IsVisible = false;
@@ -159,6 +183,11 @@ namespace appFBLA2019
             this.StackLayoutQuizStack.IsVisible = true;
         }
 
+        /// <summary>
+        /// Triggered when the scrollsearch is moved, checks if more levels need to be loaded as the user scrolls down
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ScrollSearch_Scrolled(object sender, ScrolledEventArgs e)
         {
             ScrollView scrollView = sender as ScrollView;
@@ -179,6 +208,9 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Sets up the local quizzes owned by this user as cards
+        /// </summary>
         private void SetupLocalQuizzes()
         {
             List<QuizInfo> quizzes = QuizRosterDatabase.GetRoster();
@@ -200,8 +232,14 @@ namespace appFBLA2019
             this.totalCount += userQuizzes.Count;
         }
 
+        /// <summary>
+        /// total levels owned by the user
+        /// </summary>
         private int totalCount = 0;
 
+        /// <summary>
+        /// Sets up the network quizzes owned by this user as cards
+        /// </summary>
         private void SetupNetworkQuizzes()
         {
             List<SearchInfo> chunk = SearchUtils.GetQuizzesByAuthorChunked(CredentialManager.Username, this.currentChunk);
@@ -290,6 +328,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Deletes the quiz from the roster 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonDelete_Clicked(object sender, EventArgs e)
         {
             bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud. This is not reversable.", "Yes", "No");
@@ -305,7 +348,7 @@ namespace appFBLA2019
                     ((ImageButton)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
                 string dbId = rosterInfo.DBId;
 
-                // tell the roster that the level is deleted
+                // tell the roster that the quiz is deleted
                 QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
                 {
                     IsDeletedLocally = true,
@@ -344,51 +387,11 @@ namespace appFBLA2019
             }
         }
 
-        private async void ButtonDelete_ClickedNope(object sender, EventArgs e)
-        {
-            bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud.This is not reversable.", "Yes", "No");
-            if (answer)
-            {
-                string path = App.UserPath + ((ImageButton)sender).StyleId;
-
-                if (System.IO.Directory.Exists(path))
-                {
-                    // Acquire DBId from the quiz's realm file
-                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
-                       ((Button)sender).StyleId.Split('/').Last().Split('`').First(), // Quiz Name
-                       ((Button)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
-                    string dbId = rosterInfo.DBId;
-
-                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
-                    {
-                        IsDeletedLocally = true,
-                        LastModifiedDate = DateTime.Now.ToString()
-                    };
-                    QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
-                    // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
-                    if (CrossConnectivity.Current.IsConnected)
-                    {
-                        // Get the Realm File
-                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                        OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
-                        if (returnMessage == OperationReturnMessage.True)
-                        {
-                            realm.Write(() =>
-                            {
-                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
-                            });
-                        }
-                    }
-                    Directory.Delete(path, true);
-                }
-                else
-                {
-                    await this.DisplayAlert("Quiz not Found", "Is this quiz already deleted?", "Back");
-                }
-            }
-        }
-
+        /// <summary>
+        /// Opens the account settings page when the user clicks the account settings toolbar icon
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ToolbarItemAccountSettings_Clicked(object sender, EventArgs e)
         {
             if (this.accountSettingsPage == null)
@@ -400,6 +403,11 @@ namespace appFBLA2019
             await this.Navigation.PushAsync(this.accountSettingsPage);
         }
 
+        /// <summary>
+        /// when the user is logged in, set up events for potential logout
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         public async void OnLoggedIn(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = new AccountSettingsPage();
@@ -408,12 +416,21 @@ namespace appFBLA2019
             await this.UpdateProfilePage();
         }
 
+        /// <summary>
+        /// Gets "Hello" randomly from 8 languages
+        /// </summary>
+        /// <returns>a translation of "hello"</returns>
         private string GetHello()
         {
             List<string> hello = new List<string> { "Hello, ", "Hola, ", "你好, ", "Aloha, ", "こんにちは, ", "Guten Tag, ", "Ciao, ", "Bonjour, " };
             return hello[App.random.Next(8)];
         }
 
+        /// <summary>
+        /// When the user is logged out, unload the account settings page and refresh the profile tab
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         public async void OnSignedOut(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = null;

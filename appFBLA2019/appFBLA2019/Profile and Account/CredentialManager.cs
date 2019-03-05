@@ -23,7 +23,8 @@ namespace appFBLA2019
         {
             get
             {
-                return username;
+                
+                return username ?? "dflt";
             }
             set
             {
@@ -32,7 +33,7 @@ namespace appFBLA2019
                 Directory.CreateDirectory(App.Path + "/" + value);
             }
         }
-        
+
         /// <summary>
         /// Whether the user is logged in or not.
         /// </summary>
@@ -60,7 +61,7 @@ namespace appFBLA2019
 
             if (Directory.GetDirectories(App.UserPath).Length < 8)
             {
-                await DependencyService.Get<IGetStorage>().SetupDefaultLevelsAsync(App.UserPath);
+                await DependencyService.Get<IGetStorage>().SetupDefaultQuizzesAsync(App.UserPath);
             }
         }
 

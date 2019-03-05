@@ -32,6 +32,12 @@ namespace appFBLA2019
 
             CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
 
+            if (Directory.GetDirectories(App.UserPath).Length < 8)
+            {
+                DependencyService.Get<IGetStorage>().SetupDefaultQuizzesAsync(App.UserPath);
+            }
+
+
             this.MainPage = new NavigationPage(new MainPage());
         }
 

@@ -40,7 +40,7 @@ namespace appFBLA2019.iOS
             throw new NotImplementedException();
         }
 
-        public Task SetupDefaultLevelsAsync(string userpath)
+        public Task SetupDefaultQuizzesAsync(string userpath)
         {
             throw new NotImplementedException();
         }

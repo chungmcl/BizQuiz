@@ -9,9 +9,18 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ForgotPasswordPage : ContentPage
 	{
+        /// <summary>
+        /// minimum lenght for a new password
+        /// </summary>
         private const int minLength = 5;
+        /// <summary>
+        /// the username of current user
+        /// </summary>
         private string username;
 
+        /// <summary>
+        /// default constructor
+        /// </summary>
         public ForgotPasswordPage ()
 		{
 			this.InitializeComponent ();
@@ -19,6 +28,11 @@ namespace appFBLA2019
 
         }
 
+        /// <summary>
+        /// Triggered when continue is clicked; checks if the user has an account to recover password for
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonContinue_Clicked(object sender, EventArgs e)
         {
             this.ActivityIndicator.IsVisible = true;
@@ -49,6 +63,11 @@ namespace appFBLA2019
             this.ActivityIndicator.IsRunning = false;
         }
 
+        /// <summary>
+        /// Triggered when change password is clicked; asks the server to change the password
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonChangePassword_Clicked(object sender, EventArgs e)
         {
             this.ActivityIndicator.IsVisible = true;

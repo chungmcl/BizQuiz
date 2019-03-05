@@ -20,9 +20,19 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CreateNewQuizPage : ContentPage
     {
+        /// <summary>
+        /// the original author of the quiz (if being edited)
+        /// </summary>
         private string originalAuthor;
+        /// <summary>
+        /// the original name of the quiz (if being edited)
+        /// </summary>
         private string originalName;
+        /// <summary>
+        /// the original category of the quiz (if being edited)
+        /// </summary>
         private string originalCategory;
+
         private object callerType;
 
         /// <summary>
@@ -366,7 +376,7 @@ namespace appFBLA2019
                     DBHandler.Database.NewQuizInfo(CredentialManager.Username,
                         this.EditorQuizName.Text?.Trim(),
                         this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
-                    DBHandler.Database.AddQuestions(NewQuestions);
+                    DBHandler.Database.AddQuestions(NewQuestions.ToArray());
                 }
                 else // edit
                 {
@@ -405,7 +415,7 @@ namespace appFBLA2019
                     }
 
                     // Add all the questions that aren't eddited
-                    DBHandler.Database.AddQuestions(NewQuestions);
+                    DBHandler.Database.AddQuestions(NewQuestions.ToArray());
                 }
 
                 File.Create(DBHandler.Database.DBFolderPath + ".nomedia");
