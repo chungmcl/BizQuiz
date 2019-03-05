@@ -163,14 +163,5 @@ namespace appFBLA2019
                 // just suppress any error logging exceptions
             }
         }
-
-        /// <summary>
-        /// Warns the user that their IP might be out of date (this will be obsolete when Bothell Software acquires a certificate to host the server on a static IP)
-        /// </summary>
-        public static void DisplayIPWarning()
-        {
-            Application.Current.MainPage.DisplayAlert("Connection Error!", "We couldn't connect to the server. This could happen for a number of reasons." +
-                " Make sure your server IP matches the serverIP on our website at www.bizquiz.app, then try again.", "OK");
-        }
     }
 }

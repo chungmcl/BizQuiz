@@ -210,10 +210,9 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch (SocketException ex)
+            catch (Exception ex)
             {
                 BugReportHandler.SaveReport(ex);
-                App.DisplayIPWarning();
                 return false;
             }
         }
