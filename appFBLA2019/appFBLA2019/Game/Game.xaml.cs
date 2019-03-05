@@ -268,7 +268,7 @@ namespace appFBLA2019
             this.LabelQuestion.VerticalOptions = LayoutOptions.Center;
 
             this.LabelQuestion.FontSize = 40;
-            while (this.LabelQuestion.FontSize / 2 * this.LabelQuestion.Text.Length > (this.Width - 10) * 3.5)
+            while (this.LabelQuestion.FontSize / 2 * this.LabelQuestion.Text.Length > (this.Width - 10) * 3)
             {
                 this.LabelQuestion.FontSize--;
             }
