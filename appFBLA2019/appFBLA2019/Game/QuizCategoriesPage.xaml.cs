@@ -20,10 +20,8 @@ namespace appFBLA2019
         public QuizCategoriesPage()
         {
             this.InitializeComponent();
-#if __ANDROID__
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.White);
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.DarkBlue);
-#endif
         }
 
         /// <summary>

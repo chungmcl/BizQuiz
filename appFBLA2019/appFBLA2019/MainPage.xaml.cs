@@ -24,12 +24,10 @@ namespace appFBLA2019
         {
             this.InitializeComponent();
             // Default tabs on Android are on top - Set to bottom on Android (to serve as Navigation)
-#if __ANDROID__
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.Accent);
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.Gray); //Color.FromHex("#003463")
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(false);
-#endif
             this.BarTextColor = Color.Gray;
         }
 
