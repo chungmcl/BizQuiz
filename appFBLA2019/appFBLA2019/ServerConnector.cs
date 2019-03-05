@@ -11,7 +11,9 @@ namespace appFBLA2019
 {
     public static class ServerConnector
     {
-        // The byte length of the header in transmissions
+        /// <summary>
+        /// The byte length of the header in transmissions
+        /// </summary>
         private const int headerSize = 5;
 
         // Server Release Build: 7777 Server Debug Build: 7778
