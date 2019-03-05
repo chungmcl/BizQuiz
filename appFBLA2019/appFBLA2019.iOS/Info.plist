@@ -25,7 +25,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>BizQuiz</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.bothellboi.bizquiz</string>
+	<string>com.bothellsoftware.bizquiz</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>

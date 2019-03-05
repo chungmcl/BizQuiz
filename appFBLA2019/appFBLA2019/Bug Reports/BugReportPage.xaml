@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.BugReportPage"
+             Title="Create a Bug Report">
+    <ContentPage.Content>
+        <StackLayout Padding="5">
+            <Label FontSize="30" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" VerticalOptions="Start">Tell us about your issue:</Label>
+            <ScrollView VerticalOptions="FillAndExpand">
+                <StackLayout Padding="5">
+                    <Frame IsClippedToBounds="True" CornerRadius="10" VerticalOptions="Start" HorizontalOptions="FillAndExpand">
+                        <StackLayout>
+                            <Entry x:Name="BugTitleEntry" ReturnType="Next" Placeholder="Title your bug report" FontSize="30" HorizontalOptions="FillAndExpand" MaxLength="40" SizeChanged="InputSizeChanged" />
+                            <Picker x:Name="CategoryPicker" FontSize="20" HorizontalOptions="FillAndExpand" VerticalOptions="Start" TextColor="Accent" Title="Category" SizeChanged="InputSizeChanged">
+                                <Picker.Items>
+                                    <x:String>UI</x:String>
+                                    <x:String>Gameplay</x:String>
+                                    <x:String>Profile</x:String>
+                                    <x:String>Store</x:String>
+                                    <x:String>Quiz Editor</x:String>
+                                    <x:String>Other</x:String>
+                                </Picker.Items>
+                            </Picker>
+                        </StackLayout>
+                    </Frame>
+                    <Frame IsClippedToBounds="True" CornerRadius="10" VerticalOptions="FillAndExpand"  HorizontalOptions="FillAndExpand">
+                        <Editor x:Name="BugBodyEntry" Placeholder="Describe what the issue is: what were you doing when it happened, and what unexpected behavior did you see? (Max 200 characters)"
+                        MaxLength="200" FontAttributes="Italic" SizeChanged="InputSizeChanged" AutoSize="TextChanges" BackgroundColor="Transparent" />
+                    </Frame>
+                    <Frame x:Name="BugImageFrame" IsClippedToBounds="True" CornerRadius="10" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="False" IsVisible="False">
+                        <Image x:Name="BugImage" HorizontalOptions="FillAndExpand" Aspect="AspectFit" IsEnabled="False"></Image>
+                    </Frame>
+                </StackLayout>
+            </ScrollView>
+            <Button x:Name="AddImage" HeightRequest="50" HorizontalOptions="FillAndExpand" Clicked="AddImage_Clicked" Text="Add Image / Screenshot" TextColor="White" BackgroundColor="Accent"
+                    VerticalOptions="End" CornerRadius="25" />
+            <Button x:Name="Submit" HeightRequest="50" HorizontalOptions="FillAndExpand" Clicked="Submit_Clicked" Text="Submit"  BackgroundColor="Accent" VerticalOptions="End"
+                    TextColor="White" CornerRadius="25" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

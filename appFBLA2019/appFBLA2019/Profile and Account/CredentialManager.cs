@@ -1,8 +1,7 @@
 ﻿//BizQuiz App 2019
 
 using Plugin.Connectivity;
-using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -11,41 +10,96 @@ namespace appFBLA2019
 {
     public static class CredentialManager
     {
-        public static string Username { get; private set; }
-        public static bool IsLoggedIn { get; private set; }
-        public static bool EmailConfirmed { get; private set; }
+        /// <summary>
+        /// private field for Username property.
+        /// </summary>
+        private static string username;
 
-        public static void SaveCredential(string username, string password, bool emailConfirmed)
+        /// <summary>
+        /// The username of the currently logged in user.
+        /// Username is set to "dflt" if user is not logged in.
+        /// </summary>
+        public static string Username
         {
-            Username = username;
-
-            Task.Run(async () => await SecureStorage.SetAsync("username", username));
-            Task.Run(async () => await SecureStorage.SetAsync("password", password));
-
-            IsLoggedIn = true;
+            get
+            {
+                
+                return username ?? "dflt";
+            }
+            set
+            {
+                username = value;
+                // Create a directory for the user locally for saved quizzes.
+                Directory.CreateDirectory(App.Path + "/" + value);
+            }
         }
 
-        public static void Logout()
+        /// <summary>
+        /// Whether the user is logged in or not.
+        /// </summary>
+        public static bool IsLoggedIn { get; set; }
+        /// <summary>
+        /// Whether the user has had their email confirmed.
+        /// </summary>
+        public static bool EmailConfirmed { get; set; }
+
+        /// <summary>
+        /// Save the user's credentials securely to app Keystore.
+        /// </summary>
+        /// <param name="username">The username of the account.</param>
+        /// <param name="password">The password of the account.</param>
+        /// <param name="emailConfirmed">Whether the user has had their email confirmed or not.</param>
+        public static async Task SaveCredentialAsync(string username, string password, bool emailConfirmed)
+        {
+            await SecureStorage.SetAsync("username", username);
+            await SecureStorage.SetAsync("password", password);
+            
+            Username = username;
+
+            IsLoggedIn = true;
+            EmailConfirmed = emailConfirmed;
+
+            if (Directory.GetDirectories(App.UserPath).Length < 8)
+            {
+                await DependencyService.Get<IGetStorage>().SetupDefaultQuizzesAsync(App.UserPath);
+            }
+        }
+
+        /// <summary>
+        /// Log the user out of the account.
+        /// </summary>
+        /// <param name="clearUsername">Whether to clear the username field in the Keystore or not.</param>
+        public static void Logout(bool clearUsername)
         {
             Task.Run(async () => await SecureStorage.SetAsync("password", ""));
 
+            if (clearUsername)
+            {
+                Task.Run(async () => await SecureStorage.SetAsync("username", ""));
+            }
+
+            Username = "dflt";
             IsLoggedIn = false;
             EmailConfirmed = false;
         }
 
+        /// <summary>
+        /// Check if the current user credentials are valid with the server or not
+        /// in a background task.
+        /// </summary>
+        /// <returns>The OperationReturnMessage from the server.</returns>
         public static async Task<OperationReturnMessage> CheckLoginStatus()
         {
             string username = await SecureStorage.GetAsync("username");
             Username = username;
-            string password = await SecureStorage.GetAsync("password");
 
             if (CrossConnectivity.Current.IsConnected)
             {
-                if (((username != null) && (password != null)) && ((username != "") && (password != "")))
+                if ((username != null) && (username != ""))
                 {
-                    if (ServerConnector.SendData(ServerRequestTypes.LoginAccount, username + "/" + password + "/-"))
+                    OperationReturnMessage message = ServerOperations.LoginAccount(username, await SecureStorage.GetAsync("password"));
+                    if (message != OperationReturnMessage.FalseFailedConnection)
                     {
-                        OperationReturnMessage message = ServerConnector.ReceiveFromServerORM();
                         if (message == OperationReturnMessage.True)
                         {
                             IsLoggedIn = true;
@@ -60,53 +114,52 @@ namespace appFBLA2019
                         {
                             IsLoggedIn = false;
                             EmailConfirmed = false;
-
+                            Username = "dflt";
                             await SecureStorage.SetAsync("password", "");
                         }
                         return message;
                     }
                     else
                     {
-                        return OperationReturnMessage.False;
+                        return CannotConnectToServer(username);
                     }
                 }
                 else
                 {
+
+                    Username = "dflt";
+                    IsLoggedIn = false;
+                    EmailConfirmed = false;
+                    Username = "dflt";
                     return OperationReturnMessage.False;
                 }
             }
             else // If the user is offline
             {
-                if (((username != null) && (password != null)) && ((username != "") && (password != "")))
-                {
-                    return OperationReturnMessage.False;
-                }
-                else
-                {
-                    return OperationReturnMessage.True;
-                }
+                return CannotConnectToServer(username);
             }
         }
 
         /// <summary>
-        /// Check if the current saved login credentials match with the server - Is the user logged in? Checks every two minutes. Sets the IsLoggedIn property of CredentialManager.
+        /// Handle credentials if the app could not connect to server.
         /// </summary>
-        public static void StartTimedCheckLoginStatus()
+        /// <param name="username">The username</param>
+        /// <returns></returns>
+        private static OperationReturnMessage CannotConnectToServer(string username)
         {
-            var minutes = TimeSpan.FromMinutes(2.0);
-            Device.StartTimer(minutes, () =>
+            if ((username != null) && (username != ""))
             {
-                Task.Run(async () =>
-                {
-                    if (IsLoggedIn)
-                    {
-                        await CheckLoginStatus();
-                    }
-                });
-
-                // Return true to continue the timer
-                return true;
-            });
+                IsLoggedIn = true;
+                Username = username;
+                return OperationReturnMessage.True;
+            }
+            else
+            {
+                Username = "dflt";
+                IsLoggedIn = false;
+                EmailConfirmed = false;
+                return OperationReturnMessage.False;
+            }
         }
     }
 }

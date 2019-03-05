@@ -9,74 +9,76 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Resources\testLevel`testAuthor\**" />
-    <EmbeddedResource Remove="Resources\testLevel`testAuthor\**" />
-    <None Remove="Resources\testLevel`testAuthor\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Resources\ic_close_black_48dp.png" />
-    <None Remove="Resources\ic_done_white_48dp.png" />
-    <None Remove="Resources\ic_edit_black_48dp.png" />
-    <None Remove="Resources\ic_group_black_48dp.png" />
-    <None Remove="Resources\ic_landscape_black_48dp.png" />
-    <None Remove="Resources\ic_person_black_48dp.png" />
-    <None Remove="Resources\ic_settings_black_48dp.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\ic_close_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_done_white_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_edit_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_group_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_landscape_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_person_black_48dp.png" />
-    <EmbeddedResource Include="Resources\ic_settings_black_48dp.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Plugin.FacebookClient" Version="1.4.0" />
+    <PackageReference Include="Plugin.Permissions" Version="3.0.0.12" />
     <PackageReference Include="Plugin.Share" Version="7.1.1" />
     <PackageReference Include="Realm" Version="3.4.0" />
     <PackageReference Include="Realm.Database" Version="3.4.0" />
     <PackageReference Include="Realm.DataBinding" Version="1.2.0" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+    <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     <PackageReference Include="Xam.Plugin.Connectivity" Version="3.2.0" />
     <PackageReference Include="Xam.Plugin.Media" Version="4.0.1.5" />
     <PackageReference Include="Xamarin.Essentials" Version="1.0.1" />
-    <PackageReference Include="Xamarin.Forms" Version="3.5.0.129452" />
+    <PackageReference Include="Xamarin.Forms" Version="3.5.0.169047" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Game\LevelSelectionPage.xaml.cs">
-      <DependentUpon>LevelSelectionPage.xaml</DependentUpon>
+    <Compile Update="AboutUsPage.xaml.cs">
+      <DependentUpon>AboutUsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Game\LevelCategoriesPage.xaml.cs">
-      <DependentUpon>LevelCategoriesPage.xaml</DependentUpon>
+    <Compile Update="Game\QuizEndPage.xaml.cs">
+      <DependentUpon>QuizEndPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Game\QuizSelectionPage.xaml.cs">
+      <DependentUpon>QuizSelectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Game\QuizCategoriesPage.xaml.cs">
+      <DependentUpon>QuizCategoriesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Game\Game.xaml.cs">
+      <DependentUpon>Game.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="HelpPage.xaml.cs">
+      <DependentUpon>HelpPage.xaml</DependentUpon>
     </Compile>
     <Compile Update="LevelEditor\LevelEditorPage.xaml.cs">
       <DependentUpon>LevelEditorPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
+    <Compile Update="QuizEditor\CreateNewQuizPage.xaml.cs">
+      <DependentUpon>CreateNewQuizPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="StorePage\FeaturedPage.xaml.cs">
+      <DependentUpon>FeaturedPagexaml</DependentUpon>
+    </Compile>
+    <Compile Update="StorePage\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Game\LevelEndPage.xaml">
+    <EmbeddedResource Update="AboutUsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Game\TextGame.xaml">
+    <EmbeddedResource Update="AdvancedSettingsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="LevelEditor\CreateNewLevelPage.xaml">
+    <EmbeddedResource Update="Bug Reports\BugReportPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="LevelEditor\LevelEditorPage.xaml">
+    <EmbeddedResource Update="Game\QuizEndPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="LevelEditor\PhotoPage.xaml">
+    <EmbeddedResource Update="Game\Game.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="HelpPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="QuizEditor\CreateNewQuizPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="QuizEditor\PhotoPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Profile and Account\AccountSettingsPage.xaml">
@@ -88,15 +90,23 @@
     <EmbeddedResource Update="Profile and Account\EmailConfirmationPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="Profile and Account\ForgotPasswordPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Profile and Account\LoginPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="MainPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Profile and Account\ProfileLoggedIn.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="StorePage\SearchPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="TermsOfUse.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

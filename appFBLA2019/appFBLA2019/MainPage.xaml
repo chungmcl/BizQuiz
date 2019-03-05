@@ -5,12 +5,18 @@
     xmlns:local="clr-namespace:appFBLA2019"
     x:Class="appFBLA2019.MainPage"
     Title="BizQuiz"
-    BarBackgroundColor="#004f96"
+    BarBackgroundColor="White"
     BarTextColor="White"
     x:Name="TabbedPagePage"
     CurrentPageChanged="TabbedPage_CurrentPageChanged">
-    <local:LevelCategoriesPage x:Name="levelsPage" Title="Standard Levels" Icon="ic_landscape_black_48dp.png" />
-    <local:LevelEditorPage Title="Level Editor" Icon="ic_edit_black_48dp.png" />
-    <ContentPage Title="Leaderboards" Icon="ic_group_black_48dp.png" />
+    <TabbedPage.ToolbarItems>
+      <ToolbarItem Order="Secondary"  Priority="0" Text="Help" Clicked="HelpButton_Clicked"/>
+      <ToolbarItem Order="Secondary"  Priority="0" Text="Advanced Settings" Clicked="AdvancedSettings_Clicked"/>
+      <ToolbarItem Priority="0" Name="Report a Problem" Order="Secondary" Activated="BugReportToolbarItem_Clicked"/>
+      <ToolbarItem Priority="0" Name="About Us" Order="Secondary"  Activated="AboutPageToolbarItem_Clicked" />
+        <ToolbarItem Priority="0" Name="Terms Of Use" Order="Secondary"  Activated="TermsOfUse_Activated" />
+    </TabbedPage.ToolbarItems>
+    <local:QuizCategoriesPage x:Name="quizsPage" Title="Play" Icon="ic_landscape_black_48dp.png" />
+    <local:FeaturedPage Title="Explore" Icon="ic_search_black_48dp.png" />
     <local:ProfilePage Title="Profile" Icon="ic_person_black_48dp.png" />
 </TabbedPage>

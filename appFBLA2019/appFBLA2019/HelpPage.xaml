@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CarouselPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.HelpPage">
+    <ContentPage>
+        <StackLayout Padding="10">
+            <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 1: Intro</Label>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="6*"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+            <Image Source="BizQuizLogo.png" Aspect="AspectFit" VerticalOptions="Center"/>
+            <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10" Grid.Row="1">
+                    <Label FontSize="Large" HorizontalTextAlignment="Center">
+                        Welcome to BizQuiz! This help section contains all the information you'll need to know about the game and how to create, share, and play your own FBLA-related quizzes. Swipe to get started!
+                    </Label>
+            </Frame>
+            </Grid>
+        </StackLayout>
+    </ContentPage>
+    <ContentPage>
+        <StackLayout Padding="10">
+            <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 2: Gameplay</Label>
+            <Frame VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                <StackLayout>
+                    <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="5">
+                        <Frame CornerRadius="10" Padding="5" HorizontalOptions="StartAndExpand">
+                            <Image Source="Multiple_Choice_Example.png" x:Name="MCQuestionImage" BackgroundColor="Red"/>
+                        </Frame>
+                        <Frame CornerRadius="10" Padding="5" HorizontalOptions="EndAndExpand">
+                            <Image Source="Text_Answer_Example.png" x:Name="TextQuestionImage" BackgroundColor="Blue"/>
+                        </Frame>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand">
+                        <Label HorizontalTextAlignment="Center" HorizontalOptions="StartAndExpand">Multiple choice type question</Label>
+                        <Label HorizontalTextAlignment="Center" HorizontalOptions="EndAndExpand">Text Answer type question</Label>
+                    </StackLayout>
+                </StackLayout>
+            </Frame>
+            <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                <Label FontSize="Large">
+                    Bizquiz has two types of question: multiple choice and text answer. To answer a multiple choice question, just tap the red box labelled with what you think is the correct answer. To answer a text based question, type your answer into the box provided and tap the "Check Answer" button to submit.
+                </Label>
+            </Frame>
+        </StackLayout>
+    </ContentPage>
+    <ContentPage>
+        <StackLayout Padding="10">
+            <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 3: Explore</Label>
+            <Grid VerticalOptions="FillAndExpand">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+                <Frame VerticalOptions="Fill" HorizontalOptions="FillAndExpand" CornerRadius="10" Grid.Row="0">
+                    <Label FontSize="Large" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                        The Explore tab is a place to find and download quizzes created by other users to use for your own study. When you open Explore, you will be presented with the BizQuiz Featured Quizzes, quizzes that we at BizQuiz feel represent the ideal BizQuiz quiz. From this page, you can subscribe to a quiz to save it to your account, allowing you to study with it whenever you need. You can also sort the featured by category. The magnifying glass icon at the top right opens the search page, where you can search for quizzes based on their title or author. This page also allows you to subscribe to quizzes you find. 
+                    </Label>
+                </Frame>
+                <Frame VerticalOptions="Fill" HorizontalOptions="FillAndExpand" CornerRadius="10" Grid.Row="1">
+                    <Label FontSize="Medium" FontAttributes="Italic" HorizontalTextAlignment="Center">
+                        BizQuiz's store page has a large library of quizzes, both user-created and curated by the BizQuiz team. Official BizQuiz-curated Quizzes contain questions adapted from previous FBLA national tests hosted on fblatests.org, while users are free to write and publish their own material under the terms described in the terms of use.
+                    </Label>
+                </Frame>
+            </Grid>
+        </StackLayout>
+    </ContentPage>
+</CarouselPage>

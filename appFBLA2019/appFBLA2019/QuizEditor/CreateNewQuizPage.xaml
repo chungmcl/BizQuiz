@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.CreateNewQuizPage"
+             Title="Create Your Own Quiz">
+
+    <ContentPage.ToolbarItems>
+        <!--<ToolbarItem  Icon="ic_done_white_48dp.png" Text="Save"  Priority="0" Name="Done" Order="Primary"  Activated="ButtonCreateQuiz_Clicked"/>-->
+    </ContentPage.ToolbarItems>
+
+    <ContentPage.Content>
+        <AbsoluteLayout>
+
+            <StackLayout BackgroundColor="White" AbsoluteLayout.LayoutBounds="0, 0, 1.0, 1.0" AbsoluteLayout.LayoutFlags="All">
+                <ScrollView BackgroundColor="White" VerticalOptions="FillAndExpand" x:Name ="ScrollViewQuestions">
+                    <StackLayout x:Name="stkMain">
+                        <Frame VerticalOptions="Start" CornerRadius="0" Padding="0">
+                            <StackLayout Padding="10">
+                                <Editor x:Name="EditorQuizName" BackgroundColor="White" Placeholder="Quiz Name" AutoSize="TextChanges" MaxLength="64" FontSize="38" TextColor="Gray" FontAttributes="Bold" HorizontalOptions="FillAndExpand"/>
+                                <Picker x:Name="PickerCategory" BackgroundColor="White" Title="Category" FontSize="17" FontAttributes="Italic" TextColor="Accent" HorizontalOptions="FillAndExpand">
+                                    <Picker.Items>
+                                        <x:String>Tech Events</x:String>
+                                        <x:String>Finance Events</x:String>
+                                        <x:String>Business Events</x:String>
+                                        <x:String>FBLA General</x:String>
+                                        <x:String>Officers</x:String>
+                                    </Picker.Items>
+                                </Picker>
+                            </StackLayout>
+                        </Frame>
+                        <StackLayout x:Name="StackLayoutQuestionStack" Padding="10" />
+                        <!--Things added in code-->
+                    </StackLayout>
+                </ScrollView>
+            </StackLayout>
+            
+            <Image AbsoluteLayout.LayoutBounds="1, 1, .8, .9" AbsoluteLayout.LayoutFlags="All" 
+                   x:Name="ButtonAddDrop"  Source="DropShadow.png" HorizontalOptions="End" VerticalOptions="End" Margin="20" 
+                   HeightRequest="50" WidthRequest="50" Scale="1.3"/>
+            <Button AbsoluteLayout.LayoutBounds="1, 1, .8, .9" AbsoluteLayout.LayoutFlags="All"
+                    x:Name="ButtonAddQuestion" FontSize="24" TextColor="White" Text="+" HorizontalOptions="End" 
+                    VerticalOptions="End" Clicked="ButtonAddQuestion_Clicked" HeightRequest="50" WidthRequest="50" 
+                    CornerRadius="25" BackgroundColor="#004F96" Margin="20" />
+        </AbsoluteLayout>
+    </ContentPage.Content>
+</ContentPage>

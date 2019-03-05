@@ -14,12 +14,8 @@ namespace appFBLA2019
         /// <summary>
         /// Creates a question object given the question and answers
         /// </summary>
-        /// <param name="question">
-        /// What to ask the user
-        /// </param>
-        /// <param name="answersIn">
-        /// The potential answers to the question. The correct answer is in the first slot.
-        /// </param>
+        /// <param name="question">  What to ask the user </param>
+        /// <param name="answersIn"> The potential answers to the question. The correct answer is in the first slot. </param>
         public Question(string question, string imagePath, params string[] answers)
         {
             this.QuestionText = question;
@@ -31,12 +27,28 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Creates a question that doesn't need a question
+        /// Creates a question based on another question - copy constructor
         /// </summary>
-        /// <param name="question">
-        /// </param>
-        /// <param name="answers">
-        /// </param>
+        /// <param name="question">  </param>
+        public Question(Question question)
+        {
+            this.AnswerOne = question.AnswerOne;
+            this.AnswerTwo = question.AnswerTwo;
+            this.AnswerThree = question.AnswerThree;
+            this.CorrectAnswer = question.CorrectAnswer;
+            this.ImagePath = question.ImagePath;
+            this.NeedsPicture = question.NeedsPicture;
+            this.QuestionId = question.QuestionId;
+            this.QuestionType = question.QuestionType;
+            this.Status = question.Status;
+            this.QuestionText = question.QuestionText;
+        }
+
+        /// <summary>
+        /// Creates a question that doesn't need an image
+        /// </summary>
+        /// <param name="question">  </param>
+        /// <param name="answers">   </param>
         public Question(string question, params string[] answers) : this(question, null, answers)
         {
             this.NeedsPicture = false;
@@ -135,10 +147,8 @@ namespace appFBLA2019
         /// <summary>
         /// For sorting questions by status
         /// </summary>
-        /// <param name="obj">
-        /// </param>
-        /// <returns>
-        /// </returns>
+        /// <param name="obj">  </param>
+        /// <returns>  </returns>
         public int CompareTo(object obj)
         {
             return this.Status.CompareTo(((Question)obj).Status);

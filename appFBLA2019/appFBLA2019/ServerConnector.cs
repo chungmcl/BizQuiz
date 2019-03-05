@@ -6,221 +6,168 @@ using System.Collections.Generic;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace appFBLA2019
 {
-    public enum OperationReturnMessage : byte
-    {
-        True,
-        False,
-        TrueConfirmEmail,
-        FalseInvalidCredentials,
-        FalseInvalidEmail,
-        FalseUsernameAlreadyExists,
-        FalseNoConnection
-    }
-
-    public enum ServerRequestTypes : byte
-    {
-        // "Command" Requests
-        StringData,
-
-        AddJPEGImage,
-        AddRealmFile,
-        LoginAccount,
-        RegisterAccount,
-        DeleteAccount,
-        ConfirmEmail,
-        ChangeEmail,
-
-        // "Get" Requests
-        GetEmail,
-
-        GetJPEGImage,
-        GetRealmFile,
-
-        // Returns
-        SavedJPEGImage,
-
-        SavedRealmFile,
-        GotEmail,
-        True,
-        False,
-        TrueConfirmEmail
-    }
-
     public static class ServerConnector
     {
-        // Server Release Build: 7777 Server Debug Build: 7778
+        /// <summary>
+        /// The byte length of the header in transmissions
+        /// </summary>
+        private const int headerSize = 5;
+
+        /// <summary>
+        /// port to use when connecting
+        /// Server Release Build: 7777 Server Debug Build: 7778
+        /// </summary>
         public static int Port { get { return 7777; } }
 
+        /// <summary>
+        /// Ip address of the server
+        /// </summary>
         public static string Server { get; set; }
+
+        /// <summary>
+        /// The TcpClient on to of the TLS (SSL) stream
+        /// </summary>
         public static TcpClient client;
+        /// <summary>
+        /// the current networkstream
+        /// </summary>
         public static NetworkStream netStream;
 
-        // Raw-data stream of connection.
+        /// <summary>
+        /// An empty to object to serve as a thread lock
+        /// </summary>
+        private static readonly object lockObj = new object();
+
+        /// <summary>
+        /// Raw-data stream of connection encrypted with TLS.
+        /// </summary>
         public static SslStream ssl;
 
-        public static OperationReturnMessage ReceiveFromServerORM()
-        {
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
-                return (OperationReturnMessage)(ReadByteArray(size)[0]);
-            }
-            else
-            {
-                return OperationReturnMessage.FalseNoConnection;
-            }
-        }
-
-        public static string ReceiveFromServerStringData()
-        {
-            int size = BitConverter.ToInt32(ReadByteArray(headerSize), 1);
-            string data = Encoding.Unicode.GetString(ReadByteArray(size));
-            data = data.Trim();
-            return data;
-        }
-
-        // Encrypts connection using SSL.
         /// <summary>
-        /// Send a request or data to the server.
+        /// Delegate for SslStream to validate certificate
         /// </summary>
-        /// <param name="dataType">
-        /// The type of request/data to be sent
-        /// </param>
-        /// <param name="data">
-        /// The data/string query to send
-        /// </param>
-        /// <returns>
-        /// If the data successfully sent or not
-        /// </returns>
-        public static bool SendData(ServerRequestTypes dataType, object data)
-        {
-            if (SetupConnection())
-            {
-                switch (dataType)
-                {
-                    case (ServerRequestTypes.AddJPEGImage):
-
-                        break;
-
-                    case (ServerRequestTypes.AddRealmFile):
-
-                        break;
-
-                    case (ServerRequestTypes.LoginAccount):
-                    case (ServerRequestTypes.RegisterAccount):
-                    case (ServerRequestTypes.GetEmail):
-                    case (ServerRequestTypes.ConfirmEmail):
-                    case (ServerRequestTypes.StringData):
-                        SendStringData((string)data, dataType);
-                        return true;
-
-                    case (ServerRequestTypes.GetJPEGImage):
-
-                        break;
-
-                    case (ServerRequestTypes.GetRealmFile):
-
-                        break;
-                }
-                return false;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
+        /// <param name="sender"></param>
+        /// <param name="certificate"></param>
+        /// <param name="chain"></param>
+        /// <param name="sslPolicyErrors"></param>
+        /// <returns></returns>
         public static bool ValidateCert(object sender, X509Certificate certificate,
               X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            return true; // Allow untrusted certificates.
+            return true;
         }
-
-        private const int headerSize = 5;
-        private const int maxFileSize = 2147483591;
-
-        // Max byte size for arrays in C#, slightly under int.MaxValue - Can't process anything over this
-        private static void CloseConn() // Close connection.
+        
+        /// <summary>
+        /// Send byte data to server and read what the server returns
+        /// </summary>
+        /// <param name="data">The byte data to send to server.</param>
+        /// <returns>A byte array of what the server returns</returns>
+        public static byte[] SendByteArray(byte[] data)
         {
-            ssl.Close();
-            netStream.Close();
-            client.Close();
+            // Prevent sending and receiving corrupted data
+            // because of thread collisions through the lock
+            lock (lockObj)
+            {
+                if (SetupConnection())
+                {
+                    try
+                    {
+                        if (ssl != null)
+                        {
+                            lock (ssl)
+                            {
+
+                                if (CrossConnectivity.Current.IsConnected)
+                                {
+                                    ssl.Write(data, 0, data.Length);
+                                    ssl.Flush();
+
+                                    byte[] header = ReadByteArray(headerSize);
+                                    int size = BitConverter.ToInt32(header, 1);
+                                    if (header.Length >= 5)
+                                    {
+                                        byte[] returnedData = ReadByteArray(size);
+                                        return returnedData;
+                                    }
+                                    else
+                                        return new byte[0];
+                                }
+                                else
+                                    return new byte[0];
+                            }
+                        }
+                        else
+                            return new byte[0];
+                    }
+                    catch
+                    {
+                        return new byte[0];
+                    }
+                }
+                else
+                {
+                    return new byte[0];
+                }
+            }
         }
 
-        private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
-        {
-            byte[] headerData = new byte[5];
-            headerData[0] = (byte)type;
-            byte[] dataSize = BitConverter.GetBytes(size);
-            dataSize.CopyTo(headerData, 1);
-            return headerData;
-        }
-
+        /// <summary>
+        /// Read byte array of what the server returns.
+        /// </summary>
+        /// <param name="size">Size of the file to read</param>
+        /// <returns>Byte array of data that the server returns</returns>
         private static byte[] ReadByteArray(int size)
         {
-            if (CrossConnectivity.Current.IsConnected)
+            try
             {
-                byte[] buffer = new byte[1024];
-
-                List<byte> data = new List<byte>();
-                int bytes = -1;
-                int bytesRead = 0;
-                do
+                if (CrossConnectivity.Current.IsConnected)
                 {
-                    int toRead = 0;
-                    if ((size - bytesRead) > buffer.Length)
-                    {
-                        toRead = buffer.Length - (size - bytesRead);
-                    }
-                    else
-                    {
-                        toRead = size - bytesRead;
-                    }
+                    byte[] buffer = new byte[1024];
 
-                    bytes = ssl.Read(buffer, 0, toRead);
-                    bytesRead += bytes;
-
-                    if (bytes > 0)
+                    List<byte> data = new List<byte>();
+                    int bytes = -1;
+                    int bytesRead = 0;
+                    do
                     {
-                        for (int i = 0; i < bytes; i++)
+                        int toRead = 0;
+                        if ((size - bytesRead) > buffer.Length)
+                            toRead = buffer.Length;
+                        else
+                            toRead = size - bytesRead;
+
+                        bytes = ssl.Read(buffer, 0, toRead);
+                        bytesRead += bytes;
+
+                        if (bytes > 0)
                         {
-                            data.Add(buffer[i]);
+                            for (int i = 0; i < bytes; i++)
+                            {
+                                data.Add(buffer[i]);
+                            }
                         }
-                    }
-                } while (data.Count < size);
-                data.RemoveRange(size, data.Count - size);
-                return data.ToArray();
+                    } while (data.Count < size);
+                    data.RemoveRange(size, data.Count - size);
+                    return data.ToArray();
+                }
+                else
+                {
+                    return new byte[0];
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return null;
+                BugReportHandler.SaveReport(ex);
+                return new byte[0];
             }
         }
 
-        private static void SendByteArray(byte[] data)
-        {
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                ssl.Write(data, 0, data.Length);
-                ssl.Flush();
-            }
-        }
-
-        private static void SendStringData(string data, ServerRequestTypes dataType)
-        {
-            string dataAsString = data;
-            byte[] dataAsBytes = Encoding.Unicode.GetBytes(dataAsString);
-            byte[] headerData = GenerateHeaderData(dataType, (uint)dataAsBytes.Length);
-            byte[] toSend = new byte[headerData.Length + dataAsBytes.Length];
-            headerData.CopyTo(toSend, 0);
-            dataAsBytes.CopyTo(toSend, headerData.Length);
-            SendByteArray(toSend);
-        }
-
+        /// <summary>
+        /// Setup connection between client and server
+        /// </summary>
+        /// <returns></returns>
         private static bool SetupConnection()
         {
             try
@@ -233,7 +180,7 @@ namespace appFBLA2019
                         client = new TcpClient(AddressFamily.InterNetworkV6);
                         client.Client.DualMode = true;
                         var result = client.BeginConnect(Server, Port, null, null);
-                        var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(7));
+                        var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3));
                         if (!success)
                         {
                             throw new Exception("Failed to connect - Timeout exception.");
@@ -248,8 +195,9 @@ namespace appFBLA2019
 
                             lock (ssl)
                             {
+                                
                                 ssl.WriteTimeout = 5000;
-                                ssl.ReadTimeout = 10000;
+                                ssl.ReadTimeout = 5000;
 
                                 ssl.AuthenticateAsClient("BizQuizServer");
                                 return true;
@@ -262,10 +210,25 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch
+            catch (SocketException ex)
             {
+                BugReportHandler.SaveReport(ex);
+                App.DisplayIPWarning();
                 return false;
             }
+        }
+        
+        /// <summary>
+        /// Close and dispose of network objects.
+        /// </summary>
+        public static void CloseConn() // Close connection.
+        {
+            if (ssl != null)
+                ssl.Close();
+            if (netStream != null)
+                netStream.Close();
+            if (client != null)
+                client.Close();
         }
     }
 }
