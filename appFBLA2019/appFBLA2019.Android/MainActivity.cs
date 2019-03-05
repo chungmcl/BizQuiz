@@ -38,13 +38,12 @@ namespace appFBLA2019.Droid
         /// Called when the app is launched
         /// </summary>
         /// <param name="bundle"></param>
-        protected override void OnCreate(Bundle bundle)
+        protected async override void OnCreate(Bundle bundle)
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
-
             //Stream input = this.Assets.Open("my_asset.txt");
 
             CrossCurrentActivity.Current.Init(this, bundle);
@@ -101,6 +100,10 @@ namespace appFBLA2019.Droid
             }
         }
 
+        /// <summary>
+        /// Setup an Android dialog box informing the user that they must grant the app permissions.
+        /// </summary>
+        /// <returns>A bool on whether or not they have pressed the OK button</returns>
         private Task<bool> AlertAsync()
         {
             var tcs = new TaskCompletionSource<bool>();

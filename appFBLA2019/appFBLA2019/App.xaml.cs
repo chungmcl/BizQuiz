@@ -64,7 +64,6 @@ namespace appFBLA2019
         {
             // Handle when your app starts
             await CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
-
             string tempPicturesDir = App.Path + "/" + "Pictures";
             if (Directory.Exists(tempPicturesDir))
                 Directory.Delete(App.Path + "/" + "Pictures", true);
