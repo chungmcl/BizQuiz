@@ -376,7 +376,7 @@ namespace appFBLA2019
                 }
 
                 // Add if it doesn't already exist, delete if it doesn't exist anymore, update the ones that need to be updated, and do nothing to the others Work in progress, algorithm might be off.
-                if (previousQuestions.Count() == 0)
+                if (previousQuestions.Count() == 0 || originalAuthor != CredentialManager.Username)
                 {
                     // if the user created this for the first time
 
@@ -388,6 +388,7 @@ namespace appFBLA2019
                 }
                 else // edit
                 {
+                    
                     QuizInfo updatedQuizInfo = new QuizInfo(DBHandler.Database.GetQuizInfo())
                     {
                         QuizName = this.EditorQuizName.Text?.Trim(),
