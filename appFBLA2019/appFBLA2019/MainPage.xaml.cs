@@ -54,12 +54,6 @@ namespace appFBLA2019
                         }
                     }
                 break;
-                case TabID.quizCategoriesPage:
-                {
-                    QuizCategoriesPage quizCategoriesPage = (QuizCategoriesPage)this.TabbedPagePage.Children[(int)TabID.quizCategoriesPage];
-                    await quizCategoriesPage.RefreshChildrenAsync();
-                    break;
-                }
             }
         }
 
