@@ -70,12 +70,18 @@ namespace appFBLA2019
             this.AddNewQuestion();
         }
 
+        /// <summary>
+        /// Sets up the toolbar with the done button
+        /// </summary>
         private void SetUpBar()
         {
             this.ToolbarItems.Add(this.Done);
             this.Done.Clicked += this.ButtonCreateQuiz_Clicked;
         }
 
+        /// <summary>
+        /// if the current page has user permission to close
+        /// </summary>
         private bool canClose = true;
 
         /// <summary>
@@ -168,6 +174,9 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Animates and sets up the floating button
+        /// </summary>
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -189,6 +198,9 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Animates the buttons away
+        /// </summary>
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
@@ -722,7 +734,10 @@ namespace appFBLA2019
             await button.FadeTo(1, 150, Easing.CubicInOut);
         }
 
-
+        /// <summary>
+        /// sets the quizname in the quizname editor
+        /// </summary>
+        /// <param name="quizName"></param>
         public void SetQuizName(string quizName)
         {
             this.EditorQuizName.Text = quizName;

@@ -28,8 +28,16 @@ namespace appFBLA2019.Droid
         WindowSoftInputMode =Android.Views.SoftInput.AdjustResize, ScreenOrientation =ScreenOrientation.Portrait)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger, ICloseApplication
     {
+        /// <summary>
+        /// the current window of the App
+        /// </summary>
         private Android.Views.Window currentWindow;
+
+        /// <summary>
+        /// the path where the app keeps internal files
+        /// </summary>
         private static string fileDirectory;
+
         /// <summary>
         /// Called when the app is launched
         /// </summary>

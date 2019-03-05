@@ -28,6 +28,7 @@ namespace appFBLA2019
             this.inGame = false;
 
             this.LabelQuestion.SizeChanged += (object sender, EventArgs e) => { this.RelativeLayoutImageAnswer.HeightRequest = this.StackLayoutMain.Height - this.LabelQuestion.Height - 75; };
+            this.SizeChanged += (object sender, EventArgs e) => { this.RelativeLayoutImageAnswer.HeightRequest = this.StackLayoutMain.Height - this.LabelQuestion.Height - 75; };
         }
 
         /// <summary>
@@ -351,8 +352,6 @@ namespace appFBLA2019
                     }
                     while (buttonFontSize / 2 * button.Text.Length > (button.Width - 10) * 3)
                     {
-                        double testSize = buttonFontSize / 2 * button.Text.Length;
-                        double buttonWidth = (button.Width - 10) * 3.5;
                         buttonFontSize--;
                     }
                 }

@@ -12,8 +12,14 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainPage : Xamarin.Forms.TabbedPage
     {
+        /// <summary>
+        /// ID for the tabs
+        /// </summary>
         public enum TabID : int { quizCategoriesPage, quizStorePage, profilePage}
 
+        /// <summary>
+        /// loads the main page and sets up the toolbars
+        /// </summary>
         public MainPage()
         {
             this.InitializeComponent();
@@ -27,6 +33,11 @@ namespace appFBLA2019
             this.BarTextColor = Color.Gray;
         }
 
+        /// <summary>
+        /// when pages are opened, update them
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void TabbedPage_CurrentPageChanged(object sender, EventArgs e)
         {
             var index = (TabID)this.Children.IndexOf(this.CurrentPage);
@@ -43,34 +54,60 @@ namespace appFBLA2019
                         }
                     }
                 break;
+                case TabID.quizCategoriesPage:
+                {
+                    QuizCategoriesPage quizCategoriesPage = (QuizCategoriesPage)this.TabbedPagePage.Children[(int)TabID.quizCategoriesPage];
+                    await quizCategoriesPage.RefreshChildren();
+                    break;
+                }
             }
         }
 
+        /// <summary>
+        /// Open the terms of use
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void TermsOfUse_Activated(object sender, EventArgs e)
         {
             await this.Navigation.PushModalAsync(new TermsOfUse());
         }
 
+        /// <summary>
+        /// Open the bug report screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void BugReportToolbarItem_Clicked(object sender, EventArgs e)
         {
             await this.Navigation.PushAsync(new BugReportPage());
         }
 
+        /// <summary>
+        /// Open the about page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void AboutPageToolbarItem_Clicked(object sender, EventArgs e)
         {
             await this.Navigation.PushModalAsync(new AboutUsPage());
         }
 
-        private async void TutorialButton_Clicked(object sender, EventArgs e)
-        {
-            await this.Navigation.PushAsync(new HelpPage());
-        }
-
+        /// <summary>
+        /// Open the help page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void HelpButton_Clicked(object sender, EventArgs e)
         {
             await this.Navigation.PushModalAsync(new HelpPage());
         }
 
+        /// <summary>
+        /// Open the advanced settings page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void AdvancedSettings_Clicked(object sender, EventArgs e)
         {
             await this.Navigation.PushModalAsync(new AdvancedSettingsPage());

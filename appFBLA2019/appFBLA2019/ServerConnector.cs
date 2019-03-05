@@ -11,17 +11,29 @@ namespace appFBLA2019
 {
     public static class ServerConnector
     {
-        // The byte length of the header in transmissions
+        /// <summary>
+        /// The byte length of the header in transmissions
+        /// </summary>
         private const int headerSize = 5;
 
-        // Server Release Build: 7777 Server Debug Build: 7778
+        /// <summary>
+        /// port to use when connecting
+        /// Server Release Build: 7777 Server Debug Build: 7778
+        /// </summary>
         public static int Port { get { return 7777; } }
 
-        // The address of the server
+        /// <summary>
+        /// Ip address of the server
+        /// </summary>
         public static string Server { get; set; }
 
-        // The TcpClient on to of the TLS (SSL) stream
+        /// <summary>
+        /// The TcpClient on to of the TLS (SSL) stream
+        /// </summary>
         public static TcpClient client;
+        /// <summary>
+        /// the current networkstream
+        /// </summary>
         public static NetworkStream netStream;
 
         /// <summary>
@@ -29,10 +41,19 @@ namespace appFBLA2019
         /// </summary>
         private static readonly object lockObj = new object();
 
-        // Raw-data stream of connection encrypted with TLS.
+        /// <summary>
+        /// Raw-data stream of connection encrypted with TLS.
+        /// </summary>
         public static SslStream ssl;
-        
-        // Delegate for SslStream to validate certificate
+
+        /// <summary>
+        /// Delegate for SslStream to validate certificate
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="certificate"></param>
+        /// <param name="chain"></param>
+        /// <param name="sslPolicyErrors"></param>
+        /// <returns></returns>
         public static bool ValidateCert(object sender, X509Certificate certificate,
               X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
@@ -189,10 +210,9 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch (SocketException ex)
+            catch (Exception ex)
             {
                 BugReportHandler.SaveReport(ex);
-                App.DisplayIPWarning();
                 return false;
             }
         }

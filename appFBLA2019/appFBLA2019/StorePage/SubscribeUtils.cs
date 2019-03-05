@@ -7,7 +7,19 @@ namespace appFBLA2019
 {
     public static class SubscribeUtils
     {
-        public static async Task<OperationReturnMessage> SubscribeToQuizAsync(string dbId, List<SearchInfo> quizzesSearched)
+        /// <summary>
+        /// different actions that the sub/download button takes
+        /// </summary>
+        public enum SubscribeType { Subscribe = 1, Unsubscribe, Syncing };
+
+
+        /// <summary>
+        /// Subscribes to a quiz given the ID
+        /// </summary>
+        /// <param name="dbId">the ID of the quiz to sub to</param>
+        /// <param name="quizzesSearched">the quizzes currently displayed (used to get info about the quiz from the dbid)</param>
+        /// <returns>If the subscription was successful</returns>
+        public static async Task<OperationReturnMessage> SubscribeToQuiz(string dbId, List<SearchInfo> quizzesSearched)
         {
             if (QuizRosterDatabase.GetQuizInfo(dbId) == null) // make sure it isn't in yet
             {
@@ -45,7 +57,12 @@ namespace appFBLA2019
             
         }
 
-        public static async Task<OperationReturnMessage> UnsubscribeFromQuizAsync(string dbId)
+        /// <summary>
+        /// Unsubscribe from a quiz
+        /// </summary>
+        /// <param name="dbId">ID to unsub from</param>
+        /// <returns>If the unsub was successful</returns>
+        public static async Task<OperationReturnMessage> UnsubscribeFromQuiz(string dbId)
         {
             QuizInfo info = QuizRosterDatabase.GetQuizInfo(dbId);
             string location = App.UserPath + "/" + info.Category + "/" + info.QuizName + "`" + info.AuthorName;
@@ -53,7 +70,7 @@ namespace appFBLA2019
                 Directory.Delete(location, true);
 
             QuizRosterDatabase.DeleteQuizInfo(dbId);
-            OperationReturnMessage returnMessage = await Task.Run(async () => await ServerOperations.UnsubscribeToQuizAsync(dbId));
+            OperationReturnMessage returnMessage = await Task.Run(async () => await ServerOperations.UnsubscribeToQuiz(dbId));
             if (returnMessage == OperationReturnMessage.True)
             {
                 return returnMessage;

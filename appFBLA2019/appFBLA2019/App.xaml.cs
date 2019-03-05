@@ -15,6 +15,11 @@ namespace appFBLA2019
 {
     public partial class App : Application
     {
+        /// <summary>
+        /// Main app constructor:
+        /// this registers dependencies and starts background processes that are 
+        /// required for the app to function
+        /// </summary>
         public App()
         {
             this.InitializeComponent();
@@ -46,10 +51,14 @@ namespace appFBLA2019
         /// </summary>
         public static Random random;
 
-        public static string debugFolder = "/FBLADebug/";
-
+        /// <summary>
+        /// the Path to the app's main directory
+        /// </summary>
         public static string Path;
 
+        /// <summary>
+        /// The path to the current user's folder
+        /// </summary>
         public static string UserPath
         {
             get
@@ -60,15 +69,24 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// When the app comes back into main focus
+        /// </summary>
         protected override void OnResume()
         {
         }
 
+        /// <summary>
+        /// When the app is switched away from
+        /// </summary>
         protected override void OnSleep()
         {
             // Handle when your app sleeps
         }
 
+        /// <summary>
+        /// Sets up stuff that needs storage/network permissions
+        /// </summary>
         protected override async void OnStart()
         {
             string tempPicturesDir = App.Path + "/" + "Pictures";
@@ -92,6 +110,11 @@ namespace appFBLA2019
             BugReportHandler.ProcessCrashLog();
         }
 
+        /// <summary>
+        /// Handles exceptions from unobserved tasks
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="unobservedTaskExceptionEventArgs"></param>
         private static void HandleUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
         {
             if (unobservedTaskExceptionEventArgs.Exception.InnerException == null)
@@ -104,6 +127,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Handles exceptions from the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="unhandledExceptionEventArgs"></param>
         private static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
         {
             if ((unhandledExceptionEventArgs.ExceptionObject as Exception).InnerException == null)
@@ -116,6 +144,10 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Saves unhandled exceptions to file and logs them with device diagnostics
+        /// </summary>
+        /// <param name="exception"></param>
         private static void LogUnhandledException(Exception exception)
         {
             try
@@ -130,12 +162,6 @@ namespace appFBLA2019
             {
                 // just suppress any error logging exceptions
             }
-        }
-
-        public static void DisplayIPWarning()
-        {
-            Application.Current.MainPage.DisplayAlert("Connection Error!", "We couldn't connect to the server. This could happen for a number of reasons." +
-                " Make sure your server IP matches the serverIP on our website at www.bizquiz.app, then try again.", "OK");
         }
     }
 }

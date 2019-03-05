@@ -13,10 +13,19 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class FeaturedPage : ContentPage
     {
+        /// <summary>
+        /// the category filter
+        /// </summary>
         private string category;
-        private List<SearchInfo> quizzesFeatured;
-        private enum SubscribeType { Subscribe = 1, Unsubscribe, Syncing };
 
+        /// <summary>
+        /// the quizzes shown on the featured page
+        /// </summary>
+        private List<SearchInfo> quizzesFeatured;
+
+        /// <summary>
+        /// Sets up the featured page
+        /// </summary>
         public FeaturedPage()
         {
             this.InitializeComponent();
@@ -24,6 +33,9 @@ namespace appFBLA2019
             this.quizzesFeatured = new List<SearchInfo>();
         }
 
+        /// <summary>
+        /// preloads the featured page
+        /// </summary>
         protected async override void OnAppearing()
         {
             this.quizzesRemaining = true;
@@ -31,7 +43,14 @@ namespace appFBLA2019
             await this.RefreshAsync();
         }
 
+        /// <summary>
+        /// if there are quizzes left to load
+        /// </summary>
         private bool quizzesRemaining;
+
+        /// <summary>
+        /// the most recently loaded chunk of quizzes
+        /// </summary>
         private int currentChunk;
 
         /// <summary>
@@ -226,7 +245,7 @@ namespace appFBLA2019
             bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
             if (answer)
             {
-                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
+                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
                 button.IsVisible = false;
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
@@ -245,7 +264,7 @@ namespace appFBLA2019
                 if (returnMessage == OperationReturnMessage.True)
                 {
                     QuizRosterDatabase.DeleteQuizInfo(dbId);
-                    (button.Parent as StackLayout).Children[(int)SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
+                    (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
                 {
@@ -274,7 +293,7 @@ namespace appFBLA2019
                 ImageButton button = (sender as ImageButton);
                 string dbId = button.StyleId;
 
-                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeType.Syncing] as ActivityIndicator;
+                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
                 button.IsVisible = false;
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
@@ -303,11 +322,21 @@ namespace appFBLA2019
             
         }
 
+        /// <summary>
+        /// when the search button is pressed, opens a search page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Search_Activated(object sender, EventArgs e)
         {
             this.Navigation.PushModalAsync(new SearchPage());
         }
 
+        /// <summary>
+        /// when a category is selected, reset the page with the new category
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex];
