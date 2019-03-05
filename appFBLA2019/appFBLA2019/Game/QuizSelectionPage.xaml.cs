@@ -16,6 +16,9 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class QuizSelectionPage : ContentPage
     {
+        /// <summary>
+        /// To detect taps on quiz cards
+        /// </summary>
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         
         /// <summary>
@@ -34,10 +37,14 @@ namespace appFBLA2019
         public bool serverConnected;
 
         /// <summary>
-        /// The sync status of a level
+        /// The sync status of a quiz
         /// </summary>
         private enum SyncType { Offline = 1, Upload, Download, NoChange, Syncing };
 
+        /// <summary>
+        /// Creates a quizselectionpage for the given category
+        /// </summary>
+        /// <param name="category">The category of the page</param>
         public QuizSelectionPage(string category)
         {
             this.InitializeComponent();
@@ -46,6 +53,11 @@ namespace appFBLA2019
             this.isSetup = false;
         }
 
+        /// <summary>
+        /// Called when the page receives a size, sets up the cards if possible
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
@@ -53,12 +65,19 @@ namespace appFBLA2019
             this.isSetup = true;
         }
 
+        /// <summary>
+        /// Called when the page is displayed to the user, sets up the cards if necessary 
+        /// (this allows refreshing the page when the user navigates away and returns)
+        /// </summary>
         protected override void OnAppearing()
         {
             base.OnAppearing();
             this.CheckSetup();
         }
 
+        /// <summary>
+        /// Flags the page as not set up in order to trigger a setup when the user sees the page again
+        /// </summary>
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
@@ -88,7 +107,7 @@ namespace appFBLA2019
         private readonly string category;
 
         /// <summary>
-        /// Sets up the page with levels the user has subscribed to from the category of the page
+        /// Sets up the page with quizzes the user has subscribed to from the category of the page
         /// </summary>
         public void Setup()
         {
@@ -513,7 +532,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Handle event when user clicks delete level button.
+        /// Handle event when user clicks delete quiz button.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -546,7 +565,7 @@ namespace appFBLA2019
                     ((Button)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
                 string dbId = rosterInfo.DBId;
 
-                // tell the roster that the level is deleted
+                // tell the roster that the quiz is deleted
                 QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
                 {
                     IsDeletedLocally = true,
@@ -592,7 +611,7 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Handle when user presses "three dot" icon on the level tab
+        /// Handle when user presses "three dot" icon on the quiz tab
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

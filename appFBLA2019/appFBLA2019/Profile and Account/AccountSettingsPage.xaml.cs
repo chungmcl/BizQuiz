@@ -10,22 +10,38 @@ namespace appFBLA2019
     public partial class AccountSettingsPage : ContentPage
     {
         /// <summary>
-        /// The currently open tab
+        /// The currently open frame
         /// </summary>
         private Frame currentlyOpenFrame;
 
         /// <summary>
-        /// If the task/operation in the current tab is running.
+        /// If the task/operation in the current frame is running.
         /// </summary>
         private bool currentlyOpenFrameIsRunning;
 
+        /// <summary>
+        /// handles user signout
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="eventArgs"></param>
         public delegate void SignOutEventHandler(object source, EventArgs eventArgs);
+
+        /// <summary>
+        /// handles user signout
+        /// </summary>
         public event SignOutEventHandler SignedOut;
+
+        /// <summary>
+        /// default constructor
+        /// </summary>
         public AccountSettingsPage()
         {
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// sets the confirm email to visible or not based on need for it
+        /// </summary>
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -45,6 +61,9 @@ namespace appFBLA2019
             this.Navigation.PopAsync();
         }
 
+        /// <summary>
+        /// When signed out, triggers the signout handling
+        /// </summary>
         protected virtual void OnSignedOut()
         {
             this.SignedOut?.Invoke(this, EventArgs.Empty);
@@ -302,22 +321,30 @@ namespace appFBLA2019
                 }
             }
             this.currentlyOpenFrameIsRunning = true;
-            this.DisableOtherTabs(frame);
+            this.DisableOtherFrames(frame);
             return true;
         }
 
+        /// <summary>
+        /// sets up the frames
+        /// </summary>
+        /// <param name="contentStackLayout"></param>
         private void SetupFrameEnd(StackLayout contentStackLayout)
         {
             if (this.currentlyOpenFrameIsRunning)
             {
-                this.EnableAllTabs();
+                this.EnableAllFrames();
                 this.currentlyOpenFrameIsRunning = false;
             }
 
             contentStackLayout.IsEnabled = true;
         }
 
-        private void DisableOtherTabs(View keepMeEnabled)
+        /// <summary>
+        /// when one frame is open, the rest are locked closed
+        /// </summary>
+        /// <param name="keepMeEnabled"></param>
+        private void DisableOtherFrames(View keepMeEnabled)
         {
             for (int i = 0; i < this.StackLayoutMain.Children.Count; i++)
             {
@@ -336,7 +363,10 @@ namespace appFBLA2019
             this.ButtonLogout.IsEnabled = false;
         }
 
-        private void EnableAllTabs()
+        /// <summary>
+        /// When all frames are closed, they are all available to be opened
+        /// </summary>
+        private void EnableAllFrames()
         {
             for (int i = 0; i < this.StackLayoutMain.Children.Count; i++)
             {
@@ -352,6 +382,10 @@ namespace appFBLA2019
             this.ButtonLogout.BackgroundColor = Color.Accent;
         }
 
+        /// <summary>
+        /// Closes the currently open frame
+        /// </summary>
+        /// <returns></returns>
         private async Task CloseCurrentlyOpenFrame()
         {
             if (this.currentlyOpenFrame != null)
@@ -370,7 +404,11 @@ namespace appFBLA2019
                 }
             }
         }
-
+        
+        /// <summary>
+        /// gets rid of the elements in the stack
+        /// </summary>
+        /// <param name="contentStackLayout"></param>
         private void ClearContentStack(StackLayout contentStackLayout)
         {
             // For each entry in the Frame (contentStack - button - label = entries)
@@ -385,6 +423,13 @@ namespace appFBLA2019
             label.Text = "";
         }
 
+        /// <summary>
+        /// manages frame animations
+        /// </summary>
+        /// <param name="imageButton">The button that triggered the animation</param>
+        /// <param name="contentStack">The stack inside the frame</param>
+        /// <param name="frame">The frame itself</param>
+        /// <returns></returns>
         private async Task AnimateFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
         {
             imageButton.IsEnabled = false;
@@ -413,6 +458,13 @@ namespace appFBLA2019
             imageButton.IsEnabled = true;
         }
 
+        /// <summary>
+        /// Animates the opening of the frame
+        /// </summary>
+        /// <param name="imageButton">The button that triggered the opening</param>
+        /// <param name="contentStack">The stack inside the frame</param>
+        /// <param name="frame">The frame itself</param>
+        /// <returns></returns>
         private async Task OpenFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
         {
             ((frame.Content as StackLayout).Children[0] as StackLayout).IsEnabled = false;
@@ -430,6 +482,13 @@ namespace appFBLA2019
             ((frame.Content as StackLayout).Children[0] as StackLayout).IsEnabled = true;
         }
 
+        /// <summary>
+        /// Animates the closing of the frame
+        /// </summary>
+        /// <param name="imageButton">The button that triggered the opening</param>
+        /// <param name="contentStack">The stack inside the frame</param>
+        /// <param name="frame">The frame itself</param>
+        /// <returns></returns>
         private async Task CloseFrame(ImageButton imageButton, StackLayout contentStack, Frame frame)
         {
             ((frame.Content as StackLayout).Children[0] as StackLayout).IsEnabled = false;
@@ -448,32 +507,46 @@ namespace appFBLA2019
         #endregion
 
         #region Image Button Event Handlers
-        private async void ChangeEmailTab_Clicked(object sender, EventArgs e)
+        /// <summary>
+        /// opens the change email frame
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ChangeEmailFrame_Clicked(object sender, EventArgs e)
         {
             await this.AnimateFrame(this.ImageButtonCloseChangeEmail, this.StackLayoutChangeEmailContent, this.FrameChangeEmail);
         }
 
-        private async void ChangePasswordTab_Clicked(object sender, EventArgs e)
+        /// <summary>
+        /// opens the change password frame
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ChangePasswordFrame_Clicked(object sender, EventArgs e)
         {
             await this.AnimateFrame(this.ImageButtonCloseChangePassword, this.StackLayoutChangePasswordContent, this.FrameChangePassword);
         }
 
-        private async void ConfirmEmailTab_Clicked(object sender, EventArgs e)
+        /// <summary>
+        /// opens the confirm email frame
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ConfirmEmailFrame_Clicked(object sender, EventArgs e)
         {
             await this.AnimateFrame(this.ImageButtonCloseConfirmEmail, this.StackLayoutConfirmEmailContent, this.FrameConfirmEmail);
         }
 
-        private async void DeleteAccountTab_Clicked(object sender, EventArgs e)
+        /// <summary>
+        /// opens the delete account frame
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void DeleteAccountFrame_Clicked(object sender, EventArgs e)
         {
             await this.AnimateFrame(this.ImageButtonDeleteAccount, this.StackLayoutDeleteAccountContent, this.FrameDeleteAccount);
         }
 
         #endregion
-
-        // To do:
-        // Change email
-        // Change password
-        // Confirm Email (IsVisible only if user needs to confirm email)
-        // Delete account permanently
     }
 }

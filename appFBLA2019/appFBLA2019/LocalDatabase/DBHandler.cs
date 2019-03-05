@@ -10,6 +10,9 @@ namespace appFBLA2019
     /// </summary>
     internal static class DBHandler
     {
+        /// <summary>
+        /// The gamedatabase currently selected
+        /// </summary>
         public static GameDatabase Database { get; private set; }
 
         /// <summary>
@@ -49,7 +52,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)// If the database failed to connect
             {
-                BugReportHandler.SaveReport(ex, nameof(DBHandler));
+                BugReportHandler.SaveReport(ex);
                 return false;
             }
         }

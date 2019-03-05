@@ -13,10 +13,23 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class PhotoPage : ContentPage
     {
+        /// <summary>
+        /// button with the image
+        /// </summary>
         private ImageButton imageButton;
+        /// <summary>
+        /// different actions to take on a photo
+        /// </summary>
         private enum PhotoAction { back, change, delete }
+        /// <summary>
+        /// what we're doing right now
+        /// </summary>
         private PhotoAction currentAction;
 
+        /// <summary>
+        /// creates a photopage to edit an image
+        /// </summary>
+        /// <param name="image"></param>
         public PhotoPage(ImageButton image)
         {
             InitializeComponent();
@@ -27,6 +40,9 @@ namespace appFBLA2019
             this.pictureToEdit.VerticalOptions = LayoutOptions.FillAndExpand;
         }
 
+        /// <summary>
+        /// When the page disappears, set the styleID to convey what the action was
+        /// </summary>
         protected override void OnDisappearing()
         {
             base.OnDisappearing();

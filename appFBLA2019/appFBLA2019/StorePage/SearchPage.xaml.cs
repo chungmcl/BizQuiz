@@ -182,7 +182,7 @@ namespace appFBLA2019
                 indicatorSyncing.IsRunning = true;
                 // get rosterInfo
                 QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
-                // tell the roster that the level is deleted
+                // tell the roster that the quiz is deleted
                 QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
                 {
                     IsDeletedLocally = true,
@@ -190,7 +190,7 @@ namespace appFBLA2019
                 };
                 QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
 
-                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeToLevel(dbId);
+                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuiz(dbId);
 
                 if (returnMessage == OperationReturnMessage.True)
                 {
@@ -230,7 +230,7 @@ namespace appFBLA2019
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
 
-                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToLevel(dbId, this.quizzesSearched);
+                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToQuiz(dbId, this.quizzesSearched);
                 if (returnMessage == OperationReturnMessage.True)
                 {
 
@@ -278,7 +278,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
 			{
-				BugReportHandler.SaveReport(ex, "SearchPage_SearchBar");
+				BugReportHandler.SaveReport(ex);
 				await this.DisplayAlert("Search Failed", "Try again later", "Ok");
 			}
 			Device.BeginInvokeOnMainThread(() =>

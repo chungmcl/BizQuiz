@@ -9,22 +9,32 @@ using System.Threading.Tasks;
 
 namespace appFBLA2019
 {
+    /// <summary>
+    /// The quiz roster keeps track of the quizzes the user has downloaded and enables syncing to server
+    /// </summary>
     public static class QuizRosterDatabase
     {
-        //needs to be a property so that it changes when UserPath does
+        /// <summary>
+        /// The path of the current user's roster of quizzes
+        /// </summary>
         private static string RosterPath { get { return App.UserPath + "roster.realm"; } }
 
-        public static void NewQuizInfo(string authorName, string quizName, string category)
+        /// <summary>
+        /// Creates and saves a new quizinfo to the roster
+        /// </summary>
+        /// <param name="authorName">Author of the quiz</param>
+        /// <param name="quizName">name of the quiz</param>
+        /// <param name="category">category of the quiz</param>
+        public static void SaveQuizInfo(string authorName, string quizName, string category)
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
-            Realm realmDB = Realm.GetInstance(threadConfig);
-            realmDB.Write(() =>
-            {
-                realmDB.Add(new QuizInfo(authorName, quizName, category));
-            });
+            SaveQuizInfo(new QuizInfo(authorName, quizName, category));
         }
 
-        public static void NewQuizInfo(QuizInfo quizInfo)
+        /// <summary>
+        /// Saves a quizinfo to the roster
+        /// </summary>
+        /// <param name="quizInfo">Quizinfo to save</param>
+        public static void SaveQuizInfo(QuizInfo quizInfo)
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
@@ -34,6 +44,10 @@ namespace appFBLA2019
             });
         }
 
+        /// <summary>
+        /// updates a quiz in the roster
+        /// </summary>
+        /// <param name="editedQuizInfo">quiz to update</param>
         public static void EditQuizInfo(QuizInfo editedQuizInfo)
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
@@ -44,7 +58,12 @@ namespace appFBLA2019
             });
         }
 
-        private static void EditQuizInfo(Realm threadedRealm, QuizInfo editedQuizInfo)
+        /// <summary>
+        /// updates a quizinfo in a threaded realm
+        /// </summary>
+        /// <param name="editedQuizInfo">quiz to update</param>
+        /// <param name="threadedRealm">threaded realm to use</param>
+        private static void EditQuizInfo(QuizInfo editedQuizInfo, Realm threadedRealm)
         {
             threadedRealm.Write(() =>
             {
@@ -70,6 +89,11 @@ namespace appFBLA2019
             }
         }
 
+        /// <summary>
+        /// Gets a quizinfo based on a dbid
+        /// </summary>
+        /// <param name="dbId">id of the quiz to fetch</param>
+        /// <returns>the quiz matching the DBID (null if there isn't one)</returns>
         public static QuizInfo GetQuizInfo(string dbId)
         {
             try
@@ -81,11 +105,15 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SaveReport(ex, "QuizRosterDatabase.GetQuizInfo()");
+                BugReportHandler.SaveReport(ex);
                 return null;
             }
         }
 
+        /// <summary>
+        /// Open the roster as a list of QuizInfos
+        /// </summary>
+        /// <returns>The roster</returns>
         public static List<QuizInfo> GetRoster()
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
@@ -93,6 +121,11 @@ namespace appFBLA2019
             return new List<QuizInfo>(realmDB.All<QuizInfo>());
         }
 
+        /// <summary>
+        /// Gets the roster of the category specified
+        /// </summary>
+        /// <param name="category">Category of quizzes to fetch</param>
+        /// <returns>a filtered roster</returns>
         public static List<QuizInfo> GetRoster(string category)
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
@@ -100,6 +133,11 @@ namespace appFBLA2019
             return new List<QuizInfo>(realmDB.All<QuizInfo>().Where(quizInfo => quizInfo.Category == category && !quizInfo.IsDeletedLocally));
         }
 
+        /// <summary>
+        /// Given a dbid, deletes it from the roster
+        /// </summary>
+        /// <param name="dbId">ID of quiz to delete</param>
+        /// <returns>indicated whether or not the quizz was successfully deleted</returns>
         public static bool DeleteQuizInfo(string dbId)
         {
             try
@@ -114,11 +152,15 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SaveReport(ex, "QuizRosterDatabase.DeleteQuizInfo(string dbId)");
+                BugReportHandler.SaveReport(ex);
                 return false;
             }
         }
 
+        /// <summary>
+        /// Updates the local database by syncing with the server
+        /// </summary>
+        /// <returns>an awaitable task for the completion of syncing</returns>
         public static async Task UpdateLocalDatabase()
         {
             if (App.Path != null && App.UserPath.Length > 2)
@@ -147,18 +189,18 @@ namespace appFBLA2019
                                     {
                                         SyncStatus = 3 // 3 represents offline
                                     };
-                                    EditQuizInfo(threadInstance, copy);
+                                    EditQuizInfo(copy, threadInstance);
                                 }
                                 else
                                 {
-                                    // Server returns "false" if level is not already on the server
+                                    // Server returns "false" if quiz is not already on the server
                                     if (lastModifiedDate == "false" || lastModifiedDate == null)
                                     {
                                         QuizInfo copy = new QuizInfo(QuizInfos[i])
                                         {
                                             SyncStatus = 1 // 1 represents need upload
                                         };
-                                        EditQuizInfo(threadInstance, copy);
+                                        EditQuizInfo(copy, threadInstance);
                                     }
                                     else
                                     {
@@ -170,7 +212,7 @@ namespace appFBLA2019
                                             {
                                                 SyncStatus = 1 // 1 represents need upload
                                             };
-                                            EditQuizInfo(threadInstance, copy);
+                                            EditQuizInfo(copy, threadInstance);
                                         }
                                         else if (localModifiedDateTime < serverModifiedDateTime)
                                         {
@@ -178,7 +220,7 @@ namespace appFBLA2019
                                             {
                                                 SyncStatus = 0 // 0 represents needs download
                                             };
-                                            EditQuizInfo(threadInstance, copy);
+                                            EditQuizInfo(copy, threadInstance);
                                         }
                                         else if (localModifiedDateTime == serverModifiedDateTime)
                                         {
@@ -186,7 +228,7 @@ namespace appFBLA2019
                                             {
                                                 SyncStatus = 2 // 2 represents in sync
                                             };
-                                            EditQuizInfo(threadInstance, copy);
+                                            EditQuizInfo(copy, threadInstance);
                                         }
                                     }
                                 }
@@ -228,7 +270,7 @@ namespace appFBLA2019
                         {
                             SyncStatus = 3 // 3 represents offline
                         };
-                        EditQuizInfo(threadInstance, copy);
+                        EditQuizInfo(copy, threadInstance);
                     }
                 }
             }

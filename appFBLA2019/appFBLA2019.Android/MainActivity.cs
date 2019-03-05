@@ -91,8 +91,8 @@ namespace appFBLA2019.Droid
             PermissionStatus status = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
             if (status != PermissionStatus.Granted)
             {
-                await AlertAsync();
-                CloseApplication();
+                await this.AlertAsync();
+                this.CloseApplication();
             }
         }
 
@@ -158,7 +158,7 @@ namespace appFBLA2019.Droid
         /// </summary>
         /// <param name="userpath"></param>
         /// <returns></returns>
-        public async Task SetupDefaultLevelsAsync(string userpath)
+        public async Task SetupDefaultQuizzesAsync(string userpath)
         {
             if (await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage) == PermissionStatus.Granted)
             {

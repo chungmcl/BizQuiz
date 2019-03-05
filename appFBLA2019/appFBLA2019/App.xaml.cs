@@ -32,6 +32,12 @@ namespace appFBLA2019
 
             CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
 
+            if (Directory.GetDirectories(App.UserPath).Length < 8)
+            {
+                DependencyService.Get<IGetStorage>().SetupDefaultQuizzesAsync(App.UserPath);
+            }
+
+
             this.MainPage = new NavigationPage(new MainPage());
         }
 
@@ -124,6 +130,12 @@ namespace appFBLA2019
             {
                 // just suppress any error logging exceptions
             }
+        }
+
+        public static void DisplayIPWarning()
+        {
+            Application.Current.MainPage.DisplayAlert("Connection Error!", "We couldn't connect to the server. This could happen for a number of reasons." +
+                " Make sure your server IP matches the serverIP on our website at www.bizquiz.app, then try again.", "OK");
         }
     }
 }

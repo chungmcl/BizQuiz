@@ -7,7 +7,7 @@ namespace appFBLA2019
 {
     public static class SubscribeUtils
     {
-        public static async Task<OperationReturnMessage> SubscribeToLevel(string dbId, List<SearchInfo> quizzesSearched)
+        public static async Task<OperationReturnMessage> SubscribeToQuiz(string dbId, List<SearchInfo> quizzesSearched)
         {
             if (QuizRosterDatabase.GetQuizInfo(dbId) == null) // make sure it isn't in yet
             {
@@ -25,7 +25,7 @@ namespace appFBLA2019
                         LastModifiedDate = lastModifiedDate,
                         SyncStatus = 4 // 4 to represent not present in local directory and need download
                     };
-                    QuizRosterDatabase.NewQuizInfo(newInfo);
+                    QuizRosterDatabase.SaveQuizInfo(newInfo);
                     return returnMessage;
                 }
                 else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
@@ -45,7 +45,7 @@ namespace appFBLA2019
             
         }
 
-        public static async Task<OperationReturnMessage> UnsubscribeToLevel(string dbId)
+        public static async Task<OperationReturnMessage> UnsubscribeFromQuiz(string dbId)
         {
             QuizInfo info = QuizRosterDatabase.GetQuizInfo(dbId);
             string location = App.UserPath + "/" + info.Category + "/" + info.QuizName + "`" + info.AuthorName;
