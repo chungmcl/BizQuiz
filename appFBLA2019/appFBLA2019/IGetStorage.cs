@@ -11,6 +11,6 @@ namespace appFBLA2019
     {
        string GetStorage();
 
-       Task SetupDefaultLevels(string userpath);
+       Task SetupDefaultLevelsAsync(string userpath);
     }
 }

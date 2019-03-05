@@ -4,6 +4,7 @@ using Plugin.Connectivity;
 using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace appFBLA2019
 {
@@ -47,15 +48,20 @@ namespace appFBLA2019
         /// <param name="username">The username of the account.</param>
         /// <param name="password">The password of the account.</param>
         /// <param name="emailConfirmed">Whether the user has had their email confirmed or not.</param>
-        public static void SaveCredential(string username, string password, bool emailConfirmed)
+        public static async Task SaveCredentialAsync(string username, string password, bool emailConfirmed)
         {
-            Task.Run(async () => await SecureStorage.SetAsync("username", username));
-            Task.Run(async () => await SecureStorage.SetAsync("password", password));
+            await SecureStorage.SetAsync("username", username);
+            await SecureStorage.SetAsync("password", password);
             
             Username = username;
 
             IsLoggedIn = true;
             EmailConfirmed = emailConfirmed;
+
+            if (Directory.GetDirectories(App.UserPath).Length < 8)
+            {
+                await DependencyService.Get<IGetStorage>().SetupDefaultLevelsAsync(App.UserPath);
+            }
         }
 
         /// <summary>

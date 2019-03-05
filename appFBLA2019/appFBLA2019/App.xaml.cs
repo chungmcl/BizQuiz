@@ -3,6 +3,7 @@
 using Plugin.Permissions;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -23,16 +24,14 @@ namespace appFBLA2019
             Xamarin.Forms.DependencyService.Register<ICloseApplication>();
 
             App.random = new Random();
-            //broken cause of userpath moving
-            ////if there's nothing in the user's folder
-            //if (Directory.GetFiles(UserPath).Length == 0)
-            //{
-            //    Task.WaitAll(Task.Run(() => DependencyService.Get<IGetStorage>().SetupDefaultLevels(App.UserPath)));
-            //}
-
+            App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/";
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
+
+
+            CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+
             this.MainPage = new NavigationPage(new MainPage());
         }
 
@@ -66,8 +65,6 @@ namespace appFBLA2019
 
         protected override async void OnStart()
         {
-            // Handle when your app starts
-            await CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
             string tempPicturesDir = App.Path + "/" + "Pictures";
             if (Directory.Exists(tempPicturesDir))
                 Directory.Delete(App.Path + "/" + "Pictures", true);

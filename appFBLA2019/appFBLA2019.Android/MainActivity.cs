@@ -1,14 +1,10 @@
 ﻿//BizQuiz App 2019
 
-using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Graphics;
 using Android.OS;
-using Android.Runtime;
-using Android.Support.V4.App;
-using Android.Widget;
 using appFBLA2019.Droid;
 using Plugin.CurrentActivity;
 using Plugin.FacebookClient;
@@ -18,7 +14,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using static Android.Manifest;
+using System.IO.Compression;
 
 [assembly: Dependency(typeof(MainActivity))]
 
@@ -38,7 +34,7 @@ namespace appFBLA2019.Droid
         /// Called when the app is launched
         /// </summary>
         /// <param name="bundle"></param>
-        protected async override void OnCreate(Bundle bundle)
+        protected override void OnCreate(Bundle bundle)
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
@@ -153,6 +149,37 @@ namespace appFBLA2019.Droid
         public void LogError(string error)
         {
             Android.Util.Log.Error("Crash Report", error);
+        }
+
+
+
+        /// <summary>
+        /// Copies the default levels from the assets to the user folder
+        /// </summary>
+        /// <param name="userpath"></param>
+        /// <returns></returns>
+        public async Task SetupDefaultLevelsAsync(string userpath)
+        {
+            if (await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage) == PermissionStatus.Granted)
+            {
+
+                try
+                {
+                    using (Stream dbAssetStream = Android.App.Application.Context.Assets.Open("dflt.zip"))
+                    {
+                        MemoryStream memStream = new MemoryStream();
+                        dbAssetStream.CopyTo(memStream);
+                        memStream.Position = 0;
+                        File.WriteAllBytes(userpath + "dflt.zip", memStream.ToArray());
+                        ZipFile.ExtractToDirectory(userpath + "dflt.zip", userpath);
+                        File.Delete(userpath + "dflt.zip");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    BugReportHandler.SaveReport(ex, "SetupDefaultLevels");
+                }
+            }
         }
     }
 }
