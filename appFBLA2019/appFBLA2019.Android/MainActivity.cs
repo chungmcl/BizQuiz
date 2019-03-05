@@ -179,7 +179,7 @@ namespace appFBLA2019.Droid
                         dbAssetStream.CopyTo(memStream);
                         memStream.Position = 0;
                         File.WriteAllBytes(userpath + "dflt.zip", memStream.ToArray());
-                        ZipFile.ExtractToDirectory(userpath + "dflt.zip", userpath);
+                        ZipFile.ExtractToDirectory(userpath + "dflt.zip", userpath, true);
                         File.Delete(userpath + "dflt.zip");
                     }
                 }
