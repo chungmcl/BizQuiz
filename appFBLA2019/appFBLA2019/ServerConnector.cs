@@ -90,25 +90,28 @@ namespace appFBLA2019
                                     if (header.Length >= 5)
                                     {
                                         byte[] returnedData = ReadByteArray(size);
+                                        CloseConn();
                                         return returnedData;
                                     }
                                     else
-                                        return new byte[0];
+                                        throw new Exception();
                                 }
                                 else
-                                    return new byte[0];
+                                    throw new Exception();
                             }
                         }
                         else
-                            return new byte[0];
+                            throw new Exception();
                     }
                     catch
                     {
+                        CloseConn();
                         return new byte[0];
                     }
                 }
                 else
                 {
+                    CloseConn();
                     return new byte[0];
                 }
             }
@@ -195,7 +198,6 @@ namespace appFBLA2019
 
                             lock (ssl)
                             {
-                                
                                 ssl.WriteTimeout = 5000;
                                 ssl.ReadTimeout = 5000;
 
@@ -207,11 +209,13 @@ namespace appFBLA2019
                 }
                 else
                 {
+                    CloseConn();
                     return false;
                 }
             }
             catch (Exception ex)
             {
+                CloseConn();
                 BugReportHandler.SaveReport(ex);
                 return false;
             }
