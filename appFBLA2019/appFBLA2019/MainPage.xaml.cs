@@ -50,16 +50,10 @@ namespace appFBLA2019
                         ProfilePage profilePage = (ProfilePage)this.TabbedPagePage.Children[(int)TabID.profilePage];
                         if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                         {
-                            await profilePage.UpdateProfilePage();
+                            await profilePage.UpdateProfilePageAsync();
                         }
                     }
                 break;
-                case TabID.quizCategoriesPage:
-                {
-                    QuizCategoriesPage quizCategoriesPage = (QuizCategoriesPage)this.TabbedPagePage.Children[(int)TabID.quizCategoriesPage];
-                    await quizCategoriesPage.RefreshChildren();
-                    break;
-                }
             }
         }
 

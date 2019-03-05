@@ -78,7 +78,7 @@ namespace appFBLA2019
                     ProfilePage profilePage = new ProfilePage();
                     if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
                     {
-                        await profilePage.UpdateProfilePage();
+                        await profilePage.UpdateProfilePageAsync();
                     }
                     profilePage.SetTemporary();
                     await this.Navigation.PushAsync(profilePage);
@@ -102,7 +102,7 @@ namespace appFBLA2019
         /// Update the Profile Tab Page to either show profile info or the login page if not logged in.
         /// </summary>
         /// <returns>  </returns>
-        public async Task UpdateProfilePage()
+        public async Task UpdateProfilePageAsync()
         {
             this.StackLayoutProfilePageContent.IsVisible = CredentialManager.IsLoggedIn;
             this.LocalLoginPage.IsVisible = !(CredentialManager.IsLoggedIn);
@@ -112,7 +112,7 @@ namespace appFBLA2019
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             if (this.StackLayoutProfilePageContent.IsVisible)
             {
-                await this.UpdateProfileContent();
+                await this.UpdateProfileContentAsync();
             }
             else
             {
@@ -132,7 +132,7 @@ namespace appFBLA2019
         /// Loads the profile content if the user is logged in.
         /// </summary>
         /// <returns> </returns>
-        private async Task UpdateProfileContent()
+        private async Task UpdateProfileContentAsync()
         {
             this.StackLayoutQuizStack.IsVisible = false;
             this.ActivityIndicator.IsVisible = true;
@@ -383,7 +383,7 @@ namespace appFBLA2019
                 }
                 // Setup Page again after deletion
                 this.StackLayoutProfilePageContent.Children.Clear();
-                await this.UpdateProfileContent();
+                await this.UpdateProfileContentAsync();
             }
         }
 
@@ -413,7 +413,7 @@ namespace appFBLA2019
             this.accountSettingsPage = new AccountSettingsPage();
             this.accountSettingsPage.SignedOut += this.OnSignedOut;
             this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
-            await this.UpdateProfilePage();
+            await this.UpdateProfilePageAsync();
         }
 
         /// <summary>
@@ -434,7 +434,7 @@ namespace appFBLA2019
         public async void OnSignedOut(object source, EventArgs eventArgs)
         {
             this.accountSettingsPage = null;
-            await this.UpdateProfilePage();
+            await this.UpdateProfilePageAsync();
         }
     }
 }

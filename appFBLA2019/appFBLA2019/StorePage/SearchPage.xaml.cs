@@ -219,7 +219,7 @@ namespace appFBLA2019
                 };
                 QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
 
-                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuiz(dbId);
+                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
 
                 if (returnMessage == OperationReturnMessage.True)
                 {
@@ -259,7 +259,7 @@ namespace appFBLA2019
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
 
-                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToQuiz(dbId, this.quizzesSearched);
+                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToQuizAsync(dbId, this.quizzesSearched);
                 if (returnMessage == OperationReturnMessage.True)
                 {
 
@@ -303,7 +303,7 @@ namespace appFBLA2019
 			this.isLoading = true;
 			try
             {
-                await Task.Run(() => this.Search());
+                await Task.Run(() => this.SearchAsync());
             }
             catch (Exception ex)
 			{
@@ -322,7 +322,7 @@ namespace appFBLA2019
         /// Conducts a search of the online database
         /// </summary>
         /// <returns></returns>
-        private async Task Search()
+        private async Task SearchAsync()
         {
             List<SearchInfo> chunk = new List<SearchInfo>();
             if (this.searchType == SearchType.Title)
@@ -400,7 +400,7 @@ namespace appFBLA2019
 				try
 				{
                     this.chunkNum++;
-					await Task.Run(() => this.Search());
+					await Task.Run(() => this.SearchAsync());
 				}
 				catch
 				{
@@ -438,7 +438,7 @@ namespace appFBLA2019
             this.currentChunk = 1;
             try
             {
-                await Task.Run(() => this.Search());
+                await Task.Run(() => this.SearchAsync());
             }
             catch
             {

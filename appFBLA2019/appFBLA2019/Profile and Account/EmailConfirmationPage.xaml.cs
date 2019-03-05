@@ -36,7 +36,7 @@ namespace appFBLA2019
             this.LabelTitle.Text = "Loading...";
 
             // Load the user's email into top text
-            await Task.Run(() => this.GetEmail());
+            await Task.Run(() => this.GetEmailAsync());
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace appFBLA2019
         /// Gets the email associated with an account
         /// </summary>
         /// <returns></returns>
-        private async Task GetEmail()
+        private async Task GetEmailAsync()
         {
             try
             {

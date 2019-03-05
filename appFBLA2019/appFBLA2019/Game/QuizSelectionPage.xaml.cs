@@ -282,47 +282,6 @@ namespace appFBLA2019
                     imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
                     topStack.Children.Add(imageButtonMenu);
 
-                    //Frame frameMenu = new Frame // Child of frameLayout
-                    //{
-                    //    Padding = 0,
-                    //    IsVisible = false,
-                    //};
-
-                    //StackLayout menuStack = new StackLayout
-                    //{
-                    //    FlowDirection = FlowDirection.LeftToRight,
-                    //    Orientation = StackOrientation.Vertical,
-                    //    Padding = 0,
-                    //    Spacing = 0
-                    //};
-
-                    //Button ButtonEdit = new Button(); // 3
-                    //{
-                    //    ButtonEdit.Clicked += this.ButtonEdit_Clicked;
-                    //    ButtonEdit.Text = "Edit";
-                    //    ButtonEdit.HeightRequest = 45;
-                    //    ButtonEdit.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                    //    ButtonEdit.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                    //    ButtonEdit.VerticalOptions = LayoutOptions.StartAndExpand;
-                    //    ButtonEdit.BackgroundColor = Color.White;
-                    //    ButtonEdit.CornerRadius = 0;
-                    //}
-                    //menuStack.Children.Add(ButtonEdit);
-
-                    //Button ButtonDelete = new Button();
-                    //{
-                    //    ButtonDelete.Clicked += this.ButtonDelete_Clicked;
-                    //    ButtonDelete.HeightRequest = 35;
-                    //    ButtonDelete.TextColor = Color.Red;
-                    //    ButtonDelete.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                    //    ButtonDelete.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                    //    ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
-                    //    ButtonDelete.BackgroundColor = Color.White;
-                    //    ButtonDelete.CornerRadius = 0;
-                    //    ButtonDelete.StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
-                    //}
-                    //menuStack.Children.Add(ButtonDelete);
-
                     if (CredentialManager.Username == quiz.AuthorName)
                     {
                         imageButtonMenu.StyleId = "Delete";
@@ -331,16 +290,6 @@ namespace appFBLA2019
                     {
                         imageButtonMenu.StyleId = "Unsubscribe";
                     }
-
-                    //frameMenu.Content = menuStack;
-
-                    //frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) =>
-                    //{
-                    //    return parent.Width - 100;
-                    //}), Constraint.RelativeToParent((parent) =>
-                    //{
-                    //    return parent.Y;
-                    //}), Constraint.Constant(95), Constraint.Constant(90));
 
                     frameStack.Children.Add(topStack);
 
@@ -531,10 +480,7 @@ namespace appFBLA2019
             this.DisplayAlert("Offline", "This quiz cannot be synced because you are offline.", "OK");
         }
 
-
-
-
-
+        
         /// <summary>
         /// Handle event when user clicks delete quiz button.
         /// </summary>
@@ -583,7 +529,7 @@ namespace appFBLA2019
                     OperationReturnMessage returnMessage;
                     if (unsubscribe)
                     {
-                        returnMessage = await ServerOperations.UnsubscribeToQuiz(dbId);
+                        returnMessage = await ServerOperations.UnsubscribeToQuizAsync(dbId);
                     }
                     else
                     {
@@ -637,22 +583,6 @@ namespace appFBLA2019
                 string quizInfo = ((ImageButton)sender).ClassId.Split('/').Last();
                 this.ButtonEdit_Clicked(quizInfo.Split('`').First(), quizInfo.Split('`').Last(), ((ImageButton)sender).Parent.Parent.Parent.Parent.StyleId != "notLocal");
             }
-            //Frame menu = ((Frame)((RelativeLayout)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent).Children[0]);
-            //Frame frame = ((Frame)((RelativeLayout)menu.Parent).Parent);
-
-            //frame.GestureRecognizers.Remove(this.recognizer);
-            //menu.Opacity = 0;
-            //menu.IsVisible = true;
-            //await menu.FadeTo(1, 200, Easing.CubicInOut);
-
-            //TapGestureRecognizer globalRecognizer = new TapGestureRecognizer();
-            //globalRecognizer.Tapped += async (s, a) =>
-            //{
-            //    await this.RemoveMenu(menu);
-            //    this.StackLayoutGlobalStack.GestureRecognizers.Remove(globalRecognizer);
-            //    frame.GestureRecognizers.Add(this.recognizer);
-            //};
-            //this.StackLayoutGlobalStack.GestureRecognizers.Add(globalRecognizer);
         }
 
         /// <summary>
@@ -702,21 +632,21 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ToolbarItemRefresh_Activated(object sender, EventArgs e)
         {
-            await RefreshPage();
+            await RefreshPageAsync();
         }
 
         /// <summary>
         /// Show an activity indicator and refresh the page in the background.
         /// </summary>
         /// <returns></returns>
-        public async Task RefreshPage()
+        public async Task RefreshPageAsync()
         {
             await this.StackLayoutButtonStack.FadeTo(0, 1);
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
             this.isSetup = false;
 
-            await Task.Run(() => QuizRosterDatabase.UpdateLocalDatabase());
+            await Task.Run(() => QuizRosterDatabase.UpdateLocalDatabaseAsync());
             this.CheckSetup();
 
             this.ActivityIndicator.IsVisible = false;

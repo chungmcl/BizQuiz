@@ -14,10 +14,10 @@ namespace appFBLA2019
         /// Runs on a timed background task and repeats a synchronization every two minutes.
         /// </summary>
         /// <returns></returns>
-        public static async Task RunServerChecks()
+        public static async Task RunServerChecksAsync()
         {
-            await CredentialManager.CheckLoginStatus();
-            await Task.Run(async() => await QuizRosterDatabase.UpdateLocalDatabase());
+            await CredentialManager.CheckLoginStatusAsync();
+            await Task.Run(async() => await QuizRosterDatabase.UpdateLocalDatabaseAsync());
             var minutes = TimeSpan.FromMinutes(2);
             Device.StartTimer(minutes, () =>
             {
@@ -25,10 +25,10 @@ namespace appFBLA2019
                 {
                     if (CredentialManager.IsLoggedIn)
                     {
-                        await CredentialManager.CheckLoginStatus();
+                        await CredentialManager.CheckLoginStatusAsync();
                     }
                     
-                    await QuizRosterDatabase.UpdateLocalDatabase();
+                    await QuizRosterDatabase.UpdateLocalDatabaseAsync();
                     BugReportHandler.SubmitSavedReports();
                 });
                 // Return true to continue the timer

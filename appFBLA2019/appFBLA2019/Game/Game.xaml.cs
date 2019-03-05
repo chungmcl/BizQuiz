@@ -53,7 +53,7 @@ namespace appFBLA2019
                 await this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
                 await this.ActivityBanner.TranslateTo(this.ActivityBanner.Width * -2, this.Height * 2 / 3, 0);
                 this.inGame = true;
-                await this.CycleQuestion();
+                await this.CycleQuestionAsync();
             }
         }
 
@@ -83,7 +83,7 @@ namespace appFBLA2019
         /// brings the Next Question banner to the center of the screen
         /// </summary>
         /// <returns>  </returns>
-        private async Task AnimateNextBanner()
+        private async Task AnimateNextBannerAsync()
         {
             while (this.LabelFeedback.FontSize / 2 * this.LabelFeedback.Text.Length > (this.NextBanner.Width - 5))
             {
@@ -97,7 +97,7 @@ namespace appFBLA2019
         /// checks the answer for multiple choice type questions
         /// </summary>
         /// <param name="answer"> the string of the button that was pressed </param>
-        private async Task CheckButtonAnswer(string answer)
+        private async Task CheckButtonAnswerAsync(string answer)
         {
             foreach (Button button in this.InputGrid.Children)
             {
@@ -114,13 +114,13 @@ namespace appFBLA2019
                     (button as Button).BackgroundColor = Color.Green;
                 }
 
-                await this.CorrectAnswer();
+                await this.CorrectAnswerAsync();
             }
             else
             {
                 ((Button)this.InputGrid.Children.Where(x => (x as Button).Text == answer).First()).BackgroundColor = Color.Red;
 
-                await this.IncorrectAnswer();
+                await this.IncorrectAnswerAsync();
             }
         }
 
@@ -129,7 +129,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="answer">    the answer that was typed </param>
         /// <param name="checkCase"> whether or not to check the case </param>
-        private async Task CheckTextAnswer(string answer, bool checkCase)
+        private async Task CheckTextAnswerAsync(string answer, bool checkCase)
         {
             ((Button)this.InputGrid.Children.Where(x => x.GetType() == typeof(Button)).First()).IsEnabled = false;
             answer = answer.Trim();
@@ -142,11 +142,11 @@ namespace appFBLA2019
 
             if (answer == correctAnswer)
             {
-                await this.CorrectAnswer();
+                await this.CorrectAnswerAsync();
             }
             else
             {
-                await this.IncorrectAnswer();
+                await this.IncorrectAnswerAsync();
             }
         }
 
@@ -154,7 +154,7 @@ namespace appFBLA2019
         /// triggered when the answer is correct, modifies score and shows the next question banner
         /// </summary>
         /// <returns> an awaitable task </returns>
-        private async Task CorrectAnswer()
+        private async Task CorrectAnswerAsync()
         {
             this.LabelFeedback.Text = "Correct!";
             this.LabelFeedback.FontSize = 40;
@@ -178,14 +178,14 @@ namespace appFBLA2019
                 Status = 2
             };
             DBHandler.Database.EditQuestion(copyQuestion);
-            await this.AnimateNextBanner();
+            await this.AnimateNextBannerAsync();
         }
 
         /// <summary>
         /// The core of the game loop, triggered when the user presses "Next Question". This method will either load the next question or end the game if appropriate
         /// </summary>
         /// <returns>  </returns>
-        private async Task CycleQuestion()
+        private async Task CycleQuestionAsync()
         {
             _ = this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
             _ = this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
@@ -194,7 +194,7 @@ namespace appFBLA2019
                 // Save as reference
                 this.ScoreLabel.Text = $"{this.score}/{this.quiz.Questions.Count * 2}";
                 this.currentQuestion = this.quiz.GetQuestion();
-                await this.SetUpQuestion(this.currentQuestion);
+                await this.SetUpQuestionAsync(this.currentQuestion);
             }
             else // Finished quiz
             {
@@ -208,7 +208,7 @@ namespace appFBLA2019
         /// triggered when the answer is wrong, modifies score and shows the next question banner
         /// </summary>
         /// <returns>  </returns>
-        private async Task IncorrectAnswer()
+        private async Task IncorrectAnswerAsync()
         {
             this.LabelFeedback.Text = "Incorrect!";
             this.LabelFeedback.TextColor = Color.White;
@@ -221,7 +221,7 @@ namespace appFBLA2019
             };
             DBHandler.Database.EditQuestion(copyQuestion);
 
-            await this.AnimateNextBanner();
+            await this.AnimateNextBannerAsync();
         }
 
         /// <summary>
@@ -242,14 +242,14 @@ namespace appFBLA2019
         /// <param name="e">       </param>
         private async void NextButton_Clicked(object sender, EventArgs e)
         {
-            await this.CycleQuestion();
+            await this.CycleQuestionAsync();
         }
 
         /// <summary>
         /// Sets up the layout and graphics for the next question
         /// </summary>
         /// <param name="question"> the question to be displayed </param>
-        private async Task SetUpQuestion(Question question)
+        private async Task SetUpQuestionAsync(Question question)
         {
             await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.CubicOut);
             this.ActivityIndicatorLoading.IsRunning = true;
@@ -260,7 +260,7 @@ namespace appFBLA2019
                     Status = 3
                 };
                 DBHandler.Database.EditQuestion(copyQuestion);
-                await this.CycleQuestion();
+                await this.CycleQuestionAsync();
                 return;
             }
 
@@ -317,7 +317,7 @@ namespace appFBLA2019
                     };
                     button.Clicked += async (object sender, EventArgs e) =>
                     {
-                        await this.CheckButtonAnswer(((Button)sender).Text);
+                        await this.CheckButtonAnswerAsync(((Button)sender).Text);
                     };
 
                     this.InputGrid.Children.Add(button, 0, i);
@@ -391,7 +391,7 @@ namespace appFBLA2019
                 buttonCheckAnswer.Clicked += async (object sender, EventArgs e) =>
                 {
                     // Can we do this with null-conditional operators? yes we can
-                    await this.CheckTextAnswer(entry.Text ?? "", (question.QuestionType == 2));
+                    await this.CheckTextAnswerAsync(entry.Text ?? "", (question.QuestionType == 2));
                 };
                 this.InputGrid.Children.Add(entry, 0, 0);
                 this.InputGrid.Children.Add(buttonCheckAnswer, 0, 1);

@@ -106,7 +106,7 @@ namespace appFBLA2019
             else
                 ServerConnector.Server = "50.106.17.86"; // Valid as of March 3rd, 2019
 
-            await ThreadTimer.RunServerChecks();
+            await ThreadTimer.RunServerChecksAsync();
             BugReportHandler.ProcessCrashLog();
         }
 
