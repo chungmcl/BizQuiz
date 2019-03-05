@@ -58,7 +58,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SaveReport(ex, nameof(FeaturedPage));
+                BugReportHandler.SaveReport(ex);
                 await this.DisplayAlert("Error", "Couldn't get quizzes", "Ok");
             }
         }

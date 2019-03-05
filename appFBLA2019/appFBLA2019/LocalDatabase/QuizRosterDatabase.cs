@@ -81,7 +81,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SaveReport(ex, "QuizRosterDatabase.GetQuizInfo()");
+                BugReportHandler.SaveReport(ex);
                 return null;
             }
         }
@@ -114,7 +114,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SaveReport(ex, "QuizRosterDatabase.DeleteQuizInfo(string dbId)");
+                BugReportHandler.SaveReport(ex);
                 return false;
             }
         }

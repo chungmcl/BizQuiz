@@ -138,7 +138,7 @@ namespace appFBLA2019
             }
             catch (Exception ex)
             {
-                BugReportHandler.SaveReport(ex, "ServerConnector.ReadByteArray()");
+                BugReportHandler.SaveReport(ex);
                 return new byte[0];
             }
         }
@@ -189,8 +189,10 @@ namespace appFBLA2019
                     return false;
                 }
             }
-            catch
+            catch (SocketException ex)
             {
+                BugReportHandler.SaveReport(ex);
+                App.DisplayIPWarning();
                 return false;
             }
         }

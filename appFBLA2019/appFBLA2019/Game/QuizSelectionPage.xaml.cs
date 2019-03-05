@@ -16,6 +16,9 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class QuizSelectionPage : ContentPage
     {
+        /// <summary>
+        /// To detect taps on quiz cards
+        /// </summary>
         private TapGestureRecognizer recognizer = new TapGestureRecognizer();
         
         /// <summary>
@@ -38,6 +41,10 @@ namespace appFBLA2019
         /// </summary>
         private enum SyncType { Offline = 1, Upload, Download, NoChange, Syncing };
 
+        /// <summary>
+        /// Creates a quizselectionpage for the given category
+        /// </summary>
+        /// <param name="category">The category of the page</param>
         public QuizSelectionPage(string category)
         {
             this.InitializeComponent();
@@ -46,6 +53,11 @@ namespace appFBLA2019
             this.isSetup = false;
         }
 
+        /// <summary>
+        /// Called when the page receives a size, sets up the cards if possible
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
@@ -53,12 +65,19 @@ namespace appFBLA2019
             this.isSetup = true;
         }
 
+        /// <summary>
+        /// Called when the page is displayed to the user, sets up the cards if necessary 
+        /// (this allows refreshing the page when the user navigates away and returns)
+        /// </summary>
         protected override void OnAppearing()
         {
             base.OnAppearing();
             this.CheckSetup();
         }
 
+        /// <summary>
+        /// Flags the page as not set up in order to trigger a setup when the user sees the page again
+        /// </summary>
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
