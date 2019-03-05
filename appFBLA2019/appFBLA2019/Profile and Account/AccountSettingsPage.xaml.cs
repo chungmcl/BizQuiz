@@ -72,7 +72,7 @@ namespace appFBLA2019
                             if (message == OperationReturnMessage.True)
                             {
                                 this.LabelChangePasswordMessage.Text = "Password changed successfully.";
-                                CredentialManager.SaveCredential(CredentialManager.Username, newPassword, CredentialManager.EmailConfirmed);
+                                CredentialManager.SaveCredentialAsync(CredentialManager.Username, newPassword, CredentialManager.EmailConfirmed);
                             }
                             else if (message == OperationReturnMessage.FalseInvalidCredentials)
                             {
