@@ -10,11 +10,19 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AboutUsPage : ContentPage
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public AboutUsPage()
         {
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Opens the email app to email Micheal about the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void EmailButton_Clicked(object sender, EventArgs e)
         {
             try
