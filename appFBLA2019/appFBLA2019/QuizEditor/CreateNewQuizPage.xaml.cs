@@ -280,6 +280,10 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Couldn't Create Quiz", "Please give your quiz a category", "OK");
             }
+            else if (this.EditorQuizName.Text.Contains("`"))
+            {
+                await this.DisplayAlert("Couldn't Create Quiz", "Quiz name must not include `", "OK");
+            }
             else
             {
                 // Set previousQuestions to the correct previous questions
