@@ -5,7 +5,8 @@
              xmlns:local="clr-namespace:appFBLA2019"
              NavigationPage.BackButtonTitle="true">
     <ContentPage.Content>
-        <RelativeLayout x:Name="RelativeLayoutTop" Padding="10">
+        <ScrollView>
+            <RelativeLayout x:Name="RelativeLayoutTop" Padding="10">
             <Frame x:Name="ActivityBanner" Padding="10" CornerRadius="10">
                 <ActivityIndicator x:Name="ActivityIndicatorLoading" IsRunning="True"
                                WidthRequest="100"
@@ -37,6 +38,8 @@
                 </RelativeLayout>
             </StackLayout>
         </RelativeLayout>
+        </ScrollView>
+        
     </ContentPage.Content>
     <ContentPage.ToolbarItems>
         <ToolbarItem x:Name="ScoreLabel" Order="Primary" />

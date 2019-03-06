@@ -262,10 +262,10 @@ namespace appFBLA2019
         /// <summary>
         /// Regex string to check if email is in valid format.
         /// </summary>
-        private string ComplexEmailPattern = @"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" // local-part
+        private string ComplexEmailPattern = @"^\s*[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" // local-part
             + "@"
             + @"((([\w]+([-\w]*[\w]+)*\.)+[a-zA-Z]+)|" // domain
-            + @"((([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]).){3}[01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]))\z"; // or IP Address
+            + @"((([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]).){3}[01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]))\s*\z"; // or IP Address
         
         /// <summary>
         /// Handle when text in email entry is changed.
