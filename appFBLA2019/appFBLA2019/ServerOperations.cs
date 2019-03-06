@@ -222,7 +222,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="dbId"></param>
         /// <returns>The OperationReturnMessage the server returns.</returns>
-        public static async Task<OperationReturnMessage> UnsubscribeToQuiz(string dbId)
+        public static async Task<OperationReturnMessage> UnsubscribeToQuizAsync(string dbId)
         {
             return (OperationReturnMessage)SendStringData($"{CredentialManager.Username}/{await SecureStorage.GetAsync("password")}/{dbId}/-", 
                 ServerRequestTypes.UnsubscribeToQuiz);
@@ -469,12 +469,10 @@ namespace appFBLA2019
                 if (data.Length > 0)
                 {
                     OperationReturnMessage message = (OperationReturnMessage)(data[0]);
-                    ServerConnector.CloseConn();
                     return message;
                 }
                 else
                 {
-                    ServerConnector.CloseConn();
                     return OperationReturnMessage.FalseFailedConnection;
                 }
             }
@@ -492,13 +490,13 @@ namespace appFBLA2019
                 if (data.Length > 0)
                 {
                     string dataString = Encoding.Unicode.GetString(data);
-                    ServerConnector.CloseConn();
+                    
                     dataString = dataString.Trim();
                     return dataString;
                 }
                 else
                 {
-                    ServerConnector.CloseConn();
+                    
                     return null;
                 }
             }
@@ -519,12 +517,12 @@ namespace appFBLA2019
                     MemoryStream memStream = new MemoryStream();
                     memStream.Write(data, 0, data.Length);
                     memStream.Position = 0;
-                    ServerConnector.CloseConn();
+                    
                     return binaryFormatter.Deserialize(memStream) as List<string[]>;
                 }
                 else
                 {
-                    ServerConnector.CloseConn();
+                    
                     return new List<string[]>(0);
                 }
             }

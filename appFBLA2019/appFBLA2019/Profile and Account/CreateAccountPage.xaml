@@ -6,9 +6,10 @@
         <StackLayout
             Spacing="20"
             Padding="20">
-
-            <Label x:Name="LabelTitle" Text="Create New Account" Font="Bold" HorizontalOptions="Center"/>
-
+            <StackLayout Orientation="Horizontal">
+                <Label FontSize="60" x:Name="LabelTitle" Text="Create New Account" Font="Bold" HorizontalOptions="CenterAndExpand"/>
+                <ImageButton x:Name="ImageButtonHelp" HeightRequest="25" Source="ic_help_black_48dp.png" HorizontalOptions="End" BackgroundColor="White" Clicked="ImageButtonHelp_Clicked"/>
+            </StackLayout>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="10*"/>
@@ -23,7 +24,7 @@
                 <Entry x:Name="EntryUsername" Grid.Column="0" Grid.Row="0"
                        HorizontalOptions="FillAndExpand" Placeholder="Create a username" TextChanged="EntryUsername_TextChanged"/>
                 <Entry x:Name="EntryPassword" Grid.Column="0" Grid.Row="1"
-                       HorizontalOptions="FillAndExpand" Placeholder="Create a password" TextChanged="EntryPassword_TextChanged"/>
+                      IsPassword="True" HorizontalOptions="FillAndExpand" Placeholder="Create a password" TextChanged="EntryPassword_TextChanged"/>
                 <Entry x:Name="EntryEmail" Grid.Column="0" Grid.Row="2"
                        HorizontalOptions="FillAndExpand" Placeholder="Email" TextChanged="EntryEmail_TextChanged"/>
 

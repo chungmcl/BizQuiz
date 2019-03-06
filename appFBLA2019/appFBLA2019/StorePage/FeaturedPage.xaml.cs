@@ -240,45 +240,54 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ImageButtonUnsubscribe_Clicked(object sender, EventArgs e)
         {
-            ImageButton button = (sender as ImageButton);
-            string dbId = button.StyleId;
-            bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
-            if (answer)
+            if (CredentialManager.IsLoggedIn)
             {
-                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
-                button.IsVisible = false;
-                indicatorSyncing.IsVisible = true;
-                indicatorSyncing.IsRunning = true;
-                // get rosterInfo
-                QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
-                // tell the roster that the quiz is deleted
-                QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                ImageButton button = (sender as ImageButton);
+                string dbId = button.StyleId;
+                bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+                if (answer)
                 {
-                    IsDeletedLocally = true,
-                    LastModifiedDate = DateTime.Now.ToString()
-                };
-                QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+                    ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
+                    button.IsVisible = false;
+                    indicatorSyncing.IsVisible = true;
+                    indicatorSyncing.IsRunning = true;
+                    // get rosterInfo
+                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+                    // tell the roster that the quiz is deleted
+                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                    {
+                        IsDeletedLocally = true,
+                        LastModifiedDate = DateTime.Now.ToString()
+                    };
+                    QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
 
-                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuiz(dbId);
+                    OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
 
-                if (returnMessage == OperationReturnMessage.True)
-                {
-                    QuizRosterDatabase.DeleteQuizInfo(dbId);
-                    (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
+                    if (returnMessage == OperationReturnMessage.True)
+                    {
+                        QuizRosterDatabase.DeleteQuizInfo(dbId);
+                        (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
+                    }
+                    else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
+                    {
+                        button.IsVisible = true;
+                        await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please log in and try again.", "OK");
+                    }
+                    else
+                    {
+                        button.IsVisible = true;
+                        await this.DisplayAlert("Unsubscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                    }
+                    indicatorSyncing.IsVisible = false;
+                    indicatorSyncing.IsRunning = false;
                 }
-                else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
-                {
-                    button.IsVisible = true;
-                    await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please log in and try again.", "OK");
-                }
-                else
-                {
-                    button.IsVisible = true;
-                    await this.DisplayAlert("Unsubscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
-                }
-                indicatorSyncing.IsVisible = false;
-                indicatorSyncing.IsRunning = false;
             }
+            else
+            {
+                await this.DisplayAlert("Hold on!", "Before you can manage any quizzes, you have to login.", "Ok");
+            }
+
+            
         }
 
         /// <summary>
@@ -297,7 +306,7 @@ namespace appFBLA2019
                 button.IsVisible = false;
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
-                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToQuiz(dbId, this.quizzesFeatured);
+                OperationReturnMessage returnMessage = await SubscribeUtils.SubscribeToQuizAsync(dbId, this.quizzesFeatured);
                 if (returnMessage == OperationReturnMessage.True)
                 {
                     (button.Parent as StackLayout).Children[2].IsVisible = true; // add in unsubscribe button

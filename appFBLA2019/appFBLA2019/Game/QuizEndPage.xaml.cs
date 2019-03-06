@@ -115,7 +115,7 @@ namespace appFBLA2019
 
             FacebookShareLinkContent linkContent = 
                 new FacebookShareLinkContent($"I got {this.percentScore}% correct studying {this.quizName} on BizQuiz!", 
-                new Uri("https://chungmcl.visualstudio.com/appFBLA2019"));
+                new Uri("https://www.bizquiz.app/"));
             var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
             this.ButtonShareToFacebook.IsEnabled = true;
         }
@@ -133,6 +133,7 @@ namespace appFBLA2019
             {
                 Text = $"I got { this.percentScore }% correct studying { this.quizName } on BizQuiz!",
                 Title = "Loving BizQuiz!",
+                Url = "https://www.bizquiz.app/"
             });
             this.ButtonShareToOtherMedia.IsEnabled = true;
         }

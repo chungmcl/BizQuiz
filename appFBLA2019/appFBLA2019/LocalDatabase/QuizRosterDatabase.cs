@@ -161,7 +161,7 @@ namespace appFBLA2019
         /// Updates the local database by syncing with the server
         /// </summary>
         /// <returns>an awaitable task for the completion of syncing</returns>
-        public static async Task UpdateLocalDatabase()
+        public static async Task UpdateLocalDatabaseAsync()
         {
             if (App.Path != null && App.UserPath.Length > 2)
             {
@@ -233,6 +233,14 @@ namespace appFBLA2019
                                     }
                                 }
                             }
+                        }
+                        else
+                        {
+                            QuizInfo copy = new QuizInfo(QuizInfos[i])
+                            {
+                                SyncStatus = 2 // 2 represents in sync
+                            };
+                            EditQuizInfo(copy, threadInstance);
                         }
                     }
 

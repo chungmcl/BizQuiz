@@ -20,21 +20,19 @@ namespace appFBLA2019
         public QuizCategoriesPage()
         {
             this.InitializeComponent();
-#if __ANDROID__
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarSelectedItemColor(Color.White);
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.DarkBlue);
-#endif
         }
 
         /// <summary>
         /// Triggered when MainPage changes tab, refreshes all the pages within
         /// </summary>
-        public async Task RefreshChildren()
+        public async Task RefreshChildrenAsync()
         {
             this.IsLoading = true;
             foreach (Page page in this.Children)
             {
-                await (page as QuizSelectionPage).RefreshPage();
+                await (page as QuizSelectionPage).RefreshPageAsync();
             }
             this.IsLoading = false;
         }

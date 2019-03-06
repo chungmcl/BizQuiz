@@ -18,7 +18,7 @@ namespace appFBLA2019
         /// <param name="answersIn"> The potential answers to the question. The correct answer is in the first slot. </param>
         public Question(string question, string imagePath, params string[] answers)
         {
-            this.QuestionText = question;
+            this.QuestionText = question.Trim();
             //tries to assign the params to the local Answers property which in turn assigns the fields
             //if answers is null, throws an exception
             this.Status = 0;
@@ -32,16 +32,16 @@ namespace appFBLA2019
         /// <param name="question">  </param>
         public Question(Question question)
         {
-            this.AnswerOne = question.AnswerOne;
-            this.AnswerTwo = question.AnswerTwo;
-            this.AnswerThree = question.AnswerThree;
-            this.CorrectAnswer = question.CorrectAnswer;
+            this.AnswerOne = question.AnswerOne.Trim();
+            this.AnswerTwo = question.AnswerTwo.Trim();
+            this.AnswerThree = question.AnswerThree.Trim();
+            this.CorrectAnswer = question.CorrectAnswer.Trim();
             this.ImagePath = question.ImagePath;
             this.NeedsPicture = question.NeedsPicture;
             this.QuestionId = question.QuestionId;
             this.QuestionType = question.QuestionType;
             this.Status = question.Status;
-            this.QuestionText = question.QuestionText;
+            this.QuestionText = question.QuestionText.Trim();
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace appFBLA2019
         {
             //turns the 4 answers into an easy to use array
             get
-            { return new List<string> { this.CorrectAnswer, this.AnswerOne, this.AnswerTwo, this.AnswerThree }; }
+            { return new List<string> { this.CorrectAnswer.Trim(), this.AnswerOne.Trim(), this.AnswerTwo.Trim(), this.AnswerThree.Trim() }; }
             //takes an array, makes sure it can be used in our answers, and assigns it to the answers
             private set
             {

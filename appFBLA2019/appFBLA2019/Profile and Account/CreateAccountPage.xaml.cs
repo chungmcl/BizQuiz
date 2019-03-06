@@ -44,7 +44,7 @@ namespace appFBLA2019
         /// <summary>
         /// characters that may not be used in a username or password
         /// </summary>
-        private const string forbiddenCharacters = " \\/`.,";
+        private const string forbiddenCharacters = " \\/`.,[?*#";
 
         /// <summary>
         /// default constructor
@@ -262,10 +262,10 @@ namespace appFBLA2019
         /// <summary>
         /// Regex string to check if email is in valid format.
         /// </summary>
-        private string ComplexEmailPattern = @"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" // local-part
+        private string ComplexEmailPattern = @"^\s*[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" // local-part
             + "@"
             + @"((([\w]+([-\w]*[\w]+)*\.)+[a-zA-Z]+)|" // domain
-            + @"((([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]).){3}[01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]))\z"; // or IP Address
+            + @"((([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]).){3}[01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]))\s*\z"; // or IP Address
         
         /// <summary>
         /// Handle when text in email entry is changed.
@@ -285,6 +285,11 @@ namespace appFBLA2019
                 await this.CheckIconAsync("ic_bad_red_48dp.png", "ic_check_green_48dp.png", this.checkEmail);
             }
             this.CheckEntries();
+        }
+
+        private void ImageButtonHelp_Clicked(object sender, EventArgs e)
+        {
+            this.DisplayAlert("Help", "Usernames and Passwords must be longer then 5 characters, shorter than 32, and can't contain characters: \\ / ` . , [ ? * # or whitespace", "OK");
         }
     }
 }

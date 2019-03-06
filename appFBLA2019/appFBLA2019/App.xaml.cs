@@ -33,16 +33,6 @@ namespace appFBLA2019
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleUnobservedTaskException;
-
-
-            CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
-
-            if (Directory.GetDirectories(App.UserPath).Length < 8)
-            {
-                DependencyService.Get<IGetStorage>().SetupDefaultQuizzesAsync(App.UserPath);
-            }
-
-
             this.MainPage = new NavigationPage(new MainPage());
         }
 
@@ -106,7 +96,11 @@ namespace appFBLA2019
             else
                 ServerConnector.Server = "50.106.17.86"; // Valid as of March 3rd, 2019
 
-            await ThreadTimer.RunServerChecks();
+            await ThreadTimer.RunServerChecksAsync();
+            if (Directory.GetDirectories(App.UserPath).Length < 5)
+            {
+                await DependencyService.Get<IGetStorage>().SetupDefaultQuizzesAsync(App.UserPath);
+            }
             BugReportHandler.ProcessCrashLog();
         }
 

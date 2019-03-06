@@ -96,7 +96,7 @@ namespace appFBLA2019
                 !this.IsLoading && 
                 App.Path != null)
             {
-                Directory.CreateDirectory(App.UserPath + $"{category}/");
+                Directory.CreateDirectory(App.UserPath + $"{this.category}/");
                 this.Setup();
             }
         }
@@ -163,7 +163,6 @@ namespace appFBLA2019
                 {
                     Frame frame = new Frame()
                     {
-                        HeightRequest = 100,
                         VerticalOptions = LayoutOptions.Start,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         CornerRadius = 10
@@ -276,70 +275,20 @@ namespace appFBLA2019
                         WidthRequest = 35,
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.End
-                    };
+                        HorizontalOptions = LayoutOptions.End,
+                        ClassId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName
+                };
                     imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
                     topStack.Children.Add(imageButtonMenu);
 
-                    Frame frameMenu = new Frame // Child of frameLayout
-                    {
-                        Padding = 0,
-                        IsVisible = false,
-                    };
-
-                    StackLayout menuStack = new StackLayout
-                    {
-                        FlowDirection = FlowDirection.LeftToRight,
-                        Orientation = StackOrientation.Vertical,
-                        Padding = 0,
-                        Spacing = 0
-                    };
-
-                    Button ButtonEdit = new Button(); // 3
-                    {
-                        ButtonEdit.Clicked += this.ButtonEdit_Clicked;
-                        ButtonEdit.Text = "Edit";
-                        ButtonEdit.HeightRequest = 45;
-                        ButtonEdit.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                        ButtonEdit.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                        ButtonEdit.VerticalOptions = LayoutOptions.StartAndExpand;
-                        ButtonEdit.BackgroundColor = Color.White;
-                        ButtonEdit.CornerRadius = 0;
-                    }
-                    menuStack.Children.Add(ButtonEdit);
-
-                    Button ButtonDelete = new Button();
-                    {
-                        ButtonDelete.Clicked += this.ButtonDelete_Clicked;
-                        ButtonDelete.HeightRequest = 35;
-                        ButtonDelete.TextColor = Color.Red;
-                        ButtonDelete.FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                        ButtonDelete.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                        ButtonDelete.VerticalOptions = LayoutOptions.StartAndExpand;
-                        ButtonDelete.BackgroundColor = Color.White;
-                        ButtonDelete.CornerRadius = 0;
-                        ButtonDelete.StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
-                    }
-                    menuStack.Children.Add(ButtonDelete);
-
                     if (CredentialManager.Username == quiz.AuthorName)
                     {
-                        ButtonDelete.Text = "Delete";
+                        imageButtonMenu.StyleId = "Delete";
                     }
                     else
                     {
-                        ButtonDelete.Text = "Unsubscribe";
+                        imageButtonMenu.StyleId = "Unsubscribe";
                     }
-
-                    frameMenu.Content = menuStack;
-
-                    frameLayout.Children.Add(frameMenu, Constraint.RelativeToParent((parent) =>
-                    {
-                        return parent.Width - 100;
-                    }), Constraint.RelativeToParent((parent) =>
-                    {
-                        return parent.Y;
-                    }), Constraint.Constant(95), Constraint.Constant(90));
 
                     frameStack.Children.Add(topStack);
 
@@ -377,7 +326,7 @@ namespace appFBLA2019
                         SyncNoChange.IsVisible = true;
                         activeSync = SyncNoChange;
                     }
-                    else if (quiz.SyncStatus == 1) // SyncUpload
+                    else if (quiz.SyncStatus == 1 && quiz.AuthorName == CredentialManager.Username) // SyncUpload
                     {
                         SyncUpload.IsVisible = true;
                         activeSync = SyncUpload;
@@ -389,7 +338,6 @@ namespace appFBLA2019
                         if (quiz.SyncStatus == 4) // Sync Download & notLocal yet
                         {
                             frame.StyleId = "notLocal";
-                            ButtonEdit.StyleId = "notLocal";
                         }
                     }
                     else
@@ -410,7 +358,7 @@ namespace appFBLA2019
                             activeSync.BackgroundColor = Color.LightGray;
                             Quiz newQuiz = new Quiz(this.category, quiz.QuizName, quiz.AuthorName);
                             newQuiz.LoadQuestions();
-                            await this.RemoveMenu(frameMenu);
+                            //await this.RemoveMenu(frameMenu);
                             await this.Navigation.PushAsync(new Game(newQuiz));
                             frame.BackgroundColor = Color.Default;
                             Seperator.Color = Color.LightGray;
@@ -531,14 +479,15 @@ namespace appFBLA2019
             this.DisplayAlert("Offline", "This quiz cannot be synced because you are offline.", "OK");
         }
 
+        
         /// <summary>
         /// Handle event when user clicks delete quiz button.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ButtonDelete_Clicked(object sender, EventArgs e)
+        private async void ButtonDelete_Clicked(string deleteType, string userPath)
         {
-            bool unsubscribe = ((Button)sender).Text == "Unsubscribe";
+            bool unsubscribe = deleteType == "Unsubscribe";
             string question;
             string message;
             if (unsubscribe)
@@ -555,14 +504,14 @@ namespace appFBLA2019
             bool answer = await this.DisplayAlert(question, message, "Yes", "No");
             if (answer)
             {
-                string path = App.UserPath + ((Button)sender).StyleId;
+                string path = App.UserPath + userPath;
 
                 // StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
 
                 // Acquire QuizInfo from roster
                 QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
-                    ((Button)sender).StyleId.Split('/').Last().Split('`').First(), // Quiz Name
-                    ((Button)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
+                    userPath.Split('/').Last().Split('`').First(), // Quiz Name
+                    userPath.Split('/').Last().Split('`').Last()); // Author
                 string dbId = rosterInfo.DBId;
 
                 // tell the roster that the quiz is deleted
@@ -579,7 +528,7 @@ namespace appFBLA2019
                     OperationReturnMessage returnMessage;
                     if (unsubscribe)
                     {
-                        returnMessage = await ServerOperations.UnsubscribeToQuiz(dbId);
+                        returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
                     }
                     else
                     {
@@ -604,10 +553,6 @@ namespace appFBLA2019
                     this.Setup();
                 }
             }
-            else
-            {
-                await this.RemoveMenu(((Frame)((StackLayout)((Button)sender).Parent).Parent));
-            }
         }
 
         /// <summary>
@@ -616,23 +561,27 @@ namespace appFBLA2019
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private async void ImageButtonMenu_Clicked(object sender, EventArgs e)
-        {
-            Frame menu = ((Frame)((RelativeLayout)((StackLayout)((StackLayout)((ImageButton)sender).Parent).Parent).Parent).Children[0]);
-            Frame frame = ((Frame)((RelativeLayout)menu.Parent).Parent);
-
-            frame.GestureRecognizers.Remove(this.recognizer);
-            menu.Opacity = 0;
-            menu.IsVisible = true;
-            await menu.FadeTo(1, 200, Easing.CubicInOut);
-
-            TapGestureRecognizer globalRecognizer = new TapGestureRecognizer();
-            globalRecognizer.Tapped += async (s, a) =>
+        {            
+            string quizName = ((ImageButton)sender).ClassId.Split('/').Last().Split('`').First();
+            string author = ((ImageButton)sender).ClassId.Split('/').Last().Split('`').Last();
+            string deleteText = "Delete";
+            if (author != CredentialManager.Username)
             {
-                await this.RemoveMenu(menu);
-                this.StackLayoutGlobalStack.GestureRecognizers.Remove(globalRecognizer);
-                frame.GestureRecognizers.Add(this.recognizer);
-            };
-            this.StackLayoutGlobalStack.GestureRecognizers.Add(globalRecognizer);
+                deleteText = "Unsubscribe";
+            }
+
+            string action = await this.DisplayActionSheet(quizName, "Back", null, deleteText, "Edit");
+          
+            if(action == deleteText)
+            {
+                this.ButtonDelete_Clicked(((ImageButton)sender).StyleId, ((ImageButton)sender).ClassId);
+            }
+            else if(action == "Edit")
+            {
+                //ClassId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName
+                string quizInfo = ((ImageButton)sender).ClassId.Split('/').Last();
+                this.ButtonEdit_Clicked(quizInfo.Split('`').First(), quizInfo.Split('`').Last(), ((ImageButton)sender).Parent.Parent.Parent.Parent.StyleId != "notLocal");
+            }
         }
 
         /// <summary>
@@ -651,22 +600,18 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ButtonEdit_Clicked(object sender, EventArgs e)
+        private async void ButtonEdit_Clicked(string quizTitle, string quizAuthor, bool isLocal)
         {
-            Frame frame = ((Frame)((StackLayout)((Button)sender).Parent).Parent);
-            await this.RemoveMenu(frame);
             if (!CredentialManager.IsLoggedIn)
             {
                 await this.DisplayAlert("Hold on!", "Before you can edit any quizzes, you have to login.", "Ok");
             }
-            else if (((Button)sender).StyleId == "notLocal")
+            else if (!isLocal)
             {
                 await this.DisplayAlert("Hold on!", "This quiz isn't on your device, download it before you try to edit it", "Ok");
             }
             else
             {
-                string quizTitle = ((Label)((StackLayout)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[0]).Children[0]).Text;
-                string quizAuthor = ((Label)((StackLayout)((RelativeLayout)(frame).Parent).Children[1]).Children[2]).Text.Split(':')[1].Trim();
                 DBHandler.SelectDatabase(this.category, quizTitle, quizAuthor);
                 CreateNewQuizPage quizPage = new CreateNewQuizPage(this.category, quizTitle, quizAuthor); //Create the quizPage
 
@@ -686,21 +631,21 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ToolbarItemRefresh_Activated(object sender, EventArgs e)
         {
-            await RefreshPage();
+            await this.RefreshPageAsync();
         }
 
         /// <summary>
         /// Show an activity indicator and refresh the page in the background.
         /// </summary>
         /// <returns></returns>
-        public async Task RefreshPage()
+        public async Task RefreshPageAsync()
         {
             await this.StackLayoutButtonStack.FadeTo(0, 1);
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
             this.isSetup = false;
 
-            await Task.Run(() => QuizRosterDatabase.UpdateLocalDatabase());
+            await Task.Run(() => QuizRosterDatabase.UpdateLocalDatabaseAsync());
             this.CheckSetup();
 
             this.ActivityIndicator.IsVisible = false;
