@@ -90,7 +90,7 @@ namespace appFBLA2019
                 this.LabelFeedback.FontSize--;
             }
             this.NextBanner.ForceLayout();
-            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 2500, Easing.SpringOut);
+            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.SpringOut);
         }
 
         /// <summary>
