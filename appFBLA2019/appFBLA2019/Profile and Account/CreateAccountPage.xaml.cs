@@ -140,9 +140,9 @@ namespace appFBLA2019
         /// Handle when the account is successfully created.
         /// </summary>
         /// <param name="emailConfirmed"></param>
-        protected void OnAccountCreated(bool emailConfirmed)
+        protected async void OnAccountCreated(bool emailConfirmed)
         {
-            CredentialManager.SaveCredentialAsync(this.username, this.password, emailConfirmed);
+            await CredentialManager.SaveCredentialAsync(this.username, this.password, emailConfirmed);
             this.AccountCreated?.Invoke(this,
                 new AccountCreatedEventArgs
                 {

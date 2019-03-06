@@ -61,7 +61,7 @@ namespace appFBLA2019
             {
                 if (response == OperationReturnMessage.True)
                 {
-                    CredentialManager.SaveCredentialAsync(username, password, true);
+                    await CredentialManager.SaveCredentialAsync(username, password, true);
                     this.OnLoggedIn();
                 }
                 else if (response == OperationReturnMessage.TrueConfirmEmail)
@@ -69,7 +69,7 @@ namespace appFBLA2019
                     var confirmationPage = new EmailConfirmationPage(username, password);
                     confirmationPage.EmailConfirmed += this.OnEmailConfirmed;
                     await this.Navigation.PushModalAsync(confirmationPage);
-                    CredentialManager.SaveCredentialAsync(username, password, false);
+                    await CredentialManager.SaveCredentialAsync(username, password, false);
                     this.OnLoggedIn();
                 }
                 else if (response == OperationReturnMessage.FalseInvalidCredentials)
