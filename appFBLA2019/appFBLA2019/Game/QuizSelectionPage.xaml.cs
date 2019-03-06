@@ -163,7 +163,6 @@ namespace appFBLA2019
                 {
                     Frame frame = new Frame()
                     {
-                        HeightRequest = 100,
                         VerticalOptions = LayoutOptions.Start,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         CornerRadius = 10
