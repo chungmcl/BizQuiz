@@ -97,7 +97,7 @@ namespace appFBLA2019
                 ServerConnector.Server = "50.106.17.86"; // Valid as of March 3rd, 2019
 
             await ThreadTimer.RunServerChecksAsync();
-            if (Directory.GetDirectories(App.UserPath).Length < 8)
+            if (Directory.GetDirectories(App.UserPath).Length < 5)
             {
                 await DependencyService.Get<IGetStorage>().SetupDefaultQuizzesAsync(App.UserPath);
             }
