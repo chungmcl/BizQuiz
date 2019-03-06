@@ -351,13 +351,13 @@ namespace appFBLA2019
                     };
 
                     this.InputGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = Xamarin.Forms.GridLength.Star });
-                    this.InputGrid.Children.Add(button, i, InputGrid.RowDefinitions.Count - 1);
+                    this.InputGrid.Children.Add(button, i, this.InputGrid.RowDefinitions.Count - 1);
                 }
 
-                foreach(View view in InputGrid.Children)
+                foreach(View view in this.InputGrid.Children)
                 {
                     if (view is Label)
-                        Grid.SetColumnSpan(view, InputGrid.ColumnDefinitions.Count);
+                        Grid.SetColumnSpan(view, this.InputGrid.ColumnDefinitions.Count);
                 }
             }
             else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
