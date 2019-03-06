@@ -48,9 +48,9 @@
 
                             <StackLayout x:Name="StackLayoutChangePasswordContent"
                                  IsVisible="False">
-                                <Entry x:Name="EntryCurrentPasswordChangePassword" Placeholder="Enter current password"/>
-                                <Entry x:Name="EntryNewPasswordChangePassword" Placeholder="Enter new password"/>
-                                <Entry x:Name="EntryReenterNewPasswordChangePassword" Placeholder="Reenter new password"/>
+                                <Entry IsPassword="True" x:Name="EntryCurrentPasswordChangePassword" Placeholder="Enter current password"/>
+                                <Entry IsPassword="True" x:Name="EntryNewPasswordChangePassword" Placeholder="Enter new password"/>
+                                <Entry IsPassword="True" x:Name="EntryReenterNewPasswordChangePassword" Placeholder="Reenter new password"/>
                                 <Label x:Name="LabelChangePasswordMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangePassword" 
                                         Text="Change Password"
@@ -94,7 +94,7 @@
                             <StackLayout x:Name="StackLayoutChangeEmailContent"
                                  IsVisible="False">
 
-                                <Entry x:Name="EntryEnterPasswordChangeEmail" Placeholder="Enter password"/>
+                                <Entry IsPassword="True" x:Name="EntryEnterPasswordChangeEmail" Placeholder="Enter password"/>
                                 <Entry x:Name="EntryEnterNewEmailChangeEmail" Placeholder="Enter new Email"/>
                                 <Label x:Name="LabelChangeEmailMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonChangeEmail" 
@@ -174,7 +174,7 @@
 
                             <StackLayout x:Name="StackLayoutDeleteAccountContent"
                                  IsVisible="False">
-                                <Entry x:Name="EntryEnterPasswordDeleteAccount" Placeholder="Enter password"/>
+                                <Entry IsPassword="True" x:Name="EntryEnterPasswordDeleteAccount" Placeholder="Enter password"/>
                                 <Label x:Name="LabelDeleteAccountMessage" Font="Bold" HorizontalOptions="CenterAndExpand"/>
                                 <Button x:Name="ButtonDeleteAccount" 
                                         Text="Delete Account"
