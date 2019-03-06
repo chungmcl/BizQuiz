@@ -327,7 +327,7 @@ namespace appFBLA2019
                         SyncNoChange.IsVisible = true;
                         activeSync = SyncNoChange;
                     }
-                    else if (quiz.SyncStatus == 1) // SyncUpload
+                    else if (quiz.SyncStatus == 1 && quiz.AuthorName == CredentialManager.Username) // SyncUpload
                     {
                         SyncUpload.IsVisible = true;
                         activeSync = SyncUpload;

@@ -350,7 +350,7 @@ namespace appFBLA2019
                     {
                         Grid.SetColumnSpan(button, 2);
                     }
-                    while (buttonFontSize / 2 * button.Text.Length > (button.Width - 10) * 3)
+                    while (buttonFontSize / 2 * button.Text.Length > (button.Width - 20) * 3)
                     {
                         buttonFontSize--;
                     }

@@ -234,6 +234,14 @@ namespace appFBLA2019
                                 }
                             }
                         }
+                        else
+                        {
+                            QuizInfo copy = new QuizInfo(QuizInfos[i])
+                            {
+                                SyncStatus = 2 // 2 represents in sync
+                            };
+                            EditQuizInfo(copy, threadInstance);
+                        }
                     }
 
                     int numberOfQuizsOnServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);

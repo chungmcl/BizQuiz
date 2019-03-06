@@ -42,7 +42,7 @@ namespace appFBLA2019.Droid
         /// Called when the app is launched
         /// </summary>
         /// <param name="bundle"></param>
-        protected override void OnCreate(Bundle bundle)
+        protected async override void OnCreate(Bundle bundle)
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
@@ -52,7 +52,7 @@ namespace appFBLA2019.Droid
 
             CrossCurrentActivity.Current.Init(this, bundle);
             CrossCurrentActivity.Current.Activity = this;
-            
+            await CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
             fileDirectory = this.GetExternalFilesDir(null).ToString();
 
             FacebookClientManager.Initialize(this);
@@ -101,6 +101,10 @@ namespace appFBLA2019.Droid
             {
                 await this.AlertAsync();
                 this.CloseApplication();
+            }
+            else
+            {
+                await SetupDefaultQuizzesAsync(GetStorage() + "/dflt");
             }
         }
 

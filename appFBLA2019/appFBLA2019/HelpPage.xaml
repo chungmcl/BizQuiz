@@ -60,7 +60,7 @@
                 </Frame>
                 <Frame VerticalOptions="Fill" HorizontalOptions="FillAndExpand" CornerRadius="10" Grid.Row="1">
                     <Label FontSize="Medium" FontAttributes="Italic" HorizontalTextAlignment="Center">
-                        BizQuiz's store page has a large library of quizzes, both user-created and curated by the BizQuiz team. Official BizQuiz-curated Quizzes contain questions adapted from previous FBLA national tests hosted on fblatests.org, while users are free to write and publish their own material under the terms described in the terms of use.
+                        BizQuiz's store page has a large library of quizzes, both user-created and curated by the BizQuiz team. Official BizQuiz-curated Quizzes contain questions adapted from previous FBLA national tests, while users are free to write and publish their own material under the terms described in the terms of use.
                     </Label>
                 </Frame>
             </Grid>
