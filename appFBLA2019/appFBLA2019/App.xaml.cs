@@ -87,8 +87,6 @@ namespace appFBLA2019
             Directory.CreateDirectory(App.Path + $"dflt");
             
             BugReportHandler.Setup();
-            ServerConnector.Server = "server.bizquiz.app"; // Valid as of March 6th, 2019
-
             await ThreadTimer.RunServerChecksAsync();
             if (Directory.GetDirectories(App.UserPath).Length < 5)
             {
