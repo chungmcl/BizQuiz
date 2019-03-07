@@ -17,10 +17,9 @@ namespace appFBLA2019
         private const int headerSize = 5;
 
         /// <summary>
-        /// port to use when connecting
-        /// Server Release Build: 7777 Server Debug Build: 7778
+        /// Port to use when connecting to server
         /// </summary>
-        public static int Port { get { return 7777; } }
+        public static int Port { get { return 7778; } }
 
         /// <summary>
         /// Ip address of the server
