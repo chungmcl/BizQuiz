@@ -94,7 +94,7 @@ namespace appFBLA2019
             if (serverIp != null)
                 ServerConnector.Server = serverIp;
             else
-                ServerConnector.Server = "50.106.17.86"; // Valid as of March 3rd, 2019
+                ServerConnector.Server = "bizquiz.app"; // Valid as of March 3rd, 2019
 
             await ThreadTimer.RunServerChecksAsync();
             if (Directory.GetDirectories(App.UserPath).Length < 5)
