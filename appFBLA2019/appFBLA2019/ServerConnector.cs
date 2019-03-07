@@ -20,7 +20,7 @@ namespace appFBLA2019
         /// port to use when connecting
         /// Server Release Build: 7777 Server Debug Build: 7778
         /// </summary>
-        public static int Port { get { return 7778; } }
+        public static int Port { get { return 7777; } }
 
         /// <summary>
         /// Ip address of the server

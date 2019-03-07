@@ -96,7 +96,7 @@ namespace appFBLA2019
                 !this.IsLoading && 
                 App.Path != null)
             {
-                Directory.CreateDirectory(App.UserPath + $"{category}/");
+                Directory.CreateDirectory(App.UserPath + $"{this.category}/");
                 this.Setup();
             }
         }
@@ -163,7 +163,6 @@ namespace appFBLA2019
                 {
                     Frame frame = new Frame()
                     {
-                        HeightRequest = 100,
                         VerticalOptions = LayoutOptions.Start,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         CornerRadius = 10
@@ -632,7 +631,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ToolbarItemRefresh_Activated(object sender, EventArgs e)
         {
-            await RefreshPageAsync();
+            await this.RefreshPageAsync();
         }
 
         /// <summary>

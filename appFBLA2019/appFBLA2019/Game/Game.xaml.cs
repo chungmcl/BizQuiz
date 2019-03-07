@@ -90,7 +90,7 @@ namespace appFBLA2019
                 this.LabelFeedback.FontSize--;
             }
             this.NextBanner.ForceLayout();
-            await this.NextBanner.TranslateTo((this.Width - 300) / 2, this.Height * 2 / 3, 500, Easing.SpringOut);
+            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.SpringOut);
         }
 
         /// <summary>
@@ -99,27 +99,33 @@ namespace appFBLA2019
         /// <param name="answer"> the string of the button that was pressed </param>
         private async Task CheckButtonAnswerAsync(string answer)
         {
-            foreach (Button button in this.InputGrid.Children)
+            foreach (View view in this.InputGrid.Children)
             {
-                button.IsEnabled = false;
-                if (button.Text != answer)
+                Button button = view as Button;
+                if (button != null)
                 {
-                    button.BackgroundColor = Color.Accent.AddLuminosity(-.05);
+                    button.IsEnabled = false;
+                    if (button.Text != answer)
+                    {
+                        button.BackgroundColor = Color.Accent.AddLuminosity(-.05);
+                    }
                 }
             }
-            if (answer == this.currentQuestion.CorrectAnswer)
+            if (answer == this.correct)
             {
-                foreach (View button in this.InputGrid.Children.Where(x => (x as Button).Text == this.currentQuestion.CorrectAnswer))
-                {
-                    (button as Button).BackgroundColor = Color.Green;
-                }
+                //if user answered right, color their selection green
+                //(if for some reason this predicate returns null, an imaginary button is created and assigned a color to prevent null issues)
+                Button selectedButton = (Button)this.InputGrid.Children?.Where(x => { return x is Button && ((Button)x).Text == answer; })?.First() ?? new Button();
+                selectedButton.BackgroundColor = Color.Green;
 
                 await this.CorrectAnswerAsync();
             }
             else
             {
-                ((Button)this.InputGrid.Children.Where(x => (x as Button).Text == answer).First()).BackgroundColor = Color.Red;
-
+                //if user answered wrong, color their selection red 
+                //(if for some reason this predicate returns null, an imaginary button is created and assigned a color to prevent null issues)
+                Button selectedButton = (Button)this.InputGrid.Children?.Where(x => {return x is Button && ((Button)x).Text == answer;} )?.First() ?? new Button();
+                selectedButton.BackgroundColor = Color.Red;
                 await this.IncorrectAnswerAsync();
             }
         }
@@ -188,7 +194,7 @@ namespace appFBLA2019
         private async Task CycleQuestionAsync()
         {
             _ = this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
-            _ = this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 500);
+            _ = this.NextBanner.TranslateTo(this.NextBanner.Width * -2, this.Height * 2 / 3, 0);
             if (this.quiz.QuestionsRemaining > 0)
             {
                 // Save as reference
@@ -242,6 +248,7 @@ namespace appFBLA2019
         /// <param name="e">       </param>
         private async void NextButton_Clicked(object sender, EventArgs e)
         {
+            await this.NextBanner.TranslateTo(this.Width + this.NextBanner.Width * 2, this.Height * 2 / 3, 500, Easing.CubicIn);
             await this.CycleQuestionAsync();
         }
 
@@ -269,104 +276,98 @@ namespace appFBLA2019
             this.LabelQuestion.VerticalOptions = LayoutOptions.Center;
 
             this.LabelQuestion.FontSize = 40;
-            while (this.LabelQuestion.FontSize / 2 * this.LabelQuestion.Text.Length > (this.Width - 10) * 3)
+            while (this.LabelQuestion.FontSize / 2 * this.LabelQuestion.Text.Length > (this.Width - 10) * 2.5)
             {
                 this.LabelQuestion.FontSize--;
             }
+            this.LabelQuestion.LineBreakMode = LineBreakMode.WordWrap;
 
             this.correct = question.CorrectAnswer;
             List<string> answers = question.Answers;
 
             this.InputGrid.Children.Clear();
-            this.InputGrid.RowDefinitions = new RowDefinitionCollection
-            {
-                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star },
-                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
-            };
 
             if (question.QuestionType == 0) // If multiple-choice button question
             {
-                int currentRow = 0;
-                int currentColumn = 0;
 
                 //remove empty answers
                 answers.RemoveAll(x => x == "");
 
-                //if there are only 2 answers there are only two rows
-                if (answers.Count() < 3)
+                //convert answers to be usable by A, B, C, D buttons
+                this.ShuffleAndLabel(answers);
+                foreach(string answer in answers)
                 {
-                    this.InputGrid.RowDefinitions =
-                        new RowDefinitionCollection
-                        {
-                                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
-                        };
+                    if (answer.Contains(this.correct))
+                    {
+                        this.correct = Char.ToString(answer[0]);
+                        break;
+                    }
                 }
-                this.Shuffle(answers);
-                int buttonFontSize = 30;
+
+                this.InputGrid.ColumnDefinitions.Clear();
+                this.InputGrid.RowDefinitions.Clear();
+
+                //print the possible answers as labels to avoid scaling issues with buttons
+                int answerLabelFontSize = 30;
+                for (int i = 0; i<answers.Count;i++)
+                {
+                    if (answers[i] != null)
+                    {
+                        Label answerLabel = new Label()
+                        {
+                            Text = answers[i],
+                            TextColor = Color.Gray,
+                            WidthRequest = this.Width - 10
+                        };
+                        while (answerLabelFontSize / 2 * answerLabel.Text.Length > (this.Width - 10) * 2)
+                        {
+                            answerLabelFontSize--;
+                        }
+                        this.InputGrid.RowDefinitions.Add(new RowDefinition() { Height = Xamarin.Forms.GridLength.Auto });
+                        this.InputGrid.Children.Add(answerLabel, 0, i);
+                    }
+                }
+                foreach (Label label in this.InputGrid.Children)
+                {
+                    label.FontSize = answerLabelFontSize;
+                }
+
+                this.InputGrid.RowDefinitions.Add(new RowDefinition() { Height = Xamarin.Forms.GridLength.Star });
                 for (int i = 0; i < answers.Count(); i++)
                 {
                     string answer = answers[i];
                     Button button = new Button
                     {
-                        Text = answer,
+                        Text = Char.ToString(answer[0]),
                         CornerRadius = 25,
-                        Padding = 10,
+                        Padding = 5,
                         BackgroundColor = Color.Accent,
                         TextColor = Color.White,
-                        VerticalOptions = LayoutOptions.FillAndExpand
+                        MinimumHeightRequest = 50
                     };
                     button.Clicked += async (object sender, EventArgs e) =>
                     {
                         await this.CheckButtonAnswerAsync(((Button)sender).Text);
                     };
 
-                    this.InputGrid.Children.Add(button, 0, i);
-                    //this is gross and messy, need to find a better way to place buttons correctly with math and stuff
-                    switch (i)
-                    {
-                        case 0:
-                            currentColumn = 0;
-                            currentRow = 0;
-                            break;
-
-                        case 1:
-                            currentColumn = 1;
-                            currentRow = 0;
-                            break;
-
-                        case 2:
-                            currentColumn = 0;
-                            currentRow = 1;
-                            break;
-
-                        case 3:
-                            currentColumn = 1;
-                            currentRow = 1;
-                            break;
-                    }
-
-                    this.InputGrid.Children.Add(button, currentColumn, currentRow);
-                    if (i == 2 && answers.Count() == 3)
-                    {
-                        Grid.SetColumnSpan(button, 2);
-                    }
-                    while (buttonFontSize / 2 * button.Text.Length > (button.Width - 20) * 3)
-                    {
-                        buttonFontSize--;
-                    }
+                    this.InputGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = Xamarin.Forms.GridLength.Star });
+                    this.InputGrid.Children.Add(button, i, this.InputGrid.RowDefinitions.Count - 1);
                 }
-                foreach (View button in this.InputGrid.Children)
+
+                foreach(View view in this.InputGrid.Children)
                 {
-                    (button as Button).FontSize = buttonFontSize;
+                    if (view is Label)
+                        Grid.SetColumnSpan(view, this.InputGrid.ColumnDefinitions.Count);
                 }
             }
             else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
             {
                 this.InputGrid.RowDefinitions = new RowDefinitionCollection
             {
-                new RowDefinition() { Height = Xamarin.Forms.GridLength.Auto },
-                new RowDefinition() { Height = Xamarin.Forms.GridLength.Star }
+                new RowDefinition() { Height = new GridLength(.75, GridUnitType.Star) },
+                new RowDefinition() { Height = new GridLength(1, GridUnitType.Star)}
             };
+                this.InputGrid.ColumnDefinitions = new ColumnDefinitionCollection { new ColumnDefinition() { Width = Xamarin.Forms.GridLength.Star } };
                 Entry entry = new Entry()
                 {
                     FontSize = 35,
@@ -414,7 +415,7 @@ namespace appFBLA2019
         /// given a list of strings, shuffles it (used for randomizing buttons)
         /// </summary>
         /// <param name="answers"> the list of answers to be shuffled </param>
-        private void Shuffle(List<String> answers)
+        private void ShuffleAndLabel(List<String> answers)
         {
             int n = answers.Count;
             while (n > 1)
@@ -424,6 +425,16 @@ namespace appFBLA2019
                 String value = answers[k];
                 answers[k] = answers[n];
                 answers[n] = value;
+            }
+            string[] prefixes = {
+            "A: ",
+            "B: ",
+            "C: ",
+            "D: ",
+            };
+            for (int i = 0; i < answers.Count; i++)
+            {
+                answers[i] = prefixes[i] + answers[i];
             }
         }
     }
