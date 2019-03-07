@@ -59,7 +59,7 @@ namespace appFBLA2019
             IsLoggedIn = true;
             EmailConfirmed = emailConfirmed;
 
-            if (Directory.GetDirectories(App.UserPath).Length < 8)
+            if (Directory.GetDirectories(App.UserPath).Length < 5)
             {
                 await DependencyService.Get<IGetStorage>().SetupDefaultQuizzesAsync(App.UserPath);
             }

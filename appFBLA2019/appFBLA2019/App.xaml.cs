@@ -87,15 +87,6 @@ namespace appFBLA2019
             Directory.CreateDirectory(App.Path + $"dflt");
             
             BugReportHandler.Setup();
-
-            // If app's server IP has not been changed, default to IP in else statement.
-            // If it has been changed, use the new IP.
-            string serverIp = await SecureStorage.GetAsync("serverIP");
-            if (serverIp != null)
-                ServerConnector.Server = serverIp;
-            else
-                ServerConnector.Server = "50.106.17.86"; // Valid as of March 3rd, 2019
-
             await ThreadTimer.RunServerChecksAsync();
             if (Directory.GetDirectories(App.UserPath).Length < 5)
             {

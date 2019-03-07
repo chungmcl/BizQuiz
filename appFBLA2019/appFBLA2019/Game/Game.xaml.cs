@@ -90,7 +90,7 @@ namespace appFBLA2019
                 this.LabelFeedback.FontSize--;
             }
             this.NextBanner.ForceLayout();
-            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 2500, Easing.SpringOut);
+            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.SpringOut);
         }
 
         /// <summary>
@@ -343,7 +343,8 @@ namespace appFBLA2019
                         Padding = 5,
                         BackgroundColor = Color.Accent,
                         TextColor = Color.White,
-                        MinimumHeightRequest = 50
+                        MinimumHeightRequest = 50,
+                        FontSize = 55
                     };
                     button.Clicked += async (object sender, EventArgs e) =>
                     {

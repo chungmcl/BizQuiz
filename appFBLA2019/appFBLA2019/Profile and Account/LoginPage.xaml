@@ -6,11 +6,8 @@
     <ContentView.Content>
         <StackLayout Spacing="20" Padding="20" VerticalOptions="Center">
             <StackLayout Spacing="5" VerticalOptions="Start">
-                <!--<ContentView>
-                    <Image Source="BizQuizLogo.png" Aspect="AspectFit" HeightRequest="50" HorizontalOptions="Start"/>
-                </ContentView>-->
 
-                    <Entry x:Name="EntryUsername" Grid.Column="0" Grid.Row="0"
+                <Entry x:Name="EntryUsername" Grid.Column="0" Grid.Row="0"
                             HorizontalOptions="FillAndExpand" Placeholder="Username" TextChanged="EntryUsername_TextChanged"/>
                 <Entry x:Name="EntryPassword" Grid.Column="0" Grid.Row="1"
                             IsPassword="True"
