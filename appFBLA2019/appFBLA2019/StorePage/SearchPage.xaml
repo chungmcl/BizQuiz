@@ -14,8 +14,8 @@
                     </Frame>
                     <StackLayout Padding="0" Spacing="0" Orientation="Vertical" BackgroundColor="#004F96">
                         <StackLayout Orientation="Horizontal" Padding="0" Spacing="0">
-                            <Button x:Name="buttonTitle" HeightRequest="35" CornerRadius="0" Text="Search Title" Clicked="ButtonTitle_Clicked" HorizontalOptions="FillAndExpand" BackgroundColor="#004F96" TextColor="White"/>
-                            <Button x:Name="buttonAuthor" HeightRequest="35" CornerRadius="0" Text="Search Author" Clicked="ButtonAuthor_Clicked" HorizontalOptions="FillAndExpand" BackgroundColor="#004F96" TextColor="White"/>
+                            <Button x:Name="buttonTitle" CornerRadius="0" Text="Search Title" Clicked="ButtonTitle_Clicked" HorizontalOptions="FillAndExpand" BackgroundColor="#004F96" TextColor="White"/>
+                            <Button x:Name="buttonAuthor" CornerRadius="0" Text="Search Author" Clicked="ButtonAuthor_Clicked" HorizontalOptions="FillAndExpand" BackgroundColor="#004F96" TextColor="White"/>
                         </StackLayout>
                         <BoxView x:Name="searchIndicator" BackgroundColor="White" HeightRequest="2"/>
                     </StackLayout>

@@ -343,7 +343,8 @@ namespace appFBLA2019
                         Padding = 5,
                         BackgroundColor = Color.Accent,
                         TextColor = Color.White,
-                        MinimumHeightRequest = 50
+                        MinimumHeightRequest = 50,
+                        FontSize = 55
                     };
                     button.Clicked += async (object sender, EventArgs e) =>
                     {

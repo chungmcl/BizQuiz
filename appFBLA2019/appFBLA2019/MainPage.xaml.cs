@@ -94,15 +94,5 @@ namespace appFBLA2019
         {
             await this.Navigation.PushModalAsync(new HelpPage());
         }
-
-        /// <summary>
-        /// Open the advanced settings page
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void AdvancedSettings_Clicked(object sender, EventArgs e)
-        {
-            await this.Navigation.PushModalAsync(new AdvancedSettingsPage());
-        }
     }
 }
