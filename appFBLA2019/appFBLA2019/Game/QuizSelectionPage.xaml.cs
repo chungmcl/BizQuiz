@@ -487,72 +487,80 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ButtonDelete_Clicked(string deleteType, string userPath)
         {
-            bool unsubscribe = deleteType == "Unsubscribe";
-            string question;
-            string message;
-            if (unsubscribe)
+            if (CredentialManager.IsLoggedIn)
             {
-                question = "Are you sure you want to unsubscribe?";
-                message = "This will remove the copy from your device";
+                bool unsubscribe = deleteType == "Unsubscribe";
+                string question;
+                string message;
+                if (unsubscribe)
+                {
+                    question = "Are you sure you want to unsubscribe?";
+                    message = "This will remove the copy from your device";
+                }
+                else
+                {
+                    question = "Are you sure you want to delete this quiz?";
+                    message = "This will delete the copy on your device and in the cloud. This is not reversable.";
+                }
+
+                bool answer = await this.DisplayAlert(question, message, "Yes", "No");
+                if (answer)
+                {
+                    string path = App.UserPath + userPath;
+
+                    // StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
+
+                    // Acquire QuizInfo from roster
+                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
+                        userPath.Split('/').Last().Split('`').First(), // Quiz Name
+                        userPath.Split('/').Last().Split('`').Last()); // Author
+                    string dbId = rosterInfo.DBId;
+
+                    // tell the roster that the quiz is deleted
+                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                    {
+                        IsDeletedLocally = true,
+                        LastModifiedDate = DateTime.Now.ToString()
+                    };
+                    QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+
+                    // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
+                    if (CrossConnectivity.Current.IsConnected)
+                    {
+                        OperationReturnMessage returnMessage;
+                        if (unsubscribe)
+                        {
+                            returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
+                        }
+                        else
+                        {
+                            returnMessage = await ServerOperations.DeleteQuiz(dbId);
+                        }
+
+                        if (System.IO.Directory.Exists(path))
+                        {
+                            // Get the Realm File
+                            string realmFilePath = Directory.GetFiles(path, "*.realm").First();
+                            Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                            if (returnMessage == OperationReturnMessage.True)
+                            {
+                                QuizRosterDatabase.DeleteQuizInfo(dbId);
+                                realm.Write(() =>
+                                {
+                                    realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
+                                });
+                            }
+                            Directory.Delete(path, true);
+                        }
+                        this.Setup();
+                    }
+                }
             }
             else
             {
-                question = "Are you sure you want to delete this quiz?";
-                message = "This will delete the copy on your device and in the cloud. This is not reversable.";
+                await this.DisplayAlert("Hold on!", "You must be create an account or log in before you can unsubscribe", "OK");
             }
-
-            bool answer = await this.DisplayAlert(question, message, "Yes", "No");
-            if (answer)
-            {
-                string path = App.UserPath + userPath;
-
-                // StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
-
-                // Acquire QuizInfo from roster
-                QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
-                    userPath.Split('/').Last().Split('`').First(), // Quiz Name
-                    userPath.Split('/').Last().Split('`').Last()); // Author
-                string dbId = rosterInfo.DBId;
-
-                // tell the roster that the quiz is deleted
-                QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
-                {
-                    IsDeletedLocally = true,
-                    LastModifiedDate = DateTime.Now.ToString()
-                };
-                QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
-
-                // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
-                if (CrossConnectivity.Current.IsConnected)
-                {
-                    OperationReturnMessage returnMessage;
-                    if (unsubscribe)
-                    {
-                        returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
-                    }
-                    else
-                    {
-                        returnMessage = await ServerOperations.DeleteQuiz(dbId);
-                    }
-
-                    if (System.IO.Directory.Exists(path))
-                    {
-                        // Get the Realm File
-                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                        if (returnMessage == OperationReturnMessage.True)
-                        {
-                            QuizRosterDatabase.DeleteQuizInfo(dbId);
-                            realm.Write(() =>
-                            {
-                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
-                            });
-                        }
-                        Directory.Delete(path, true);
-                    }
-                    this.Setup();
-                }
-            }
+            
         }
 
         /// <summary>

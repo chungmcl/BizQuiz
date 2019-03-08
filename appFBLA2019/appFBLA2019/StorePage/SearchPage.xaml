@@ -39,17 +39,16 @@
             </Frame>
 
 
-            <StackLayout>
-                <Label x:Name="message"  Text=""/>
+            <StackLayout >
+                <Label Margin="20" x:Name="LableNone" FontSize="Large" Text="Sorry, we couldn't find any quizzes matching what you searched" HorizontalOptions="CenterAndExpand" IsVisible="False"/>
                 <ScrollView x:Name="ScrollSearch" Scrolled="ScrollSearch_Scrolled">
-                    <StackLayout x:Name="SearchedStack"  Padding="10">
+                    <StackLayout x:Name="SearchedStack" Padding="10">
                         <!--Search Results go here-->
                     </StackLayout>
                 </ScrollView>
                 <ActivityIndicator x:Name="ActivityIndicator" 
                                    Color="Accent" 
-                                   VerticalOptions="CenterAndExpand"
-                                   IsVisible="False"/>
+                                   VerticalOptions="CenterAndExpand"/>
             </StackLayout>
             
             
