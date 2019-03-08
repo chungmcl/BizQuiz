@@ -19,7 +19,7 @@ namespace appFBLA2019
         /// <summary>
         /// Port to use when connecting to server
         /// </summary>
-        public static int Port { get { return 7778; } }
+        public static int Port { get { return 8888; } }
 
         /// <summary>
         /// Ip address of the server
