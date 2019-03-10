@@ -19,6 +19,7 @@
                 </StackLayout>
             </Frame>
             <StackLayout x:Name="StackLayoutMain" Spacing="0" Padding="10" BackgroundColor="Blue"
+                         RelativeLayout.YConstraint="{ConstraintExpression Type=Constant, Constant=0}"
                          RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Height}">
                 <Label x:Name="LabelQuestion" VerticalTextAlignment="Center" LineBreakMode="WordWrap"/>
                 <ProgressBar x:Name="ProgressBar" VerticalOptions="Start" Progress="0" HeightRequest="10" ProgressColor="Accent" />
@@ -30,7 +31,7 @@
                         RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.4, Property=Height}"
                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.5, Property=Height}"
                                 BackgroundColor="Red">
-                        <StackLayout x:Name="InputStack" Spacing="5" Padding="0"/>
+                        <Grid x:Name="InputGrid" RowSpacing="5" Padding="0"/>
                     </ScrollView>
                     </RelativeLayout>
             </StackLayout>

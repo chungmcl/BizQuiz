@@ -23,11 +23,11 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="score">           </param>
         /// <param name="totalQuestions">  </param>
-        public QuizEndPage(int score, int totalQuestions, string quizName)
+        public QuizEndPage(double score, int totalQuestions, string quizName)
         {
             this.InitializeComponent();
             this.quizName = quizName;
-            this.percentScore = score / (totalQuestions * 2.0) * 100;
+            this.percentScore = score / (totalQuestions) * 100;
             switch (this.percentScore)
             {
                 case double x when (x < 60):
@@ -46,7 +46,7 @@ namespace appFBLA2019
                     this.LabelFeedback.Text = "Wow! You're a master!";
                     break;
             }
-            this.LabelScore.Text = $"{score}/{totalQuestions * 2}";
+            this.LabelScore.Text = $"{score}/{totalQuestions}";
         }
 
         /// <summary>
