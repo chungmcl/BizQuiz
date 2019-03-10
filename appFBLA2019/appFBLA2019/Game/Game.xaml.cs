@@ -26,9 +26,6 @@ namespace appFBLA2019
             this.score = 0;
             this.Title = quiz.Title;
             this.inGame = false;
-
-            //this.LabelQuestion.SizeChanged += (object sender, EventArgs e) => { this.RelativeLayoutImageAnswer.HeightRequest = this.StackLayoutMain.Height - this.LabelQuestion.Height - 75; };
-            //this.SizeChanged += (object sender, EventArgs e) => { this.RelativeLayoutImageAnswer.HeightRequest = this.StackLayoutMain.Height - this.LabelQuestion.Height - 75; };
         }
 
         /// <summary>
@@ -50,8 +47,11 @@ namespace appFBLA2019
             base.OnAppearing();
             if (!this.inGame)
             {
-                await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 3 / 2, 0);
-                await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.Height * 3 / 2, 0);
+                this.LabelQuestion.WidthRequest = this.Width - 20;
+                this.NextBanner.WidthRequest = this.Width * 2 / 3;
+                this.NextBanner.ForceLayout();
+                await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.StackLayoutMain.Height * 3 / 2, 0);
+                await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.StackLayoutMain.Height *3/2, 0);
                 this.inGame = true;
                 await this.CycleQuestionAsync();
             }
@@ -85,12 +85,14 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task AnimateNextBannerAsync()
         {
-            while (this.LabelFeedback.FontSize / 2 * this.LabelFeedback.Text.Length > (this.NextBanner.Width - 5))
+            this.LabelFeedback.FontSize = 30;
+            while (this.LabelFeedback.FontSize / 2 * this.LabelFeedback.Text.Length > (this.NextBanner.Width - 5) * 2)
             {
                 this.LabelFeedback.FontSize--;
             }
-            this.NextBanner.ForceLayout();
-            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 1 / 3, 500, Easing.SpringOut);
+
+            await this.LayoutRefreshAsync();
+            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.StackLayoutMain.Height * 1 / 3, 500, Easing.SpringOut);
         }
 
         /// <summary>
@@ -163,7 +165,6 @@ namespace appFBLA2019
         private async Task CorrectAnswerAsync()
         {
             this.LabelFeedback.Text = "Correct!";
-            this.LabelFeedback.FontSize = 40;
             this.NextBanner.BackgroundColor = Color.Green;
             this.LabelFeedback.TextColor = Color.White;
             //add 1 point for getting it right first time, 0.5 point for getting it right a second time
@@ -175,7 +176,7 @@ namespace appFBLA2019
             else
             {
                 this.score += .5;
-                this.LabelFeedback.Text += " + half a point";
+                this.LabelFeedback.Text += " + .5 points";
             }
 
             // 2 represents 'correct'
@@ -184,6 +185,7 @@ namespace appFBLA2019
                 Status = 2
             };
             DBHandler.Database.EditQuestion(copyQuestion);
+
             await this.AnimateNextBannerAsync();
         }
 
@@ -194,12 +196,18 @@ namespace appFBLA2019
         private async Task CycleQuestionAsync()
         {
             _ = this.ProgressBar.ProgressTo(((double)this.quiz.Questions.Count() - (double)this.quiz.QuestionsRemaining) / (double)this.quiz.Questions.Count(), 500, Easing.SpringOut);
-            _ = this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.Height * 3 / 2, 0);
+            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.StackLayoutMain.Height * 3 / 2, 0);
             if (this.quiz.QuestionsRemaining > 0)
             {
                 // Save as reference
                 this.ScoreLabel.Text = $"Score: {this.score}/{this.quiz.Questions.Count}";
-                this.currentQuestion = this.quiz.GetQuestion();
+
+                //prevents same question twice in a row
+                Question newQuestion = this.quiz.GetQuestion();
+                while (newQuestion.QuestionId == (this.currentQuestion?.QuestionId ?? "") /*if the current question is null, ID is "" so it can't be the same*/)
+                    newQuestion = this.quiz.GetQuestion();
+
+                this.currentQuestion = newQuestion;
                 await this.SetUpQuestionAsync(this.currentQuestion);
             }
             else
@@ -249,10 +257,12 @@ namespace appFBLA2019
         private async Task LayoutRefreshAsync()
         {
             this.QuestionImage.Aspect = Aspect.AspectFit;
-            this.RelativeLayoutImageAnswer.HeightRequest = this.StackLayoutMain.Height - (this.LabelQuestion.Height + this.ProgressBar.Height + 10 /*bottom padding*/);
             
             this.UpdateChildrenLayout();
             this.ForceLayout();
+
+            this.NextBanner.WidthRequest = this.Width * 2 / 3;
+            this.InputGrid.HeightRequest = this.StackLayoutMain.Height - (this.LabelQuestion.Height + this.ProgressBar.Height + 20/*bottom padding*/);
         }
 
         /// <summary>
@@ -263,7 +273,7 @@ namespace appFBLA2019
         private async void NextButton_Clicked(object sender, EventArgs e)
         {
             this.NextButton.IsEnabled = false;
-            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, -this.Height, 500, Easing.CubicIn);
+            await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, -this.StackLayoutMain.Height, 500, Easing.CubicIn);
             this.NextButton.IsEnabled = true;
             await this.CycleQuestionAsync();
         }
@@ -274,7 +284,7 @@ namespace appFBLA2019
         /// <param name="question"> the question to be displayed </param>
         private async Task SetUpQuestionAsync(Question question)
         {
-            await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.Height * 2 / 3, 500, Easing.CubicOut);
+            await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.StackLayoutMain.Height * 2 / 3, 500, Easing.CubicOut);
 
             if (question.QuestionText == "" || question.CorrectAnswer == "")
             {
@@ -298,6 +308,8 @@ namespace appFBLA2019
             }
             this.LabelQuestion.LineBreakMode = LineBreakMode.WordWrap;
 
+            this.StackLayoutMain.ForceLayout();
+
             this.correct = question.CorrectAnswer;
             List<string> answers = question.Answers;
 
@@ -308,6 +320,15 @@ namespace appFBLA2019
                 new ColumnDefinition() {Width = Xamarin.Forms.GridLength.Star }
             };
 
+            if (question.NeedsPicture)
+            {
+                this.QuestionImage.Source = ImageSource.FromFile(question.ImagePath);
+                this.QuestionImage.IsEnabled = question.NeedsPicture;
+                this.InputGrid.Children.Add(this.QuestionImage, 0, 0);
+            }
+
+            //creates padding to push the buttons down to the bottom of the page
+            this.InputGrid.RowDefinitions.Add(new RowDefinition() { Height = Xamarin.Forms.GridLength.Star });
             if (question.QuestionType == 0) // If multiple-choice button question
             {
 
@@ -325,7 +346,6 @@ namespace appFBLA2019
                     }
                 }
 
-                InputGrid.RowDefinitions.Add(new RowDefinition() { Height = Xamarin.Forms.GridLength.Star });
                 int answerButtonFontSize = 40;
                 for (int i = 0; i < answers.Count(); i++)
                 {
@@ -339,7 +359,7 @@ namespace appFBLA2019
                         BorderColor = Color.Accent,
                         BorderWidth = 2,
                         MinimumHeightRequest = 50,
-                        HorizontalOptions = LayoutOptions.FillAndExpand
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
                     };
                     button.Clicked += async (object sender, EventArgs e) =>
                     {
@@ -362,22 +382,21 @@ namespace appFBLA2019
             }
             else if (question.QuestionType == 1 || question.QuestionType == 2) // if text response
             {
-                this.InputGrid.RowDefinitions = new RowDefinitionCollection
-            {
-                new RowDefinition() {Height = Xamarin.Forms.GridLength.Star },
-                new RowDefinition() {Height = Xamarin.Forms.GridLength.Auto },
-            };
+                this.InputGrid.RowDefinitions.Add(new RowDefinition() { Height = Xamarin.Forms.GridLength.Auto });
+                this.InputGrid.RowDefinitions.Add(new RowDefinition() { Height = Xamarin.Forms.GridLength.Auto});
                 Entry entry = new Entry()
                 {
                     FontSize = 35,
                     FontAttributes = FontAttributes.Italic,
                     TextColor = Color.Gray,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    WidthRequest = this.Width,
+                    WidthRequest = InputGrid.Width,
                     Placeholder = "Answer Here",
                     PlaceholderColor = Color.LightGray,
                     Margin = 0,
-                    HorizontalOptions=LayoutOptions.FillAndExpand
+                    HorizontalOptions=LayoutOptions.FillAndExpand,
+                    IsTextPredictionEnabled=true,
+                    HorizontalTextAlignment=TextAlignment.Center,
+                    ReturnType = ReturnType.Go
                 };
                 entry.HeightRequest = entry.FontSize * 3;
                 Button buttonCheckAnswer = new Button
@@ -385,26 +404,29 @@ namespace appFBLA2019
                     Text = "Check Answer",
                     FontSize = 40,
                     CornerRadius = 25,
-                    Padding = 10,
-                    BackgroundColor = Color.Accent,
-                    TextColor = Color.White,
-                    HorizontalOptions = LayoutOptions.FillAndExpand
+                    Padding = 5,
+                    BackgroundColor = Color.White,
+                    TextColor = Color.DarkGray,
+                    BorderColor = Color.Accent,
+                    BorderWidth = 2,
+                    MinimumHeightRequest = 50,
+                };
+                entry.Completed += async (object sender, EventArgs e) =>
+                {
+                    await this.CheckTextAnswerAsync(entry.Text ?? "", (question.QuestionType == 2));
                 };
                 buttonCheckAnswer.Clicked += async (object sender, EventArgs e) =>
                 {
                     await this.CheckTextAnswerAsync(entry.Text ?? "", (question.QuestionType == 2));
                 };
-                this.InputGrid.Children.Add(entry, 0, 0);
-                this.InputGrid.Children.Add(buttonCheckAnswer, 0, 1);
+                this.InputGrid.Children.Add(entry, 0, InputGrid.RowDefinitions.Count - 2);
+                this.InputGrid.Children.Add(buttonCheckAnswer, 0, InputGrid.RowDefinitions.Count - 1);
             }
-
-            this.QuestionImage.Source = ImageSource.FromFile(question.ImagePath); // Add cases for all JPG file extensions(for example, ".jpeg")
-            this.QuestionImage.IsEnabled = question.NeedsPicture;
 
 
             await this.LayoutRefreshAsync();
-            await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, -this.Height, 500, Easing.CubicIn);
-            await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.Height * 3 / 2, 0);
+            await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, -this.StackLayoutMain.Height, 500, Easing.CubicIn);
+            await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.StackLayoutMain.Height * 3 / 2, 0);
         }
 
         /// <summary>
