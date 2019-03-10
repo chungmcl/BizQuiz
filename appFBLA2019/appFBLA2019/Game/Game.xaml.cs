@@ -85,7 +85,7 @@ namespace appFBLA2019
         /// <returns>  </returns>
         private async Task AnimateNextBannerAsync()
         {
-            while (this.LabelFeedback.FontSize / 2 * this.LabelFeedback.Text.Length > (this.NextBanner.Width - 5) * 2)
+            while (this.LabelFeedback.FontSize / 2 * this.LabelFeedback.Text.Length > (this.NextBanner.Width - 5))
             {
                 this.LabelFeedback.FontSize--;
             }
@@ -249,6 +249,7 @@ namespace appFBLA2019
         private async Task LayoutRefreshAsync()
         {
             this.QuestionImage.Aspect = Aspect.AspectFit;
+            this.RelativeLayoutImageAnswer.HeightRequest = this.StackLayoutMain.Height - (this.LabelQuestion.Height + this.ProgressBar.Height + 10 /*bottom padding*/);
             
             this.UpdateChildrenLayout();
             this.ForceLayout();

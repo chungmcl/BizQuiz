@@ -14,23 +14,23 @@
             </Frame>
             <Frame x:Name="NextBanner" Padding="10" CornerRadius="10">
                 <StackLayout>
-                    <Label x:Name="LabelFeedback" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="Italic" FontSize="40" />
-                    <Button x:Name="NextButton" Text="Next question" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" Clicked="NextButton_Clicked" FontSize="30" WidthRequest="300" />
+                    <Label x:Name="LabelFeedback" HorizontalOptions="Center" FontAttributes="Italic" FontSize="40" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                    <Button x:Name="NextButton" Text="Next question" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" Clicked="NextButton_Clicked" FontSize="40" WidthRequest="350" />
                 </StackLayout>
             </Frame>
-            <StackLayout x:Name="StackLayoutMain" Spacing="0" Padding="10" BackgroundColor="Blue"
+            <StackLayout x:Name="StackLayoutMain" Spacing="0" Padding="10"
                          RelativeLayout.YConstraint="{ConstraintExpression Type=Constant, Constant=0}"
                          RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Height}">
                 <Label x:Name="LabelQuestion" VerticalTextAlignment="Center" LineBreakMode="WordWrap"/>
                 <ProgressBar x:Name="ProgressBar" VerticalOptions="Start" Progress="0" HeightRequest="10" ProgressColor="Accent" />
-                <RelativeLayout x:Name="RelativeLayoutImageAnswer" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" BackgroundColor="Green">
+                <RelativeLayout x:Name="RelativeLayoutImageAnswer">
                     <Image x:Name="QuestionImage" IsEnabled="False"
                             RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.4, Property=Height, Constant=-20}"
                            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}" />
                     <ScrollView RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}"
                         RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.4, Property=Height}"
                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.5, Property=Height}"
-                                BackgroundColor="Red">
+                                >
                         <Grid x:Name="InputGrid" RowSpacing="5" Padding="0"/>
                     </ScrollView>
                     </RelativeLayout>
