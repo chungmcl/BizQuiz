@@ -30,6 +30,7 @@ namespace appFBLA2019
         {
             this.InitializeComponent();
             this.currentChunk = 1;
+            this.category = "All";
             this.quizzesFeatured = new List<SearchInfo>();
         }
 
@@ -39,7 +40,7 @@ namespace appFBLA2019
         protected async override void OnAppearing()
         {
             this.quizzesRemaining = true;
-            this.category = "All";
+            //this.category = "All";
             await this.Refresh();
         }
 

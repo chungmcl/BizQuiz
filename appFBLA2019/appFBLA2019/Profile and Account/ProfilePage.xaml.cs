@@ -382,7 +382,6 @@ namespace appFBLA2019
                     }
                 }
                 // Setup Page again after deletion
-                this.StackLayoutProfilePageContent.Children.Clear();
                 await this.UpdateProfileContentAsync();
             }
         }
