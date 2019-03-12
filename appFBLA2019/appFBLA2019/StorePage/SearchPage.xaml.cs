@@ -91,7 +91,7 @@ namespace appFBLA2019
             List<QuizInfo> currentlySubscribed = QuizRosterDatabase.GetRoster();
 			foreach(SearchInfo quiz in quizzes)
             {// Only add quiz if the category is what user picked (we are asking the server for more then we need so this could be changed)
-                if (this.category == "All" || quiz.Category == this.category) 
+                if (this.category == "All" || quiz.Category == this.category)
                 {
 
                     Frame quizFrame = new Frame
@@ -184,7 +184,6 @@ namespace appFBLA2019
                         Text = "Category: " + quiz.Category,
                     };
                     frameStack.Children.Add(quizCategory);
-
                     quizFrame.Content = frameStack;
                     this.quizzesSearched.Add(quiz);
                     Device.BeginInvokeOnMainThread(() =>
@@ -200,46 +199,53 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void ImageButtonUnsubscribe_Clicked(object sender, EventArgs e)
         {
-            ImageButton button = (sender as ImageButton);
-            string dbId = button.StyleId;
-            bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
-            if (answer)
+            if (CredentialManager.IsLoggedIn)
             {
-                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
-                button.IsVisible = false;
-                indicatorSyncing.IsVisible = true;
-                indicatorSyncing.IsRunning = true;
-                // get rosterInfo
-                QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
-                // tell the roster that the quiz is deleted
-                QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                ImageButton button = (sender as ImageButton);
+                string dbId = button.StyleId;
+                bool answer = await this.DisplayAlert("Are you sure you want to unsubscribe?", "You will no longer get updates of this quiz", "Yes", "No");
+                if (answer)
                 {
-                    IsDeletedLocally = true,
-                    LastModifiedDate = DateTime.Now.ToString()
-                };
-                QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+                    ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
+                    button.IsVisible = false;
+                    indicatorSyncing.IsVisible = true;
+                    indicatorSyncing.IsRunning = true;
+                    // get rosterInfo
+                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+                    // tell the roster that the quiz is deleted
+                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                    {
+                        IsDeletedLocally = true,
+                        LastModifiedDate = DateTime.Now.ToString()
+                    };
+                    QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
 
-                OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
+                    OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
 
-                if (returnMessage == OperationReturnMessage.True)
-                {
-                    (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
-                    QuizRosterDatabase.DeleteQuizInfo(dbId);
+                    if (returnMessage == OperationReturnMessage.True)
+                    {
+                        (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Subscribe].IsVisible = true; // add in subscribe button
+                        QuizRosterDatabase.DeleteQuizInfo(dbId);
+                    }
+                    else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
+                    {
+                        button.IsVisible = true;
+                        await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please log in and try again.", "OK");
+                    }
+                    else
+                    {
+                        button.IsVisible = true;
+                        await this.DisplayAlert("Unsubscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
+                    }
+                    indicatorSyncing.IsVisible = false;
+                    indicatorSyncing.IsRunning = false;
                 }
-                else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)
-                {
-                    button.IsVisible = true;
-                    await this.DisplayAlert("Invalid Credentials", "Your current login credentials are invalid. Please log in and try again.", "OK");
-                }
-                else
-                {
-                    button.IsVisible = true;
-                    await this.DisplayAlert("Unsubscribe Failed", "The unsubscription request could not be completed. Please try again.", "OK");
-                }
-                indicatorSyncing.IsVisible = false;
-                indicatorSyncing.IsRunning = false;
-
             }
+            else
+            {
+                await this.DisplayAlert("Hold on!", "Before you can subscribe to any quizzes, you have to login.", "Ok");
+            }
+            
         }
 
         /// <summary>
@@ -295,27 +301,8 @@ namespace appFBLA2019
 			// Delete what was in there previously
 			this.end = false;
             this.currentChunk = 1;
-			Device.BeginInvokeOnMainThread(() => {
-			    this.SearchedStack.Children.Clear();
-			    this.ActivityIndicator.IsEnabled = true;
-			    this.ActivityIndicator.IsRunning = true;
-			});
-			this.isLoading = true;
-			try
-            {
-                await Task.Run(() => this.SearchAsync());
-            }
-            catch (Exception ex)
-			{
-				BugReportHandler.SaveReport(ex);
-				await this.DisplayAlert("Search Failed", "Try again later", "Ok");
-			}
-			Device.BeginInvokeOnMainThread(() =>
-			{
-			    this.ActivityIndicator.IsEnabled = false;
-			    this.ActivityIndicator.IsRunning = false;
-			    this.isLoading = false;
-			});
+            await Task.Run(() => this.SearchAsync());
+
 		}
 
         /// <summary>
@@ -324,26 +311,36 @@ namespace appFBLA2019
         /// <returns></returns>
         private async Task SearchAsync()
         {
-            List<SearchInfo> chunk = new List<SearchInfo>();
-            if (this.searchType == SearchType.Title)
-                chunk = SearchUtils.GetQuizzesByQuizNameChunked(this.SearchBar.Text, this.currentChunk);
-            else
-                chunk = SearchUtils.GetQuizzesByAuthorChunked(this.SearchBar.Text, this.currentChunk);
-            if (this.currentChunk == 1 && chunk.Count == 0)
+            try
             {
+                this.isLoading = true;
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    this.SearchedStack.Children.Add(new Label()
-                    {
-                        Text = "Sorry, we couldn't find any quizzes matching what you searched", 
-                        FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-                        HorizontalOptions = LayoutOptions.CenterAndExpand,
-                    });
-                }
-                );
+                    this.SearchedStack.Children.Clear();
+                    this.ActivityIndicator.IsRunning = true;
+                });
+                List<SearchInfo> chunk = new List<SearchInfo>();
+                if (this.searchType == SearchType.Title)
+                    chunk = SearchUtils.GetQuizzesByQuizNameChunked(this.SearchBar.Text, this.currentChunk);
+                else
+                    chunk = SearchUtils.GetQuizzesByAuthorChunked(this.SearchBar.Text, this.currentChunk);
+                if (chunk.Count < 20)
+                    await Task.Run(() => this.AddQuizzes(chunk));
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    if (this.SearchedStack.Children.Count() == 0)
+                        this.LableNone.IsVisible = true;
+                    else
+                        this.LableNone.IsVisible = false;
+                    this.ActivityIndicator.IsRunning = false;
+                });
+                this.isLoading = false;
             }
-            if (chunk.Count < 20)
-            await Task.Run(() => this.AddQuizzes(chunk));
+            catch (Exception ex)
+            {
+                BugReportHandler.SaveReport(ex);
+                await this.DisplayAlert("Search Failed", "Try again later", "Ok");
+            }
         }
 
         /// <summary>
@@ -397,15 +394,8 @@ namespace appFBLA2019
 
 			if (scrollingSpace <= e.ScrollY && !this.end && !this.isLoading)
 			{
-				try
-				{
-                    this.chunkNum++;
-					await Task.Run(() => this.SearchAsync());
-				}
-				catch
-				{
-					await this.DisplayAlert("Search Failed", "Try again later", "Ok");
-				}
+                this.chunkNum++;
+				await Task.Run(() => this.SearchAsync());
 			}
 		}
 
@@ -414,36 +404,33 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-		private void ButtonTitle_Clicked(object sender, EventArgs e)
+		private async void ButtonTitle_Clicked(object sender, EventArgs e)
 		{
-			this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 3), 250, Easing.CubicInOut); 
+			await this.searchIndicator.LayoutTo(new Rectangle(this.buttonTitle.X, this.searchIndicator.Y, this.buttonTitle.Width, 3), 250, Easing.CubicInOut); 
 			this.searchType = SearchType.Title;
-		   
-		}
+            this.currentChunk = 1;
+            await Task.Run(() => this.SearchAsync());
+        }
 
         /// <summary>
         /// Runs when user switches to search by author tab
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-		private void ButtonAuthor_Clicked(object sender, EventArgs e)
+		private async void ButtonAuthor_Clicked(object sender, EventArgs e)
 		{        
-			this.searchIndicator.LayoutTo(new Rectangle(this.buttonAuthor.X, this.searchIndicator.Y, this.buttonAuthor.Width, 3), 250, Easing.CubicInOut);
+			await this.searchIndicator.LayoutTo(new Rectangle(this.buttonAuthor.X, this.searchIndicator.Y, this.buttonAuthor.Width, 3), 250, Easing.CubicInOut);
 			this.searchType = SearchType.Author;
-		}
+            this.currentChunk = 1;
+            await Task.Run(() => this.SearchAsync());
+        }
 
         private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
+            this.SearchedStack.Children.Clear();
             this.category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex];
             this.currentChunk = 1;
-            try
-            {
-                await Task.Run(() => this.SearchAsync());
-            }
-            catch
-            {
-                await this.DisplayAlert("Search Failed", "Try again later", "Ok");
-            }
+            await Task.Run(() => this.SearchAsync());
         }
 
     }

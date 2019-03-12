@@ -19,10 +19,10 @@ namespace appFBLA2019
         /// <summary>
         /// Port to use when connecting to server
         /// </summary>
-        public static int Port { get { return 7777; } }
+        public static int Port { get { return 8888; } }
 
         /// <summary>
-        /// IP address of the server
+        /// Ip address of the server
         /// </summary>
         public static string Server { get { return "server.bizquiz.app"; } }
 

@@ -20,7 +20,6 @@
                             <x:String>Business Events</x:String>
                             <x:String>FBLA General</x:String>
                             <x:String>Officers</x:String>
-                            <x:String>Parliamentary Procedure</x:String>
                         </Picker.Items>
                     </Picker>
                 </StackLayout>
