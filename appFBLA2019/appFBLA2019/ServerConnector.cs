@@ -22,7 +22,7 @@ namespace appFBLA2019
         public static int Port { get { return 7778; } }
 
         /// <summary>
-        /// Ip address of the server
+        /// IP address of the server
         /// </summary>
         public static string Server { get { return "server.bizquiz.app"; } }
 
