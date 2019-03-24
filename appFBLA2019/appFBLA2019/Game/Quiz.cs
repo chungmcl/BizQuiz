@@ -37,7 +37,7 @@ namespace appFBLA2019
                 this.Questions.Sort();
                 if (this.Questions != null)
                 {
-                    //uses a predicate to find the # of questions with a status lower than 2 (failed or unattempted)
+                    //uses a predicate to find the # of questions with a status lower than 2 (failed once or unattempted)
                     return this.Questions.FindAll(x => x.Status < 2).Count;
                 }
                 return 0;

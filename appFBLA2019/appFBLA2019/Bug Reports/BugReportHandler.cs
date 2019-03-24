@@ -47,9 +47,10 @@ namespace appFBLA2019
         /// <param name="parentMethod">for internal use</param>
         public static void SaveReport(Exception exception, string source = "", [CallerFilePath]string parentFile = "", [CallerLineNumber]int callLine = 0, [CallerMemberName]string parentMethod = "")
         {
+            string callTrace = $"Method {parentMethod} in {parentFile} at line {callLine}";
             if (source == "")
             {
-                source = $"Method {parentMethod} in {parentFile} at line {callLine}";
+                source = parentMethod;
             }
             SaveReport(new BugReport($"Unhandled Exception from {source}", $"{source} Exceptions", exception.ToString()));
         }

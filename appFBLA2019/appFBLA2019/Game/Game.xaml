@@ -5,7 +5,8 @@
              xmlns:local="clr-namespace:appFBLA2019"
              NavigationPage.BackButtonTitle="true">
     <ContentPage.Content>
-        <RelativeLayout>
+        <ScrollView>
+            <RelativeLayout>
             <Frame x:Name="ActivityBanner" Padding="10" CornerRadius="10">
                 <ActivityIndicator x:Name="ActivityIndicatorLoading" IsRunning="True"
                                WidthRequest="100"
@@ -14,28 +15,24 @@
             </Frame>
             <Frame x:Name="NextBanner" Padding="10" CornerRadius="10">
                 <StackLayout>
-                    <Label x:Name="LabelFeedback" VerticalOptions="Start" HorizontalOptions="Center" FontAttributes="Italic" FontSize="40" />
-                    <Button x:Name="NextButton" Text="Next question" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" Clicked="NextButton_Clicked" FontSize="30" WidthRequest="300" />
+                    <Label x:Name="LabelFeedback" HorizontalOptions="CenterAndExpand" FontAttributes="Italic" FontSize="40" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                    <Button x:Name="NextButton" Text="Next question" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" Clicked="NextButton_Clicked" FontSize="40" HorizontalOptions="CenterAndExpand"/>
                 </StackLayout>
             </Frame>
-            <StackLayout x:Name="StackLayoutMain" Spacing="0" Padding="10" BackgroundColor="Blue"
-                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Height}">
+            <StackLayout x:Name="StackLayoutMain" Spacing="0" Padding="10"
+                         RelativeLayout.YConstraint="{ConstraintExpression Type=Constant, Constant=0}"
+                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Height}"
+                         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Factor=1, Property=Width}">
                 <Label x:Name="LabelQuestion" VerticalTextAlignment="Center" LineBreakMode="WordWrap"/>
                 <ProgressBar x:Name="ProgressBar" VerticalOptions="Start" Progress="0" HeightRequest="10" ProgressColor="Accent" />
-                <RelativeLayout x:Name="RelativeLayoutImageAnswer" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" BackgroundColor="Green">
-                    <Image x:Name="QuestionImage" IsEnabled="False"
-                            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.4, Property=Height, Constant=-20}"
-                           RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}" />
-                    <ScrollView RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Factor=1, Property=Width}"
-                        RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.4, Property=Height}"
-                        RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Factor=.5, Property=Height}"
-                                BackgroundColor="Red">
-                        <StackLayout x:Name="InputStack" Spacing="5" Padding="0"/>
-                    </ScrollView>
-                    </RelativeLayout>
+                <ScrollView>
+                    <Grid x:Name="InputGrid">
+                        <Image x:Name="QuestionImage" IsEnabled="False"/>
+                    </Grid>
+                </ScrollView>
             </StackLayout>
-        </RelativeLayout>
-
+            </RelativeLayout>
+        </ScrollView>
     </ContentPage.Content>
     <ContentPage.ToolbarItems>
         <ToolbarItem x:Name="ScoreLabel" Order="Primary" />
