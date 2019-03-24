@@ -3,7 +3,6 @@
 using Plugin.Media;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -25,11 +24,9 @@ namespace appFBLA2019
             }
             else
             {
-                BugReport report = new BugReport(this.BugTitleEntry.Text, this.CategoryPicker.SelectedItem as string, this.BugBodyEntry.Text, this.ImagePath);
-                BugReportHandler.SaveReport(report);
-                Task task = Task.Run(() => BugReportHandler.SubmitSavedReports());
-                await this.DisplayAlert("Report Saved", "We'll send your report as soon as we can, and our team will take a look at your issue. Thanks for letting us know!", "OK");
-                await task;
+                BugReportHandler.SaveReport(new BugReport(this.BugTitleEntry.Text, this.CategoryPicker.SelectedItem as string, this.BugBodyEntry.Text, this.ImagePath));
+                    await this.DisplayAlert("Report Saved", "We'll send your report as soon as we can, and our team will take a look at your issue. Thanks for letting us know!", "OK");
+
                 await this.Navigation.PopAsync();
             }
         }

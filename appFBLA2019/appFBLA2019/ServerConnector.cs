@@ -24,7 +24,7 @@ namespace appFBLA2019
         /// <summary>
         /// Ip address of the server
         /// </summary>
-        public static string Server { get { return "server.bizquiz.app"; } }
+        public static string Server { get { return /*"server.bizquiz.app";*/ "73.254.202.205"; } }
 
         /// <summary>
         /// The TcpClient on to of the TLS (SSL) stream

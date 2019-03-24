@@ -228,11 +228,6 @@ namespace appFBLA2019
                 ServerRequestTypes.UnsubscribeToQuiz);
         }
 
-        /// <summary>
-        /// Send a quiz to the server with the current user credentials.
-        /// </summary>
-        /// <param name="relativeQuizPath">The path to the quiz on the current device.</param>
-        /// <returns>A bool wrapped in a task representing whether the quiz successfully sent or not.</returns>
         public async static Task<bool> SendQuiz(string relativeQuizPath)
         {
             try
@@ -287,14 +282,6 @@ namespace appFBLA2019
             }
         }
 
-        /// <summary>
-        /// Download a quiz from the server.
-        /// </summary>
-        /// <param name="dBId">The DBId of the quiz to download</param>
-        /// <param name="quizName">The name of the quiz to download.</param>
-        /// <param name="authorName">The name of the author of the quiz.</param>
-        /// <param name="category">The category the quiz belongs in.</param>
-        /// <returns></returns>
         public static bool GetQuiz(string dBId, string quizName, string authorName, string category)
         {
             // TO DO: CHECK IF quizName or category changed and save accordingly
@@ -356,11 +343,6 @@ namespace appFBLA2019
             return true;
         }
 
-        /// <summary>
-        /// Delete the specified directory.
-        /// </summary>
-        /// <param name="path">The path to the directory to delete.</param>
-        /// <param name="recursive">Whether or not to recursively delete subfolders and files within the specified directory.</param>
         private static void DeleteDirectory(string path, bool recursive)
         {
             if (recursive)
@@ -394,12 +376,6 @@ namespace appFBLA2019
             Directory.Delete(path);
         }
 
-        /// <summary>
-        /// Send a bugreport to the server
-        /// </summary>
-        /// <param name="report">The exception or bug text to send.</param>
-        /// <param name="image">The image associated with the bugreport to send.</param>
-        /// <returns></returns>
         public static bool SendBugReport(string report, byte[] image = null)
         {
             byte[] reportBytes = Encoding.Unicode.GetBytes(report);
@@ -433,35 +409,17 @@ namespace appFBLA2019
             }
         }
 
-        /// <summary>
-        /// Request a forgot password code be sent to a user's email given the username.
-        /// </summary>
-        /// <param name="username">The username of the account that requires a forgot password code.</param>
-        /// <returns></returns>
         public static OperationReturnMessage ForgotPassword(string username)
         {
             return (OperationReturnMessage)SendStringData($"{username}/-", ServerRequestTypes.ForgotPassword);
         }
 
-        /// <summary>
-        /// Change password if password is forgotten.
-        /// </summary>
-        /// <param name="username">The username that needs to have password changed.</param>
-        /// <param name="resetCode">The reset code to confirm ownership of count that was sent to account's associated email</param>
-        /// <param name="newPassword">The new password to change password to.</param>
-        /// <returns></returns>
         public static OperationReturnMessage ForgotPasswordChangePassword(string username, string resetCode, string newPassword)
         {
             return (OperationReturnMessage)SendStringData($"{username}/{resetCode}/{newPassword}/-", ServerRequestTypes.ForgotPasswordChangePassword);
         }
 
         #region Header Generators
-        /// <summary>
-        /// Generate a header to detail what to do with data when server receives byte data.
-        /// </summary>
-        /// <param name="type">The type of server request to be performed.</param>
-        /// <param name="size">The size of the data being sent to the server.</param>
-        /// <returns></returns>
         private static byte[] GenerateHeaderData(ServerRequestTypes type, uint size)
         {
             byte[] headerData = new byte[stringHeaderSize];
@@ -471,10 +429,6 @@ namespace appFBLA2019
             return headerData;
         }
 
-        /// <summary>
-        /// Generate a subheader for realm files.
-        /// </summary>
-        /// <returns>A byte array of the realm file subheader.</returns>
         private async static Task<byte[]> GenerateRealmHeader()
         {
             byte[] headerData = new byte[realmHeaderSize];
@@ -487,12 +441,6 @@ namespace appFBLA2019
             return headerData;
         }
 
-        /// <summary>
-        /// Generate a subheader for JPEG files.
-        /// </summary>
-        /// <param name="fileName">The filename of the jpg file to be sent.</param>
-        /// <param name="dBId">The DBId the image is associated with.</param>
-        /// <returns></returns>
         private async static Task<byte[]> GenerateImageHeader(string fileName, string dBId)
         {
             byte[] headerData = new byte[imageHeaderSize];
@@ -513,12 +461,6 @@ namespace appFBLA2019
         #endregion
 
         #region Data Receives
-        /// <summary>
-        /// Receive an OperationReturnMessage from the server after sending a server request.
-        /// </summary>
-        /// <param name="toSend">The data to send to server.</param>
-        /// <returns>The OperationReturnMessage returned by the server after data has been received
-        /// and processed by the server.</returns>
         private static OperationReturnMessage ReceiveFromServerORM(byte[] toSend)
         {
             if (CrossConnectivity.Current.IsConnected)
@@ -540,11 +482,6 @@ namespace appFBLA2019
             }
         }
 
-        /// <summary>
-        /// Receive string data from the server after sending a server request.
-        /// </summary>
-        /// <param name="toSend">The data to send to server.</param>
-        /// <returns>The string the server returns.</returns>
         private static string ReceiveFromServerStringData(byte[] toSend)
         {
             if (CrossConnectivity.Current.IsConnected)
@@ -569,11 +506,6 @@ namespace appFBLA2019
             }
         }
 
-        /// <summary>
-        /// Receive list of string arrays from the server after sending a server request.
-        /// </summary>
-        /// <param name="toSend">The data to send to server.</param>
-        /// <returns>The list of string arrays the server returns.</returns>
         private static List<string[]> ReceiveFromServerListOfStringArrays(byte[] toSend)
         {
             if (CrossConnectivity.Current.IsConnected)
@@ -600,11 +532,6 @@ namespace appFBLA2019
             }
         }
 
-        /// <summary>
-        /// Receive 
-        /// </summary>
-        /// <param name="toSend"></param>
-        /// <returns></returns>
         private static byte[] ReceiveFromServerBytes(byte[] toSend)
         {
             if (CrossConnectivity.Current.IsConnected)
@@ -694,10 +621,6 @@ namespace appFBLA2019
         #endregion
     }
 
-    /// <summary>
-    /// An enum detailing a message the server returns.
-    /// Is stored as a single byte in byte array transmission from server.
-    /// </summary>
     public enum OperationReturnMessage : byte
     {
         True,
@@ -712,10 +635,6 @@ namespace appFBLA2019
         FalseFailedConnection
     }
 
-    /// <summary>
-    /// An enum detailing the kind of action the client wants the server to perform.
-    /// Is sent as the first byte in the byte array sent to server.
-    /// </summary>
     public enum ServerRequestTypes : byte
     {
         // "Command" Requests
