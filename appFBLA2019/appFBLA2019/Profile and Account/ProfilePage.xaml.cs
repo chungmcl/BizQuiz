@@ -47,7 +47,7 @@ namespace appFBLA2019
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
+            await UpdateProfilePageAsync();
         }
 
         /// <summary>
@@ -339,50 +339,41 @@ namespace appFBLA2019
             if (answer)
             {
                 string path = App.UserPath + ((ImageButton)sender).StyleId;
-
+                
                 // StyleId = "/" + quiz.Category + "/" + quiz.QuizName + "`" + quiz.Author;
 
                 // Acquire QuizInfo from roster
                 QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
                     ((ImageButton)sender).StyleId.Split('/').Last().Split('`').First(), // Quiz Name
                     ((ImageButton)sender).StyleId.Split('/').Last().Split('`').Last()); // Author
-                string dbId = rosterInfo.DBId;
 
-                // tell the roster that the quiz is deleted
-                QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                if (rosterInfo != null)
                 {
-                    IsDeletedLocally = true,
-                    LastModifiedDate = DateTime.Now.ToString()
-                };
-                QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+                    string dbId = rosterInfo.DBId;
 
-                // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
-                if (CrossConnectivity.Current.IsConnected)
-                {
+                    // tell the roster that the quiz is deleted
+                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
+                    {
+                        IsDeletedLocally = true,
+                        LastModifiedDate = DateTime.Now.ToString()
+                    };
+                    QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
+
+                    // If connected, tell server to delete this quiz If not, it will tell server to delete next time it is connected in QuizRosterDatabase.UpdateLocalDatabase()
                     OperationReturnMessage returnMessage = await ServerOperations.DeleteQuiz(dbId);
+                    if (returnMessage == OperationReturnMessage.True)
+                        QuizRosterDatabase.DeleteQuizInfo(dbId);
 
                     if (System.IO.Directory.Exists(path))
-                    {
-                        // Get the Realm File
-                        string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                        Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                        if (returnMessage == OperationReturnMessage.True)
-                        {
-                            QuizRosterDatabase.DeleteQuizInfo(dbId);
-                            realm.Write(() =>
-                            {
-                                realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
-                            });
-                        }
                         Directory.Delete(path, true);
-                    }
-                    else
-                    {
-                        await this.DisplayAlert("Quiz not Found", "Is this quiz already deleted?", "Back");
-                    }
                 }
+                else
+                {
+                    await DisplayAlert("Could not delete quiz", "This quiz could not be deleted at this time. Please try again later", "OK");
+                }
+
                 // Setup Page again after deletion
-                await this.UpdateProfileContentAsync();
+                await this.UpdateProfilePageAsync();
             }
         }
 
