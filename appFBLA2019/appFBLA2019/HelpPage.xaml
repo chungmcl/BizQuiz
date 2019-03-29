@@ -19,6 +19,7 @@
             </Grid>
         </StackLayout>
     </ContentPage>
+    
     <ContentPage>
         <StackLayout Padding="10">
             <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 2: Gameplay</Label>
@@ -45,6 +46,34 @@
             </Frame>
         </StackLayout>
     </ContentPage>
+
+    <ContentPage>
+        <StackLayout Padding="10">
+            <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 3: Gameplay</Label>
+            <Frame VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                <StackLayout>
+                    <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="5">
+                        <Frame CornerRadius="10" Padding="5" HorizontalOptions="StartAndExpand">
+                            <Image Source="Multiple_Choice_Example.png" x:Name="MCQuestionImage" BackgroundColor="Red"/>
+                        </Frame>
+                        <Frame CornerRadius="10" Padding="5" HorizontalOptions="EndAndExpand">
+                            <Image Source="Text_Answer_Example.png" x:Name="TextQuestionImage" BackgroundColor="Blue"/>
+                        </Frame>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand">
+                        <Label HorizontalTextAlignment="Center" HorizontalOptions="StartAndExpand">Multiple choice type question</Label>
+                        <Label HorizontalTextAlignment="Center" HorizontalOptions="EndAndExpand">Text Answer type question</Label>
+                    </StackLayout>
+                </StackLayout>
+            </Frame>
+            <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10">
+                <Label FontSize="Large">
+                    Bizquiz has two types of question: multiple choice and text answer. To answer a multiple choice question, just tap the red box labelled with what you think is the correct answer. To answer a text based question, type your answer into the box provided and tap the "Check Answer" button to submit.
+                </Label>
+            </Frame>
+        </StackLayout>
+    </ContentPage>
+
     <ContentPage>
         <StackLayout Padding="10">
             <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 3: Explore</Label>
@@ -66,4 +95,5 @@
             </Grid>
         </StackLayout>
     </ContentPage>
+    
 </CarouselPage>
