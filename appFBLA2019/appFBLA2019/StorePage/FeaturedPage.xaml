@@ -5,7 +5,7 @@
              x:Class="appFBLA2019.FeaturedPage"
              Title="Search">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Priority="0" Icon="ic_search_white_48dp.png" Text="Search" Name="Search" Order="Primary"  Activated="Search_Activated" />
+        <ToolbarItem x:Name="ToolbarItemSearchButton" Priority="0" Icon="ic_search_white_48dp.png" Text="Search" Order="Primary"  Activated="Search_Activated" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout Padding="0">

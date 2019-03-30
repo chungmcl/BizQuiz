@@ -41,7 +41,7 @@ namespace appFBLA2019
         {
             this.quizzesRemaining = true;
             //this.category = "All";
-            await this.Refresh();
+            await this.RefreshAsync();
         }
 
         /// <summary>
@@ -57,24 +57,48 @@ namespace appFBLA2019
         /// <summary>
         /// Refreshes the page's quiz content
         /// </summary>
-        private async Task Refresh()
+        private async Task RefreshAsync()
         {
             this.LabelNoQuiz.IsVisible = false;
             this.SearchedStack.Children.Clear();
             this.quizzesFeatured.Clear();
             try
             {
-                Device.BeginInvokeOnMainThread(() => {
-                    this.SearchedStack.Children.Clear();
-                    this.ActivityIndicator.IsVisible = true;
-                    this.ActivityIndicator.IsRunning = true;
-                });
-                await Task.Run(() => this.AddQuizzes(SearchUtils.GetQuizzesByAuthorChunked("BizQuiz", 1)));
-                Device.BeginInvokeOnMainThread(() =>
+                if (CredentialManager.IsLoggedIn)
                 {
-                    this.ActivityIndicator.IsVisible = false;
-                    this.ActivityIndicator.IsRunning = false;
-                });
+                    this.PickerCategory.IsVisible = true;
+                    this.ToolbarItemSearchButton.IsEnabled = true;
+                    Device.BeginInvokeOnMainThread(() => {
+                        this.SearchedStack.Children.Clear();
+                        this.ActivityIndicator.IsVisible = true;
+                        this.ActivityIndicator.IsRunning = true;
+                    });
+                    await Task.Run(() => this.AddQuizzes(SearchUtils.GetQuizzesByAuthorChunked("BizQuiz", 1)));
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        this.ActivityIndicator.IsVisible = false;
+                        this.ActivityIndicator.IsRunning = false;
+                    });
+                }
+                else
+                {
+                    this.PickerCategory.IsVisible = false;
+                    this.ToolbarItemSearchButton.IsEnabled = false;
+                    this.SearchedStack.Children.Clear();
+                    this.SearchedStack.Children.Add(
+                        new Frame()
+                        {
+                            CornerRadius = 10,
+                            HorizontalOptions = LayoutOptions.CenterAndExpand,
+                            Content = new Label
+                            {
+                                Text = "Create an account to search for and use quizzes " +
+                                "created by the BizQuiz community!",
+                                HorizontalTextAlignment = TextAlignment.Center,
+                                FontSize = 38
+                            }
+                        });
+                }
             }
             catch (Exception ex)
             {
@@ -351,7 +375,7 @@ namespace appFBLA2019
         {
             this.category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex];
             this.currentChunk = 1;
-            await this.Refresh();
+            await this.RefreshAsync();
         }
     }
 }
