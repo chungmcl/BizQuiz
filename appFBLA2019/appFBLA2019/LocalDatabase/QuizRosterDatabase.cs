@@ -244,30 +244,26 @@ namespace appFBLA2019
                         }
                     }
 
-                    int numberOfQuizsOnServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
-                    if (numberOfQuizsOnServer > QuizInfos.Count)
-                    {
-                        string[] dbIds = new string[QuizInfos.Count];
-                        for (int i = 0; i < dbIds.Length; i++)
-                            dbIds[i] = QuizInfos[i].DBId;
+                    string[] dbIds = new string[QuizInfos.Count];
+                    for (int i = 0; i < dbIds.Length; i++)
+                        dbIds[i] = QuizInfos[i].DBId;
 
-                        List<string[]> missingQuizs = ServerOperations.GetMissingQuizzesByAuthorName(CredentialManager.Username, dbIds);
-                        foreach (string[] missingQuiz in missingQuizs)
+                    List<string[]> missingQuizs = ServerOperations.GetMissingQuizzesByAuthorName(CredentialManager.Username, dbIds);
+                    foreach (string[] missingQuiz in missingQuizs)
+                    {
+                        QuizInfo info = new QuizInfo
                         {
-                            QuizInfo info = new QuizInfo
-                            {
-                                DBId = missingQuiz[0],
-                                AuthorName = missingQuiz[1],
-                                QuizName = missingQuiz[2],
-                                Category = missingQuiz[3],
-                                LastModifiedDate = missingQuiz[4],
-                                SyncStatus = 4
-                            };
-                            threadInstance.Write(() =>
-                            {
-                                threadInstance.Add(info);
-                            });
-                        }
+                            DBId = missingQuiz[0],
+                            AuthorName = missingQuiz[1],
+                            QuizName = missingQuiz[2],
+                            Category = missingQuiz[3],
+                            LastModifiedDate = missingQuiz[4],
+                            SyncStatus = 4
+                        };
+                        threadInstance.Write(() =>
+                        {
+                            threadInstance.Add(info);
+                        });
                     }
                 }
                 else

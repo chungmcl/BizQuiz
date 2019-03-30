@@ -19,6 +19,7 @@
             </Grid>
         </StackLayout>
     </ContentPage>
+
     <ContentPage>
         <StackLayout Padding="10">
             <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 2: Gameplay</Label>
@@ -36,7 +37,7 @@
                         <Label HorizontalTextAlignment="Center" HorizontalOptions="StartAndExpand">Multiple choice type question</Label>
                         <Label HorizontalTextAlignment="Center" HorizontalOptions="EndAndExpand">Text Answer type question</Label>
                     </StackLayout>
-                </StackLayout>
+                </StackLayout> 
             </Frame>
             <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10">
                 <Label FontSize="Large">
@@ -45,6 +46,7 @@
             </Frame>
         </StackLayout>
     </ContentPage>
+
     <ContentPage>
         <StackLayout Padding="10">
             <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 3: Explore</Label>
@@ -66,4 +68,5 @@
             </Grid>
         </StackLayout>
     </ContentPage>
+    
 </CarouselPage>
