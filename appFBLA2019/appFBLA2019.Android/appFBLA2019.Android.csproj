@@ -84,7 +84,7 @@
     <PackageReference Include="Xamarin.Android.Support.Compat">
       <Version>28.0.0.1</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="3.5.0.169047" />
+    <PackageReference Include="Xamarin.Forms" Version="3.6.0.293080" />
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.1" />
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0.1" />
     <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.1" />
@@ -312,6 +312,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\Multiple_Choice_Example.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_cached_black_48dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_settings_black_48dp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

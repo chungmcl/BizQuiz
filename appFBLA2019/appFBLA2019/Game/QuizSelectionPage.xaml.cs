@@ -168,11 +168,6 @@ namespace appFBLA2019
                         CornerRadius = 10
                     };
 
-                    RelativeLayout frameLayout = new RelativeLayout // Child of frame
-                    {
-                        HeightRequest = 100
-                    };
-
                     StackLayout frameStack = new StackLayout // 1st Child of frameLayout
                     {
                         FlowDirection = FlowDirection.LeftToRight,
@@ -194,8 +189,8 @@ namespace appFBLA2019
                         FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                         FontAttributes = FontAttributes.Bold,
                         VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        HeightRequest = 45
+                        HorizontalOptions = LayoutOptions.FillAndExpand//,
+                        //HeightRequest = 45
                     };
                     topStack.Children.Add(title);
 
@@ -277,7 +272,7 @@ namespace appFBLA2019
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
                         ClassId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName
-                };
+                    };
                     imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
                     topStack.Children.Add(imageButtonMenu);
 
@@ -307,7 +302,6 @@ namespace appFBLA2019
                     {
                         Text = "Created by: " + quiz.AuthorName,
                         FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
-                        HeightRequest = 60,
                         VerticalOptions = LayoutOptions.End,
                         HorizontalOptions = LayoutOptions.StartAndExpand
                     };
@@ -374,12 +368,7 @@ namespace appFBLA2019
 
                     frame.GestureRecognizers.Add(recognizer);
 
-                    frameLayout.Children.Add(frameStack, Constraint.RelativeToParent((parent) =>
-                    {
-                        return 0;
-                    }));
-
-                    frame.Content = frameLayout;
+                    frame.Content = frameStack;
                     this.StackLayoutButtonStack.Children.Add(frame);
                 }
                 this.IsLoading = false;
@@ -444,7 +433,7 @@ namespace appFBLA2019
                 indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
 
-                ((((button.Parent as StackLayout).Parent as StackLayout).Parent as RelativeLayout).Parent as Frame).StyleId = "Local";
+                (((button.Parent as StackLayout).Parent as StackLayout).Parent as Frame).StyleId = "Local";
             }
             else // If it failed to download
             {
