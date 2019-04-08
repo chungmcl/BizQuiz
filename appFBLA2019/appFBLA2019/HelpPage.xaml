@@ -34,38 +34,137 @@
                         </Frame>
                     </StackLayout>
                     <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand">
-                        <Label HorizontalTextAlignment="Center" HorizontalOptions="StartAndExpand">Multiple choice type question</Label>
+                        <Label HorizontalTextAlignment="Center" HorizontalOptions="StartAndExpand">Multiple Choice type question</Label>
                         <Label HorizontalTextAlignment="Center" HorizontalOptions="EndAndExpand">Text Answer type question</Label>
                     </StackLayout>
                 </StackLayout> 
             </Frame>
             <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10">
                 <Label FontSize="Large">
-                    Bizquiz has two types of question: multiple choice and text answer. To answer a multiple choice question, just tap the red box labelled with what you think is the correct answer. To answer a text based question, type your answer into the box provided and tap the "Check Answer" button to submit.
+                    BizQuiz has two types of questions: multiple choice and text answer. To answer a multiple choice question, just tap the red box labelled with what you think is the correct answer. To answer a text based question, type your answer into the box provided and tap the "Check Answer" button to submit.
                 </Label>
             </Frame>
         </StackLayout>
     </ContentPage>
 
     <ContentPage>
+        <ScrollView>
+            <StackLayout Padding="10">
+                <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 3: Explore Page</Label>
+
+                <Frame CornerRadius="10">
+                    <Label FontSize="Small" HorizontalTextAlignment="Center">
+                        The Explore tab is a place to find and download quizzes created by other users to use for your own study. When you open Explore, you will be presented with the BizQuiz Featured Quizzes, quizzes that we at BizQuiz feel represent the ideal BizQuiz quiz. From this page and the search page, you can subscribe to a quiz to save it to your account, allowing you to study with it whenever you need. You can also sort quizzes by category.
+                    </Label>
+                </Frame>
+
+                <Frame VerticalOptions="Fill" CornerRadius="10">
+                    <StackLayout>
+
+                        <StackLayout>
+                            <Frame CornerRadius="10" HorizontalOptions="Center">
+                                <Image Source="ic_search_black_48dp.png" 
+                                   HorizontalOptions="FillAndExpand"
+                                   VerticalOptions="FillAndExpand"
+                                   HeightRequest="40"></Image>
+                            </Frame>
+                            <Label Text="Search" 
+                           HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+
+                            <StackLayout>
+                                <Frame CornerRadius="10">
+                                    <Image Source="ic_playlist_add_black_48dp.png"
+                                   HorizontalOptions="FillAndExpand"
+                                   VerticalOptions="FillAndExpand"
+                                   HeightRequest="40"></Image>
+                                </Frame>
+                                <Label Text="&quot;Not Subscribed&quot;"
+                                   HorizontalTextAlignment="Center"/>
+                                <Label Text="Click to Subscribe" 
+                           HorizontalTextAlignment="Center"
+                               FontSize="Micro"/>
+                            </StackLayout>
+
+                            <StackLayout>
+                                <Frame CornerRadius="10">
+                                    <Image Source="ic_playlist_add_check_black_48dp.png"
+                                   HorizontalOptions="FillAndExpand"
+                                   VerticalOptions="FillAndExpand"
+                                   HeightRequest="40"></Image>
+                                </Frame>
+                                <Label Text="&quot;Subscribed&quot;"
+                                   HorizontalTextAlignment="Center"/>
+                                <Label Text="Click to Unsubscribe" 
+                           HorizontalTextAlignment="Center"
+                               FontSize="Micro"/>
+                            </StackLayout>
+
+                        </StackLayout>
+
+                    </StackLayout>
+
+                </Frame>
+
+                <Frame VerticalOptions="Fill" HorizontalOptions="End" CornerRadius="10" Grid.Row="1">
+                    <Label FontSize="Micro" FontAttributes="Italic" HorizontalTextAlignment="Center">
+                        BizQuiz's explore page has a large library of quizzes, both user-created and curated by the BizQuiz team. Official BizQuiz-curated Quizzes contain questions adapted from previous FBLA national tests, while users are free to write and publish their own material under the terms described in the terms of use.
+                    </Label>
+                </Frame>
+
+            </StackLayout>
+        </ScrollView>
+    </ContentPage>
+
+    <ContentPage>
         <StackLayout Padding="10">
-            <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 3: Explore</Label>
-            <Grid VerticalOptions="FillAndExpand">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="5*"/>
-                    <RowDefinition Height="2*"/>
-                </Grid.RowDefinitions>
-                <Frame VerticalOptions="Fill" HorizontalOptions="FillAndExpand" CornerRadius="10" Grid.Row="0">
-                    <Label FontSize="Large" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
-                        The Explore tab is a place to find and download quizzes created by other users to use for your own study. When you open Explore, you will be presented with the BizQuiz Featured Quizzes, quizzes that we at BizQuiz feel represent the ideal BizQuiz quiz. From this page, you can subscribe to a quiz to save it to your account, allowing you to study with it whenever you need. You can also sort the featured by category. The magnifying glass icon at the top right opens the search page, where you can search for quizzes based on their title or author. This page also allows you to subscribe to quizzes you find. 
+            <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Help Page 4: Play Page</Label>
+            
+            <Frame VerticalOptions="Fill" CornerRadius="10">
+                <StackLayout>
+                    <Frame CornerRadius="10" HorizontalOptions="Center">
+                        <Image Source="ic_cloud_download_black_48dp.png" 
+                                   HorizontalOptions="FillAndExpand"
+                                   VerticalOptions="FillAndExpand"
+                                   HeightRequest="40"></Image>
+                    </Frame>
+                    <Label HorizontalTextAlignment="Center">
+                        Once you are subscribed to a quiz, press this download icon in the button of the subscribed quiz in the play tab to download the latest version of the quiz. If the quiz has a new update from the author, the download icon will show up for you to update your copy of the quiz.
                     </Label>
-                </Frame>
-                <Frame VerticalOptions="Fill" HorizontalOptions="FillAndExpand" CornerRadius="10" Grid.Row="1">
-                    <Label FontSize="Medium" FontAttributes="Italic" HorizontalTextAlignment="Center">
-                        BizQuiz's store page has a large library of quizzes, both user-created and curated by the BizQuiz team. Official BizQuiz-curated Quizzes contain questions adapted from previous FBLA national tests, while users are free to write and publish their own material under the terms described in the terms of use.
+                </StackLayout>
+            </Frame>
+
+            <Frame VerticalOptions="Fill" CornerRadius="10">
+                <StackLayout>
+                    <Frame CornerRadius="10" HorizontalOptions="Center">
+                        <Image Source="ic_cloud_upload_black_48dp.png" 
+                                   HorizontalOptions="FillAndExpand"
+                                   VerticalOptions="FillAndExpand"
+                                   HeightRequest="40"></Image>
+                    </Frame>
+                    <Label HorizontalTextAlignment="Center">
+                           If you have created a quiz and wish to share it with the BizQuiz community, simply press this upload icon on your quiz from the play page to upload to the BizQuiz server. If you make any changes to a quiz, simply press upload again to upload your changes to the community.
                     </Label>
-                </Frame>
-            </Grid>
+                </StackLayout>
+            </Frame>
+
+            <Frame VerticalOptions="Fill" CornerRadius="10">
+                <StackLayout>
+                    <Frame CornerRadius="10" HorizontalOptions="Center">
+                        <Image Source="ic_more_vert_black_48dp.png" 
+                                   HorizontalOptions="FillAndExpand"
+                                   VerticalOptions="FillAndExpand"
+                                   HeightRequest="40"></Image>
+                    </Frame>
+                    <Label HorizontalTextAlignment="Center">
+                            Press the overflow button to access the menu to edit the selected quiz or unsubscribe from the quiz.
+                    </Label>
+                </StackLayout>
+            </Frame>
+            
+
         </StackLayout>
     </ContentPage>
     
