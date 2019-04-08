@@ -92,7 +92,7 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void HelpButton_Clicked(object sender, EventArgs e)
         {
-            await this.Navigation.PushModalAsync(new HelpPage());
+            await this.Navigation.PushModalAsync(new NavigationPage(new HelpPage()));
         }
     }
 }
