@@ -72,10 +72,10 @@ namespace appFBLA2019
                     Directory.Delete(location, true);
             }
 
-            QuizRosterDatabase.DeleteQuizInfo(dbId);
             OperationReturnMessage returnMessage = await Task.Run(async () => await ServerOperations.UnsubscribeToQuizAsync(dbId));
             if (returnMessage == OperationReturnMessage.True)
             {
+                QuizRosterDatabase.DeleteQuizInfo(dbId);
                 return returnMessage;
             }
             else if (returnMessage == OperationReturnMessage.FalseInvalidCredentials)

@@ -276,15 +276,6 @@ namespace appFBLA2019
                     button.IsVisible = false;
                     indicatorSyncing.IsVisible = true;
                     indicatorSyncing.IsRunning = true;
-                    // get rosterInfo
-                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(dbId);
-                    // tell the roster that the quiz is deleted
-                    QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
-                    {
-                        IsDeletedLocally = true,
-                        LastModifiedDate = DateTime.Now.ToString()
-                    };
-                    QuizRosterDatabase.EditQuizInfo(rosterInfoUpdated);
 
                     OperationReturnMessage returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
 
@@ -311,8 +302,6 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Hold on!", "Before you can manage any quizzes, you have to login.", "Ok");
             }
-
-            
         }
 
         /// <summary>
