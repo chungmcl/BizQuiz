@@ -27,7 +27,7 @@ namespace appFBLA2019
         {
             try
             {
-                Device.OpenUri(new Uri("mailto:chungmcl@hotmail.com?subject=BizQuiz&body=I really enjoyed your Bizquiz app!"));
+                Device.OpenUri(new Uri("mailto:chungmcl@hotmail.com?subject=BizQuiz&body=I really enjoyed your BizQuiz app!"));
             }
             catch
             {
