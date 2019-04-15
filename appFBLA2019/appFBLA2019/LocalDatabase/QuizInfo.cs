@@ -39,9 +39,16 @@ namespace appFBLA2019
         /// If the quiz has been deleted from the server
         /// </summary>
         public bool IsDeletedOnServer { get; set; }
+
+        /// <summary>
+        /// The relative path to the quiz folder from the application folder.
+        /// This property is relative to the device the application is stored on.
+        /// </summary>
+        public string RelativePath { get; set; }
         
         /// <summary>
         /// Default constructor; doesn't initialize anything
+        /// (Required for storage in Realm file)
         /// </summary>
         public QuizInfo() { }
 
@@ -62,6 +69,8 @@ namespace appFBLA2019
             this.SyncStatus = 1;
             this.IsDeletedLocally = false;
             this.IsDeletedOnServer = false;
+
+            this.RelativePath = App.UserPath + $"/{this.Category}/{this.DBId}/";
         }
 
         /// <summary>
@@ -79,6 +88,8 @@ namespace appFBLA2019
             this.SyncStatus = quizInfoToCopy.SyncStatus;
             this.IsDeletedLocally = quizInfoToCopy.IsDeletedLocally;
             this.IsDeletedOnServer = quizInfoToCopy.IsDeletedOnServer;
+
+            this.RelativePath = quizInfoToCopy.RelativePath;
         }
     }
 }

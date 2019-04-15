@@ -47,7 +47,8 @@ namespace appFBLA2019
         public static string Path;
 
         /// <summary>
-        /// The path to the current user's folder
+        /// The path to the current user's folder within
+        /// the app's main directory.
         /// </summary>
         public static string UserPath
         {

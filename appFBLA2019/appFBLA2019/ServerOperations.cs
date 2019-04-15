@@ -301,6 +301,8 @@ namespace appFBLA2019
             string tempPath = App.UserPath + "/" + "temp" + "/" + dBId + "/";
             string tempFilePath = tempPath + "/" + realmFileExtension;
             
+            // Store the realm file into a temporary directory in order the retrieve information from it
+            // (Information regarding the images in order to retrieve them from the server)
             Directory.CreateDirectory(tempPath);
             byte[] realmFile = (byte[])SendStringData($"{dBId}/-", ServerRequestTypes.GetRealmFile);
             if (realmFile.Length > 0)
@@ -308,6 +310,7 @@ namespace appFBLA2019
             else
                 return false;
 
+            // Retrieve info regarding the images from the realm file from its temporary location
             Realm realmDB = Realm.GetInstance(new RealmConfiguration(tempFilePath));
             IQueryable<Question> questionsWithPictures = realmDB.All<Question>().Where(question => question.NeedsPicture);
             foreach (Question question in questionsWithPictures)
@@ -319,13 +322,14 @@ namespace appFBLA2019
                 else
                     return false;
             }
+            
             QuizInfo info = realmDB.All<QuizInfo>().First();
             string newQuizName = info.QuizName;
             string newCategory = info.Category;
             string newLastModfiedDate = info.LastModifiedDate;
 
-            string quizPath = App.UserPath + "/" + newCategory + "/" + $"{newQuizName}`{info.AuthorName}/";
-            string realmFilePath = quizPath + "/" + newQuizName + realmFileExtension;
+            string quizPath = App.UserPath + $"/{newCategory}/{info.DBId}/";
+            string realmFilePath = quizPath + "/" + info.DBId + realmFileExtension;
             Directory.CreateDirectory(quizPath);
 
             string[] imageFilePaths = Directory.GetFiles(tempPath, "*.jpg");

@@ -130,7 +130,8 @@ namespace appFBLA2019
         {
             RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
-            return new List<QuizInfo>(realmDB.All<QuizInfo>().Where(quizInfo => quizInfo.Category == category && !quizInfo.IsDeletedLocally));
+            return new List<QuizInfo>(realmDB.All<QuizInfo>().Where(
+                quizInfo => quizInfo.Category == category && !quizInfo.IsDeletedLocally));
         }
 
         /// <summary>
