@@ -184,7 +184,7 @@ namespace appFBLA2019
             {
                 Status = 2
             };
-            DBHandler.Database.EditQuestion(copyQuestion);
+            this.quiz.Database.EditQuestion(copyQuestion);
 
             await this.AnimateNextBannerAsync();
         }
@@ -236,7 +236,7 @@ namespace appFBLA2019
                     //1 represents failed once
                     Status = 1
                 };
-                DBHandler.Database.EditQuestion(copyQuestion);
+                this.quiz.Database.EditQuestion(copyQuestion);
             }
             else
             {
@@ -245,7 +245,7 @@ namespace appFBLA2019
                 {
                     Status = 3
                 };
-                DBHandler.Database.EditQuestion(copyQuestion);
+                this.quiz.Database.EditQuestion(copyQuestion);
             }
 
             await this.AnimateNextBannerAsync();
@@ -292,7 +292,7 @@ namespace appFBLA2019
                 {
                     Status = 3
                 };
-                DBHandler.Database.EditQuestion(copyQuestion);
+                this.quiz.Database.EditQuestion(copyQuestion);
                 await this.CycleQuestionAsync();
                 return;
             }

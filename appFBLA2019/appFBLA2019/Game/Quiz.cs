@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Realms;
 
 namespace appFBLA2019
 {
@@ -10,16 +11,14 @@ namespace appFBLA2019
     /// </summary>
     public class Quiz
     {
+        public GameDatabase Database { get; set; }
         //this one will be used in the app for database stuff
         /// <summary>
         /// Select/create database file for the current game/topic, Load the questions from file
         /// </summary>
-        /// <param name="quizTitle"> The name of the database file - if one does not yet exist, it will create one based on the name you pass it. DO NOT INCLUDE FILE EXTENSION IN FILENAME. </param>
-        /// <param name="author">    The username of the author of the quiz </param>
-        public Quiz(string category, string quizTitle, string author)
+        public Quiz(string DBId)
         {
-            this.Title = quizTitle;
-            DBHandler.SelectDatabase(category, quizTitle, author);
+            this.Database = new GameDatabase(DBId);
         }
 
         /// <summary>
@@ -71,7 +70,7 @@ namespace appFBLA2019
         /// </summary>
         public void LoadQuestions()
         {
-            this.Questions = DBHandler.Database.GetQuestions();
+            this.Questions = this.Database.GetQuestions();
             this.ResetQuiz();
         }
 
@@ -86,7 +85,7 @@ namespace appFBLA2019
                 {
                     Status = 0
                 };
-                DBHandler.Database.EditQuestion(copyQuestion);
+                this.Database.EditQuestion(copyQuestion);
             }
         }
     }

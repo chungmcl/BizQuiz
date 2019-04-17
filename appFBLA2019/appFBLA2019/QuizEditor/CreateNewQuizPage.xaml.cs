@@ -33,6 +33,11 @@ namespace appFBLA2019
         /// </summary>
         private string originalCategory;
 
+        /// <summary>
+        /// The original DBId of the quiz (if being edited)
+        /// </summary>
+        private string originalDBId;
+
         private object callerType;
 
         /// <summary>
@@ -49,14 +54,16 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="originalName">    </param>
         /// <param name="originalAuthor">  </param>
-        public CreateNewQuizPage(string originalCategory, string originalName, string originalAuthor)
+        public CreateNewQuizPage(QuizInfo oldQuizInfo)
         {
             this.InitializeComponent();
             this.SetUpBar();
-            this.originalCategory = originalCategory;
-            this.originalAuthor = originalAuthor;
-            this.originalName = originalName;
-            this.PickerCategory.SelectedItem = originalCategory;
+            this.originalCategory = oldQuizInfo.Category;
+            this.originalAuthor = oldQuizInfo.AuthorName;
+            this.originalName = oldQuizInfo.QuizName;
+            this.PickerCategory.SelectedItem = oldQuizInfo.Category;
+
+            this.originalDBId = oldQuizInfo.DBId;
         }
 
         /// <summary>
@@ -280,25 +287,22 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Couldn't Create Quiz", "Please give your quiz a category", "OK");
             }
-            else if (this.EditorQuizName.Text.Contains("`"))
-            {
-                await this.DisplayAlert("Couldn't Create Quiz", "Quiz name must not include `", "OK");
-            }
             else
             {
+                GameDatabase database = new GameDatabase(this.originalDBId);
+
                 // Set previousQuestions to the correct previous questions
                 List<Question> previousQuestions = new List<Question>(); // A list of questions already in the database
 
                 if (!string.IsNullOrWhiteSpace(this.originalName)) // Edit
                 {
-                    DBHandler.SelectDatabase(this.originalCategory, this.originalName, this.originalAuthor);
-                    previousQuestions = DBHandler.Database.GetQuestions();
+                    previousQuestions = database.GetQuestions();
                 }
 
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
 
                 // Now open the database the user just made, might be the same as the one already open
-                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EditorQuizName.Text?.Trim(), CredentialManager.Username);
+                database = new GameDatabase()
                 // Loops through each question frame on the screen
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {

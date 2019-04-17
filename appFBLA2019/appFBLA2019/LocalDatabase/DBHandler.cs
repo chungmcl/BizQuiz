@@ -17,21 +17,17 @@ namespace appFBLA2019
 
         /// <summary>
         /// </summary>
-        /// <param name="fileName"> Name of the database file to be selected without extension </param>
-        /// <param name="author">   The username of the author of this quiz, which is unique (Two quizzes with the same name must have two unique authors) </param>
         /// <returns> Bool representing successful database connection or not. </returns>
-        public static bool SelectDatabase(string category, string quizTitle, string author)
+        public static bool SelectDatabase(string DBId)
         {
             try
             {
-                // If the current database is null, or the name of the current database does not match the name of the database being requested to be selected, connect to the database specified in the parameter fileName
-
-                // Backtick ( ` ) character used to seperate quiz name from author name
-                if (Database == null || Database.fileName != $"/{category}/{quizTitle}`{author}")
+                QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
+                // If the current database is null, or the name of the current database does not match the name of the database being requested to be selected, 
+                // connect to the database specified in the parameter fileName
+                if (Database == null || Database.relativePath != info.RelativePath)
                 {
-                    string folderPath = App.UserPath + $"{category}/{quizTitle}`{author}";
-                    Directory.CreateDirectory(folderPath);
-                    Database = new GameDatabase(folderPath, quizTitle);
+                    Database = new GameDatabase(info.RelativePath);
 
                     return true;
                 }

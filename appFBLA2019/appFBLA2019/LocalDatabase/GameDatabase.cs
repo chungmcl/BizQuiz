@@ -21,30 +21,21 @@ namespace appFBLA2019
         /// <summary>
         /// the path to the database folder
         /// </summary>
-        public readonly string DBFolderPath;
+        public string DBFolderPath { get { return App.UserPath + relativePath + "/"; } set { } }
         /// <summary>
         /// the path to the quiz database
         /// </summary>
         private readonly string dbPath;
         /// <summary>
-        /// the name of the realm file
+        /// the relative path from the user folder to the quiz folder
         /// </summary>
-        public readonly string fileName;
+        public readonly string relativePath;
 
-        public GameDatabase(string dbFolderPath, string quizTitle)
+        public GameDatabase(string DBId)
         {
-            this.dbPath = dbFolderPath + $"/{quizTitle}{realmExtension}";
-            this.DBFolderPath = dbFolderPath + "/";
-            this.fileName = $"/{quizTitle}{realmExtension}";
-        }
-
-        /// <summary>
-        /// Access the full database with the full path to the file.
-        /// </summary>
-        /// <param name="fullPath"></param>
-        public GameDatabase(string fullPath)
-        {
-            this.dbPath = fullPath;
+            QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
+            this.relativePath = info.RelativePath;
+            this.dbPath = DBFolderPath + $"/{DBId}{realmExtension}";
         }
 
         /// <summary>

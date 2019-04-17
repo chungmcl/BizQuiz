@@ -204,7 +204,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                        StyleId = quiz.DBId,
                     };
                     SyncOffline.Clicked += this.SyncOffline_Clicked;
                     topStack.Children.Add(SyncOffline);
@@ -218,7 +218,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                        StyleId = quiz.DBId,
                     };
                     SyncUpload.Clicked += this.SyncUpload_Clicked;
                     topStack.Children.Add(SyncUpload);
@@ -232,8 +232,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
-                        ClassId = quiz.DBId + "/" + quiz.AuthorName + "/" + quiz.QuizName + "/" + quiz.Category
+                        StyleId = quiz.DBId,
                     };
                     SyncDownload.Clicked += this.SyncDownload_Clicked;
                     topStack.Children.Add(SyncDownload);
@@ -247,7 +246,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                        StyleId = quiz.DBId
                     };
                     SyncNoChange.Clicked += this.SyncNoChange_Clicked;
                     topStack.Children.Add(SyncNoChange);
@@ -271,7 +270,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        ClassId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName
+                        ClassId = quiz.DBId
                     };
                     imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
                     topStack.Children.Add(imageButtonMenu);
@@ -350,7 +349,9 @@ namespace appFBLA2019
                             Seperator.Color = Color.Gray;
                             imageButtonMenu.BackgroundColor = Color.LightGray;
                             activeSync.BackgroundColor = Color.LightGray;
-                            Quiz newQuiz = new Quiz(this.category, quiz.QuizName, quiz.AuthorName);
+
+                            // Load the quiz associated with this DBId
+                            Quiz newQuiz = new Quiz(quiz.DBId);
                             newQuiz.LoadQuestions();
                             //await this.RemoveMenu(frameMenu);
                             await this.Navigation.PushAsync(new Game(newQuiz));
@@ -575,9 +576,7 @@ namespace appFBLA2019
             }
             else if(action == "Edit")
             {
-                //ClassId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName
-                string quizInfo = ((ImageButton)sender).ClassId.Split('/').Last();
-                this.ButtonEdit_Clicked(quizInfo.Split('`').First(), quizInfo.Split('`').Last(), ((ImageButton)sender).Parent.Parent.Parent.Parent.StyleId != "notLocal");
+                this.ButtonEdit_Clicked(((ImageButton)sender).ClassId);
             }
         }
 
@@ -597,22 +596,22 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ButtonEdit_Clicked(string quizTitle, string quizAuthor, bool isLocal)
+        private async void ButtonEdit_Clicked(string DBId)
         {
+            QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
             if (!CredentialManager.IsLoggedIn)
             {
                 await this.DisplayAlert("Hold on!", "Before you can edit any quizzes, you have to login.", "Ok");
             }
-            else if (!isLocal)
+            else if (info.SyncStatus == 4)
             {
                 await this.DisplayAlert("Hold on!", "This quiz isn't on your device, download it before you try to edit it", "Ok");
             }
             else
             {
-                DBHandler.SelectDatabase(this.category, quizTitle, quizAuthor);
-                CreateNewQuizPage quizPage = new CreateNewQuizPage(this.category, quizTitle, quizAuthor); //Create the quizPage
+                CreateNewQuizPage quizPage = new CreateNewQuizPage(DBId); //Create the quizPage
 
-                quizPage.SetQuizName(quizTitle);
+                quizPage.SetQuizName(info.QuizName);
                 foreach (Question question in DBHandler.Database.GetQuestions())
                 {
                     quizPage.AddNewQuestion(question);
