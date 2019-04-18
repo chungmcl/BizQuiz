@@ -609,7 +609,7 @@ namespace appFBLA2019
             }
             else
             {
-                CreateNewQuizPage quizPage = new CreateNewQuizPage(DBId); //Create the quizPage
+                CreateNewQuizPage quizPage = new CreateNewQuizPage(info); //Create the quizPage
 
                 quizPage.SetQuizName(info.QuizName);
                 foreach (Question question in DBHandler.Database.GetQuestions())

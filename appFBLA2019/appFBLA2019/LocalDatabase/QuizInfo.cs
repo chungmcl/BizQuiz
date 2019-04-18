@@ -45,9 +45,11 @@ namespace appFBLA2019
         /// This property is relative to the device the application is stored on.
         /// </summary>
         public string RelativePath { get; set; }
+
+        public int SubscriberCount { get; set; }
         
         /// <summary>
-        /// Default constructor; doesn't initialize anything
+        /// Default constructor -  doesn't initialize anything
         /// (Required for storage in Realm file)
         /// </summary>
         public QuizInfo() { }

@@ -34,9 +34,9 @@ namespace appFBLA2019
         private string originalCategory;
 
         /// <summary>
-        /// The original DBId of the quiz (if being edited)
+        /// the original QuizInfo of the quiz (if being edited)
         /// </summary>
-        private string originalDBId;
+        private QuizInfo originalQuizInfo;
 
         private object callerType;
 
@@ -63,7 +63,7 @@ namespace appFBLA2019
             this.originalName = oldQuizInfo.QuizName;
             this.PickerCategory.SelectedItem = oldQuizInfo.Category;
 
-            this.originalDBId = oldQuizInfo.DBId;
+            this.originalQuizInfo = oldQuizInfo;
         }
 
         /// <summary>
@@ -296,13 +296,13 @@ namespace appFBLA2019
 
                 if (!string.IsNullOrWhiteSpace(this.originalName)) // Edit
                 {
-                    previousQuestions = database.GetQuestions();
+                    previousQuestions = this.oldQuizInfo.GetQuestions();
                 }
 
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
 
                 // Now open the database the user just made, might be the same as the one already open
-                database = new GameDatabase()
+                database = new GameDatabase();
                 // Loops through each question frame on the screen
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
@@ -378,7 +378,7 @@ namespace appFBLA2019
                         }
                     }
 
-                    addThis.QuestionId = frame.StyleId; // Set the dbid
+                    addThis.QuestionId = frame.StyleId; // Set the questionId
 
                     NewQuestions.Add(addThis);
                 }
