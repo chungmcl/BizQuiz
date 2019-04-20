@@ -230,6 +230,7 @@ namespace appFBLA2019
                 // Scroll to bottom
                 _ = this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
 
+
                 //animate in frame
                 await frame.TranslateTo(x - 10, 0, 500, Easing.CubicOut);
             }
@@ -289,20 +290,26 @@ namespace appFBLA2019
             }
             else
             {
-                GameDatabase database = new GameDatabase(this.originalDBId);
-
-                // Set previousQuestions to the correct previous questions
-                List<Question> previousQuestions = new List<Question>(); // A list of questions already in the database
-
-                if (!string.IsNullOrWhiteSpace(this.originalName)) // Edit
+                Quiz database;
+                List<Question> previousQuestions = new List<Question>();
+                // If editing
+                if (this.originalQuizInfo != null)
                 {
-                    previousQuestions = this.oldQuizInfo.GetQuestions();
+                    database = new Quiz(this.originalQuizInfo.DBId);
+                    
+                    // Set previousQuestions to the correct previous questions
+                    previousQuestions = database.GetQuestions();
+                }
+                else // If new quiz
+                {
+                    database = new Quiz(
+                        CredentialManager.Username,
+                        this.EditorQuizName.Text.Trim(),
+                        this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
                 }
 
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
-
-                // Now open the database the user just made, might be the same as the one already open
-                database = new GameDatabase();
+                
                 // Loops through each question frame on the screen
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
@@ -384,7 +391,7 @@ namespace appFBLA2019
                 }
 
                 // Add if it doesn't already exist, delete if it doesn't exist anymore, update the ones that need to be updated, and do nothing to the others Work in progress, algorithm might be off.
-                if (previousQuestions.Count() == 0 || originalAuthor != CredentialManager.Username)
+                if (previousQuestions.Count == 0 || originalAuthor != CredentialManager.Username)
                 {
                     // if the user created this for the first time
 

@@ -72,7 +72,7 @@ namespace appFBLA2019
             this.IsDeletedLocally = false;
             this.IsDeletedOnServer = false;
 
-            this.RelativePath = App.UserPath + $"/{this.Category}/{this.DBId}/";
+            this.RelativePath = $"/{this.Category}/{this.DBId}/";
         }
 
         /// <summary>
@@ -92,6 +92,8 @@ namespace appFBLA2019
             this.IsDeletedOnServer = quizInfoToCopy.IsDeletedOnServer;
 
             this.RelativePath = quizInfoToCopy.RelativePath;
+
+            this.SubscriberCount = quizInfoToCopy.SubscriberCount;
         }
     }
 }

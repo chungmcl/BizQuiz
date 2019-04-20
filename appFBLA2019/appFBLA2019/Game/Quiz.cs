@@ -25,7 +25,7 @@ namespace appFBLA2019
         /// <summary>
         /// the path to the quiz database
         /// </summary>
-        private readonly string dbPath;
+        private string dbPath;
         /// <summary>
         /// the relative path from the user folder to the quiz folder
         /// </summary>
@@ -44,16 +44,23 @@ namespace appFBLA2019
         [Ignored]
         public List<Question> Questions { get; set; }
 
-
-        //this one will be used in the app for database stuff
+        
         /// <summary>
-        /// Select/create database file for the current game/topic, Load the questions from file
+        /// Select database file for the current game/topic, Load the questions from file
         /// </summary>
         public Quiz(string DBId)
         {
             QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
             this.relativePath = info.RelativePath;
             this.dbPath = DBFolderPath + $"/{DBId}{realmExtension}";
+        }
+
+        /// <summary>
+        /// Create a new Quiz
+        /// </summary>
+        public Quiz(string authorName, string quizName, string category)
+        {
+            NewQuizInfo(authorName, quizName, category);
         }
 
         /// <summary>
@@ -241,19 +248,28 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Create a new quizinfo and adds it to the 
+        /// Create a new quizinfo and adds it to the Quiz DB
         /// </summary>
         /// <param name="authorName">Author</param>
         /// <param name="quizName">Quiz name</param>
         /// <param name="category">Category</param>
         public void NewQuizInfo(string authorName, string quizName, string category)
         {
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
             QuizInfo newQuizInfo = new QuizInfo(authorName, quizName, category)
             {
                 // Sync status is irrelevant in a Quiz Database's copy of the QuizInfo
                 SyncStatus = -1
             };
+
+            if (this.dbPath == null)
+            {
+                string newDBPath = 
+                    App.UserPath + $"{category}/{newQuizInfo.DBId}/{newQuizInfo.DBId}.realm";
+                Directory.CreateDirectory(newDBPath);
+                this.dbPath = newDBPath;
+            }
+
+            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
 
             realmDB.Write(() =>
             {
