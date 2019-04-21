@@ -468,14 +468,13 @@ namespace appFBLA2019
         {
             this.DisplayAlert("Offline", "This quiz cannot be synced because you are offline.", "OK");
         }
-
         
         /// <summary>
         /// Handle event when user clicks delete quiz button.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ButtonDelete_Clicked(string deleteType, string userPath)
+        private async void ButtonDelete_Clicked(string deleteType, string DBId)
         {
             if (CredentialManager.IsLoggedIn)
             {
@@ -496,15 +495,12 @@ namespace appFBLA2019
                 bool answer = await this.DisplayAlert(question, message, "Yes", "No");
                 if (answer)
                 {
-                    string path = App.UserPath + userPath;
 
                     // StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
 
                     // Acquire QuizInfo from roster
-                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
-                        userPath.Split('/').Last().Split('`').First(), // Quiz Name
-                        userPath.Split('/').Last().Split('`').Last()); // Author
-                    string dbId = rosterInfo.DBId;
+                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(DBId); // Author
+                    string path = rosterInfo.RelativePath;
 
                     // tell the roster that the quiz is deleted
                     QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
@@ -520,24 +516,24 @@ namespace appFBLA2019
                         OperationReturnMessage returnMessage;
                         if (unsubscribe)
                         {
-                            returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
+                            returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(DBId);
                         }
                         else
                         {
-                            returnMessage = await ServerOperations.DeleteQuiz(dbId);
+                            returnMessage = await ServerOperations.DeleteQuiz(DBId);
                         }
 
                         if (System.IO.Directory.Exists(path))
                         {
                             // Get the Realm File
                             string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                            Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                            Realm realm = Realm.GetInstance(App.realmConfiguration(realmFilePath));
                             if (returnMessage == OperationReturnMessage.True)
                             {
-                                QuizRosterDatabase.DeleteQuizInfo(dbId);
+                                QuizRosterDatabase.DeleteQuizInfo(DBId);
                                 realm.Write(() =>
                                 {
-                                    realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
+                                    realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == DBId).First());
                                 });
                             }
                             Directory.Delete(path, true);
@@ -559,9 +555,11 @@ namespace appFBLA2019
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private async void ImageButtonMenu_Clicked(object sender, EventArgs e)
-        {            
-            string quizName = ((ImageButton)sender).ClassId.Split('/').Last().Split('`').First();
-            string author = ((ImageButton)sender).ClassId.Split('/').Last().Split('`').Last();
+        {
+            string DBId = ((ImageButton)sender).ClassId;
+            QuizInfo quizInfo = QuizRosterDatabase.GetQuizInfo(DBId);
+            string quizName = quizInfo.QuizName;
+            string author = quizInfo.AuthorName;
             string deleteText = "Delete";
             if (author != CredentialManager.Username)
             {
@@ -576,7 +574,7 @@ namespace appFBLA2019
             }
             else if(action == "Edit")
             {
-                this.ButtonEdit_Clicked(((ImageButton)sender).ClassId);
+                this.ButtonEdit_Clicked(DBId);
             }
         }
 
@@ -612,7 +610,8 @@ namespace appFBLA2019
                 CreateNewQuizPage quizPage = new CreateNewQuizPage(info); //Create the quizPage
 
                 quizPage.SetQuizName(info.QuizName);
-                foreach (Question question in DBHandler.Database.GetQuestions())
+                Quiz quizDB = new Quiz(info.DBId);
+                foreach (Question question in quizDB.GetQuestions())
                 {
                     quizPage.AddNewQuestion(question);
                 }

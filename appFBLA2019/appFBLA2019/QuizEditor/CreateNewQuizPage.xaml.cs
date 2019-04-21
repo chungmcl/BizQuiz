@@ -290,23 +290,7 @@ namespace appFBLA2019
             }
             else
             {
-                Quiz database;
                 List<Question> previousQuestions = new List<Question>();
-                // If editing
-                if (this.originalQuizInfo != null)
-                {
-                    database = new Quiz(this.originalQuizInfo.DBId);
-                    
-                    // Set previousQuestions to the correct previous questions
-                    previousQuestions = database.GetQuestions();
-                }
-                else // If new quiz
-                {
-                    database = new Quiz(
-                        CredentialManager.Username,
-                        this.EditorQuizName.Text.Trim(),
-                        this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
-                }
 
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
                 
@@ -390,26 +374,40 @@ namespace appFBLA2019
                     NewQuestions.Add(addThis);
                 }
 
-                // Add if it doesn't already exist, delete if it doesn't exist anymore, update the ones that need to be updated, and do nothing to the others Work in progress, algorithm might be off.
+                Quiz database;
+                // If editing
+                if (this.originalQuizInfo != null)
+                {
+                    database = new Quiz(this.originalQuizInfo.DBId);
+
+                    // Set previousQuestions to the correct previous questions
+                    previousQuestions = database.GetQuestions();
+                }
+                else // If new quiz
+                {
+                    database = new Quiz(
+                        CredentialManager.Username,
+                        this.EditorQuizName.Text.Trim(),
+                        this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
+                }
+
+                // Add if it doesn't already exist, delete if it doesn't exist anymore, update the ones that need to be updated, and do nothing to the others
                 if (previousQuestions.Count == 0 || originalAuthor != CredentialManager.Username)
                 {
                     // if the user created this for the first time
 
                     // Save a new QuizInfo into the quiz database, which also adds this QuizInfo to the device quiz roster
-                    DBHandler.Database.NewQuizInfo(CredentialManager.Username,
-                        this.EditorQuizName.Text?.Trim(),
-                        this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
-                    DBHandler.Database.AddQuestions(NewQuestions.ToArray());
+                    database.AddQuestions(NewQuestions.ToArray());
                 }
                 else // edit
                 {
                     
-                    QuizInfo updatedQuizInfo = new QuizInfo(DBHandler.Database.GetQuizInfo())
+                    QuizInfo updatedQuizInfo = new QuizInfo(database.QuizInfo)
                     {
                         QuizName = this.EditorQuizName.Text?.Trim(),
                         LastModifiedDate = DateTime.Now.ToString()
                     };
-                    DBHandler.Database.EditQuizInfo(updatedQuizInfo);
+                    database.EditQuizInfo(updatedQuizInfo);
 
                     // Logic for how to save each question.
                     for (int i = 0; i <= previousQuestions.Count() - 1; i++)
@@ -422,7 +420,7 @@ namespace appFBLA2019
                             {
                                 DBIdSame = true;
                                 // the same question, but changed, so update
-                                DBHandler.Database.EditQuestion(newQuestion);
+                                database.EditQuestion(newQuestion);
                                 NewQuestions.Remove(newQuestion);
                                 break;
                             }
@@ -434,21 +432,15 @@ namespace appFBLA2019
 
                         if (!DBIdSame) // if the question doesn't exist in the new list. delete it
                         {
-                            DBHandler.Database.DeleteQuestions(previousQuestions[i]);
+                            database.DeleteQuestions(previousQuestions[i]);
                         }
                     }
 
                     // Add all the questions that aren't eddited
-                    DBHandler.Database.AddQuestions(NewQuestions.ToArray());
+                    database.AddQuestions(NewQuestions.ToArray());
                 }
 
-                File.Create(DBHandler.Database.DBFolderPath + ".nomedia");
-
-                // If they renamed the quiz, delete the old one
-                if (this.originalName != this.EditorQuizName.Text?.Trim() && this.originalAuthor == CredentialManager.Username)
-                {
-                    Directory.Delete(App.UserPath + "/" + this.originalName + "`" + this.originalAuthor, true);
-                }
+                File.Create(database.DBFolderPath + ".nomedia");
 
                 // Returns user to front page of QuizEditor and refreshed database
                 await this.Navigation.PopAsync(true);

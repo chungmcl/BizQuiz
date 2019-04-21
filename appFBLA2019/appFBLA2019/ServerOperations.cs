@@ -238,7 +238,7 @@ namespace appFBLA2019
             try
             {
                 string realmFilePath = Directory.GetFiles(App.UserPath + relativeQuizPath, "*.realm").First();
-                Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
+                Realm realm = Realm.GetInstance(App.realmConfiguration(realmFilePath));
                 QuizInfo info = realm.All<QuizInfo>().First();
                 
                 if (await SendRealmFile(realmFilePath) != OperationReturnMessage.True)
@@ -311,7 +311,7 @@ namespace appFBLA2019
                 return false;
 
             // Retrieve info regarding the images from the realm file from its temporary location
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(tempFilePath));
+            Realm realmDB = Realm.GetInstance(App.realmConfiguration(tempFilePath));
             IQueryable<Question> questionsWithPictures = realmDB.All<Question>().Where(question => question.NeedsPicture);
             foreach (Question question in questionsWithPictures)
             {
@@ -343,8 +343,8 @@ namespace appFBLA2019
                 File.Copy(path, quizPath + "/" + imageName, true);
             }
 
-            if (quizName != newQuizName || category != newCategory)
-                DeleteDirectory(App.UserPath + "/" + category + "/" + $"{quizName}`{authorName}", true);
+            if (category != newCategory)
+                DeleteDirectory(info.RelativePath, true);
 
             DeleteDirectory(tempPath, true);
 

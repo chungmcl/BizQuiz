@@ -1,6 +1,7 @@
 //BizQuiz App 2019
 
 using Plugin.Permissions;
+using Realms;
 using System;
 using System.IO;
 using System.Linq;
@@ -58,6 +59,11 @@ namespace appFBLA2019
                 Directory.CreateDirectory(path);
                 return path;
             }
+        }
+
+        public static RealmConfiguration realmConfiguration(string path)
+        {
+            return new RealmConfiguration(path) { SchemaVersion = 2 };
         }
 
         /// <summary>

@@ -30,9 +30,20 @@ namespace appFBLA2019
         /// the relative path from the user folder to the quiz folder
         /// </summary>
         public readonly string relativePath;
-
-
         
+        /// <summary>
+        /// Get the QuizInfo tied to this database
+        /// </summary>
+        /// <returns>A quiz info for the same quiz as this page</returns>
+        public QuizInfo QuizInfo
+        {
+            get
+            {
+                Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath));
+                return realmDB.All<QuizInfo>().First();
+            }
+        }
+
         /// <summary>
         /// the title of the quiz
         /// </summary>
@@ -51,7 +62,7 @@ namespace appFBLA2019
         public Quiz(string DBId)
         {
             QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
-            this.relativePath = info.RelativePath;
+            this.relativePath = $"/{info.Category}/{info.DBId}/";
             this.dbPath = DBFolderPath + $"/{DBId}{realmExtension}";
         }
 
@@ -120,12 +131,7 @@ namespace appFBLA2019
                 this.EditQuestion(copyQuestion);
             }
         }
-
-
-
-
-
-
+        
         /// <summary>
         /// adds questions to the database
         /// </summary>
@@ -144,7 +150,7 @@ namespace appFBLA2019
         /// <param name="questions">one or more questions to delete</param>
         public void DeleteQuestions(params Question[] questions)
         {
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath));
             foreach (Question question in questions)
             {
                 if (question.NeedsPicture)
@@ -165,7 +171,7 @@ namespace appFBLA2019
         /// <param name="updatedQuestion">the question to save</param>
         public void EditQuestion(Question updatedQuestion)
         {
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath));
             realmDB.Write(() =>
             {
                 realmDB.Add(updatedQuestion, update: true);
@@ -184,7 +190,7 @@ namespace appFBLA2019
         /// <returns>Every question in this database</returns>
         public List<Question> GetQuestions()
         {
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath));
             IQueryable<Question> queryable = realmDB.All<Question>();
             List<Question> questions = new List<Question>(queryable);
             for (int i = 0; i < queryable.Count(); i++)
@@ -203,7 +209,7 @@ namespace appFBLA2019
         /// <param name="question">the question to save</param>
         private void SaveQuestion(Question question)
         {
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath));
             string dbPrimaryKey = Guid.NewGuid().ToString(); // Once created, it will be PERMANENT AND IMMUTABLE
             question.QuestionId = dbPrimaryKey;
 
@@ -238,17 +244,8 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Get the quizinfo tied to this database
-        /// </summary>
-        /// <returns>A quiz info for the same quiz as this page</returns>
-        public QuizInfo GetQuizInfo()
-        {
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
-            return realmDB.All<QuizInfo>().First();
-        }
-
-        /// <summary>
-        /// Create a new quizinfo and adds it to the Quiz DB
+        /// Create a new quizinfo and adds it to the Quiz DB.
+        /// A copy is stored in the device quiz roster.
         /// </summary>
         /// <param name="authorName">Author</param>
         /// <param name="quizName">Quiz name</param>
@@ -263,13 +260,11 @@ namespace appFBLA2019
 
             if (this.dbPath == null)
             {
-                string newDBPath = 
-                    App.UserPath + $"{category}/{newQuizInfo.DBId}/{newQuizInfo.DBId}.realm";
-                Directory.CreateDirectory(newDBPath);
-                this.dbPath = newDBPath;
+                Directory.CreateDirectory(newQuizInfo.RelativePath);
+                this.dbPath = newQuizInfo.RelativePath;
             }
 
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath + $"/{newQuizInfo.DBId}.realm"));
 
             realmDB.Write(() =>
             {
@@ -289,7 +284,7 @@ namespace appFBLA2019
         /// <param name="editedQuizInfo">the new version of the quizinfo to save</param>
         public void EditQuizInfo(QuizInfo editedQuizInfo)
         {
-            Realm realmDB = Realm.GetInstance(new RealmConfiguration(this.dbPath));
+            Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath));
             realmDB.Write(() =>
             {
                 realmDB.Add(editedQuizInfo, update: true);

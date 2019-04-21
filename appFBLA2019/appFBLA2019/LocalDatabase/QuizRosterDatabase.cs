@@ -36,7 +36,7 @@ namespace appFBLA2019
         /// <param name="quizInfo">Quizinfo to save</param>
         public static void SaveQuizInfo(QuizInfo quizInfo)
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+            RealmConfiguration threadConfig = App.realmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
@@ -50,7 +50,7 @@ namespace appFBLA2019
         /// <param name="editedQuizInfo">quiz to update</param>
         public static void EditQuizInfo(QuizInfo editedQuizInfo)
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+            RealmConfiguration threadConfig = App.realmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             realmDB.Write(() =>
             {
@@ -78,7 +78,7 @@ namespace appFBLA2019
         {
             try
             {
-                RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+                RealmConfiguration threadConfig = App.realmConfiguration(RosterPath);
                 Realm realmDB = Realm.GetInstance(threadConfig);
                 return realmDB.All<QuizInfo>().Where
                                  (quizInfo => quizInfo.AuthorName == authorName && quizInfo.QuizName == quizName).First();
@@ -98,7 +98,7 @@ namespace appFBLA2019
         {
             try
             {
-                RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+                RealmConfiguration threadConfig = App.realmConfiguration(RosterPath);
                 Realm realmDB = Realm.GetInstance(threadConfig);
                 return realmDB.All<QuizInfo>().Where
                                  (quizInfo => quizInfo.DBId == dbId).First();
@@ -116,7 +116,7 @@ namespace appFBLA2019
         /// <returns>The roster</returns>
         public static List<QuizInfo> GetRoster()
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+            RealmConfiguration threadConfig = App.realmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             return new List<QuizInfo>(realmDB.All<QuizInfo>());
         }
@@ -128,7 +128,7 @@ namespace appFBLA2019
         /// <returns>a filtered roster</returns>
         public static List<QuizInfo> GetRoster(string category)
         {
-            RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+            RealmConfiguration threadConfig = App.realmConfiguration(RosterPath);
             Realm realmDB = Realm.GetInstance(threadConfig);
             return new List<QuizInfo>(realmDB.All<QuizInfo>().Where(
                 quizInfo => quizInfo.Category == category && !quizInfo.IsDeletedLocally));
@@ -143,7 +143,7 @@ namespace appFBLA2019
         {
             try
             {
-                RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+                RealmConfiguration threadConfig = App.realmConfiguration(RosterPath);
                 Realm realmDB = Realm.GetInstance(threadConfig);
                 realmDB.Write(() =>
                 {
@@ -166,7 +166,7 @@ namespace appFBLA2019
         {
             if (App.Path != null && App.UserPath.Length > 2)
             {
-                RealmConfiguration threadConfig = new RealmConfiguration(RosterPath);
+                RealmConfiguration threadConfig = App.realmConfiguration(RosterPath);
                 Realm threadInstance = Realm.GetInstance(threadConfig);
 
                 List<QuizInfo> QuizInfos = new List<QuizInfo>(threadInstance.All<QuizInfo>());

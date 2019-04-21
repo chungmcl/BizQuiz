@@ -31,12 +31,6 @@ namespace appFBLA2019
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetBarItemColor(Color.Gray); //Color.FromHex("#003463")
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(false);
             this.BarTextColor = Color.Gray;
-
-            Realm realm = Realm.GetInstance(App.UserPath + "/roster.realm");
-            realm.Write(() =>
-            {
-                realm.Add(new QuizInfo());
-            });
         }
 
         /// <summary>

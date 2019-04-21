@@ -41,10 +41,10 @@ namespace appFBLA2019
         public bool IsDeletedOnServer { get; set; }
 
         /// <summary>
-        /// The relative path to the quiz folder from the application folder.
-        /// This property is relative to the device the application is stored on.
+        /// The path to the Quiz. This property is variable and is dependent on the device BizQuiz is installed on.
         /// </summary>
-        public string RelativePath { get; set; }
+        [Ignored]
+        public string RelativePath { get { return $"{App.UserPath}/{this.Category}/{this.DBId}/"; } }
 
         public int SubscriberCount { get; set; }
         
@@ -71,8 +71,6 @@ namespace appFBLA2019
             this.SyncStatus = 1;
             this.IsDeletedLocally = false;
             this.IsDeletedOnServer = false;
-
-            this.RelativePath = $"/{this.Category}/{this.DBId}/";
         }
 
         /// <summary>
@@ -90,8 +88,6 @@ namespace appFBLA2019
             this.SyncStatus = quizInfoToCopy.SyncStatus;
             this.IsDeletedLocally = quizInfoToCopy.IsDeletedLocally;
             this.IsDeletedOnServer = quizInfoToCopy.IsDeletedOnServer;
-
-            this.RelativePath = quizInfoToCopy.RelativePath;
 
             this.SubscriberCount = quizInfoToCopy.SubscriberCount;
         }
