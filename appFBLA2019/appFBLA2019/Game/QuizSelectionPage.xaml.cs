@@ -352,7 +352,6 @@ namespace appFBLA2019
 
                             // Load the quiz associated with this DBId
                             Quiz newQuiz = new Quiz(quiz.DBId);
-                            newQuiz.LoadQuestions();
                             //await this.RemoveMenu(frameMenu);
                             await this.Navigation.PushAsync(new Game(newQuiz));
                             frame.BackgroundColor = Color.Default;
@@ -495,9 +494,6 @@ namespace appFBLA2019
                 bool answer = await this.DisplayAlert(question, message, "Yes", "No");
                 if (answer)
                 {
-
-                    // StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
-
                     // Acquire QuizInfo from roster
                     QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(DBId); // Author
                     string path = rosterInfo.RelativePath;
@@ -525,17 +521,6 @@ namespace appFBLA2019
 
                         if (System.IO.Directory.Exists(path))
                         {
-                            // Get the Realm File
-                            string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                            Realm realm = Realm.GetInstance(App.realmConfiguration(realmFilePath));
-                            if (returnMessage == OperationReturnMessage.True)
-                            {
-                                QuizRosterDatabase.DeleteQuizInfo(DBId);
-                                realm.Write(() =>
-                                {
-                                    realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == DBId).First());
-                                });
-                            }
                             Directory.Delete(path, true);
                         }
                         this.Setup();

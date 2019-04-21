@@ -21,33 +21,30 @@ namespace appFBLA2019
         /// <summary>
         /// the path to the database folder
         /// </summary>
-        public string DBFolderPath { get { return App.UserPath + relativePath + "/"; } set { } }
+        public string DBFolderPath { get { return this.QuizInfo.RelativePath; } }
+
         /// <summary>
         /// the path to the quiz database
         /// </summary>
-        private string dbPath;
-        /// <summary>
-        /// the relative path from the user folder to the quiz folder
-        /// </summary>
-        public readonly string relativePath;
-        
-        /// <summary>
-        /// Get the QuizInfo tied to this database
-        /// </summary>
-        /// <returns>A quiz info for the same quiz as this page</returns>
-        public QuizInfo QuizInfo
+        private string dbPath
         {
             get
             {
-                Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath));
-                return realmDB.All<QuizInfo>().First();
+                Directory.CreateDirectory(this.QuizInfo.RelativePath);
+                return this.DBFolderPath + $"/{this.QuizInfo.DBId}{realmExtension}";
             }
         }
 
         /// <summary>
+        /// Get the QuizInfo tied to this database
+        /// </summary>
+        /// <returns>A quiz info for the same quiz as this page</returns>
+        public QuizInfo QuizInfo { get; private set; }
+
+        /// <summary>
         /// the title of the quiz
         /// </summary>
-        public string Title { get; private set; }
+        public string Title { get { return this.QuizInfo.QuizName; } }
         
         /// <summary>
         /// The current list of questions (includes answered)
@@ -61,9 +58,8 @@ namespace appFBLA2019
         /// </summary>
         public Quiz(string DBId)
         {
-            QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
-            this.relativePath = $"/{info.Category}/{info.DBId}/";
-            this.dbPath = DBFolderPath + $"/{DBId}{realmExtension}";
+            this.QuizInfo = QuizRosterDatabase.GetQuizInfo(DBId);
+            this.LoadQuestions();
         }
 
         /// <summary>
@@ -257,14 +253,9 @@ namespace appFBLA2019
                 // Sync status is irrelevant in a Quiz Database's copy of the QuizInfo
                 SyncStatus = -1
             };
+            this.QuizInfo = newQuizInfo;
 
-            if (this.dbPath == null)
-            {
-                Directory.CreateDirectory(newQuizInfo.RelativePath);
-                this.dbPath = newQuizInfo.RelativePath;
-            }
-
-            Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath + $"/{newQuizInfo.DBId}.realm"));
+            Realm realmDB = Realm.GetInstance(App.realmConfiguration(this.dbPath));
 
             realmDB.Write(() =>
             {

@@ -41,11 +41,15 @@ namespace appFBLA2019
         public bool IsDeletedOnServer { get; set; }
 
         /// <summary>
-        /// The path to the Quiz. This property is variable and is dependent on the device BizQuiz is installed on.
+        /// The path to the Quiz folder. This property is variable and is dependent on the device BizQuiz is installed on.
+        /// This property is not persisted in the Realm file.
         /// </summary>
         [Ignored]
         public string RelativePath { get { return $"{App.UserPath}/{this.Category}/{this.DBId}/"; } }
 
+        /// <summary>
+        /// The total number of subscribers to the quiz this QuizInfo is associated with.
+        /// </summary>
         public int SubscriberCount { get; set; }
         
         /// <summary>
