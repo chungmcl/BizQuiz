@@ -10,16 +10,10 @@ namespace appFBLA2019
         /// <param name="username">User to get levels from</param>
         /// <param name="chunk">chunk of levels to get</param>
         /// <returns>The chunk requested</returns>
-        public static List<SearchInfo> GetQuizzesByAuthorChunked(string username = "BizQuiz", int chunk = 1)
+        public static List<QuizInfo> GetQuizzesByAuthorChunked(string username = "BizQuiz", int chunk = 1)
         {
-            List<SearchInfo> toReturn = new List<SearchInfo>();
-            List<string[]> quizzes = ServerOperations.GetQuizzesByAuthorName(username, chunk);
-
-            foreach (string[] quizData in quizzes)
-            {
-                toReturn.Add(new SearchInfo(quizData[0], quizData[1], quizData[2], quizData[3], quizData[4]));
-            }
-            return toReturn;
+            List<string[]> quizDatas = ServerOperations.GetQuizzesByAuthorName(username, chunk);
+            return ListOfDataToQuizInfo(quizDatas);
         }
 
         /// <summary>
@@ -28,14 +22,28 @@ namespace appFBLA2019
         /// <param name="quizName">search string for level names</param>
         /// <param name="chunk">chunk of levels to get</param>
         /// <returns>The chunk requested</returns>
-        public static List<SearchInfo> GetQuizzesByQuizNameChunked(string quizName, int chunk = 1)
+        public static List<QuizInfo> GetQuizzesByQuizNameChunked(string quizName, int chunk = 1)
         {
-            List<SearchInfo> toReturn = new List<SearchInfo>();
-            List<string[]> quizzes = ServerOperations.GetQuizzesByQuizName(quizName, chunk);
+            List<string[]> quizData = ServerOperations.GetQuizzesByQuizName(quizName, chunk);
+            return ListOfDataToQuizInfo(quizData);
+        }
 
-            foreach (string[] quizData in quizzes)
+        /// <summary>
+        /// Convert List of String arrays containing quiz data (from server) to QuizInfo objects
+        /// </summary>
+        /// <param name="quizData"></param>
+        private static List<QuizInfo> ListOfDataToQuizInfo(List<string[]> quizDatas)
+        {
+            List<QuizInfo> toReturn = new List<QuizInfo>();
+            foreach (string[] quizData in quizDatas)
             {
-                toReturn.Add(new SearchInfo(quizData[0], quizData[1], quizData[2], quizData[3], quizData[4]));
+                QuizInfo newInfo = new QuizInfo();
+                newInfo.DBId = quizData[0];
+                newInfo.AuthorName = quizData[1];
+                newInfo.QuizName = quizData[2];
+                newInfo.Category = quizData[3];
+                newInfo.SubscriberCount = int.Parse(quizData[4]);
+                toReturn.Add(newInfo);
             }
             return toReturn;
         }

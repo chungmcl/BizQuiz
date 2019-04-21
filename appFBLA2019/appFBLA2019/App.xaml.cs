@@ -1,6 +1,7 @@
 //BizQuiz App 2019
 
 using Plugin.Permissions;
+using Realms;
 using System;
 using System.IO;
 using System.Linq;
@@ -47,7 +48,8 @@ namespace appFBLA2019
         public static string Path;
 
         /// <summary>
-        /// The path to the current user's folder
+        /// The path to the current user's folder within
+        /// the app's main directory.
         /// </summary>
         public static string UserPath
         {
@@ -57,6 +59,11 @@ namespace appFBLA2019
                 Directory.CreateDirectory(path);
                 return path;
             }
+        }
+
+        public static RealmConfiguration realmConfiguration(string path)
+        {
+            return new RealmConfiguration(path) { SchemaVersion = 2 };
         }
 
         /// <summary>

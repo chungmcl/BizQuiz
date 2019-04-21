@@ -204,7 +204,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                        StyleId = quiz.DBId,
                     };
                     SyncOffline.Clicked += this.SyncOffline_Clicked;
                     topStack.Children.Add(SyncOffline);
@@ -218,7 +218,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                        StyleId = quiz.DBId,
                     };
                     SyncUpload.Clicked += this.SyncUpload_Clicked;
                     topStack.Children.Add(SyncUpload);
@@ -232,8 +232,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
-                        ClassId = quiz.DBId + "/" + quiz.AuthorName + "/" + quiz.QuizName + "/" + quiz.Category
+                        StyleId = quiz.DBId,
                     };
                     SyncDownload.Clicked += this.SyncDownload_Clicked;
                     topStack.Children.Add(SyncDownload);
@@ -247,7 +246,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName,
+                        StyleId = quiz.DBId
                     };
                     SyncNoChange.Clicked += this.SyncNoChange_Clicked;
                     topStack.Children.Add(SyncNoChange);
@@ -271,7 +270,7 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        ClassId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName
+                        ClassId = quiz.DBId
                     };
                     imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
                     topStack.Children.Add(imageButtonMenu);
@@ -350,8 +349,9 @@ namespace appFBLA2019
                             Seperator.Color = Color.Gray;
                             imageButtonMenu.BackgroundColor = Color.LightGray;
                             activeSync.BackgroundColor = Color.LightGray;
-                            Quiz newQuiz = new Quiz(this.category, quiz.QuizName, quiz.AuthorName);
-                            newQuiz.LoadQuestions();
+
+                            // Load the quiz associated with this DBId
+                            Quiz newQuiz = new Quiz(quiz.DBId);
                             //await this.RemoveMenu(frameMenu);
                             await this.Navigation.PushAsync(new Game(newQuiz));
                             frame.BackgroundColor = Color.Default;
@@ -467,14 +467,13 @@ namespace appFBLA2019
         {
             this.DisplayAlert("Offline", "This quiz cannot be synced because you are offline.", "OK");
         }
-
         
         /// <summary>
         /// Handle event when user clicks delete quiz button.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ButtonDelete_Clicked(string deleteType, string userPath)
+        private async void ButtonDelete_Clicked(string deleteType, string DBId)
         {
             if (CredentialManager.IsLoggedIn)
             {
@@ -495,15 +494,9 @@ namespace appFBLA2019
                 bool answer = await this.DisplayAlert(question, message, "Yes", "No");
                 if (answer)
                 {
-                    string path = App.UserPath + userPath;
-
-                    // StyleId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
-
                     // Acquire QuizInfo from roster
-                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(
-                        userPath.Split('/').Last().Split('`').First(), // Quiz Name
-                        userPath.Split('/').Last().Split('`').Last()); // Author
-                    string dbId = rosterInfo.DBId;
+                    QuizInfo rosterInfo = QuizRosterDatabase.GetQuizInfo(DBId); // Author
+                    string path = rosterInfo.RelativePath;
 
                     // tell the roster that the quiz is deleted
                     QuizInfo rosterInfoUpdated = new QuizInfo(rosterInfo)
@@ -519,26 +512,15 @@ namespace appFBLA2019
                         OperationReturnMessage returnMessage;
                         if (unsubscribe)
                         {
-                            returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(dbId);
+                            returnMessage = await SubscribeUtils.UnsubscribeFromQuizAsync(DBId);
                         }
                         else
                         {
-                            returnMessage = await ServerOperations.DeleteQuiz(dbId);
+                            returnMessage = await ServerOperations.DeleteQuiz(DBId);
                         }
 
                         if (System.IO.Directory.Exists(path))
                         {
-                            // Get the Realm File
-                            string realmFilePath = Directory.GetFiles(path, "*.realm").First();
-                            Realm realm = Realm.GetInstance(new RealmConfiguration(realmFilePath));
-                            if (returnMessage == OperationReturnMessage.True)
-                            {
-                                QuizRosterDatabase.DeleteQuizInfo(dbId);
-                                realm.Write(() =>
-                                {
-                                    realm.Remove(realm.All<QuizInfo>().Where(quizInfo => quizInfo.DBId == dbId).First());
-                                });
-                            }
                             Directory.Delete(path, true);
                         }
                         this.Setup();
@@ -558,9 +540,11 @@ namespace appFBLA2019
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private async void ImageButtonMenu_Clicked(object sender, EventArgs e)
-        {            
-            string quizName = ((ImageButton)sender).ClassId.Split('/').Last().Split('`').First();
-            string author = ((ImageButton)sender).ClassId.Split('/').Last().Split('`').Last();
+        {
+            string DBId = ((ImageButton)sender).ClassId;
+            QuizInfo quizInfo = QuizRosterDatabase.GetQuizInfo(DBId);
+            string quizName = quizInfo.QuizName;
+            string author = quizInfo.AuthorName;
             string deleteText = "Delete";
             if (author != CredentialManager.Username)
             {
@@ -575,9 +559,7 @@ namespace appFBLA2019
             }
             else if(action == "Edit")
             {
-                //ClassId = "/" + this.category + "/" + quiz.QuizName + "`" + quiz.AuthorName
-                string quizInfo = ((ImageButton)sender).ClassId.Split('/').Last();
-                this.ButtonEdit_Clicked(quizInfo.Split('`').First(), quizInfo.Split('`').Last(), ((ImageButton)sender).Parent.Parent.Parent.Parent.StyleId != "notLocal");
+                this.ButtonEdit_Clicked(DBId);
             }
         }
 
@@ -597,23 +579,24 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ButtonEdit_Clicked(string quizTitle, string quizAuthor, bool isLocal)
+        private async void ButtonEdit_Clicked(string DBId)
         {
+            QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
             if (!CredentialManager.IsLoggedIn)
             {
                 await this.DisplayAlert("Hold on!", "Before you can edit any quizzes, you have to login.", "Ok");
             }
-            else if (!isLocal)
+            else if (info.SyncStatus == 4)
             {
                 await this.DisplayAlert("Hold on!", "This quiz isn't on your device, download it before you try to edit it", "Ok");
             }
             else
             {
-                DBHandler.SelectDatabase(this.category, quizTitle, quizAuthor);
-                CreateNewQuizPage quizPage = new CreateNewQuizPage(this.category, quizTitle, quizAuthor); //Create the quizPage
+                CreateNewQuizPage quizPage = new CreateNewQuizPage(info); //Create the quizPage
 
-                quizPage.SetQuizName(quizTitle);
-                foreach (Question question in DBHandler.Database.GetQuestions())
+                quizPage.SetQuizName(info.QuizName);
+                Quiz quizDB = new Quiz(info.DBId);
+                foreach (Question question in quizDB.GetQuestions())
                 {
                     quizPage.AddNewQuestion(question);
                 }

@@ -7,6 +7,8 @@ using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Xaml;
 
+using Realms;
+
 namespace appFBLA2019
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
