@@ -39,7 +39,7 @@ namespace appFBLA2019
         /// <summary>
         /// the quizzes being displayed
         /// </summary>
-		private List<SearchInfo> quizzesSearched;
+		private List<QuizInfo> quizzesSearched;
 
         /// <summary>
         /// Types of search
@@ -57,7 +57,7 @@ namespace appFBLA2019
 		public SearchPage()
 		{
             this.isStartup = true;
-            this.quizzesSearched = new List<SearchInfo>();
+            this.quizzesSearched = new List<QuizInfo>();
 			this.InitializeComponent();
             this.searchType = SearchType.Title;
             this.category = "All";
@@ -86,10 +86,10 @@ namespace appFBLA2019
         /// Adds a quiz to the search stack given a QuizInfo
         /// </summary>
         /// <param name="quizzes"></param>
-        private void AddQuizzes(List<SearchInfo> quizzes)
+        private void AddQuizzes(List<QuizInfo> quizzes)
 		{
             List<QuizInfo> currentlySubscribed = QuizRosterDatabase.GetRoster();
-			foreach(SearchInfo quiz in quizzes)
+			foreach(QuizInfo quiz in quizzes)
             {// Only add quiz if the category is what user picked (we are asking the server for more then we need so this could be changed)
                 if (this.category == "All" || quiz.Category == this.category)
                 {
@@ -158,7 +158,7 @@ namespace appFBLA2019
                     topStack.Children.Add(Syncing);
 
 
-                    if (quiz.Author != CredentialManager.Username)
+                    if (quiz.AuthorName != CredentialManager.Username)
                     {
                         // If already subscribed
                         if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId && !quizInfo.IsDeletedLocally).Count() > 0))
@@ -175,7 +175,7 @@ namespace appFBLA2019
 
                     Label quizAuthor = new Label
                     {
-                        Text = "Created by: " + quiz.Author,
+                        Text = "Created by: " + quiz.AuthorName,
                     };
                     frameStack.Children.Add(quizAuthor);
 
@@ -260,7 +260,8 @@ namespace appFBLA2019
                 ImageButton button = (sender as ImageButton);
                 string dbId = button.StyleId;
 
-                ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
+                ActivityIndicator indicatorSyncing = 
+                    (button.Parent as StackLayout).Children[(int)SubscribeUtils.SubscribeType.Syncing] as ActivityIndicator;
                 button.IsVisible = false;
                 indicatorSyncing.IsVisible = true;
                 indicatorSyncing.IsRunning = true;
@@ -319,7 +320,7 @@ namespace appFBLA2019
                     this.SearchedStack.Children.Clear();
                     this.ActivityIndicator.IsRunning = true;
                 });
-                List<SearchInfo> chunk = new List<SearchInfo>();
+                List<QuizInfo> chunk = new List<QuizInfo>();
                 if (this.searchType == SearchType.Title)
                     chunk = SearchUtils.GetQuizzesByQuizNameChunked(this.SearchBar.Text, this.currentChunk);
                 else

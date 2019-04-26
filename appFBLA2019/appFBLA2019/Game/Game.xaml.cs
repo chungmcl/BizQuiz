@@ -91,7 +91,7 @@ namespace appFBLA2019
                 this.LabelFeedback.FontSize--;
             }
 
-            await this.LayoutRefreshAsync();
+            this.LayoutRefresh();
             await this.NextBanner.TranslateTo((this.Width - this.NextBanner.Width) / 2, this.StackLayoutMain.Height * 1 / 3, 500, Easing.SpringOut);
         }
 
@@ -184,7 +184,7 @@ namespace appFBLA2019
             {
                 Status = 2
             };
-            DBHandler.Database.EditQuestion(copyQuestion);
+            this.quiz.EditQuestion(copyQuestion);
 
             await this.AnimateNextBannerAsync();
         }
@@ -236,7 +236,7 @@ namespace appFBLA2019
                     //1 represents failed once
                     Status = 1
                 };
-                DBHandler.Database.EditQuestion(copyQuestion);
+                this.quiz.EditQuestion(copyQuestion);
             }
             else
             {
@@ -245,7 +245,7 @@ namespace appFBLA2019
                 {
                     Status = 3
                 };
-                DBHandler.Database.EditQuestion(copyQuestion);
+                this.quiz.EditQuestion(copyQuestion);
             }
 
             await this.AnimateNextBannerAsync();
@@ -254,7 +254,7 @@ namespace appFBLA2019
         /// <summary>
         /// Forces a refresh of the layout
         /// </summary>
-        private async Task LayoutRefreshAsync()
+        private void LayoutRefresh()
         {
             this.QuestionImage.Aspect = Aspect.AspectFit;
             
@@ -292,7 +292,7 @@ namespace appFBLA2019
                 {
                     Status = 3
                 };
-                DBHandler.Database.EditQuestion(copyQuestion);
+                this.quiz.EditQuestion(copyQuestion);
                 await this.CycleQuestionAsync();
                 return;
             }
@@ -424,7 +424,7 @@ namespace appFBLA2019
             }
 
 
-            await this.LayoutRefreshAsync();
+            this.LayoutRefresh();
             await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, -this.StackLayoutMain.Height, 500, Easing.CubicIn);
             await this.ActivityBanner.TranslateTo((this.Width - this.ActivityBanner.Width) / 2, this.StackLayoutMain.Height * 3 / 2, 0);
         }

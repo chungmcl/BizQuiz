@@ -214,15 +214,15 @@ namespace appFBLA2019
         private void SetupLocalQuizzes()
         {
             List<QuizInfo> quizzes = QuizRosterDatabase.GetRoster();
-            List<SearchInfo> userQuizzes = new List<SearchInfo>();
+            List<QuizInfo> userQuizzes = new List<QuizInfo>();
             foreach (QuizInfo quiz in quizzes)
             {
                 if (quiz.AuthorName == CredentialManager.Username)
                 {
-                    userQuizzes.Add(new SearchInfo()
+                    userQuizzes.Add(new QuizInfo()
                     {
                         DBId = quiz.DBId,
-                        Author = quiz.AuthorName,
+                        AuthorName = quiz.AuthorName,
                         QuizName = quiz.QuizName,
                         Category = quiz.Category
                     });
@@ -242,7 +242,7 @@ namespace appFBLA2019
         /// </summary>
         private void SetupNetworkQuizzes()
         {
-            List<SearchInfo> chunk = SearchUtils.GetQuizzesByAuthorChunked(CredentialManager.Username, this.currentChunk);
+            List<QuizInfo> chunk = SearchUtils.GetQuizzesByAuthorChunked(CredentialManager.Username, this.currentChunk);
             if (chunk.Count == 0)
             {
                 return;
@@ -255,9 +255,9 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="quizzes">       a list of quizzes to dislay </param>
         /// <param name="isNetworkQuiz"> if the incoming quiz is a networkQuiz </param>
-        private void AddQuizzes(List<SearchInfo> quizzes, bool isNetworkQuiz)
+        private void AddQuizzes(List<QuizInfo> quizzes, bool isNetworkQuiz)
         {
-            foreach (SearchInfo quiz in quizzes)
+            foreach (QuizInfo quiz in quizzes)
             {
                 //if its not already stored locally (only applies to network quizzess)
                 if (isNetworkQuiz && QuizRosterDatabase.GetQuizInfo(quiz.DBId) != null)
@@ -299,7 +299,7 @@ namespace appFBLA2019
                     {
                         buttonDelete.HorizontalOptions = LayoutOptions.End;
                         buttonDelete.Source = "ic_delete_red_48dp.png";
-                        buttonDelete.StyleId = "/" + quiz.Category + "/" + quiz.QuizName + "`" + quiz.Author;
+                        buttonDelete.StyleId = "/" + quiz.Category + "/" + quiz.QuizName + "`" + quiz.AuthorName;
                         buttonDelete.Clicked += this.ButtonDelete_Clicked;
                         buttonDelete.BackgroundColor = Color.White;
                         buttonDelete.HeightRequest = 35;
@@ -316,7 +316,7 @@ namespace appFBLA2019
 
                     Label Subscribers = new Label
                     {
-                        Text = "Subscribers: " + quiz.SubCount
+                        Text = "Subscribers: " + quiz.SubscriberCount
                     };
                     frameStack.Children.Add(Subscribers);
 

@@ -33,6 +33,11 @@ namespace appFBLA2019
         /// </summary>
         private string originalCategory;
 
+        /// <summary>
+        /// the original QuizInfo of the quiz (if being edited)
+        /// </summary>
+        private QuizInfo originalQuizInfo;
+
         private object callerType;
 
         /// <summary>
@@ -49,14 +54,16 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="originalName">    </param>
         /// <param name="originalAuthor">  </param>
-        public CreateNewQuizPage(string originalCategory, string originalName, string originalAuthor)
+        public CreateNewQuizPage(QuizInfo oldQuizInfo)
         {
             this.InitializeComponent();
             this.SetUpBar();
-            this.originalCategory = originalCategory;
-            this.originalAuthor = originalAuthor;
-            this.originalName = originalName;
-            this.PickerCategory.SelectedItem = originalCategory;
+            this.originalCategory = oldQuizInfo.Category;
+            this.originalAuthor = oldQuizInfo.AuthorName;
+            this.originalName = oldQuizInfo.QuizName;
+            this.PickerCategory.SelectedItem = oldQuizInfo.Category;
+
+            this.originalQuizInfo = oldQuizInfo;
         }
 
         /// <summary>
@@ -223,6 +230,7 @@ namespace appFBLA2019
                 // Scroll to bottom
                 _ = this.ScrollViewQuestions.ScrollToAsync(this.stkMain, ScrollToPosition.End, true);
 
+
                 //animate in frame
                 await frame.TranslateTo(x - 10, 0, 500, Easing.CubicOut);
             }
@@ -280,25 +288,12 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Couldn't Create Quiz", "Please give your quiz a category", "OK");
             }
-            else if (this.EditorQuizName.Text.Contains("`"))
-            {
-                await this.DisplayAlert("Couldn't Create Quiz", "Quiz name must not include `", "OK");
-            }
             else
             {
-                // Set previousQuestions to the correct previous questions
-                List<Question> previousQuestions = new List<Question>(); // A list of questions already in the database
-
-                if (!string.IsNullOrWhiteSpace(this.originalName)) // Edit
-                {
-                    DBHandler.SelectDatabase(this.originalCategory, this.originalName, this.originalAuthor);
-                    previousQuestions = DBHandler.Database.GetQuestions();
-                }
+                List<Question> previousQuestions = new List<Question>();
 
                 List<Question> NewQuestions = new List<Question>();  // A list of questions the user wants to add to the database
-
-                // Now open the database the user just made, might be the same as the one already open
-                DBHandler.SelectDatabase(this.PickerCategory.Items[this.PickerCategory.SelectedIndex], this.EditorQuizName.Text?.Trim(), CredentialManager.Username);
+                
                 // Loops through each question frame on the screen
                 foreach (Frame frame in this.StackLayoutQuestionStack.Children)
                 {
@@ -374,31 +369,45 @@ namespace appFBLA2019
                         }
                     }
 
-                    addThis.QuestionId = frame.StyleId; // Set the dbid
+                    addThis.QuestionId = frame.StyleId; // Set the questionId
 
                     NewQuestions.Add(addThis);
                 }
 
-                // Add if it doesn't already exist, delete if it doesn't exist anymore, update the ones that need to be updated, and do nothing to the others Work in progress, algorithm might be off.
-                if (previousQuestions.Count() == 0 || originalAuthor != CredentialManager.Username)
+                Quiz database;
+                // If editing
+                if (this.originalQuizInfo != null)
+                {
+                    database = new Quiz(this.originalQuizInfo.DBId);
+
+                    // Set previousQuestions to the correct previous questions
+                    previousQuestions = database.GetQuestions();
+                }
+                else // If new quiz
+                {
+                    database = new Quiz(
+                        CredentialManager.Username,
+                        this.EditorQuizName.Text.Trim(),
+                        this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
+                }
+
+                // Add if it doesn't already exist, delete if it doesn't exist anymore, update the ones that need to be updated, and do nothing to the others
+                if (previousQuestions.Count == 0 || originalAuthor != CredentialManager.Username)
                 {
                     // if the user created this for the first time
 
                     // Save a new QuizInfo into the quiz database, which also adds this QuizInfo to the device quiz roster
-                    DBHandler.Database.NewQuizInfo(CredentialManager.Username,
-                        this.EditorQuizName.Text?.Trim(),
-                        this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
-                    DBHandler.Database.AddQuestions(NewQuestions.ToArray());
+                    database.AddQuestions(NewQuestions.ToArray());
                 }
                 else // edit
                 {
                     
-                    QuizInfo updatedQuizInfo = new QuizInfo(DBHandler.Database.GetQuizInfo())
+                    QuizInfo updatedQuizInfo = new QuizInfo(database.QuizInfo)
                     {
                         QuizName = this.EditorQuizName.Text?.Trim(),
                         LastModifiedDate = DateTime.Now.ToString()
                     };
-                    DBHandler.Database.EditQuizInfo(updatedQuizInfo);
+                    database.EditQuizInfo(updatedQuizInfo);
 
                     // Logic for how to save each question.
                     for (int i = 0; i <= previousQuestions.Count() - 1; i++)
@@ -411,7 +420,7 @@ namespace appFBLA2019
                             {
                                 DBIdSame = true;
                                 // the same question, but changed, so update
-                                DBHandler.Database.EditQuestion(newQuestion);
+                                database.EditQuestion(newQuestion);
                                 NewQuestions.Remove(newQuestion);
                                 break;
                             }
@@ -423,21 +432,15 @@ namespace appFBLA2019
 
                         if (!DBIdSame) // if the question doesn't exist in the new list. delete it
                         {
-                            DBHandler.Database.DeleteQuestions(previousQuestions[i]);
+                            database.DeleteQuestions(previousQuestions[i]);
                         }
                     }
 
                     // Add all the questions that aren't eddited
-                    DBHandler.Database.AddQuestions(NewQuestions.ToArray());
+                    database.AddQuestions(NewQuestions.ToArray());
                 }
 
-                File.Create(DBHandler.Database.DBFolderPath + ".nomedia");
-
-                // If they renamed the quiz, delete the old one
-                if (this.originalName != this.EditorQuizName.Text?.Trim() && this.originalAuthor == CredentialManager.Username)
-                {
-                    Directory.Delete(App.UserPath + "/" + this.originalName + "`" + this.originalAuthor, true);
-                }
+                File.Create(database.DBFolderPath + ".nomedia");
 
                 // Returns user to front page of QuizEditor and refreshed database
                 await this.Navigation.PopAsync(true);

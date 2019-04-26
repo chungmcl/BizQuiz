@@ -23,7 +23,6 @@ namespace appFBLA2019
         {
             get
             {
-                
                 return username ?? "dflt";
             }
             set

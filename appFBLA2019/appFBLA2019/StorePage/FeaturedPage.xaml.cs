@@ -21,7 +21,7 @@ namespace appFBLA2019
         /// <summary>
         /// the quizzes shown on the featured page
         /// </summary>
-        private List<SearchInfo> quizzesFeatured;
+        private List<QuizInfo> quizzesFeatured;
 
         /// <summary>
         /// Sets up the featured page
@@ -31,7 +31,7 @@ namespace appFBLA2019
             this.InitializeComponent();
             this.currentChunk = 1;
             this.category = "All";
-            this.quizzesFeatured = new List<SearchInfo>();
+            this.quizzesFeatured = new List<QuizInfo>();
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace appFBLA2019
         /// </summary>
         private async Task Search()
         {
-            List<SearchInfo> chunk = new List<SearchInfo>();
+            List<QuizInfo> chunk = new List<QuizInfo>();
             chunk = SearchUtils.GetQuizzesByAuthorChunked("BizQuiz", this.currentChunk);
             if (chunk.Count < 20)
                 this.quizzesRemaining = false;
@@ -146,10 +146,10 @@ namespace appFBLA2019
         /// Adds a quiz to the search stack given a QuizInfo
         /// </summary>
         /// <param name="quizzes"></param>
-        private void AddQuizzes(List<SearchInfo> quizzes)
+        private void AddQuizzes(List<QuizInfo> quizzes)
         {
             List<QuizInfo> currentlySubscribed = QuizRosterDatabase.GetRoster();
-            foreach (SearchInfo quiz in quizzes)
+            foreach (QuizInfo quiz in quizzes)
             {
                 if (this.category == "All" || quiz.Category == this.category) // Only add quiz if the category is what user picked
                 {
@@ -219,7 +219,7 @@ namespace appFBLA2019
 
 
 
-                    if (quiz.Author != CredentialManager.Username)
+                    if (quiz.AuthorName != CredentialManager.Username)
                     {
                         // If already subscribed
                         if (!(currentlySubscribed.Where(quizInfo => quizInfo.DBId == quiz.DBId && !quizInfo.IsDeletedLocally).Count() > 0))
@@ -236,7 +236,7 @@ namespace appFBLA2019
 
                     Label quizAuthor = new Label
                     {
-                        Text = "Created by: " + quiz.Author,
+                        Text = "Created by: " + quiz.AuthorName,
                     };
                     frameStack.Children.Add(quizAuthor);
 

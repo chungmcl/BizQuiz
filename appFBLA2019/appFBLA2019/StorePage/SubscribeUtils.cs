@@ -19,19 +19,19 @@ namespace appFBLA2019
         /// <param name="dbId">the ID of the quiz to sub to</param>
         /// <param name="quizzesSearched">the quizzes currently displayed (used to get info about the quiz from the dbid)</param>
         /// <returns>If the subscription was successful</returns>
-        public static async Task<OperationReturnMessage> SubscribeToQuizAsync(string dbId, List<SearchInfo> quizzesSearched)
+        public static async Task<OperationReturnMessage> SubscribeToQuizAsync(string dbId, List<QuizInfo> quizzesSearched)
         {
             if (QuizRosterDatabase.GetQuizInfo(dbId) == null) // make sure it isn't in yet
             {
                 OperationReturnMessage returnMessage = await Task.Run(async () => await ServerOperations.SubscribeToQuiz(dbId));
                 if (returnMessage == OperationReturnMessage.True)
                 {
-                    SearchInfo quiz = quizzesSearched.Where(searchInfo => searchInfo.DBId == dbId).First();
+                    QuizInfo quiz = quizzesSearched.Where(quizInfo => quizInfo.DBId == dbId).First();
                     string lastModifiedDate = await Task.Run(() => ServerOperations.GetLastModifiedDate(dbId));
                     QuizInfo newInfo = new QuizInfo
                     {
                         DBId = quiz.DBId,
-                        AuthorName = quiz.Author,
+                        AuthorName = quiz.AuthorName,
                         QuizName = quiz.QuizName,
                         Category = quiz.Category,
                         LastModifiedDate = lastModifiedDate,
