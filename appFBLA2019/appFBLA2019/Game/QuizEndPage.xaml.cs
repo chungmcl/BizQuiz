@@ -7,6 +7,7 @@ using Plugin.Share.Abstractions;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Xamarin.Essentials;
 
 namespace appFBLA2019
 {
@@ -128,14 +129,26 @@ namespace appFBLA2019
         private async void ButtonShareToOtherMedia_Clicked(object sender, EventArgs e)
         {
             this.ButtonShareToOtherMedia.IsEnabled = false;
-            IShare shareinfo = CrossShare.Current;
-            await CrossShare.Current.Share(new ShareMessage
-            {
-                Text = $"I got { this.percentScore }% correct studying { this.quizName } on BizQuiz!",
-                Title = "Loving BizQuiz!",
-                Url = "https://www.bizquiz.app/"
-            });
+            //IShare shareinfo = CrossShare.Current;
+            //await CrossShare.Current.Share(new ShareMessage
+            //{
+            //    Text = $"I got { this.percentScore }% correct studying { this.quizName } on BizQuiz!",
+            //    Title = "Loving BizQuiz!",
+            //    Url = "https://www.bizquiz.app/"
+            //});
+            await Share.RequestAsync($"I got { this.percentScore }% correct studying { this.quizName } on BizQuiz!", 
+                "Loving BizQuiz!");
             this.ButtonShareToOtherMedia.IsEnabled = true;
+        }
+
+        private void ButtonShareToTwitter_Clicked(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void ButtonShareToInstagram_Clicked(object sender, EventArgs e)
+        {
+
         }
     }
 }

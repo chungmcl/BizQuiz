@@ -7,7 +7,35 @@
             <Label x:Name="LabelFeedback" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray" />
             <Label x:Name="LabelScore" FontAttributes="Bold" FontSize="100" TextColor="Accent"
                    HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
-            <Button x:Name="ButtonShareToFacebook" Text="Share to Facebook" Clicked="ButtonShareToFacebook_Clicked" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" />
+            <Button x:Name="ButtonShareToFacebook" 
+                    Text="Share to Facebook" 
+                    Clicked="ButtonShareToFacebook_Clicked" 
+                    CornerRadius = "25" 
+                    BackgroundColor = "Accent" 
+                    TextColor = "White" 
+                    Image="facebook_logo.png"
+                    ContentLayout="Left, 5"
+                    HeightRequest="50"/>
+            <Button x:Name="ButtonShareToTwitter"
+                    Text="Share to Twitter"
+                    Clicked="ButtonShareToTwitter_Clicked"
+                    CornerRadius="25"
+                    BackgroundColor="Accent"
+                    TextColor = "White" 
+                    Image="twitter_logo.png"
+                    ContentLayout="Left, 5"
+                    HeightRequest="50"
+                />
+            <Button x:Name="ButtonShareToInstagram"
+                    Text="Share to Instagram"
+                    Clicked="ButtonShareToInstagram_Clicked"
+                    CornerRadius="25"
+                    BackgroundColor="Accent"
+                    TextColor = "White" 
+                    Image="instagram_logo.png"
+                    ContentLayout="Left, 5"
+                    HeightRequest="50"
+                    />
             <Button x:Name="ButtonShareToOtherMedia" Text="Share to Other Social Media" Clicked="ButtonShareToOtherMedia_Clicked" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" />
             <Button x:Name="ButtonDone" Text="Done" Clicked="ButtonDone_Clicked" CornerRadius = "25" BackgroundColor = "Accent" TextColor = "White" />
         </StackLayout>
