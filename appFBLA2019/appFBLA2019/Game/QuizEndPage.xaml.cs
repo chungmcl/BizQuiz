@@ -8,6 +8,8 @@ using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xamarin.Essentials;
+using Xamarin.Social;
+using Xamarin.Social.Services;
 
 namespace appFBLA2019
 {
@@ -143,7 +145,12 @@ namespace appFBLA2019
 
         private void ButtonShareToTwitter_Clicked(object sender, EventArgs e)
         {
-            
+            TwitterService twitter = new TwitterService()
+            {
+                ConsumerKey = "xxM17xeqLnMNXmWzbIbr9WSl4",
+                ConsumerSecret = "hw1O2mgIbRjcQDDNWvKJgglIQ8WbYjY5lCDB8GCPp7IpdvenB0"
+            };
+            twitter.ShareItemAsync(new Item("test"), new Xamarin.Auth.Account("bhsappdev"));
         }
 
         private void ButtonShareToInstagram_Clicked(object sender, EventArgs e)
