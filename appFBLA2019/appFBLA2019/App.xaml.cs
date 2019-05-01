@@ -28,6 +28,7 @@ namespace appFBLA2019
             Xamarin.Forms.DependencyService.Register<IErrorLogger>();
             Xamarin.Forms.DependencyService.Register<IGetImage>();
             Xamarin.Forms.DependencyService.Register<ICloseApplication>();
+            Xamarin.Forms.DependencyService.Register<ISocialMedia>();
 
             App.random = new Random();
             App.Path = DependencyService.Get<IGetStorage>().GetStorage() + "/";

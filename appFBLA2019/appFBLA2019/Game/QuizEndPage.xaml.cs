@@ -19,8 +19,15 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class QuizEndPage : ContentPage
     {
+        private const string twitterPackageName = "com.twitter.android";
+        private const string instagramPackageName = "com.instagram.android";
+
         private double percentScore;
         private string quizName;
+
+        private string shareText { get { return 
+                    $"I got {this.percentScore.ToString("#.##")}% correct studying {this.quizName} on BizQuiz!"; } }
+
         /// <summary>
         /// Constructs the page and sets the score
         /// </summary>
@@ -117,7 +124,7 @@ namespace appFBLA2019
             this.ButtonShareToFacebook.IsEnabled = false;
 
             FacebookShareLinkContent linkContent = 
-                new FacebookShareLinkContent($"I got {this.percentScore}% correct studying {this.quizName} on BizQuiz!", 
+                new FacebookShareLinkContent(this.shareText, 
                 new Uri("https://www.bizquiz.app/"));
             var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
             this.ButtonShareToFacebook.IsEnabled = true;
@@ -131,31 +138,38 @@ namespace appFBLA2019
         private async void ButtonShareToOtherMedia_Clicked(object sender, EventArgs e)
         {
             this.ButtonShareToOtherMedia.IsEnabled = false;
-            //IShare shareinfo = CrossShare.Current;
-            //await CrossShare.Current.Share(new ShareMessage
-            //{
-            //    Text = $"I got { this.percentScore }% correct studying { this.quizName } on BizQuiz!",
-            //    Title = "Loving BizQuiz!",
-            //    Url = "https://www.bizquiz.app/"
-            //});
-            await Share.RequestAsync($"I got { this.percentScore }% correct studying { this.quizName } on BizQuiz!", 
-                "Loving BizQuiz!");
+
+            ShareTextRequest request = new ShareTextRequest();
+            request.Title = $"Share to other social media platforms";
+            request.Text = this.shareText;
+            request.Uri = "https://www.bizquiz.app/";
+            await Share.RequestAsync(request);
+
             this.ButtonShareToOtherMedia.IsEnabled = true;
         }
 
         private void ButtonShareToTwitter_Clicked(object sender, EventArgs e)
         {
-            TwitterService twitter = new TwitterService()
-            {
-                ConsumerKey = "xxM17xeqLnMNXmWzbIbr9WSl4",
-                ConsumerSecret = "hw1O2mgIbRjcQDDNWvKJgglIQ8WbYjY5lCDB8GCPp7IpdvenB0"
-            };
-            twitter.ShareItemAsync(new Item("test"), new Xamarin.Auth.Account("bhsappdev"));
+            this.ButtonShareToTwitter.IsEnabled = false;
+
+            Device.OpenUri(new Uri("https://twitter.com/"));
+
+            this.ButtonShareToTwitter.IsEnabled = true;
         }
 
         private void ButtonShareToInstagram_Clicked(object sender, EventArgs e)
         {
-
+            this.ButtonShareToInstagram.IsEnabled = false;
+            DependencyService.Get<ISocialMedia>().CreateInstagramIntent("/storage/emulated/0/DCIM/Camera/bothell boy og.png", "test");
+            if (DependencyService.Get<ISocialMedia>().IsPackageInstalled(instagramPackageName))
+            {
+                DependencyService.Get<ISocialMedia>().CreateInstagramIntent("/storage/emulated/0/DCIM/Camera/bothell boy og.png", "test");
+            }
+            else
+            {
+                Device.OpenUri(new Uri("https://www.instagram.com/"));
+            }
+            this.ButtonShareToInstagram.IsEnabled = true;
         }
     }
 }

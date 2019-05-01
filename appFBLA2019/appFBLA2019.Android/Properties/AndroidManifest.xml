@@ -7,7 +7,10 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<application android:label="BizQuiz" android:theme="@style/Theme.AppCompat.Light" android:icon="@drawable/icon" android:windowSoftInputMode="adjustResize">
 		<provider android:name="android.support.v4.content.FileProvider" android:authorities="${applicationId}.fileprovider" android:exported="false" android:grantUriPermissions="true">
-			<meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"></meta-data>
+			<meta-data 
+        android:name="android.support.FILE_PROVIDER_PATHS" 
+        android:resource="@xml/file_paths">
+    </meta-data>
 		</provider>
 		<provider android:authorities="com.facebook.app.FacebookContentProvider1213675455439682" android:name="com.facebook.FacebookContentProvider" android:exported="true" />
 		<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id" />
