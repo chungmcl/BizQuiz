@@ -3,10 +3,8 @@
              x:Class="appFBLA2019.IntroPage"
              NavigationPage.HasBackButton="False"
              Title="BizQuiz">
-  <CarouselView Position="{Binding Position, Mode=TwoWay}" ItemsSource="{Binding ItemsSource}"></CarouselView>
-  <CarouselIndicators IndicatorHeight="16" IndicatorWidth="16" UnselectedIndicator="unselected_circle.png" SelectedIndicator="selected_circle.png" Position="{Binding Position}" ItemsSource="{Binding ItemsSource}" />
-
-  <ContentPage>
+  
+    <ContentPage>
         <Label Text="ahhaha"/>
     </ContentPage>
 

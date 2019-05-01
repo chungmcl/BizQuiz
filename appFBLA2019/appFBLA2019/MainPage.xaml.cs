@@ -8,6 +8,7 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Xaml;
 
 using Realms;
+using Xamarin.Essentials;
 
 namespace appFBLA2019
 {
@@ -57,6 +58,17 @@ namespace appFBLA2019
             }
         }
 
+        protected override async void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            if (Xamarin.Forms.Application.Current.Properties.ContainsKey("Tutorial") && App.Current.Properties["Tutorial"] as string == "Yes")
+            {
+                Xamarin.Forms.Application.Current.Properties["Tutorial"] = "No";
+                await Xamarin.Forms.Application.Current.SavePropertiesAsync();
+                await this.Navigation.PushAsync(new TutorialHomePage(), animated : false);
+            }
+        }
+
         /// <summary>
         /// Open the terms of use
         /// </summary>
@@ -95,6 +107,15 @@ namespace appFBLA2019
         private async void HelpButton_Clicked(object sender, EventArgs e)
         {
             await this.Navigation.PushModalAsync(new NavigationPage(new HelpPage()));
+        }
+
+        private async void Removed_ClickedAsync(object sender, EventArgs e)
+        {
+            if (Xamarin.Forms.Application.Current.Properties.ContainsKey("Tutorial"))
+            {
+                Xamarin.Forms.Application.Current.Properties["Tutorial"] = "Yes";
+                await Xamarin.Forms.Application.Current.SavePropertiesAsync();
+            }
         }
     }
 }
