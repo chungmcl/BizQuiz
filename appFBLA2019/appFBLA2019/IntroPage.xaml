@@ -1,0 +1,23 @@
+﻿<CarouselPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.IntroPage"
+             NavigationPage.HasBackButton="False"
+             Title="BizQuiz">
+  <CarouselView Position="{Binding Position, Mode=TwoWay}" ItemsSource="{Binding ItemsSource}"></CarouselView>
+  <CarouselIndicators IndicatorHeight="16" IndicatorWidth="16" UnselectedIndicator="unselected_circle.png" SelectedIndicator="selected_circle.png" Position="{Binding Position}" ItemsSource="{Binding ItemsSource}" />
+
+  <ContentPage>
+        <Label Text="ahhaha"/>
+    </ContentPage>
+
+    <ContentPage>
+        <Label Text="ddd"/>
+    </ContentPage>
+
+    <ContentPage>
+        <StackLayout>
+          <Label Text="ggg"/>
+          <Button Text="test" Clicked="Button_ClickedAsync"/>
+        </StackLayout> 
+    </ContentPage>
+</CarouselPage>
