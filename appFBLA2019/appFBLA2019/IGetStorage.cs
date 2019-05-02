@@ -21,5 +21,13 @@ namespace appFBLA2019
         /// <param name="userpath">Path to the user folder</param>
         /// <returns></returns>
         Task SetupDefaultQuizzesAsync(string userpath);
+
+
+        /// <summary>
+        /// Check if an Android package is installed on the current device
+        /// </summary>
+        /// <param name="packageName">A bool stating whether the package specified is installed or not</param>
+        /// <returns></returns>
+        bool IsPackageInstalled(string packageName);
     }
 }

@@ -27,7 +27,7 @@ namespace appFBLA2019.Droid
     [Activity(Label = "appFBLA2019", Icon = "@mipmap/icon", Theme = "@style/MainTheme", 
         MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, 
         WindowSoftInputMode =Android.Views.SoftInput.AdjustResize, ScreenOrientation =ScreenOrientation.Portrait)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger, ICloseApplication, ISocialMedia
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGetStorage, IGetImage, IErrorLogger, ICloseApplication
     {
         /// <summary>
         /// the current window of the App
@@ -200,43 +200,14 @@ namespace appFBLA2019.Droid
             bool installed = false;
             try
             {
-                Forms.Context.PackageManager.GetPackageInfo(packageName, PackageInfoFlags.Activities);
+                Android.App.Application.Context.PackageManager.GetPackageInfo(packageName, PackageInfoFlags.Activities);
                 installed = true;
             }
-            catch (Exception exception)
+            catch
             {
                 installed = false;
             }
             return installed;
-        }
-
-        /// <summary>
-        /// Create a Instagram intent to share something
-        /// </summary>
-        /// <param name="mediaPath"></param>
-        /// <param name="textToShare"></param>
-        public void CreateInstagramIntent(string mediaPath, string textToShare)
-        {
-            // Create the new Intent using the 'Send' action.
-            Intent share = new Intent(Intent.ActionSend);
-
-            string type = "image/png";
-            // Set the MIME type
-            share.SetType(type);
-
-            // Create the URI from the media
-            Java.IO.File media = new Java.IO.File(mediaPath);
-            //Android.Net.Uri uri = Android.Net.Uri.FromFile(media);
-            Android.Net.Uri uri = FileProvider.GetUriForFile(Forms.Context, "com.bothellsoftware.bizquiz", media);
-
-            // Add the URI to the Intent.
-            share.PutExtra(Intent.ExtraStream, uri);
-
-            // Add text to the Intent.
-            share.PutExtra(Intent.ExtraText, textToShare);
-
-            // Broadcast the Intent.
-            Forms.Context.StartActivity(Intent.CreateChooser(share, "Share to"));
         }
     }
 }

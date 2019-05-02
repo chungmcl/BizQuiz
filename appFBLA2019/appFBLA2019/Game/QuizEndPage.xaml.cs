@@ -25,8 +25,19 @@ namespace appFBLA2019
         private double percentScore;
         private string quizName;
 
-        private string shareText { get { return 
-                    $"I got {this.percentScore.ToString("#.##")}% correct studying {this.quizName} on BizQuiz!"; } }
+        private string shareText
+        {
+            get
+            {
+                string text = $"I got {this.percentScore.ToString("#.##")}% correct studying {this.quizName} on BizQuiz! " +
+                    $"Study with me and let's achieve great things in FBLA together! ";
+
+                if (CredentialManager.IsLoggedIn)
+                    text = text + $" Find on me BizQuiz @{CredentialManager.Username}";
+
+                return text;
+            }
+        }
 
         /// <summary>
         /// Constructs the page and sets the score
@@ -148,28 +159,24 @@ namespace appFBLA2019
             this.ButtonShareToOtherMedia.IsEnabled = true;
         }
 
-        private void ButtonShareToTwitter_Clicked(object sender, EventArgs e)
+        private async void ButtonShareToTwitter_Clicked(object sender, EventArgs e)
         {
             this.ButtonShareToTwitter.IsEnabled = false;
-
-            Device.OpenUri(new Uri("https://twitter.com/"));
-
-            this.ButtonShareToTwitter.IsEnabled = true;
-        }
-
-        private void ButtonShareToInstagram_Clicked(object sender, EventArgs e)
-        {
-            this.ButtonShareToInstagram.IsEnabled = false;
-            DependencyService.Get<ISocialMedia>().CreateInstagramIntent("/storage/emulated/0/DCIM/Camera/bothell boy og.png", "test");
-            if (DependencyService.Get<ISocialMedia>().IsPackageInstalled(instagramPackageName))
+            bool twitterInstalled = DependencyService.Get<IGetStorage>().IsPackageInstalled(twitterPackageName);
+            string shareURI = $"https://twitter.com/share?text={Uri.EscapeUriString(this.shareText)}&url=http://www.bizquiz.app&hashtags=BizQuiz";
+            if (!twitterInstalled)
             {
-                DependencyService.Get<ISocialMedia>().CreateInstagramIntent("/storage/emulated/0/DCIM/Camera/bothell boy og.png", "test");
+                bool result = 
+                    await DisplayAlert("Twitter not installed", "Twitter is not installed on this device. Open in browser?", "OK", "Cancel");
+
+                if (result)
+                    Device.OpenUri(new Uri(shareURI));
             }
             else
             {
-                Device.OpenUri(new Uri("https://www.instagram.com/"));
+                Device.OpenUri(new Uri(shareURI));
             }
-            this.ButtonShareToInstagram.IsEnabled = true;
+            this.ButtonShareToTwitter.IsEnabled = true;
         }
     }
 }
