@@ -49,6 +49,9 @@ namespace appFBLA2019
 
         /// <summary>
         /// The total number of subscribers to the quiz this QuizInfo is associated with.
+        /// (This field is persisted within the realm file BUT is NOT updated on the server's copy
+        /// of the realm file. Update the roster and refer to the roster's data on subscriber count for
+        /// an accurate number.)
         /// </summary>
         public int SubscriberCount { get; set; }
         
