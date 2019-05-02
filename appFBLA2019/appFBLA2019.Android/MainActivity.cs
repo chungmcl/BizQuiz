@@ -54,7 +54,7 @@ namespace appFBLA2019.Droid
             CrossCurrentActivity.Current.Activity = this;
             await CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
             fileDirectory = this.GetExternalFilesDir(null).ToString();
-
+                
             FacebookClientManager.Initialize(this);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);

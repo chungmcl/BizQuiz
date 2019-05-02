@@ -65,7 +65,7 @@ namespace appFBLA2019
             {
                 Xamarin.Forms.Application.Current.Properties["Tutorial"] = "No";
                 await Xamarin.Forms.Application.Current.SavePropertiesAsync();
-                await this.Navigation.PushAsync(new TutorialHomePage(), animated : false);
+                await this.Navigation.PushAsync(new TutorialPage(), animated : false);
             }
         }
 
