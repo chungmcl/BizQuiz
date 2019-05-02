@@ -92,7 +92,13 @@ namespace appFBLA2019
 
             CredentialManager.Username = "dflt";
             Directory.CreateDirectory(App.Path + $"dflt");
-            
+
+            if (!App.Current.Properties.ContainsKey("Tutorial"))
+            {
+                App.Current.Properties.Add("Tutorial", "Yes");
+                await this.SavePropertiesAsync();
+            }
+
             BugReportHandler.Setup();
             await ThreadTimer.RunServerChecksAsync();
             if (Directory.GetDirectories(App.UserPath).Length < 5)
