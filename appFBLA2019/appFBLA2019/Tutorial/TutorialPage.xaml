@@ -51,7 +51,7 @@
                 BackgroundColor="LightGray"
                 BorderColor="Transparent">
                 <StackLayout Orientation="Horizontal">
-                    <Button x:Name="ButtonSkip" Text="Skip Tutorial" HorizontalOptions="StartAndExpand" Clicked="Skip_Clicked" BackgroundColor="Transparent" BorderColor="Transparent"/>
+                    <Button x:Name="ButtonSkip" Text="Skip Tutorial" HorizontalOptions="StartAndExpand" Clicked="Done_Clicked" BackgroundColor="Transparent" BorderColor="Transparent"/>
                     <Button x:Name="ButtonPrevious" Text="Previous" HorizontalOptions="EndAndExpand" Clicked="Previous_Clicked" IsVisible="False" BackgroundColor="Accent" TextColor="White" CornerRadius="25"/>
                     <Button x:Name="ButtonNext" Text="Next" Clicked="Next_Clicked" BackgroundColor="#004F96" TextColor="White" CornerRadius="25"/>
                     <Button x:Name="ButtonDone" Text="Create Account" Clicked="Done_Clicked" IsVisible="False" BackgroundColor="#004F96" TextColor="White" CornerRadius="25"/>

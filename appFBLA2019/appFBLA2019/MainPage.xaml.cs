@@ -61,11 +61,11 @@ namespace appFBLA2019
         protected override async void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            if (Xamarin.Forms.Application.Current.Properties.ContainsKey("Tutorial") && App.Current.Properties["Tutorial"] as string == "Yes")
+            if (!Xamarin.Forms.Application.Current.Properties.ContainsKey("Tutorial") || App.Current.Properties["Tutorial"] as string != "Done")
             {
-                Xamarin.Forms.Application.Current.Properties["Tutorial"] = "No";
+                Xamarin.Forms.Application.Current.Properties["Tutorial"] = "Opened";
                 await Xamarin.Forms.Application.Current.SavePropertiesAsync();
-                await this.Navigation.PushAsync(new TutorialPage(), animated : false);
+                await this.Navigation.PushAsync(new TutorialPage(), animated: false);
             }
         }
 
@@ -113,7 +113,7 @@ namespace appFBLA2019
         {
             if (Xamarin.Forms.Application.Current.Properties.ContainsKey("Tutorial"))
             {
-                Xamarin.Forms.Application.Current.Properties["Tutorial"] = "Yes";
+                Xamarin.Forms.Application.Current.Properties["Tutorial"] = "Reset";
                 await Xamarin.Forms.Application.Current.SavePropertiesAsync();
             }
         }
