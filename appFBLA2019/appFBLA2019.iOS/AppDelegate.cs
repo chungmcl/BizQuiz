@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
+using static System.Environment;
 
 namespace appFBLA2019.iOS
 {
@@ -27,12 +28,15 @@ namespace appFBLA2019.iOS
 
         public Stream GetJPGStreamFromByteArray(byte[] image)
         {
-            throw new NotImplementedException();
+            UIKit.UIImage images = new UIKit.UIImage(Foundation.NSData.FromArray(image));
+            byte[] bytes = images.AsJPEG(100).ToArray();
+            Stream imgStream = new MemoryStream(bytes);
+            return imgStream;
         }
 
         public string GetStorage()
         {
-            throw new NotImplementedException();
+            return GetFolderPath(SpecialFolder.Resources);
         }
 
         public void LogError(string error)
@@ -47,7 +51,22 @@ namespace appFBLA2019.iOS
 
         public bool IsPackageInstalled(string packageName)
         {
-            throw new NotImplementedException();
+            string url = "";
+            switch (packageName)
+            {
+                case "com.twitter.android":
+                    url = "www.twitter.com";
+                    break;
+                case "com.instagram.android":
+                    url = "www.instagram.com";
+                    break;
+            }
+            
+            NSUrl nsurl = new NSUrl(url);
+            if (UIApplication.SharedApplication.CanOpenUrl(nsurl))
+                return true;
+            else
+                return false;
         }
     }
 }
