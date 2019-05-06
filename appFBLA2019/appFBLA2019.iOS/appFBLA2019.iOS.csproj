@@ -230,4 +230,7 @@
       <Name>appFBLA2019</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="FodyWeavers.xml" />
+  </ItemGroup>
 </Project>
