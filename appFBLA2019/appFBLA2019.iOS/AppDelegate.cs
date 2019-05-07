@@ -28,6 +28,7 @@ namespace appFBLA2019.iOS
 
         public Stream GetJPGStreamFromByteArray(byte[] image)
         {
+            // test
             UIKit.UIImage images = new UIKit.UIImage(Foundation.NSData.FromArray(image));
             byte[] bytes = images.AsJPEG(100).ToArray();
             Stream imgStream = new MemoryStream(bytes);
