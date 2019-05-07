@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.HelpPage"
              Title="Help">
+    
     <ContentPage>
         <StackLayout Padding="10">
             <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Need help?</Label>
@@ -13,9 +14,9 @@
                 </Grid.RowDefinitions>
                 <Image Source="BizQuizLogo.png" Aspect="AspectFit" VerticalOptions="Center"/>
                 <Frame VerticalOptions="End" HorizontalOptions="FillAndExpand" CornerRadius="10" Grid.Row="1">
-                    <Label FontSize="Large" HorizontalTextAlignment="Center">
-                        Welcome to BizQuiz! This help section contains all the information you'll need to know about the game and how to create, share, and play your own FBLA-related quizzes. Swipe to get started!
-                    </Label>
+                    <Label FontSize="Large" HorizontalTextAlignment="Center" 
+                           Text="Welcome to BizQuiz! This help section contains all the information you'll need to know about the game and how 
+                           to create, share, and play your own FBLA-related quizzes. Swipe to get started!"/>
                 </Frame>
             </Grid>
         </StackLayout>
@@ -198,9 +199,10 @@
             <StackLayout Padding="10">
                 <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">The Profile Page</Label>
                 <Frame CornerRadius="10">
-                    <Label FontSize="Medium" HorizontalTextAlignment="Center">
-                        The profile page offers access to all things related to your account. All BizQuiz users must create an account to upload, download, create, and use quizzes from the online community. Once you have logged in, the profile page offers these options:
-                    </Label>
+                    <Label FontSize="Medium" HorizontalTextAlignment="Center" 
+                           Text="The profile page offers access to all things related to your account. All BizQuiz users must create 
+                           an account to upload, download, create, and use quizzes from the online community. Once you have logged 
+                           in, the profile page offers these options:" />
                 </Frame>
 
                 <Frame VerticalOptions="Fill" CornerRadius="10">
@@ -239,9 +241,10 @@
         <StackLayout Padding="10">
             <Label FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="Gray">Still need help?</Label>
             <Frame CornerRadius="10">
-                <Label FontSize="Large" HorizontalTextAlignment="Center">
-                    BizQuiz was created to provide an easy and efficient way to study and prepare for FBLA conferences and practice business skills. If you have any issues with BizQuiz or would like to leave suggestions or feedback, feel free to contact us! We're always happy to help!
-                </Label>
+                <Label FontSize="Large" HorizontalTextAlignment="Center" 
+                       Text="BizQuiz was created to provide an easy and efficient way to study and prepare for FBLA conferences and practice 
+                       business skills. If you have any issues with BizQuiz or would like to leave suggestions or feedback, feel free to 
+                       contact us! We're always happy to help!"/>
             </Frame>
 
             <Frame VerticalOptions="Center" HorizontalOptions="FillAndExpand" CornerRadius="10">

@@ -1,0 +1,21 @@
+﻿<CarouselPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="appFBLA2019.IntroPage"
+             NavigationPage.HasBackButton="False"
+             Title="BizQuiz">
+  
+    <ContentPage>
+        <Label Text="ahhaha"/>
+    </ContentPage>
+
+    <ContentPage>
+        <Label Text="ddd"/>
+    </ContentPage>
+
+    <ContentPage>
+        <StackLayout>
+          <Label Text="ggg"/>
+          <Button Text="test" Clicked="Button_ClickedAsync"/>
+        </StackLayout> 
+    </ContentPage>
+</CarouselPage>

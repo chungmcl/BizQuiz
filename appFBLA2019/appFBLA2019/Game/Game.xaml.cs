@@ -204,8 +204,10 @@ namespace appFBLA2019
 
                 //prevents same question twice in a row
                 Question newQuestion = this.quiz.GetQuestion();
-                while (newQuestion.QuestionId == (this.currentQuestion?.QuestionId ?? "") /*if the current question is null, ID is "" so it can't be the same*/)
+                while (newQuestion.QuestionId == (this.currentQuestion?.QuestionId ?? "") && this.quiz.QuestionsRemaining > 2)
+                {
                     newQuestion = this.quiz.GetQuestion();
+                }
 
                 this.currentQuestion = newQuestion;
                 await this.SetUpQuestionAsync(this.currentQuestion);

@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             NavigationPage.HasBackButton="False"
+             x:Class="appFBLA2019.TutorialPage">
+    <ContentPage.Content>
+        <StackLayout Padding="0" Margin="0">
+
+            <StackLayout x:Name="StackTutorials" Padding="0" Margin="0" VerticalOptions="FillAndExpand">
+                
+                <Frame x:Name="FrameHomePage" IsVisible="True" VerticalOptions="FillAndExpand">
+                    <StackLayout>
+                        <Label Text="The Home Page"
+                            VerticalOptions="StartAndExpand" 
+                            HorizontalOptions="CenterAndExpand" />
+                        
+                    </StackLayout>
+                </Frame>
+
+                <Frame x:Name="FrameQuizGame" IsVisible="False" VerticalOptions="FillAndExpand">
+                    <StackLayout>
+                        <Label Text="The Quiz Game"
+                            VerticalOptions="StartAndExpand" 
+                            HorizontalOptions="CenterAndExpand" />
+                        
+                    </StackLayout>
+                </Frame>
+
+                <Frame x:Name="FrameSearch" IsVisible="False" VerticalOptions="FillAndExpand">
+                    <StackLayout>
+                        <Label Text="Searching and Sharing"
+                            VerticalOptions="StartAndExpand" 
+                            HorizontalOptions="CenterAndExpand" />
+                        
+                    </StackLayout>
+                </Frame>
+
+                <Frame x:Name="FrameCreator" IsVisible="False" VerticalOptions="FillAndExpand">
+                    <StackLayout>
+                        <Label Text="Quiz Creation"
+                            VerticalOptions="StartAndExpand" 
+                            HorizontalOptions="CenterAndExpand" />
+                        
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+            
+            <Frame CornerRadius="0"
+                VerticalOptions="End"
+                HorizontalOptions="FillAndExpand"
+                BackgroundColor="LightGray"
+                BorderColor="Transparent">
+                <StackLayout Orientation="Horizontal">
+                    <Button x:Name="ButtonSkip" Text="Skip Tutorial" HorizontalOptions="StartAndExpand" Clicked="Skip_Clicked" BackgroundColor="Transparent" BorderColor="Transparent"/>
+                    <Button x:Name="ButtonPrevious" Text="Previous" HorizontalOptions="EndAndExpand" Clicked="Previous_Clicked" IsVisible="False" BackgroundColor="Accent" TextColor="White" CornerRadius="25"/>
+                    <Button x:Name="ButtonNext" Text="Next" Clicked="Next_Clicked" BackgroundColor="#004F96" TextColor="White" CornerRadius="25"/>
+                    <Button x:Name="ButtonDone" Text="Create Account" Clicked="Done_Clicked" IsVisible="False" BackgroundColor="#004F96" TextColor="White" CornerRadius="25"/>
+                </StackLayout>
+            </Frame>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
