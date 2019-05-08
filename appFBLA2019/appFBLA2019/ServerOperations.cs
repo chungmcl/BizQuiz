@@ -280,8 +280,9 @@ namespace appFBLA2019
                     throw new Exception();
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                string test = ex.ToString();
                 // Alert server that quiz send failed Delete records
                 return false;
             }

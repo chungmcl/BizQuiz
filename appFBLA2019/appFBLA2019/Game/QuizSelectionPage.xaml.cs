@@ -204,7 +204,8 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = quiz.DBId,
+                        ClassId = quiz.DBId,
+                        StyleId = quiz.Category
                     };
                     SyncOffline.Clicked += this.SyncOffline_Clicked;
                     topStack.Children.Add(SyncOffline);
@@ -218,7 +219,8 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = quiz.DBId,
+                        ClassId = quiz.DBId,
+                        StyleId = quiz.Category
                     };
                     SyncUpload.Clicked += this.SyncUpload_Clicked;
                     topStack.Children.Add(SyncUpload);
@@ -232,7 +234,8 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = quiz.DBId,
+                        ClassId = quiz.DBId,
+                        StyleId = quiz.Category
                     };
                     SyncDownload.Clicked += this.SyncDownload_Clicked;
                     topStack.Children.Add(SyncDownload);
@@ -246,7 +249,8 @@ namespace appFBLA2019
                         BackgroundColor = Color.White,
                         VerticalOptions = LayoutOptions.StartAndExpand,
                         HorizontalOptions = LayoutOptions.End,
-                        StyleId = quiz.DBId
+                        ClassId = quiz.DBId,
+                        StyleId = quiz.Category
                     };
                     SyncNoChange.Clicked += this.SyncNoChange_Clicked;
                     topStack.Children.Add(SyncNoChange);
@@ -385,7 +389,7 @@ namespace appFBLA2019
             this.serverConnected = true;
             ImageButton button = (sender as ImageButton);
             ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
-            string quizPath = button.StyleId;
+            string quizPath = "/" + button.StyleId + "/" + button.ClassId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
@@ -423,7 +427,7 @@ namespace appFBLA2019
             string category = button.ClassId.Split('/')[3];
 
             ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
-            string quizPath = button.StyleId;
+            string quizPath = button.ClassId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
