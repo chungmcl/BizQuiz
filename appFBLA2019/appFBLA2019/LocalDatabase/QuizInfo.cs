@@ -100,3 +100,8 @@ namespace appFBLA2019
         }
     }
 }
+
+/// <summary>
+/// The sync status of a quiz
+/// </summary>
+public enum SyncType { Offline = 1, Upload, Download, NoChange, Syncing };
