@@ -67,14 +67,13 @@ namespace appFBLA2019
             }
         }
 
-        private void Skip_Clicked(object sender, EventArgs e)
-        {
-            this.Navigation.PopToRootAsync();
-        }
-
         private void Done_Clicked(object sender, EventArgs e)
         {
-
+            this.Navigation.PopToRootAsync();
+            if (Xamarin.Forms.Application.Current.Properties.ContainsKey("Tutorial"))
+            {
+                Xamarin.Forms.Application.Current.Properties["Tutorial"] = "Done";
+            }
         }
     }
 }

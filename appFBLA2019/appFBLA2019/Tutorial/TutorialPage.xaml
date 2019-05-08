@@ -8,21 +8,50 @@
 
             <StackLayout x:Name="StackTutorials" Padding="0" Margin="0" VerticalOptions="FillAndExpand">
                 
-                <Frame x:Name="FrameHomePage" IsVisible="True" VerticalOptions="FillAndExpand">
+                <Frame x:Name="FrameIntro" IsVisible="True" VerticalOptions="FillAndExpand">
                     <StackLayout>
-                        <Label Text="The Home Page"
+                        <Label Text="Welcome to BizQuiz" FontSize="Large"
                             VerticalOptions="StartAndExpand" 
                             HorizontalOptions="CenterAndExpand" />
-                        
+                        <Image Source="BizQuizCircle.png" HorizontalOptions="CenterAndExpand"/>
+                        <Label Text="With BizQuiz, you can create, share, and study anything FBLA! 
+                               Premade levels give users a good starting point for studying, and 
+                               user created levels can help you get exactly what you want."/>
+                    </StackLayout>
+                </Frame>
+                
+                <Frame x:Name="FrameQuizSelection" IsVisible="False" VerticalOptions="FillAndExpand">
+                    <StackLayout>
+                        <Label Text="The Quiz Game" FontSize="Large"
+                            VerticalOptions="StartAndExpand" 
+                            HorizontalOptions="CenterAndExpand" />
+                        <Label Text="To test yourself with a quiz, enter the &quot;Play&quot; Tab from the home page."/>
+                        <Image Source="TutQuizSelect"/>
+                        <Label Text="Chose a quiz from any of the five categories: Tech Events, Finance Events, Business Events, FBLA General, or Officers"/>
                     </StackLayout>
                 </Frame>
 
                 <Frame x:Name="FrameQuizGame" IsVisible="False" VerticalOptions="FillAndExpand">
                     <StackLayout>
-                        <Label Text="The Quiz Game"
+                        <Label Text="The Quiz Game" FontSize="Large"
                             VerticalOptions="StartAndExpand" 
                             HorizontalOptions="CenterAndExpand" />
-                        
+                        <Label Text="Tapping a quiz will bring it up to play"/>
+                        <Image Source="TutGame"/>
+                        <Label Text="There are Multiple Choice, and text answer questions. To answer a multiple choice question, just tap the red box 
+                               labelled with what you think is the correct answer. To answer a text based question, type your answer into the box 
+                               provided and tap the &quot;Check Answer&quot; button to submit. At the end of a quiz, you can see your score, and 
+                               share it on social media!"/>
+                    </StackLayout>
+                </Frame>
+
+                <Frame x:Name="FrameQuizSearching" IsVisible="False" VerticalOptions="FillAndExpand">
+                    <StackLayout>
+                        <Label Text="The Explore Tab"
+                            VerticalOptions="StartAndExpand" 
+                            HorizontalOptions="CenterAndExpand" />
+                        <Label Text="If you are looking for a quiz for a specific event, you can search for it on the explore page" />
+
                     </StackLayout>
                 </Frame>
 
@@ -51,10 +80,10 @@
                 BackgroundColor="LightGray"
                 BorderColor="Transparent">
                 <StackLayout Orientation="Horizontal">
-                    <Button x:Name="ButtonSkip" Text="Skip Tutorial" HorizontalOptions="StartAndExpand" Clicked="Skip_Clicked" BackgroundColor="Transparent" BorderColor="Transparent"/>
-                    <Button x:Name="ButtonPrevious" Text="Previous" HorizontalOptions="EndAndExpand" Clicked="Previous_Clicked" IsVisible="False" BackgroundColor="Accent" TextColor="White" CornerRadius="25"/>
-                    <Button x:Name="ButtonNext" Text="Next" Clicked="Next_Clicked" BackgroundColor="#004F96" TextColor="White" CornerRadius="25"/>
-                    <Button x:Name="ButtonDone" Text="Create Account" Clicked="Done_Clicked" IsVisible="False" BackgroundColor="#004F96" TextColor="White" CornerRadius="25"/>
+                    <Button x:Name="ButtonSkip" Text="Skip Tutorial" HorizontalOptions="StartAndExpand" Clicked="Done_Clicked" BackgroundColor="Transparent" BorderColor="Transparent"/>
+                    <Button x:Name="ButtonPrevious" Text="Previous" HorizontalOptions="EndAndExpand" Clicked="Previous_Clicked" IsVisible="False" BackgroundColor="DarkGray" TextColor="White" CornerRadius="25"/>
+                    <Button x:Name="ButtonNext" Text="Next" Clicked="Next_Clicked" BackgroundColor="DarkGray" TextColor="White" CornerRadius="25"/>
+                    <Button x:Name="ButtonDone" Text="Create Account" Clicked="Done_Clicked" IsVisible="False" TextColor="White" CornerRadius="25"/>
                 </StackLayout>
             </Frame>
         </StackLayout>
