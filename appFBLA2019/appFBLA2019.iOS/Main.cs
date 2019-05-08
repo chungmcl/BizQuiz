@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System;
 using UIKit;
+using Plugin.Permissions;
 
 namespace appFBLA2019.iOS
 {
