@@ -218,8 +218,7 @@ namespace appFBLA2019
                 FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                 FontAttributes = FontAttributes.Bold,
                 VerticalOptions = LayoutOptions.StartAndExpand,
-                HorizontalOptions = LayoutOptions.FillAndExpand//,
-                                                               //HeightRequest = 45
+                HorizontalOptions = LayoutOptions.FillAndExpand
             };
             topStack.Children.Add(title);
 
@@ -330,14 +329,14 @@ namespace appFBLA2019
             };
             frameStack.Children.Add(Seperator);
 
-            Label Author = new Label // 2
+            Label SubscriberCount = new Label // 2
             {
-                Text = "Created by: " + quizInfo.AuthorName,
+                Text = "Subscriber Count: " + quizInfo.SubscriberCount,
                 FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
                 VerticalOptions = LayoutOptions.End,
                 HorizontalOptions = LayoutOptions.StartAndExpand
             };
-            frameStack.Children.Add(Author);
+            frameStack.Children.Add(SubscriberCount);
 
             // The sync button thats active in the current frame
             ImageButton activeSync;
@@ -593,13 +592,7 @@ namespace appFBLA2019
             {
                 if (quiz.AuthorName == CredentialManager.Username)
                 {
-                    userQuizzes.Add(new QuizInfo()
-                    {
-                        DBId = quiz.DBId,
-                        AuthorName = quiz.AuthorName,
-                        QuizName = quiz.QuizName,
-                        Category = quiz.Category
-                    });
+                    userQuizzes.Add(new QuizInfo(quiz));
                 }
             }
             this.AddQuizzes(userQuizzes, false);
