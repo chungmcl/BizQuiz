@@ -481,7 +481,6 @@ namespace appFBLA2019
         /// <summary>
         /// Handle event when user clicks delete quiz button.
         /// </summary>
-        /// <param name="sender"></param>
         /// <param name="e"></param>
         private async void ButtonDelete_Clicked(string deleteType, string DBId)
         {
@@ -587,8 +586,6 @@ namespace appFBLA2019
         /// <summary>
         /// Handle when user clicks edit button
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private async void ButtonEdit_Clicked(string DBId)
         {
             QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
