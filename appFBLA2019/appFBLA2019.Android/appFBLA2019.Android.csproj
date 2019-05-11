@@ -212,9 +212,6 @@
     <AndroidResource Include="Resources\drawable\DropShadow.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\DropShadowTop.png" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_arrow_drop_down_black_48dp.png" />
   </ItemGroup>
   <ItemGroup>
@@ -323,7 +320,7 @@
     <AndroidResource Include="Resources\drawable\TutQuizSelect.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\TutExplorePagepng.png" />
+    <AndroidResource Include="Resources\drawable\TutExplorePage.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\TutGame.png" />
@@ -338,7 +335,16 @@
     <AndroidResource Include="Resources\drawable\TutQuizCreator.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\BizQuizCricle.png" />
+    <AndroidResource Include="Resources\drawable\BizQuizCircle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\TutSearch.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\TutOverflowOther.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\TutOverflowOwn.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>
