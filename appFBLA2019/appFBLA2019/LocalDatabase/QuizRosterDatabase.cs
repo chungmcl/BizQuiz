@@ -259,6 +259,7 @@ namespace appFBLA2019
                             QuizName = missingQuiz[2],
                             Category = missingQuiz[3],
                             LastModifiedDate = missingQuiz[4],
+                            SubscriberCount = int.Parse(missingQuiz[5]),
                             SyncStatus = 4
                         };
                         threadInstance.Write(() =>

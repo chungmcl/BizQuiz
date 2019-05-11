@@ -15,6 +15,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using System.IO.Compression;
+using Xamarin.Essentials;
 
 [assembly: Dependency(typeof(MainActivity))]
 
@@ -48,7 +49,6 @@ namespace appFBLA2019.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
-            //Stream input = this.Assets.Open("my_asset.txt");
 
             CrossCurrentActivity.Current.Init(this, bundle);
             CrossCurrentActivity.Current.Activity = this;
@@ -162,9 +162,7 @@ namespace appFBLA2019.Droid
         {
             Android.Util.Log.Error("Crash Report", error);
         }
-
-
-
+        
         /// <summary>
         /// Copies the default levels from the assets to the user folder
         /// </summary>
@@ -192,6 +190,24 @@ namespace appFBLA2019.Droid
                     BugReportHandler.SaveReport(ex, "SetupDefaultLevels");
                 }
             }
+        }
+
+        /// <summary>
+        /// Check if an Android package is installed on the current device
+        /// </summary>
+        public bool IsPackageInstalled(string packageName)
+        {
+            bool installed = false;
+            try
+            {
+                Android.App.Application.Context.PackageManager.GetPackageInfo(packageName, PackageInfoFlags.Activities);
+                installed = true;
+            }
+            catch
+            {
+                installed = false;
+            }
+            return installed;
         }
     }
 }

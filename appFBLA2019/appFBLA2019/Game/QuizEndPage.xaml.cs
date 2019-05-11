@@ -2,11 +2,10 @@
 
 using Plugin.FacebookClient;
 using Plugin.FacebookClient.Abstractions;
-using Plugin.Share;
-using Plugin.Share.Abstractions;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Xamarin.Essentials;
 
 namespace appFBLA2019
 {
@@ -16,8 +15,26 @@ namespace appFBLA2019
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class QuizEndPage : ContentPage
     {
+        private const string twitterPackageName = "com.twitter.android";
+        private const string instagramPackageName = "com.instagram.android";
+
         private double percentScore;
         private string quizName;
+
+        private string shareText
+        {
+            get
+            {
+                string text = $"I got {this.percentScore.ToString("#.##")}% correct studying {this.quizName} on BizQuiz! " +
+                    $"Study with me and let's achieve great things in FBLA together! ";
+
+                if (CredentialManager.IsLoggedIn)
+                    text = text + $" Find on me BizQuiz @{CredentialManager.Username}";
+
+                return text;
+            }
+        }
+
         /// <summary>
         /// Constructs the page and sets the score
         /// </summary>
@@ -114,7 +131,7 @@ namespace appFBLA2019
             this.ButtonShareToFacebook.IsEnabled = false;
 
             FacebookShareLinkContent linkContent = 
-                new FacebookShareLinkContent($"I got {this.percentScore}% correct studying {this.quizName} on BizQuiz!", 
+                new FacebookShareLinkContent(this.shareText, 
                 new Uri("https://www.bizquiz.app/"));
             var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
             this.ButtonShareToFacebook.IsEnabled = true;
@@ -128,14 +145,34 @@ namespace appFBLA2019
         private async void ButtonShareToOtherMedia_Clicked(object sender, EventArgs e)
         {
             this.ButtonShareToOtherMedia.IsEnabled = false;
-            IShare shareinfo = CrossShare.Current;
-            await CrossShare.Current.Share(new ShareMessage
-            {
-                Text = $"I got { this.percentScore }% correct studying { this.quizName } on BizQuiz!",
-                Title = "Loving BizQuiz!",
-                Url = "https://www.bizquiz.app/"
-            });
+
+            ShareTextRequest request = new ShareTextRequest();
+            request.Title = $"Share to other social media platforms";
+            request.Text = this.shareText;
+            request.Uri = "https://www.bizquiz.app/";
+            await Share.RequestAsync(request);
+
             this.ButtonShareToOtherMedia.IsEnabled = true;
+        }
+
+        private async void ButtonShareToTwitter_Clicked(object sender, EventArgs e)
+        {
+            this.ButtonShareToTwitter.IsEnabled = false;
+            bool twitterInstalled = DependencyService.Get<IGetStorage>().IsPackageInstalled(twitterPackageName);
+            string shareURI = $"https://twitter.com/share?text={Uri.EscapeUriString(this.shareText)}&url=http://www.bizquiz.app&hashtags=BizQuiz";
+            if (!twitterInstalled)
+            {
+                bool result = 
+                    await DisplayAlert("Twitter not installed", "Twitter is not installed on this device. Open in browser?", "OK", "Cancel");
+
+                if (result)
+                    Device.OpenUri(new Uri(shareURI));
+            }
+            else
+            {
+                Device.OpenUri(new Uri(shareURI));
+            }
+            this.ButtonShareToTwitter.IsEnabled = true;
         }
     }
 }
