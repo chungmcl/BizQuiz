@@ -146,27 +146,42 @@ namespace appFBLA2019
                 this.SetupLocalQuizzes();
                 this.SetupNetworkQuizzes();
                 int createdCountFromServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
-                if (createdCountFromServer >= 0)
+                string frameMessage = "";
+                if (createdCountFromServer >= 0) // Returns -1 if can't connect to server
                 {
                     this.totalCount += createdCountFromServer;
                     if (this.totalCount == 0 && this.StackLayoutQuizStack.Children.Count < 1)
                     {
-                        Frame frame = new Frame()
-                        {
-                            CornerRadius = 10,
-                            HorizontalOptions = LayoutOptions.CenterAndExpand,
-                            Content = new Label
-                            {
-                                Text = "You haven't made any quizzes yet!",
-                                HorizontalTextAlignment = TextAlignment.Center,
-                                FontSize = 38
-                            }
-                        };
-                        Device.BeginInvokeOnMainThread(() =>
-                            this.StackLayoutQuizStack.Children.Add(frame));
+                        frameMessage = "You haven't made any quizzes yet!";
                     }
+                    else
+                    {
+                        Device.BeginInvokeOnMainThread(() =>
+                            this.QuizNumber.Text = "You have created a total of " + this.totalCount + " quizzes!");
+                        this.PickerCategory.IsVisible = true;
+                    }
+                }
+                else
+                {
+                    frameMessage = "Could not connect to BizQuiz servers. Please try again later.";
+                }
+
+                if (frameMessage != "")
+                {
+                    Frame frame = new Frame()
+                    {
+                        CornerRadius = 10,
+                        HorizontalOptions = LayoutOptions.CenterAndExpand,
+                        Content = new Label
+                        {
+                            Text = frameMessage,
+                            HorizontalTextAlignment = TextAlignment.Center,
+                            FontSize = 38
+                        }
+                    };
+
                     Device.BeginInvokeOnMainThread(() =>
-                        this.QuizNumber.Text = "You have created a total of " + this.totalCount + " quizzes!");
+                        this.StackLayoutQuizStack.Children.Add(frame));
                 }
             });
 
@@ -183,9 +198,6 @@ namespace appFBLA2019
             this.ActivityIndicator.IsRunning = false;
             this.ActivityIndicator.IsVisible = false;
             this.StackLayoutQuizStack.IsVisible = true;
-
-            this.PickerCategory.IsVisible = true;
-
         }
 
         /// <summary>

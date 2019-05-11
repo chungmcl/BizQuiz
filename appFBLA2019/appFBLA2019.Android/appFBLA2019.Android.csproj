@@ -182,7 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\appFBLA2019\appFBLA2019.csproj">
-      <Project>{0C1DA6A2-37C4-42EA-BDC1-153A1474F893}</Project>
+      <Project>{6083435E-05FE-4EE8-BBBA-D7A583E999F4}</Project>
       <Name>appFBLA2019</Name>
     </ProjectReference>
   </ItemGroup>
