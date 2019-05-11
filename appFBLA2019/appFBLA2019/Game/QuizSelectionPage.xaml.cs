@@ -51,6 +51,8 @@ namespace appFBLA2019
             this.category = category;
             this.IsLoading = false;
             this.isSetup = false;
+
+            this.FrameCreateNew.IsVisible = CredentialManager.IsLoggedIn;
         }
 
         /// <summary>
@@ -72,6 +74,7 @@ namespace appFBLA2019
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            this.FrameCreateNew.IsVisible = CredentialManager.IsLoggedIn;
             this.CheckSetup();
         }
 

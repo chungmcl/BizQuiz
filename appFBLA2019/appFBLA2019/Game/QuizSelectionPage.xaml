@@ -12,7 +12,7 @@
                     <!--buttons / progress cards get placed in here-->
                 </StackLayout>
             </ScrollView>
-            <Frame CornerRadius="25" Padding="0" IsClippedToBounds="False" HorizontalOptions="Center">
+            <Frame x:Name="FrameCreateNew" CornerRadius="25" Padding="0" IsClippedToBounds="False" HorizontalOptions="Center">
                     <Button x:Name="ButtonCreateQuiz" FontSize="24" TextColor="White" Text="Create new Quiz"
                             Clicked="ButtonCreateQuiz_Activated" BackgroundColor="Accent" Padding="10,0" HeightRequest="50"/>
             </Frame>
