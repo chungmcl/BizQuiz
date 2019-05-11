@@ -90,10 +90,7 @@
                                 <Label Text="If you can't find a quiz you want on the &quot;Explore&quot; tab, you can create your own quiz using the built in custom quiz creator." />
                             </Frame>
                             <Frame CornerRadius="10" Padding="0">
-                                <StackLayout HorizontalOptions="CenterAndExpand" Orientation="Horizontal" Padding="0" Spacing="0">
-                                    <Image Source="TutProfile" HeightRequest="300"/>
-                                    <Image Source="TutQuizCreator" HeightRequest="300"/>
-                                </StackLayout>
+                                <Image Source="TutQuizCreator" HeightRequest="300"/>
                             </Frame>
 
                             <Frame CornerRadius="10">
