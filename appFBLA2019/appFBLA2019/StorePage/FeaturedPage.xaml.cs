@@ -92,7 +92,7 @@ namespace appFBLA2019
                             HorizontalOptions = LayoutOptions.CenterAndExpand,
                             Content = new Label
                             {
-                                Text = "Create an account to search for and use quizzes " +
+                                Text = "Create an account to create, search for, and use quizzes " +
                                 "created by the BizQuiz community!",
                                 HorizontalTextAlignment = TextAlignment.Center,
                                 FontSize = 38
