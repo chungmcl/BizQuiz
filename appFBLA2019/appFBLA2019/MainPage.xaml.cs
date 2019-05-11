@@ -24,7 +24,7 @@ namespace appFBLA2019
         /// loads the main page and sets up the toolbars
         /// </summary>
         public MainPage()
-        {
+        {          
             this.InitializeComponent();
             // Default tabs on Android are on top - Set to bottom on Android (to serve as Navigation)
             this.On<Xamarin.Forms.PlatformConfiguration.Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
@@ -61,11 +61,11 @@ namespace appFBLA2019
         protected override async void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            if (!Xamarin.Forms.Application.Current.Properties.ContainsKey("Tutorial") || App.Current.Properties["Tutorial"] as string != "Done")
+            if (!Xamarin.Forms.Application.Current.Properties.ContainsKey("Tutorial") || (App.Current.Properties["Tutorial"] as string != "Done" && App.Current.Properties["Tutorial"] as string != "Opened"))
             {
                 Xamarin.Forms.Application.Current.Properties["Tutorial"] = "Opened";
                 await Xamarin.Forms.Application.Current.SavePropertiesAsync();
-                await this.Navigation.PushAsync(new TutorialPage(), animated: false);
+                await this.Navigation.PushAsync(new TutorialPage(true, this), animated: false);
             }
         }
 
@@ -106,16 +106,8 @@ namespace appFBLA2019
         /// <param name="e"></param>
         private async void HelpButton_Clicked(object sender, EventArgs e)
         {
-            await this.Navigation.PushModalAsync(new NavigationPage(new HelpPage()));
+            await this.Navigation.PushModalAsync(new NavigationPage(new TutorialPage(false, this)));
         }
-
-        private async void Removed_ClickedAsync(object sender, EventArgs e)
-        {
-            if (Xamarin.Forms.Application.Current.Properties.ContainsKey("Tutorial"))
-            {
-                Xamarin.Forms.Application.Current.Properties["Tutorial"] = "Reset";
-                await Xamarin.Forms.Application.Current.SavePropertiesAsync();
-            }
-        }
+        
     }
 }
