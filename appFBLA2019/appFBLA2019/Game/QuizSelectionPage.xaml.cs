@@ -639,5 +639,32 @@ namespace appFBLA2019
             this.ActivityIndicator.IsRunning = false;
             await this.StackLayoutButtonStack.FadeTo(1, 1);
         }
+
+        /// <summary>
+        /// When the user wants to create a brand new quiz
+        /// </summary>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
+        private async void ButtonCreateQuiz_Activated(object sender, EventArgs e)
+        {
+            if (CredentialManager.IsLoggedIn)
+            {
+                CreateNewQuizPage quiz = new CreateNewQuizPage();
+                await this.Navigation.PushAsync(quiz);
+            }
+            else
+            {
+                if (await this.DisplayAlert("Hold on!", "Before you can create your own custom quizzes, you have to create your own account.", "Login/Create Account", "Go Back"))
+                {
+                    ProfilePage profilePage = new ProfilePage();
+                    if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
+                    {
+                        await profilePage.UpdateProfilePageAsync();
+                    }
+                    profilePage.SetTemporary();
+                    await this.Navigation.PushAsync(profilePage);
+                }
+            }
+        }
     }
 }

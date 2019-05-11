@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.ProfilePage"
@@ -13,11 +13,6 @@
                         <Label x:Name="LabelUsername" HorizontalOptions="CenterAndExpand" VerticalOptions="StartAndExpand" FontSize="28" FontAttributes="Bold" Opacity="0"/>
                         <Label x:Name="QuizNumber" HorizontalOptions="CenterAndExpand" FontSize="18" />
                         
-                        <ActivityIndicator x:Name="ActivityIndicator" 
-                               Color="Accent" 
-                               VerticalOptions="CenterAndExpand"
-                               IsVisible="False"/>
-
                         <Picker x:Name="PickerCategory" SelectedIndex="0" Title="Filter by Category" IsVisible="False" SelectedIndexChanged="PickerCategory_SelectedIndexChanged">
                             <Picker.Items>
                                 <x:String>All</x:String>
@@ -29,6 +24,11 @@
                             </Picker.Items>
                         </Picker>
                         
+                        <ActivityIndicator x:Name="ActivityIndicator" 
+                               Color="Accent" 
+                               VerticalOptions="CenterAndExpand"
+                               IsVisible="False"/>
+                        
                         <StackLayout Padding="10" x:Name="StackLayoutQuizStack">
                             <!--Quizzes user created goes here!-->
                         </StackLayout>
@@ -36,7 +36,7 @@
                 </ScrollView>
                 <Frame CornerRadius="25" Padding="0" IsClippedToBounds="False" HorizontalOptions="Center">
                     <Button x:Name="ButtonCreateQuiz" FontSize="24" TextColor="White" Text="Create new Quiz"
-                            Clicked="New_Activated" BackgroundColor="Accent" Padding="10,0" HeightRequest="50"/>
+                            Clicked="ButtonCreateQuiz_Activated" BackgroundColor="Accent" Padding="10,0" HeightRequest="50"/>
                 </Frame>
             </StackLayout>
         </Grid>

@@ -17,12 +17,20 @@ namespace appFBLA2019
     public partial class ProfilePage : ContentPage
     {
         /// <summary>
-        /// If the profilepage is currently loading
+        /// Gets a value indicating whether this <see cref="T:appFBLA2019.ProfilePage"/> is loading.
         /// </summary>
+        /// <value><c>true</c> if is loading; otherwise, <c>false</c>.</value>
         public bool IsLoading { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="T:appFBLA2019.ProfilePage"/> is loading QuizStack.
+        /// </summary>
+        /// <value><c>true</c> if is content loading; otherwise, <c>false</c>.</value>
+        private bool IsContentLoading { get; set; }
+
         /// <summary>
         /// If the page is currently showing the login page
-        /// </summary>
+        /// </summary> 
         public bool IsOnLoginPage { get; private set; }
         /// <summary>
         /// the page that contains the account settings
@@ -65,7 +73,7 @@ namespace appFBLA2019
         /// </summary>
         /// <param name="sender">  </param>
         /// <param name="e">       </param>
-        private async void New_Activated(object sender, EventArgs e)
+        private async void ButtonCreateQuiz_Activated(object sender, EventArgs e)
         {
             if (CredentialManager.IsLoggedIn)
             {
@@ -113,7 +121,7 @@ namespace appFBLA2019
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             if (this.StackLayoutProfilePageContent.IsVisible)
             {
-                await this.UpdateProfileContentAsync();
+                await this.UpdateProfileContentAsync("All");
             }
             else
             {
@@ -133,71 +141,85 @@ namespace appFBLA2019
         /// Loads the profile content if the user is logged in.
         /// </summary>
         /// <returns> </returns>
-        private async Task UpdateProfileContentAsync()
+        private async Task UpdateProfileContentAsync(string category)
         {
-            this.PickerCategory.IsVisible = false;
-            this.StackLayoutQuizStack.IsVisible = false;
-            this.ActivityIndicator.IsVisible = true;
-            this.ActivityIndicator.IsRunning = true;
-
-            await Task.Run(() =>
+            if (!this.IsContentLoading)
             {
-                this.totalCount = 0;
-                this.SetupLocalQuizzes();
-                this.SetupNetworkQuizzes();
-                int createdCountFromServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
-                string frameMessage = "";
-                if (createdCountFromServer >= 0) // Returns -1 if can't connect to server
+                this.IsContentLoading = true;
+                this.PickerCategory.IsEnabled = false;
+                this.StackLayoutQuizStack.Children.Clear();
+                this.StackLayoutQuizStack.IsEnabled = false;
+                this.ActivityIndicator.IsVisible = true;
+                this.ActivityIndicator.IsRunning = true;
+
+                await Task.Run(() =>
                 {
-                    this.totalCount += createdCountFromServer;
-                    if (this.totalCount == 0 && this.StackLayoutQuizStack.Children.Count < 1)
+                    this.totalCount = 0;
+                    this.SetupLocalQuizzes(category);
+                    this.SetupNetworkQuizzes(category);
+                    int createdCountFromServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
+                    string frameMessage = "";
+                    if (createdCountFromServer >= 0) // Returns -1 if can't connect to server
                     {
-                        frameMessage = "You haven't made any quizzes yet!";
+                        this.totalCount += createdCountFromServer;
+                        if (this.totalCount == 0 && this.StackLayoutQuizStack.Children.Count < 1)
+                        {
+                            frameMessage = "You haven't made any quizzes yet!";
+                        }
+                        else
+                        {
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                this.QuizNumber.Text = "You have created a total of " + this.totalCount + " quizzes!";
+                                this.PickerCategory.IsVisible = true;
+                                this.PickerCategory.IsEnabled = true;
+                            });
+                        }
                     }
                     else
                     {
+                        frameMessage = "Could not connect to BizQuiz servers. Please try again later.";
                         Device.BeginInvokeOnMainThread(() =>
-                            this.QuizNumber.Text = "You have created a total of " + this.totalCount + " quizzes!");
-                        this.PickerCategory.IsVisible = true;
-                    }
-                }
-                else
-                {
-                    frameMessage = "Could not connect to BizQuiz servers. Please try again later.";
-                }
-
-                if (frameMessage != "")
-                {
-                    Frame frame = new Frame()
-                    {
-                        CornerRadius = 10,
-                        HorizontalOptions = LayoutOptions.CenterAndExpand,
-                        Content = new Label
                         {
-                            Text = frameMessage,
-                            HorizontalTextAlignment = TextAlignment.Center,
-                            FontSize = 38
-                        }
-                    };
+                            this.PickerCategory.IsVisible = true;
+                            this.PickerCategory.IsEnabled = true;
+                        });
+                    }
 
-                    Device.BeginInvokeOnMainThread(() =>
-                        this.StackLayoutQuizStack.Children.Add(frame));
+                    if (frameMessage != "")
+                    {
+                        Frame frame = new Frame()
+                        {
+                            CornerRadius = 10,
+                            HorizontalOptions = LayoutOptions.CenterAndExpand,
+                            Content = new Label
+                            {
+                                Text = frameMessage,
+                                HorizontalTextAlignment = TextAlignment.Center,
+                                FontSize = 38
+                            }
+                        };
+
+                        Device.BeginInvokeOnMainThread(() =>
+                            this.StackLayoutQuizStack.Children.Add(frame));
+                    }
+                });
+
+                if (this.ToolbarItems.Count <= 0)
+                {
+                    ToolbarItem accountSettingsButton = new ToolbarItem();
+                    accountSettingsButton.Clicked += this.ToolbarItemAccountSettings_Clicked;
+                    accountSettingsButton.Icon = ImageSource.FromFile("ic_settings_white_48dp.png") as FileImageSource;
+                    this.ToolbarItems.Add(accountSettingsButton);
                 }
-            });
 
-            if (this.ToolbarItems.Count <= 0)
-            {
-                ToolbarItem accountSettingsButton = new ToolbarItem();
-                accountSettingsButton.Clicked += this.ToolbarItemAccountSettings_Clicked;
-                accountSettingsButton.Icon = ImageSource.FromFile("ic_settings_white_48dp.png") as FileImageSource;
-                this.ToolbarItems.Add(accountSettingsButton);
+                this.IsOnLoginPage = false;
+                this.totalCount = 0;
+                this.ActivityIndicator.IsRunning = false;
+                this.ActivityIndicator.IsVisible = false;
+                this.StackLayoutQuizStack.IsEnabled = true;
+                this.IsContentLoading = false;
             }
-
-            this.IsOnLoginPage = false;
-            this.totalCount = 0;
-            this.ActivityIndicator.IsRunning = false;
-            this.ActivityIndicator.IsVisible = false;
-            this.StackLayoutQuizStack.IsVisible = true;
         }
 
         /// <summary>
@@ -491,7 +513,8 @@ namespace appFBLA2019
             }
             indicatorSyncing.IsRunning = false;
             // this.serverConnected = false;
-            await this.UpdateProfileContentAsync();
+            await this.UpdateProfileContentAsync(
+                this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
         }
 
         /// <summary>
@@ -535,20 +558,18 @@ namespace appFBLA2019
 
             if (action == deleteText)
             {
-                this.ButtonDelete_Clicked(DBId);
+                await this.ButtonDelete_Clicked(DBId);
             }
             else if (action == "Edit")
             {
-                this.ButtonEdit_Clicked(DBId);
+                await this.ButtonEdit_Clicked(DBId);
             }
         }
 
         /// <summary>
         /// Handle when user clicks edit button
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void ButtonEdit_Clicked(string DBId)
+        private async Task ButtonEdit_Clicked(string DBId)
         {
             QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
             if (!CredentialManager.IsLoggedIn)
@@ -587,8 +608,15 @@ namespace appFBLA2019
             {
                 try
                 {
-                    this.currentChunk++;
-                    await Task.Run(() => this.SetupNetworkQuizzes());
+                    if (this.PickerCategory.SelectedIndex >= 0)
+                    {
+                        this.currentChunk++;
+
+                        string category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex];
+
+                        await Task.Run(() =>
+                            this.SetupNetworkQuizzes(category));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -601,13 +629,19 @@ namespace appFBLA2019
         /// <summary>
         /// Sets up the local quizzes owned by this user as cards
         /// </summary>
-        private void SetupLocalQuizzes()
+        private void SetupLocalQuizzes(string category)
         {
             List<QuizInfo> quizzes = QuizRosterDatabase.GetRoster();
             List<QuizInfo> userQuizzes = new List<QuizInfo>();
             foreach (QuizInfo quiz in quizzes)
             {
-                if (quiz.AuthorName == CredentialManager.Username)
+                if ((quiz.AuthorName == CredentialManager.Username 
+                    && quiz.Category == category)
+
+                    ||
+
+                    (quiz.AuthorName == CredentialManager.Username
+                    && category == "All"))
                 {
                     userQuizzes.Add(new QuizInfo(quiz));
                 }
@@ -624,14 +658,16 @@ namespace appFBLA2019
         /// <summary>
         /// Sets up the network quizzes owned by this user as cards
         /// </summary>
-        private void SetupNetworkQuizzes()
+        private void SetupNetworkQuizzes(string category)
         {
             List<QuizInfo> chunk = SearchUtils.GetQuizzesByAuthorChunked(CredentialManager.Username, this.currentChunk);
             if (chunk.Count == 0)
             {
                 return;
             }
-            this.AddQuizzes(chunk, true);
+            this.AddQuizzes(
+                chunk.Where(quizInfo => 
+                    (quizInfo.Category == category) || (category == "All")).ToList(), true);
         }
 
         /// <summary>
@@ -661,9 +697,7 @@ namespace appFBLA2019
         /// <summary>
         /// Deletes the quiz from the roster 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void ButtonDelete_Clicked(string DBId)
+        private async Task ButtonDelete_Clicked(string DBId)
         {
             bool answer = await this.DisplayAlert("Are you sure you want to delete this quiz?", "This will delete the copy on your device and in the cloud. This is not reversable.", "Yes", "No");
             if (answer)
@@ -718,13 +752,18 @@ namespace appFBLA2019
             }
             await this.Navigation.PushAsync(this.accountSettingsPage);
         }
-
+        /// <summary>
+        /// Update the page to show only quizzes of a particular category when the user changes the category from the picker.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedIndex = (sender as Picker).SelectedIndex;
             if (selectedIndex >= 0)
             {
                 string category = this.PickerCategory.Items[selectedIndex];
+                await UpdateProfileContentAsync(category);
             }
         }
 

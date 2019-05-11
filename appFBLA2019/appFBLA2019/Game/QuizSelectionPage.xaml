@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="appFBLA2019.QuizSelectionPage"
@@ -7,11 +7,15 @@
     <ContentPage.Content>
         <StackLayout x:Name="StackLayoutGlobalStack">
             <ActivityIndicator x:Name="ActivityIndicator" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" IsVisible="False" />
-            <ScrollView>
+            <ScrollView VerticalOptions="FillAndExpand">
                 <StackLayout x:Name="StackLayoutButtonStack" Padding="10">
                     <!--buttons / progress cards get placed in here-->
                 </StackLayout>
             </ScrollView>
+            <Frame CornerRadius="25" Padding="0" IsClippedToBounds="False" HorizontalOptions="Center">
+                    <Button x:Name="ButtonCreateQuiz" FontSize="24" TextColor="White" Text="Create new Quiz"
+                            Clicked="ButtonCreateQuiz_Activated" BackgroundColor="Accent" Padding="10,0" HeightRequest="50"/>
+            </Frame>
         </StackLayout>
     </ContentPage.Content>
     <ContentPage.ToolbarItems>
