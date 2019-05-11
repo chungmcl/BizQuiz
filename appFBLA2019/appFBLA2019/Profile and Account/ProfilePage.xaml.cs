@@ -481,11 +481,19 @@ namespace appFBLA2019
         {
             // this.serverConnected = true;
             ImageButton button = sender as ImageButton;
+            string dbId = button.ClassId;
+            QuizInfo quizInfo = QuizRosterDatabase.GetQuizInfo(dbId);
 
-            string dbId = button.ClassId.Split('/')[0];
-            string authorName = button.ClassId.Split('/')[1];
-            string quizName = button.ClassId.Split('/')[2];
-            string category = button.ClassId.Split('/')[3];
+            // DOES THIS WORK?
+            while (quizInfo == null && Plugin.Connectivity.CrossConnectivity.Current.IsConnected)
+            {
+                await QuizRosterDatabase.UpdateLocalDatabaseAsync();
+                quizInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+            }
+            
+            string authorName = quizInfo.AuthorName;
+            string quizName = quizInfo.QuizName;
+            string category = quizInfo.Category;
 
             ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
             string quizPath = button.ClassId;
