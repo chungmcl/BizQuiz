@@ -2,14 +2,10 @@
 
 using Plugin.FacebookClient;
 using Plugin.FacebookClient.Abstractions;
-using Plugin.Share;
-using Plugin.Share.Abstractions;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xamarin.Essentials;
-using Xamarin.Social;
-using Xamarin.Social.Services;
 
 namespace appFBLA2019
 {
