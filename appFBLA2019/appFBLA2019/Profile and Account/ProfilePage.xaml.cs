@@ -57,6 +57,7 @@ namespace appFBLA2019
         {
             base.OnDisappearing();
             this.LabelUsername.FadeTo(0, 500, Easing.CubicInOut);
+            this.PickerCategory.IsVisible = false;
         }
 
         /// <summary>
@@ -134,6 +135,7 @@ namespace appFBLA2019
         /// <returns> </returns>
         private async Task UpdateProfileContentAsync()
         {
+            this.PickerCategory.IsVisible = false;
             this.StackLayoutQuizStack.IsVisible = false;
             this.ActivityIndicator.IsVisible = true;
             this.ActivityIndicator.IsRunning = true;
@@ -181,6 +183,9 @@ namespace appFBLA2019
             this.ActivityIndicator.IsRunning = false;
             this.ActivityIndicator.IsVisible = false;
             this.StackLayoutQuizStack.IsVisible = true;
+
+            this.PickerCategory.IsVisible = true;
+
         }
 
         /// <summary>
@@ -700,6 +705,15 @@ namespace appFBLA2019
                 this.accountSettingsPage.SignedOut += this.LocalLoginPage.OnSignout;
             }
             await this.Navigation.PushAsync(this.accountSettingsPage);
+        }
+
+        private async void PickerCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selectedIndex = (sender as Picker).SelectedIndex;
+            if (selectedIndex >= 0)
+            {
+                string category = this.PickerCategory.Items[selectedIndex];
+            }
         }
 
         /// <summary>
