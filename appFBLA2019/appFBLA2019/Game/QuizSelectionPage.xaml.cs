@@ -323,26 +323,27 @@ namespace appFBLA2019
             // The sync button thats active in the current frame
             ImageButton activeSync;
 
-            if (quizInfo.SyncStatus == 3) // SyncOffline
+            if (quizInfo.SyncStatus == (int)SyncStatusEnum.Offline) // SyncOffline
             {
                 SyncOffline.IsVisible = true;
                 activeSync = SyncOffline;
             }
-            else if (quizInfo.SyncStatus == 2) // SyncNoChange
+            else if (quizInfo.SyncStatus == (int)SyncStatusEnum.Synced) // SyncNoChange
             {
                 SyncNoChange.IsVisible = true;
                 activeSync = SyncNoChange;
             }
-            else if (quizInfo.SyncStatus == 1 && quizInfo.AuthorName == CredentialManager.Username) // SyncUpload
+            else if (quizInfo.SyncStatus == (int)SyncStatusEnum.NeedUpload && quizInfo.AuthorName == CredentialManager.Username) // SyncUpload
             {
                 SyncUpload.IsVisible = true;
                 activeSync = SyncUpload;
             }
-            else if (quizInfo.SyncStatus == 0 || quizInfo.SyncStatus == 4) // SyncDownload
+            else if (quizInfo.SyncStatus == (int)SyncStatusEnum.NeedDownload || 
+                quizInfo.SyncStatus == (int)SyncStatusEnum.NotDownloadedAndNeedDownload) // SyncDownload
             {
                 SyncDownload.IsVisible = true;
                 activeSync = SyncDownload;
-                if (quizInfo.SyncStatus == 4) // Sync Download & notLocal yet
+                if (quizInfo.SyncStatus == (int)SyncStatusEnum.NotDownloadedAndNeedDownload) // Sync Download & notLocal yet
                 {
                     frame.StyleId = "notLocal";
                 }
@@ -395,14 +396,14 @@ namespace appFBLA2019
         {
             this.serverConnected = true;
             ImageButton button = (sender as ImageButton);
-            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)UISyncStatus.Syncing] as ActivityIndicator;
             string quizPath = "/" + button.StyleId + "/" + button.ClassId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
             if (await Task.Run(async () => await ServerOperations.SendQuiz(quizPath)))
             {
-                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)UISyncStatus.NoChange] as ImageButton;
                 indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
             }
@@ -433,14 +434,14 @@ namespace appFBLA2019
             string quizName = button.ClassId.Split('/')[2];
             string category = button.ClassId.Split('/')[3];
 
-            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)UISyncStatus.Syncing] as ActivityIndicator;
             string quizPath = button.ClassId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
             if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
             {
-                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)UISyncStatus.NoChange] as ImageButton;
                 indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
 
@@ -594,7 +595,7 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Hold on!", "Before you can edit any quizzes, you have to login.", "Ok");
             }
-            else if (info.SyncStatus == 4)
+            else if (info.SyncStatus == (int)SyncStatusEnum.NotDownloadedAndNeedDownload)
             {
                 await this.DisplayAlert("Hold on!", "This quiz isn't on your device, download it before you try to edit it", "Ok");
             }

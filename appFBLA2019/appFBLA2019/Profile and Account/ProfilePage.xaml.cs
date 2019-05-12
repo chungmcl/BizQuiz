@@ -1,4 +1,5 @@
 ﻿//BizQuiz App 2019
+using Plugin.Connectivity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +30,10 @@ namespace appFBLA2019
         /// If the page is currently showing the login page
         /// </summary> 
         public bool IsOnLoginPage { get; private set; }
+
+        private string SelectedCategory
+            { get { return this.PickerCategory.Items[this.PickerCategory.SelectedIndex]; } }
+
         /// <summary>
         /// the page that contains the account settings
         /// </summary>
@@ -37,11 +42,6 @@ namespace appFBLA2019
         /// used for downloading levels from the server in chunks
         /// </summary>
         private int currentChunk = 1;
-
-        /// <summary>
-        /// total levels owned by the user
-        /// </summary>
-        private int totalCount = 0;
 
         /// <summary>
         /// Default constructor
@@ -123,7 +123,10 @@ namespace appFBLA2019
             await this.LabelUsername.FadeTo(1, 500, Easing.CubicInOut);
             if (this.StackLayoutProfilePageContent.IsVisible)
             {
-                await this.UpdateProfileContentAsync("All");
+                if (this.PickerCategory.SelectedIndex < 0)
+                    await this.UpdateProfileContentAsync("All");
+                else
+                    await this.UpdateProfileContentAsync(this.SelectedCategory);
             }
             else
             {
@@ -148,6 +151,8 @@ namespace appFBLA2019
             if (!this.IsContentLoading)
             {
                 this.IsContentLoading = true;
+                this.QuizNumber.IsVisible = true;
+                this.PickerCategory.IsVisible = false;
                 this.PickerCategory.IsEnabled = false;
                 this.StackLayoutQuizStack.Children.Clear();
                 this.StackLayoutQuizStack.IsEnabled = false;
@@ -156,22 +161,28 @@ namespace appFBLA2019
 
                 await Task.Run(async() =>
                 {
-                    this.totalCount = 0;
                     await this.SetupQuizzes(category);
                     int createdCountFromServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
                     string frameMessage = "";
                     if (createdCountFromServer >= 0) // Returns -1 if can't connect to server
                     {
-                        this.totalCount += createdCountFromServer;
-                        if (this.totalCount == 0 && this.StackLayoutQuizStack.Children.Count < 1)
+                        if (createdCountFromServer == 0 && 
+                            QuizRosterDatabase.GetRoster()
+                            .Where(quizInfo => quizInfo.AuthorName == CredentialManager.Username)
+                                .Count() == 0)
                         {
                             frameMessage = "You haven't made any quizzes yet!";
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                this.PickerCategory.IsVisible = false;
+                                this.QuizNumber.IsVisible = false;
+                            });
                         }
                         else
                         {
                             Device.BeginInvokeOnMainThread(() =>
                             {
-                                this.QuizNumber.Text = "You have created a total of " + this.totalCount + " quizzes!";
+                                this.QuizNumber.Text = "You have published a total of " + createdCountFromServer + " quizzes!";
                                 this.PickerCategory.IsVisible = true;
                                 this.PickerCategory.IsEnabled = true;
                             });
@@ -215,7 +226,6 @@ namespace appFBLA2019
                 }
 
                 this.IsOnLoginPage = false;
-                this.totalCount = 0;
                 this.ActivityIndicator.IsRunning = false;
                 this.ActivityIndicator.IsVisible = false;
                 this.StackLayoutQuizStack.IsEnabled = true;
@@ -236,6 +246,8 @@ namespace appFBLA2019
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 CornerRadius = 10
             };
+
+            frame.ClassId = quizInfo.DBId;
 
             StackLayout frameStack = new StackLayout // 1st Child of frameLayout
             {
@@ -381,26 +393,27 @@ namespace appFBLA2019
             // The sync button thats active in the current frame
             ImageButton activeSync;
 
-            if (quizInfo.SyncStatus == 3) // SyncOffline
+            if (quizInfo.SyncStatus == (int)SyncStatusEnum.Offline) // SyncOffline
             {
                 SyncOffline.IsVisible = true;
                 activeSync = SyncOffline;
             }
-            else if (quizInfo.SyncStatus == 2) // SyncNoChange
+            else if (quizInfo.SyncStatus == (int)SyncStatusEnum.Synced) // SyncNoChange
             {
                 SyncNoChange.IsVisible = true;
                 activeSync = SyncNoChange;
             }
-            else if (quizInfo.SyncStatus == 1 && quizInfo.AuthorName == CredentialManager.Username) // SyncUpload
+            else if (quizInfo.SyncStatus == (int)SyncStatusEnum.NeedUpload && quizInfo.AuthorName == CredentialManager.Username) // SyncUpload
             {
                 SyncUpload.IsVisible = true;
                 activeSync = SyncUpload;
             }
-            else if (quizInfo.SyncStatus == 0 || quizInfo.SyncStatus == 4) // SyncDownload
+            else if (quizInfo.SyncStatus == (int)SyncStatusEnum.NeedDownload || 
+                quizInfo.SyncStatus == (int)SyncStatusEnum.NotDownloadedAndNeedDownload) // SyncDownload
             {
                 SyncDownload.IsVisible = true;
                 activeSync = SyncDownload;
-                if (quizInfo.SyncStatus == 4) // Sync Download & notLocal yet
+                if (quizInfo.SyncStatus == (int)SyncStatusEnum.NotDownloadedAndNeedDownload) // Sync Download & notLocal yet
                 {
                     frame.StyleId = "notLocal";
                 }
@@ -423,8 +436,7 @@ namespace appFBLA2019
                     activeSync.BackgroundColor = Color.LightGray;
 
                     // Load the quiz associated with this DBId
-                    Quiz newQuiz = new Quiz(quizInfo.DBId);
-                    //await this.RemoveMenu(frameMenu);
+                    Quiz newQuiz = new Quiz(frame.ClassId);
                     await this.Navigation.PushAsync(new Game(newQuiz));
                     frame.BackgroundColor = Color.Default;
                     Seperator.Color = Color.LightGray;
@@ -451,16 +463,15 @@ namespace appFBLA2019
         /// <param name="e">       </param>
         private async void SyncUpload_Clicked(object sender, EventArgs e)
         {
-            // this.serverConnected = true;
             ImageButton button = (sender as ImageButton);
-            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)UISyncStatus.Syncing] as ActivityIndicator;
             string quizPath = "/" + button.StyleId + "/" + button.ClassId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
             if (await Task.Run(async () => await ServerOperations.SendQuiz(quizPath)))
             {
-                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)UISyncStatus.NoChange] as ImageButton;
                 indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
             }
@@ -473,7 +484,10 @@ namespace appFBLA2019
                     "OK");
             }
             indicatorSyncing.IsRunning = false;
-            // this.serverConnected = false;
+            this.QuizNumber.Text = 
+                "You have published a total of " + 
+                await Task.Run(() => ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username)) + 
+                " quizzes!";
         }
 
         /// <summary>
@@ -499,14 +513,14 @@ namespace appFBLA2019
             string quizName = quizInfo.QuizName;
             string category = quizInfo.Category;
 
-            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)UISyncStatus.Syncing] as ActivityIndicator;
             string quizPath = button.ClassId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
             if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
             {
-                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)UISyncStatus.NoChange] as ImageButton;
                 indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
 
@@ -585,7 +599,7 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Hold on!", "Before you can edit any quizzes, you have to login.", "Ok");
             }
-            else if (info.SyncStatus == 4)
+            else if (info.SyncStatus == (int)SyncStatusEnum.NotDownloadedAndNeedDownload)
             {
                 await this.DisplayAlert("Hold on!", "This quiz isn't on your device, download it before you try to edit it", "Ok");
             }
@@ -652,14 +666,13 @@ namespace appFBLA2019
                     quizInfo =>
                         (quizInfo.AuthorName == CredentialManager.Username 
                         &&
-                        (quizInfo.Category == category || quizInfo.Category == "All"))).
+                        (quizInfo.Category == category || category == "All"))).
 
                 OrderBy(quizInfo => quizInfo.SubscriberCount).
 
                 Take(20 * this.currentChunk).ToList();
 
             this.AddQuizzes(quizzes, false);
-            this.totalCount += quizzes.Count;
         }
 
         /// <summary>
@@ -686,18 +699,10 @@ namespace appFBLA2019
         {
             foreach (QuizInfo quiz in quizzes)
             {
-                //if its not already stored locally (only applies to network quizzess)
-                if (isNetworkQuiz && QuizRosterDatabase.GetQuizInfo(quiz.DBId) != null)
-                {
-                    this.totalCount--;
-                }
-                else
-                {
-                    Frame frame = GenerateFrame(quiz);
+                Frame frame = GenerateFrame(quiz);
 
-                    Device.BeginInvokeOnMainThread(() =>
-                    this.StackLayoutQuizStack.Children.Add(frame));
-                }
+                Device.BeginInvokeOnMainThread(() =>
+                this.StackLayoutQuizStack.Children.Add(frame));
             }
         }
 
@@ -733,6 +738,11 @@ namespace appFBLA2019
 
                     if (System.IO.Directory.Exists(path))
                         Directory.Delete(path, true);
+
+                    this.QuizNumber.Text =
+                    "You have published a total of " +
+                    await Task.Run(() => ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username)) +
+                    " quizzes!";
                 }
                 else
                 {

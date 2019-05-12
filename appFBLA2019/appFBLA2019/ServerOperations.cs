@@ -270,7 +270,7 @@ namespace appFBLA2019
                 {
                     QuizInfo infoCopy = new QuizInfo(info)
                     {
-                        SyncStatus = 2
+                        SyncStatus = (int)SyncStatusEnum.Synced
                     };
                     QuizRosterDatabase.EditQuizInfo(infoCopy);
                     return true;
@@ -351,7 +351,7 @@ namespace appFBLA2019
 
             QuizInfo infoCopy = new QuizInfo(QuizRosterDatabase.GetQuizInfo(dBId))
             {
-                SyncStatus = 2,
+                SyncStatus = (int)SyncStatusEnum.Synced,
                 QuizName = newQuizName,
                 Category = newCategory,
                 LastModifiedDate = newLastModfiedDate
