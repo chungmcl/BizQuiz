@@ -56,6 +56,7 @@ namespace appFBLA2019
             {
                 realmDB.Add(editedQuizInfo, update: true);
             });
+            realmDB.Dispose();
         }
 
         /// <summary>
@@ -179,7 +180,11 @@ namespace appFBLA2019
                             if (QuizInfos[i].IsDeletedLocally)
                             {
                                 if (await ServerOperations.DeleteQuiz(QuizInfos[i].DBId) == OperationReturnMessage.True)
-                                    DeleteQuizInfo(QuizInfos[i].DBId);
+                                {
+                                    string toDeleteDBId = QuizInfos[i].DBId;
+                                    QuizInfos.Remove(QuizInfos[i]);
+                                    DeleteQuizInfo(toDeleteDBId);
+                                }
                             }
                             else if (QuizInfos[i].SyncStatus != (int)SyncStatusEnum.NotDownloadedAndNeedDownload)
                             {
