@@ -39,6 +39,11 @@ namespace appFBLA2019
         private int currentChunk = 1;
 
         /// <summary>
+        /// total levels owned by the user
+        /// </summary>
+        private int totalCount = 0;
+
+        /// <summary>
         /// Default constructor
         /// </summary>
         public ProfilePage()
@@ -149,11 +154,10 @@ namespace appFBLA2019
                 this.ActivityIndicator.IsVisible = true;
                 this.ActivityIndicator.IsRunning = true;
 
-                await Task.Run(() =>
+                await Task.Run(async() =>
                 {
                     this.totalCount = 0;
-                    this.SetupLocalQuizzes(category);
-                    this.SetupNetworkQuizzes(category);
+                    await this.SetupQuizzes(category);
                     int createdCountFromServer = ServerOperations.GetNumberOfQuizzesByAuthorName(CredentialManager.Username);
                     string frameMessage = "";
                     if (createdCountFromServer >= 0) // Returns -1 if can't connect to server
@@ -632,33 +636,31 @@ namespace appFBLA2019
         }
 
         /// <summary>
-        /// Sets up the local quizzes owned by this user as cards
+        /// Sets up the quizzes owned by this user as cards
         /// </summary>
-        private void SetupLocalQuizzes(string category)
+        private async Task SetupQuizzes(string category)
         {
-            List<QuizInfo> quizzes = QuizRosterDatabase.GetRoster();
-            List<QuizInfo> userQuizzes = new List<QuizInfo>();
-            foreach (QuizInfo quiz in quizzes)
-            {
-                if ((quiz.AuthorName == CredentialManager.Username 
-                    && quiz.Category == category)
+            await QuizRosterDatabase.UpdateLocalDatabaseAsync();
 
-                    ||
+            // A single LINQ statement to get all quizzes by the current
+            // user that is logged in, and of the specified category,
+            // taking the top 20 of the current chunk ordered by
+            // the subscriber count of the quizzes
+            List<QuizInfo> quizzes =
+                QuizRosterDatabase.GetRoster().
+                Where(
+                    quizInfo =>
+                        (quizInfo.AuthorName == CredentialManager.Username 
+                        &&
+                        (quizInfo.Category == category || quizInfo.Category == "All"))).
 
-                    (quiz.AuthorName == CredentialManager.Username
-                    && category == "All"))
-                {
-                    userQuizzes.Add(new QuizInfo(quiz));
-                }
-            }
-            this.AddQuizzes(userQuizzes, false);
-            this.totalCount += userQuizzes.Count;
+                OrderBy(quizInfo => quizInfo.SubscriberCount).
+
+                Take(20 * this.currentChunk).ToList();
+
+            this.AddQuizzes(quizzes, false);
+            this.totalCount += quizzes.Count;
         }
-
-        /// <summary>
-        /// total levels owned by the user
-        /// </summary>
-        private int totalCount = 0;
 
         /// <summary>
         /// Sets up the network quizzes owned by this user as cards
