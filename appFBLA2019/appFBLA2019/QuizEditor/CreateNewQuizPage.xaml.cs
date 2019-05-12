@@ -24,10 +24,12 @@ namespace appFBLA2019
         /// the original author of the quiz (if being edited)
         /// </summary>
         private string originalAuthor;
+
         /// <summary>
         /// the original name of the quiz (if being edited)
         /// </summary>
         private string originalName;
+
         /// <summary>
         /// the original category of the quiz (if being edited)
         /// </summary>
@@ -405,7 +407,8 @@ namespace appFBLA2019
                     QuizInfo updatedQuizInfo = new QuizInfo(database.QuizInfo)
                     {
                         QuizName = this.EditorQuizName.Text?.Trim(),
-                        LastModifiedDate = DateTime.Now.ToString()
+                        LastModifiedDate = DateTime.Now.ToString(),
+                        Category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex]
                     };
                     database.EditQuizInfo(updatedQuizInfo);
 
