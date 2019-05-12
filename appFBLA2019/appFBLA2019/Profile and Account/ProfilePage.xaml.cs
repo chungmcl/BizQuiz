@@ -32,7 +32,16 @@ namespace appFBLA2019
         public bool IsOnLoginPage { get; private set; }
 
         private string SelectedCategory
-            { get { return this.PickerCategory.Items[this.PickerCategory.SelectedIndex]; } }
+        {
+            get
+            {
+                int selectedIndex = this.PickerCategory.SelectedIndex;
+                if (selectedIndex < 0)
+                    return "All";
+
+                return this.PickerCategory.Items[selectedIndex];
+            }
+        }
 
         /// <summary>
         /// the page that contains the account settings
@@ -166,10 +175,9 @@ namespace appFBLA2019
                     string frameMessage = "";
                     if (createdCountFromServer >= 0) // Returns -1 if can't connect to server
                     {
-                        if (createdCountFromServer == 0 && 
-                            QuizRosterDatabase.GetRoster()
-                            .Where(quizInfo => quizInfo.AuthorName == CredentialManager.Username)
-                                .Count() == 0)
+                        if (createdCountFromServer == 0 &&
+                                !QuizRosterDatabase.GetRoster()
+                                    .Any(quizInfo => quizInfo.AuthorName == CredentialManager.Username))
                         {
                             frameMessage = "You haven't made any quizzes yet!";
                             Device.BeginInvokeOnMainThread(() =>
@@ -535,9 +543,8 @@ namespace appFBLA2019
                     "OK");
             }
             indicatorSyncing.IsRunning = false;
-            // this.serverConnected = false;
             await this.UpdateProfileContentAsync(
-                this.PickerCategory.Items[this.PickerCategory.SelectedIndex]);
+                this.SelectedCategory);
         }
 
         /// <summary>
@@ -660,8 +667,9 @@ namespace appFBLA2019
             // user that is logged in, and of the specified category,
             // taking the top 20 of the current chunk ordered by
             // the subscriber count of the quizzes
+            List<QuizInfo> rosterCopy = QuizRosterDatabase.GetRoster();
             List<QuizInfo> quizzes =
-                QuizRosterDatabase.GetRoster().
+                rosterCopy.
                 Where(
                     quizInfo =>
                         (quizInfo.AuthorName == CredentialManager.Username 
