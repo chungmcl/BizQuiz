@@ -411,9 +411,12 @@ namespace appFBLA2019
                         Category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex]
                     };
                     database.EditQuizInfo(updatedQuizInfo);
-                    Directory.CreateDirectory(updatedQuizInfo.RelativePath);
-                    Directory.Delete(updatedQuizInfo.RelativePath, true);
-                    Directory.Move(currentDirectory, updatedQuizInfo.RelativePath);
+                    if (currentDirectory != updatedQuizInfo.RelativePath)
+                    {
+                        Directory.CreateDirectory(updatedQuizInfo.RelativePath);
+                        Directory.Delete(updatedQuizInfo.RelativePath, true);
+                        Directory.Move(currentDirectory, updatedQuizInfo.RelativePath);
+                    }
 
                     // Logic for how to save each question.
                     for (int i = 0; i <= previousQuestions.Count() - 1; i++)

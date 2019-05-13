@@ -327,7 +327,7 @@ namespace appFBLA2019
             string newCategory = info.Category;
             string newLastModfiedDate = info.LastModifiedDate;
 
-            string quizPath = App.UserPath + $"/{newCategory}/{info.DBId}/";
+            string quizPath = info.RelativePath;
             string realmFilePath = quizPath + "/" + info.DBId + realmFileExtension;
             Directory.CreateDirectory(quizPath);
 
