@@ -526,7 +526,7 @@ namespace appFBLA2019
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
-            if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
+            if (await Task.Run(() => ServerOperations.GetQuiz(dbId, category)))
             {
                 ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)UISyncStatus.NoChange] as ImageButton;
                 indicatorSyncing.IsVisible = false;

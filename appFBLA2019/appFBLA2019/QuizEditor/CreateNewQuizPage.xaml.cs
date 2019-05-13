@@ -403,7 +403,7 @@ namespace appFBLA2019
                 }
                 else // edit
                 {
-                    
+                    string currentDirectory = database.DBFolderPath;
                     QuizInfo updatedQuizInfo = new QuizInfo(database.QuizInfo)
                     {
                         QuizName = this.EditorQuizName.Text?.Trim(),
@@ -411,6 +411,9 @@ namespace appFBLA2019
                         Category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex]
                     };
                     database.EditQuizInfo(updatedQuizInfo);
+                    Directory.CreateDirectory(updatedQuizInfo.RelativePath);
+                    Directory.Delete(updatedQuizInfo.RelativePath, true);
+                    Directory.Move(currentDirectory, updatedQuizInfo.RelativePath);
 
                     // Logic for how to save each question.
                     for (int i = 0; i <= previousQuestions.Count() - 1; i++)

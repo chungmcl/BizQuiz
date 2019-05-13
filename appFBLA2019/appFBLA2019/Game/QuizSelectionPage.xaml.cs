@@ -429,17 +429,18 @@ namespace appFBLA2019
             this.serverConnected = true;
             ImageButton button = sender as ImageButton;
 
-            string dbId = button.ClassId.Split('/')[0];
-            string authorName = button.ClassId.Split('/')[1];
-            string quizName = button.ClassId.Split('/')[2];
-            string category = button.ClassId.Split('/')[3];
+            string dbId = button.ClassId;
+            QuizInfo quizInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+            string quizName = quizInfo.AuthorName;
+            string authorName = quizInfo.AuthorName;
+            string quizCategory = quizInfo.Category;
 
             ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)UISyncStatus.Syncing] as ActivityIndicator;
             string quizPath = button.ClassId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
-            if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
+            if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizCategory)))
             {
                 ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)UISyncStatus.NoChange] as ImageButton;
                 indicatorSyncing.IsVisible = false;
