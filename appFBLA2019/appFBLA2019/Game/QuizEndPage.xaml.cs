@@ -2,14 +2,10 @@
 
 using Plugin.FacebookClient;
 using Plugin.FacebookClient.Abstractions;
-using Plugin.Share;
-using Plugin.Share.Abstractions;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xamarin.Essentials;
-using Xamarin.Social;
-using Xamarin.Social.Services;
 
 namespace appFBLA2019
 {
@@ -25,7 +21,7 @@ namespace appFBLA2019
         private double percentScore;
         private string quizName;
 
-        private string shareText
+        private string ShareText
         {
             get
             {
@@ -63,7 +59,7 @@ namespace appFBLA2019
                     this.LabelFeedback.Text = "Great job! Just a little more work and you're an expert!";
                     break;
 
-                case double x when (x == 100):
+                case double x when (x >= 100):
                     this.LabelFeedback.Text = "Wow! You're a master!";
                     break;
             }
@@ -92,16 +88,9 @@ namespace appFBLA2019
             base.OnSizeAllocated(width, height);
             this.LabelFeedback.Scale = 0.00001;
             this.LabelScore.Scale = 0.00001;
-            this.ButtonShareToFacebook.Scale = 0.00001;
-            this.ButtonShareToOtherMedia.Scale = 0.00001;
-            this.ButtonDone.Scale = 0.00001;
 
             await this.LabelFeedback.ScaleTo(1, 250, Easing.BounceIn);
             await this.LabelScore.ScaleTo(1, 1000, Easing.BounceIn);
-
-            await this.ButtonShareToFacebook.ScaleTo(1, 500, Easing.SpringOut);
-            await this.ButtonShareToOtherMedia.ScaleTo(1, 500, Easing.SpringOut);
-            await this.ButtonDone.ScaleTo(1, 500, Easing.SpringOut);
         }
 
         /// <summary>
@@ -135,7 +124,7 @@ namespace appFBLA2019
             this.ButtonShareToFacebook.IsEnabled = false;
 
             FacebookShareLinkContent linkContent = 
-                new FacebookShareLinkContent(this.shareText, 
+                new FacebookShareLinkContent(this.ShareText, 
                 new Uri("https://www.bizquiz.app/"));
             var ret = await CrossFacebookClient.Current.ShareAsync(linkContent);
             this.ButtonShareToFacebook.IsEnabled = true;
@@ -152,7 +141,7 @@ namespace appFBLA2019
 
             ShareTextRequest request = new ShareTextRequest();
             request.Title = $"Share to other social media platforms";
-            request.Text = this.shareText;
+            request.Text = this.ShareText;
             request.Uri = "https://www.bizquiz.app/";
             await Share.RequestAsync(request);
 
@@ -163,7 +152,7 @@ namespace appFBLA2019
         {
             this.ButtonShareToTwitter.IsEnabled = false;
             bool twitterInstalled = DependencyService.Get<IGetStorage>().IsPackageInstalled(twitterPackageName);
-            string shareURI = $"https://twitter.com/share?text={Uri.EscapeUriString(this.shareText)}&url=http://www.bizquiz.app&hashtags=BizQuiz";
+            string shareURI = $"https://twitter.com/share?text={Uri.EscapeUriString(this.ShareText)}&url=http://www.bizquiz.app&hashtags=BizQuiz";
             if (!twitterInstalled)
             {
                 bool result = 

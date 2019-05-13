@@ -24,10 +24,12 @@ namespace appFBLA2019
         /// the original author of the quiz (if being edited)
         /// </summary>
         private string originalAuthor;
+
         /// <summary>
         /// the original name of the quiz (if being edited)
         /// </summary>
         private string originalName;
+
         /// <summary>
         /// the original category of the quiz (if being edited)
         /// </summary>
@@ -401,13 +403,17 @@ namespace appFBLA2019
                 }
                 else // edit
                 {
-                    
+                    string currentDirectory = database.DBFolderPath;
                     QuizInfo updatedQuizInfo = new QuizInfo(database.QuizInfo)
                     {
                         QuizName = this.EditorQuizName.Text?.Trim(),
-                        LastModifiedDate = DateTime.Now.ToString()
+                        LastModifiedDate = DateTime.Now.ToString(),
+                        Category = this.PickerCategory.Items[this.PickerCategory.SelectedIndex]
                     };
                     database.EditQuizInfo(updatedQuizInfo);
+                    Directory.CreateDirectory(updatedQuizInfo.RelativePath);
+                    Directory.Delete(updatedQuizInfo.RelativePath, true);
+                    Directory.Move(currentDirectory, updatedQuizInfo.RelativePath);
 
                     // Logic for how to save each question.
                     for (int i = 0; i <= previousQuestions.Count() - 1; i++)

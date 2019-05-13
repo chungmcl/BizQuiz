@@ -7,8 +7,12 @@ using System.IO;
 using System.Threading.Tasks;
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
-using static System.Environment;
+using Xamarin.Forms;
+using Plugin.Permissions;
+using System.IO.Compression;
+using System.Reflection;
 
+[assembly: Dependency(typeof(appFBLA2019.iOS.AppDelegate))]
 namespace appFBLA2019.iOS
 {
     // The UIApplicationDelegate for the application. This class is responsible for launching the User Interface of the application, as well as listening (and optionally responding) to application events from iOS.
@@ -22,7 +26,6 @@ namespace appFBLA2019.iOS
         {
             global::Xamarin.Forms.Forms.Init();
             this.LoadApplication(new App());
-
             return base.FinishedLaunching(app, options);
         }
 
@@ -37,17 +40,34 @@ namespace appFBLA2019.iOS
 
         public string GetStorage()
         {
-            return GetFolderPath(SpecialFolder.Resources);
+            return Environment.GetFolderPath(Environment.SpecialFolder.Resources);
         }
 
         public void LogError(string error)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public Task SetupDefaultQuizzesAsync(string userpath)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var assembly = IntrospectionExtensions.GetTypeInfo(typeof(AppDelegate)).Assembly;
+                using (Stream dbAssetStream = assembly.GetManifestResourceStream("appFBLA2019.dflt.zip"))
+                {
+                    MemoryStream memStream = new MemoryStream();
+                    dbAssetStream.CopyTo(memStream);
+                    memStream.Position = 0;
+                    File.WriteAllBytes(userpath + "dflt.zip", memStream.ToArray());
+                    ZipFile.ExtractToDirectory(userpath + "dflt.zip", userpath, true);
+                    File.Delete(userpath + "dflt.zip");
+                }
+            }
+            catch (Exception ex)
+            {
+                BugReportHandler.SaveReport(ex, "SetupDefaultLevels");
+            }
+            return Task.CompletedTask;
         }
 
         public bool IsPackageInstalled(string packageName)

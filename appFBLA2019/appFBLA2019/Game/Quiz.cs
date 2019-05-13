@@ -264,7 +264,7 @@ namespace appFBLA2019
 
             QuizInfo rosterCopy = new QuizInfo(newQuizInfo)
             {
-                SyncStatus = 1 // Default to 1, meaning "needs upload" in roster
+                SyncStatus = (int)SyncStatusEnum.NeedUpload // Default to 1, meaning "needs upload" in roster
             };
             QuizRosterDatabase.SaveQuizInfo(rosterCopy);
         }
@@ -283,7 +283,7 @@ namespace appFBLA2019
 
             QuizInfo rosterCopy = new QuizInfo(editedQuizInfo)
             {
-                SyncStatus = 1 // Default to 1, meaning "needs upload" in roster
+                SyncStatus = (int)SyncStatusEnum.NeedUpload // Default to 1, meaning "needs upload" in roster
             };
             QuizRosterDatabase.EditQuizInfo(rosterCopy);
         }

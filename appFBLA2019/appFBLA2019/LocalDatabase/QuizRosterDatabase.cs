@@ -56,6 +56,7 @@ namespace appFBLA2019
             {
                 realmDB.Add(editedQuizInfo, update: true);
             });
+            realmDB.Dispose();
         }
 
         /// <summary>
@@ -179,16 +180,20 @@ namespace appFBLA2019
                             if (QuizInfos[i].IsDeletedLocally)
                             {
                                 if (await ServerOperations.DeleteQuiz(QuizInfos[i].DBId) == OperationReturnMessage.True)
-                                    DeleteQuizInfo(QuizInfos[i].DBId);
+                                {
+                                    string toDeleteDBId = QuizInfos[i].DBId;
+                                    QuizInfos.Remove(QuizInfos[i]);
+                                    DeleteQuizInfo(toDeleteDBId);
+                                }
                             }
-                            else if (QuizInfos[i].SyncStatus != 4)
+                            else if (QuizInfos[i].SyncStatus != (int)SyncStatusEnum.NotDownloadedAndNeedDownload)
                             {
                                 string lastModifiedDate = ServerOperations.GetLastModifiedDate(QuizInfos[i].DBId);
                                 if (lastModifiedDate == "") // returns empty string could not reach server
                                 {
                                     QuizInfo copy = new QuizInfo(QuizInfos[i])
                                     {
-                                        SyncStatus = 3 // 3 represents offline
+                                        SyncStatus = (int)SyncStatusEnum.Offline // 3 represents offline
                                     };
                                     EditQuizInfo(copy, threadInstance);
                                 }
@@ -199,7 +204,7 @@ namespace appFBLA2019
                                     {
                                         QuizInfo copy = new QuizInfo(QuizInfos[i])
                                         {
-                                            SyncStatus = 1 // 1 represents need upload
+                                            SyncStatus = (int)SyncStatusEnum.NeedUpload // 1 represents need upload
                                         };
                                         EditQuizInfo(copy, threadInstance);
                                     }
@@ -211,7 +216,7 @@ namespace appFBLA2019
                                         {
                                             QuizInfo copy = new QuizInfo(QuizInfos[i])
                                             {
-                                                SyncStatus = 1 // 1 represents need upload
+                                                SyncStatus = (int)SyncStatusEnum.NeedUpload // 1 represents need upload
                                             };
                                             EditQuizInfo(copy, threadInstance);
                                         }
@@ -219,7 +224,7 @@ namespace appFBLA2019
                                         {
                                             QuizInfo copy = new QuizInfo(QuizInfos[i])
                                             {
-                                                SyncStatus = 0 // 0 represents needs download
+                                                SyncStatus = (int)SyncStatusEnum.NeedDownload // 0 represents needs download
                                             };
                                             EditQuizInfo(copy, threadInstance);
                                         }
@@ -227,7 +232,7 @@ namespace appFBLA2019
                                         {
                                             QuizInfo copy = new QuizInfo(QuizInfos[i])
                                             {
-                                                SyncStatus = 2 // 2 represents in sync
+                                                SyncStatus = (int)SyncStatusEnum.Synced // 2 represents in sync
                                             };
                                             EditQuizInfo(copy, threadInstance);
                                         }
@@ -239,7 +244,7 @@ namespace appFBLA2019
                         {
                             QuizInfo copy = new QuizInfo(QuizInfos[i])
                             {
-                                SyncStatus = 2 // 2 represents in sync
+                                SyncStatus = (int)SyncStatusEnum.Synced // 2 represents in sync
                             };
                             EditQuizInfo(copy, threadInstance);
                         }
@@ -260,7 +265,7 @@ namespace appFBLA2019
                             Category = missingQuiz[3],
                             LastModifiedDate = missingQuiz[4],
                             SubscriberCount = int.Parse(missingQuiz[5]),
-                            SyncStatus = 4
+                            SyncStatus = (int)SyncStatusEnum.NotDownloadedAndNeedDownload
                         };
                         threadInstance.Write(() =>
                         {
@@ -274,7 +279,7 @@ namespace appFBLA2019
                     {
                         QuizInfo copy = new QuizInfo(QuizInfos[i])
                         {
-                            SyncStatus = 3 // 3 represents offline
+                            SyncStatus = (int)SyncStatusEnum.Offline // 3 represents offline
                         };
                         EditQuizInfo(copy, threadInstance);
                     }

@@ -270,7 +270,7 @@ namespace appFBLA2019
                 {
                     QuizInfo infoCopy = new QuizInfo(info)
                     {
-                        SyncStatus = 2
+                        SyncStatus = (int)SyncStatusEnum.Synced
                     };
                     QuizRosterDatabase.EditQuizInfo(infoCopy);
                     return true;
@@ -280,8 +280,9 @@ namespace appFBLA2019
                     throw new Exception();
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                string test = ex.ToString();
                 // Alert server that quiz send failed Delete records
                 return false;
             }
@@ -291,11 +292,9 @@ namespace appFBLA2019
         /// Download a quiz from the server.
         /// </summary>
         /// <param name="dBId">The DBId of the quiz to download</param>
-        /// <param name="quizName">The name of the quiz to download.</param>
-        /// <param name="authorName">The name of the author of the quiz.</param>
         /// <param name="category">The category the quiz belongs in.</param>
         /// <returns></returns>
-        public static bool GetQuiz(string dBId, string quizName, string authorName, string category)
+        public static bool GetQuiz(string dBId, string category)
         {
             // TO DO: CHECK IF quizName or category changed and save accordingly
             string tempPath = App.UserPath + "/" + "temp" + "/" + dBId + "/";
@@ -350,7 +349,7 @@ namespace appFBLA2019
 
             QuizInfo infoCopy = new QuizInfo(QuizRosterDatabase.GetQuizInfo(dBId))
             {
-                SyncStatus = 2,
+                SyncStatus = (int)SyncStatusEnum.Synced,
                 QuizName = newQuizName,
                 Category = newCategory,
                 LastModifiedDate = newLastModfiedDate

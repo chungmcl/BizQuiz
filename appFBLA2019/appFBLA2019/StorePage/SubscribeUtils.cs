@@ -35,7 +35,7 @@ namespace appFBLA2019
                         QuizName = quiz.QuizName,
                         Category = quiz.Category,
                         LastModifiedDate = lastModifiedDate,
-                        SyncStatus = 4 // 4 to represent not present in local directory and need download
+                        SyncStatus = (int)SyncStatusEnum.NotDownloadedAndNeedDownload // 4 to represent not present in local directory and need download
                     };
                     QuizRosterDatabase.SaveQuizInfo(newInfo);
                     return returnMessage;
@@ -65,7 +65,7 @@ namespace appFBLA2019
         public static async Task<OperationReturnMessage> UnsubscribeFromQuizAsync(string dbId)
         {
             QuizInfo info = QuizRosterDatabase.GetQuizInfo(dbId);
-            if (info.SyncStatus != 4)
+            if (info.SyncStatus != (int)SyncStatusEnum.NotDownloadedAndNeedDownload)
             {
                 string location = App.UserPath + "/" + info.Category + "/" + info.QuizName + "`" + info.AuthorName;
                 if (Directory.Exists(location))

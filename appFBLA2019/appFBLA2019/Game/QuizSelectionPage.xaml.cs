@@ -1,11 +1,9 @@
 ﻿//BizQuiz App 2019
 
 using Plugin.Connectivity;
-using Realms;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -37,9 +35,9 @@ namespace appFBLA2019
         public bool serverConnected;
 
         /// <summary>
-        /// The sync status of a quiz
+        /// The category of the selectionpage
         /// </summary>
-        private enum SyncType { Offline = 1, Upload, Download, NoChange, Syncing };
+        private readonly string category;
 
         /// <summary>
         /// Creates a quizselectionpage for the given category
@@ -51,6 +49,8 @@ namespace appFBLA2019
             this.category = category;
             this.IsLoading = false;
             this.isSetup = false;
+
+            this.FrameCreateNew.IsVisible = CredentialManager.IsLoggedIn;
         }
 
         /// <summary>
@@ -72,6 +72,7 @@ namespace appFBLA2019
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            this.FrameCreateNew.IsVisible = CredentialManager.IsLoggedIn;
             this.CheckSetup();
         }
 
@@ -100,11 +101,6 @@ namespace appFBLA2019
                 this.Setup();
             }
         }
-
-        /// <summary>
-        /// The category of the selectionpage
-        /// </summary>
-        private readonly string category;
 
         /// <summary>
         /// Sets up the page with quizzes the user has subscribed to from the category of the page
@@ -161,218 +157,234 @@ namespace appFBLA2019
 
                 foreach (QuizInfo quiz in quizzes)
                 {
-                    Frame frame = new Frame()
-                    {
-                        VerticalOptions = LayoutOptions.Start,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        CornerRadius = 10
-                    };
-
-                    StackLayout frameStack = new StackLayout // 1st Child of frameLayout
-                    {
-                        FlowDirection = FlowDirection.LeftToRight,
-                        Orientation = StackOrientation.Vertical,
-                        Padding = 10
-                    };
-
-                    StackLayout topStack = new StackLayout
-                    {
-                        FlowDirection = FlowDirection.LeftToRight,
-                        Orientation = StackOrientation.Horizontal,
-                        VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand
-                    };
-
-                    Label title = new Label // 0
-                    {
-                        Text = quiz.QuizName,
-                        FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-                        FontAttributes = FontAttributes.Bold,
-                        VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand//,
-                        //HeightRequest = 45
-                    };
-                    topStack.Children.Add(title);
-
-                    // Add the sync buttons, We create one for each sync action to keep correct formatting and fix a sizing bug.
-                    ImageButton SyncOffline = new ImageButton // 1
-                    {
-                        IsVisible = false,
-                        Source = "ic_cloud_off_black_48dp.png",
-                        HeightRequest = 25,
-                        WidthRequest = 25,
-                        BackgroundColor = Color.White,
-                        VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.End,
-                        StyleId = quiz.DBId,
-                    };
-                    SyncOffline.Clicked += this.SyncOffline_Clicked;
-                    topStack.Children.Add(SyncOffline);
-
-                    ImageButton SyncUpload = new ImageButton // 2
-                    {
-                        IsVisible = false,
-                        Source = "ic_cloud_upload_black_48dp.png",
-                        HeightRequest = 25,
-                        WidthRequest = 25,
-                        BackgroundColor = Color.White,
-                        VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.End,
-                        StyleId = quiz.DBId,
-                    };
-                    SyncUpload.Clicked += this.SyncUpload_Clicked;
-                    topStack.Children.Add(SyncUpload);
-
-                    ImageButton SyncDownload = new ImageButton // 3
-                    {
-                        IsVisible = false,
-                        Source = "ic_cloud_download_black_48dp.png",
-                        HeightRequest = 25,
-                        WidthRequest = 25,
-                        BackgroundColor = Color.White,
-                        VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.End,
-                        StyleId = quiz.DBId,
-                    };
-                    SyncDownload.Clicked += this.SyncDownload_Clicked;
-                    topStack.Children.Add(SyncDownload);
-
-                    ImageButton SyncNoChange = new ImageButton // 4
-                    {
-                        IsVisible = false,
-                        Source = "ic_cloud_done_black_48dp.png",
-                        HeightRequest = 25,
-                        WidthRequest = 25,
-                        BackgroundColor = Color.White,
-                        VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.End,
-                        StyleId = quiz.DBId
-                    };
-                    SyncNoChange.Clicked += this.SyncNoChange_Clicked;
-                    topStack.Children.Add(SyncNoChange);
-
-                    ActivityIndicator Syncing = new ActivityIndicator // 5
-                    {
-                        IsVisible = false,
-                        Color = Color.Accent,
-                        HeightRequest = 25,
-                        WidthRequest = 25,
-                        VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.End,
-                    };
-                    topStack.Children.Add(Syncing);
-
-                    ImageButton imageButtonMenu = new ImageButton // 6
-                    {
-                        Source = "ic_more_vert_black_48dp.png",
-                        HeightRequest = 35,
-                        WidthRequest = 35,
-                        BackgroundColor = Color.White,
-                        VerticalOptions = LayoutOptions.StartAndExpand,
-                        HorizontalOptions = LayoutOptions.End,
-                        ClassId = quiz.DBId
-                    };
-                    imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
-                    topStack.Children.Add(imageButtonMenu);
-
-                    if (CredentialManager.Username == quiz.AuthorName)
-                    {
-                        imageButtonMenu.StyleId = "Delete";
-                    }
-                    else
-                    {
-                        imageButtonMenu.StyleId = "Unsubscribe";
-                    }
-
-                    frameStack.Children.Add(topStack);
-
-                    BoxView Seperator = new BoxView // 1
-                    {
-                        Color = Color.LightGray,
-                        CornerRadius = 1,
-                        HeightRequest = 2,
-                        WidthRequest = Application.Current.MainPage.Width - 75,
-                        HorizontalOptions = LayoutOptions.CenterAndExpand,
-                        VerticalOptions = LayoutOptions.CenterAndExpand
-                    };
-                    frameStack.Children.Add(Seperator);
-
-                    Label Author = new Label // 2
-                    {
-                        Text = "Created by: " + quiz.AuthorName,
-                        FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
-                        VerticalOptions = LayoutOptions.End,
-                        HorizontalOptions = LayoutOptions.StartAndExpand
-                    };
-                    frameStack.Children.Add(Author);
-
-                    // The sync button thats active in the current frame
-                    ImageButton activeSync;
-
-                    if (quiz.SyncStatus == 3) // SyncOffline
-                    {
-                        SyncOffline.IsVisible = true;
-                        activeSync = SyncOffline;
-                    }
-                    else if (quiz.SyncStatus == 2) // SyncNoChange
-                    {
-                        SyncNoChange.IsVisible = true;
-                        activeSync = SyncNoChange;
-                    }
-                    else if (quiz.SyncStatus == 1 && quiz.AuthorName == CredentialManager.Username) // SyncUpload
-                    {
-                        SyncUpload.IsVisible = true;
-                        activeSync = SyncUpload;
-                    }
-                    else if (quiz.SyncStatus == 0 || quiz.SyncStatus == 4) // SyncDownload
-                    {
-                        SyncDownload.IsVisible = true;
-                        activeSync = SyncDownload;
-                        if (quiz.SyncStatus == 4) // Sync Download & notLocal yet
-                        {
-                            frame.StyleId = "notLocal";
-                        }
-                    }
-                    else
-                    {
-                        SyncOffline.IsVisible = true;
-                        activeSync = SyncOffline;
-                    }
-
-                    TapGestureRecognizer recognizer = new TapGestureRecognizer();
-                    recognizer.Tapped += async (object sender, EventArgs e) =>
-                    {
-                        if (frame.StyleId != "notLocal")
-                        {
-                            frame.GestureRecognizers.Remove(recognizer);
-                            frame.BackgroundColor = Color.LightGray;
-                            Seperator.Color = Color.Gray;
-                            imageButtonMenu.BackgroundColor = Color.LightGray;
-                            activeSync.BackgroundColor = Color.LightGray;
-
-                            // Load the quiz associated with this DBId
-                            Quiz newQuiz = new Quiz(quiz.DBId);
-                            //await this.RemoveMenu(frameMenu);
-                            await this.Navigation.PushAsync(new Game(newQuiz));
-                            frame.BackgroundColor = Color.Default;
-                            Seperator.Color = Color.LightGray;
-                            imageButtonMenu.BackgroundColor = Color.White;
-                            activeSync.BackgroundColor = Color.White;
-                            frame.GestureRecognizers.Add(recognizer);
-                        }
-                        else
-                        {
-                            await this.DisplayAlert("Hold on!", "In order to study with this quiz, you must download it first", "OK");
-                        }
-                    };
-
-                    frame.GestureRecognizers.Add(recognizer);
-
-                    frame.Content = frameStack;
+                    Frame frame = GenerateFrame(quiz);
                     this.StackLayoutButtonStack.Children.Add(frame);
                 }
                 this.IsLoading = false;
             }
+        }
+
+        /// <summary>
+        /// Generate a frame (card-like button) for the UI based on a QuizInfo
+        /// </summary>
+        /// <param name="quizInfo">QuizInfo of the quiz to generate a frame for</param>
+        /// <returns></returns>
+        private Frame GenerateFrame(QuizInfo quizInfo)
+        {
+            Frame frame = new Frame()
+            {
+                VerticalOptions = LayoutOptions.Start,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                CornerRadius = 10
+            };
+
+            StackLayout frameStack = new StackLayout // 1st Child of frameLayout
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                Orientation = StackOrientation.Vertical,
+                Padding = 10
+            };
+
+            StackLayout topStack = new StackLayout
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                Orientation = StackOrientation.Horizontal,
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand
+            };
+
+            Label title = new Label // 0
+            {
+                Text = quizInfo.QuizName,
+                FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
+                FontAttributes = FontAttributes.Bold,
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand//,
+                                                               //HeightRequest = 45
+            };
+            topStack.Children.Add(title);
+
+            // Add the sync buttons, We create one for each sync action to keep correct formatting and fix a sizing bug.
+            ImageButton SyncOffline = new ImageButton // 1
+            {
+                IsVisible = false,
+                Source = "ic_cloud_off_black_48dp.png",
+                HeightRequest = 25,
+                WidthRequest = 25,
+                BackgroundColor = Color.White,
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.End,
+                ClassId = quizInfo.DBId,
+                StyleId = quizInfo.Category
+            };
+            SyncOffline.Clicked += this.SyncOffline_Clicked;
+            topStack.Children.Add(SyncOffline);
+
+            ImageButton SyncUpload = new ImageButton // 2
+            {
+                IsVisible = false,
+                Source = "ic_cloud_upload_black_48dp.png",
+                HeightRequest = 25,
+                WidthRequest = 25,
+                BackgroundColor = Color.White,
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.End,
+                ClassId = quizInfo.DBId,
+                StyleId = quizInfo.Category
+            };
+            SyncUpload.Clicked += this.SyncUpload_Clicked;
+            topStack.Children.Add(SyncUpload);
+
+            ImageButton SyncDownload = new ImageButton // 3
+            {
+                IsVisible = false,
+                Source = "ic_cloud_download_black_48dp.png",
+                HeightRequest = 25,
+                WidthRequest = 25,
+                BackgroundColor = Color.White,
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.End,
+                ClassId = quizInfo.DBId,
+                StyleId = quizInfo.Category
+            };
+            SyncDownload.Clicked += this.SyncDownload_Clicked;
+            topStack.Children.Add(SyncDownload);
+
+            ImageButton SyncNoChange = new ImageButton // 4
+            {
+                IsVisible = false,
+                Source = "ic_cloud_done_black_48dp.png",
+                HeightRequest = 25,
+                WidthRequest = 25,
+                BackgroundColor = Color.White,
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.End,
+                ClassId = quizInfo.DBId,
+                StyleId = quizInfo.Category
+            };
+            SyncNoChange.Clicked += this.SyncNoChange_Clicked;
+            topStack.Children.Add(SyncNoChange);
+
+            ActivityIndicator Syncing = new ActivityIndicator // 5
+            {
+                IsVisible = false,
+                Color = Color.Accent,
+                HeightRequest = 25,
+                WidthRequest = 25,
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.End,
+            };
+            topStack.Children.Add(Syncing);
+
+            ImageButton imageButtonMenu = new ImageButton // 6
+            {
+                Source = "ic_more_vert_black_48dp.png",
+                HeightRequest = 35,
+                WidthRequest = 35,
+                BackgroundColor = Color.White,
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.End,
+                ClassId = quizInfo.DBId
+            };
+            imageButtonMenu.Clicked += this.ImageButtonMenu_Clicked;
+            topStack.Children.Add(imageButtonMenu);
+
+            if (CredentialManager.Username == quizInfo.AuthorName)
+            {
+                imageButtonMenu.StyleId = "Delete";
+            }
+            else
+            {
+                imageButtonMenu.StyleId = "Unsubscribe";
+            }
+
+            frameStack.Children.Add(topStack);
+
+            BoxView Seperator = new BoxView // 1
+            {
+                Color = Color.LightGray,
+                CornerRadius = 1,
+                HeightRequest = 2,
+                WidthRequest = Application.Current.MainPage.Width - 75,
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                VerticalOptions = LayoutOptions.CenterAndExpand
+            };
+            frameStack.Children.Add(Seperator);
+
+            Label Author = new Label // 2
+            {
+                Text = "Created by: " + quizInfo.AuthorName,
+                FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
+                VerticalOptions = LayoutOptions.End,
+                HorizontalOptions = LayoutOptions.StartAndExpand
+            };
+            frameStack.Children.Add(Author);
+
+            // The sync button thats active in the current frame
+            ImageButton activeSync;
+
+            if (quizInfo.SyncStatus == (int)SyncStatusEnum.Offline) // SyncOffline
+            {
+                SyncOffline.IsVisible = true;
+                activeSync = SyncOffline;
+            }
+            else if (quizInfo.SyncStatus == (int)SyncStatusEnum.Synced) // SyncNoChange
+            {
+                SyncNoChange.IsVisible = true;
+                activeSync = SyncNoChange;
+            }
+            else if (quizInfo.SyncStatus == (int)SyncStatusEnum.NeedUpload && quizInfo.AuthorName == CredentialManager.Username) // SyncUpload
+            {
+                SyncUpload.IsVisible = true;
+                activeSync = SyncUpload;
+            }
+            else if (quizInfo.SyncStatus == (int)SyncStatusEnum.NeedDownload || 
+                quizInfo.SyncStatus == (int)SyncStatusEnum.NotDownloadedAndNeedDownload) // SyncDownload
+            {
+                SyncDownload.IsVisible = true;
+                activeSync = SyncDownload;
+                if (quizInfo.SyncStatus == (int)SyncStatusEnum.NotDownloadedAndNeedDownload) // Sync Download & notLocal yet
+                {
+                    frame.StyleId = "notLocal";
+                }
+            }
+            else
+            {
+                SyncOffline.IsVisible = true;
+                activeSync = SyncOffline;
+            }
+
+            TapGestureRecognizer recognizer = new TapGestureRecognizer();
+            recognizer.Tapped += async (object sender, EventArgs e) =>
+            {
+                if (frame.StyleId != "notLocal")
+                {
+                    frame.GestureRecognizers.Remove(recognizer);
+                    frame.BackgroundColor = Color.LightGray;
+                    Seperator.Color = Color.Gray;
+                    imageButtonMenu.BackgroundColor = Color.LightGray;
+                    activeSync.BackgroundColor = Color.LightGray;
+
+                    // Load the quiz associated with this DBId
+                    Quiz newQuiz = new Quiz(quizInfo.DBId);
+                    //await this.RemoveMenu(frameMenu);
+                    await this.Navigation.PushAsync(new Game(newQuiz));
+                    frame.BackgroundColor = Color.Default;
+                    Seperator.Color = Color.LightGray;
+                    imageButtonMenu.BackgroundColor = Color.White;
+                    activeSync.BackgroundColor = Color.White;
+                    frame.GestureRecognizers.Add(recognizer);
+                }
+                else
+                {
+                    await this.DisplayAlert("Hold on!", "In order to study with this quiz, you must download it first", "OK");
+                }
+            };
+
+            frame.GestureRecognizers.Add(recognizer);
+            frame.Content = frameStack;
+
+            return frame;
         }
 
         /// <summary>
@@ -384,14 +396,14 @@ namespace appFBLA2019
         {
             this.serverConnected = true;
             ImageButton button = (sender as ImageButton);
-            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
-            string quizPath = button.StyleId;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)UISyncStatus.Syncing] as ActivityIndicator;
+            string quizPath = "/" + button.StyleId + "/" + button.ClassId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
             if (await Task.Run(async () => await ServerOperations.SendQuiz(quizPath)))
             {
-                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)UISyncStatus.NoChange] as ImageButton;
                 indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
             }
@@ -417,19 +429,20 @@ namespace appFBLA2019
             this.serverConnected = true;
             ImageButton button = sender as ImageButton;
 
-            string dbId = button.ClassId.Split('/')[0];
-            string authorName = button.ClassId.Split('/')[1];
-            string quizName = button.ClassId.Split('/')[2];
-            string category = button.ClassId.Split('/')[3];
+            string dbId = button.ClassId;
+            QuizInfo quizInfo = QuizRosterDatabase.GetQuizInfo(dbId);
+            string quizName = quizInfo.AuthorName;
+            string authorName = quizInfo.AuthorName;
+            string quizCategory = quizInfo.Category;
 
-            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)SyncType.Syncing] as ActivityIndicator;
-            string quizPath = button.StyleId;
+            ActivityIndicator indicatorSyncing = (button.Parent as StackLayout).Children[(int)UISyncStatus.Syncing] as ActivityIndicator;
+            string quizPath = button.ClassId;
             button.IsVisible = false;
             indicatorSyncing.IsVisible = true;
             indicatorSyncing.IsRunning = true;
-            if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizName, authorName, category)))
+            if (await Task.Run(() => ServerOperations.GetQuiz(dbId, quizCategory)))
             {
-                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)SyncType.NoChange] as ImageButton;
+                ImageButton buttonSyncNoChange = (button.Parent as StackLayout).Children[(int)UISyncStatus.NoChange] as ImageButton;
                 indicatorSyncing.IsVisible = false;
                 buttonSyncNoChange.IsVisible = true;
 
@@ -471,7 +484,6 @@ namespace appFBLA2019
         /// <summary>
         /// Handle event when user clicks delete quiz button.
         /// </summary>
-        /// <param name="sender"></param>
         /// <param name="e"></param>
         private async void ButtonDelete_Clicked(string deleteType, string DBId)
         {
@@ -577,8 +589,6 @@ namespace appFBLA2019
         /// <summary>
         /// Handle when user clicks edit button
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private async void ButtonEdit_Clicked(string DBId)
         {
             QuizInfo info = QuizRosterDatabase.GetQuizInfo(DBId);
@@ -586,7 +596,7 @@ namespace appFBLA2019
             {
                 await this.DisplayAlert("Hold on!", "Before you can edit any quizzes, you have to login.", "Ok");
             }
-            else if (info.SyncStatus == 4)
+            else if (info.SyncStatus == (int)SyncStatusEnum.NotDownloadedAndNeedDownload)
             {
                 await this.DisplayAlert("Hold on!", "This quiz isn't on your device, download it before you try to edit it", "Ok");
             }
@@ -631,6 +641,33 @@ namespace appFBLA2019
             this.ActivityIndicator.IsVisible = false;
             this.ActivityIndicator.IsRunning = false;
             await this.StackLayoutButtonStack.FadeTo(1, 1);
+        }
+
+        /// <summary>
+        /// When the user wants to create a brand new quiz
+        /// </summary>
+        /// <param name="sender">  </param>
+        /// <param name="e">       </param>
+        private async void ButtonCreateQuiz_Activated(object sender, EventArgs e)
+        {
+            if (CredentialManager.IsLoggedIn)
+            {
+                CreateNewQuizPage quiz = new CreateNewQuizPage();
+                await this.Navigation.PushAsync(quiz);
+            }
+            else
+            {
+                if (await this.DisplayAlert("Hold on!", "Before you can create your own custom quizzes, you have to create your own account.", "Login/Create Account", "Go Back"))
+                {
+                    ProfilePage profilePage = new ProfilePage();
+                    if (!profilePage.IsLoading && !profilePage.IsOnLoginPage)
+                    {
+                        await profilePage.UpdateProfilePageAsync();
+                    }
+                    profilePage.SetTemporary();
+                    await this.Navigation.PushAsync(profilePage);
+                }
+            }
         }
     }
 }

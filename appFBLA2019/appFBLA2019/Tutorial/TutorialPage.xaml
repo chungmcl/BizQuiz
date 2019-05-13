@@ -5,45 +5,126 @@
              x:Class="appFBLA2019.TutorialPage">
     <ContentPage.Content>
         <StackLayout Padding="0" Margin="0">
+            <ScrollView VerticalOptions="FillAndExpand">
+                <StackLayout x:Name="StackTutorials" VerticalOptions="FillAndExpand">
 
-            <StackLayout x:Name="StackTutorials" Padding="0" Margin="0" VerticalOptions="FillAndExpand">
-                
-                <Frame x:Name="FrameHomePage" IsVisible="True" VerticalOptions="FillAndExpand">
-                    <StackLayout>
-                        <Label Text="The Home Page"
-                            VerticalOptions="StartAndExpand" 
+                    <Frame x:Name="FrameIntro" IsVisible="True" VerticalOptions="FillAndExpand" >
+                        <StackLayout>
+                            <Label Text="Welcome to BizQuiz" FontSize="Large"
+                            VerticalOptions="Start" 
                             HorizontalOptions="CenterAndExpand" />
-                        
-                    </StackLayout>
-                </Frame>
+                            <Frame CornerRadius="10">
+                                <Image Source="BizQuizCircle.png" HeightRequest="300" HorizontalOptions="CenterAndExpand"/>
+                            </Frame>
 
-                <Frame x:Name="FrameQuizGame" IsVisible="False" VerticalOptions="FillAndExpand">
-                    <StackLayout>
-                        <Label Text="The Quiz Game"
-                            VerticalOptions="StartAndExpand" 
-                            HorizontalOptions="CenterAndExpand" />
-                        
-                    </StackLayout>
-                </Frame>
+                            <Frame CornerRadius="10">
+                                <Label Text="With BizQuiz, you can create, share, and study anything FBLA! Premade levels give users a good starting point for studying, and user created levels can help you get exactly what you want." VerticalOptions="StartAndExpand"/>
+                            </Frame>
+                        </StackLayout>
+                    </Frame>
 
-                <Frame x:Name="FrameSearch" IsVisible="False" VerticalOptions="FillAndExpand">
-                    <StackLayout>
-                        <Label Text="Searching and Sharing"
-                            VerticalOptions="StartAndExpand" 
+                    <Frame x:Name="FrameQuizSelection" IsVisible="False" VerticalOptions="FillAndExpand" >
+                        <StackLayout>
+                            <Label Text="Selecting a Quiz" FontSize="Large"
                             HorizontalOptions="CenterAndExpand" />
-                        
-                    </StackLayout>
-                </Frame>
+                            <Frame CornerRadius="10">
+                                <Label Text="To test yourself with a quiz, enter the &quot;Play&quot; tab from the home page."/>
+                            </Frame>
+                            <Frame CornerRadius="10">
+                                <Image Source="TutQuizSelect" HeightRequest="400"/>
+                            </Frame>
+                            <Frame CornerRadius="10">
+                                <Label Text="The &quot;Play&quot; tab displays all of the quizzes you have subscribed to. Simply choose a quiz from any of the five categories: Tech Events, Finance Events, Business Events, FBLA General, or Officers"
+                               VerticalOptions="StartAndExpand"/>
+                            </Frame>
+                        </StackLayout>
+                    </Frame>
 
-                <Frame x:Name="FrameCreator" IsVisible="False" VerticalOptions="FillAndExpand">
-                    <StackLayout>
-                        <Label Text="Quiz Creation"
-                            VerticalOptions="StartAndExpand" 
+                    <Frame x:Name="FrameQuizGame" IsVisible="False" VerticalOptions="FillAndExpand">
+                        <StackLayout>
+                            <Label Text="The Quiz Game" FontSize="Large"
                             HorizontalOptions="CenterAndExpand" />
-                        
-                    </StackLayout>
-                </Frame>
-            </StackLayout>
+                            <Frame CornerRadius="10">
+                                <Label Text="Tapping a quiz will bring it up to play"/>
+                            </Frame>
+
+                            <Frame CornerRadius="10">
+                                <Image HeightRequest="400" Source="TutGame"/>
+                            </Frame>
+
+                            <Frame CornerRadius="10">
+                                <Label Text="There are Multiple Choice, and text answer questions. To answer a multiple choice question, just tap the red box labeled with what you think is the correct answer. To answer a text based question, type your answer into the box provided and tap the &quot;Check Answer&quot; button to submit. At the end of a quiz, you can see your score, and share it on social media!"
+                               VerticalOptions="StartAndExpand"/>
+                            </Frame>
+
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame x:Name="FrameQuizExplore" IsVisible="False" VerticalOptions="FillAndExpand" >
+                        <StackLayout>
+                            <Label Text="The Explore Tab" FontSize="Large"
+                            HorizontalOptions="CenterAndExpand" />
+
+                            <Frame CornerRadius="10">
+                                <Label Text="The Explore tab is a place to find and download quizzes created by other users to use for your own study." />
+                            </Frame>
+
+                            <Frame CornerRadius="10">
+                                <Image Source="TutExplorePage.png" HeightRequest="400"/>
+                            </Frame>
+
+                            <Frame CornerRadius="10">
+                                <Label Text="You can subscribe to a quiz by pressing the &quot;add&quot; button to save it to your account. When you subscribe to a quiz, it will apear in the &quot;play&quot; tab so you can study from it. You can also sort quizzes by category using the picker at the top of the page."
+                               VerticalOptions="StartAndExpand" />
+                            </Frame>
+
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame x:Name="FrameCreator" IsVisible="False" VerticalOptions="FillAndExpand" >
+                        <StackLayout>
+                            <Label Text="Quiz Creation" FontSize="Large"
+                            HorizontalOptions="CenterAndExpand" />
+
+                            <Frame CornerRadius="10">
+                                <Label Text="If you can't find a quiz you want on the &quot;Explore&quot; tab, you can create your own quiz using the built in custom quiz creator." />
+                            </Frame>
+                            <Frame CornerRadius="10" Padding="0">
+                                <Image Source="TutQuizCreator" HeightRequest="300"/>
+                            </Frame>
+
+                            <Frame CornerRadius="10">
+                                <Label Text="When logged in, go to the &quot;Profile&quot; Tab or Play Tab, and tap &quot;Create New Quiz&quot;. From this tab, you can set a title, category, and questions. You can add more questions wtih the &quot;Plus&quot; button at the bottom or delete a specific question with the &quot;X&quot;. You can set question type, either multiple choice, or text answer, with the button at the top of a question card. When you are done writing your quiz, press the check at the top to save and exit." />
+                            </Frame>
+
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame x:Name="FrameSync" IsVisible="False" VerticalOptions="FillAndExpand">
+                        <StackLayout>
+                            <Label Text="Uploading and Syncing Your Quizzes" FontSize="Large"
+                            HorizontalOptions="CenterAndExpand"/>
+
+                            <Frame CornerRadius="10">
+                                <Label Text="After you create a quiz, you can find it on the &quot;Play&quot;, or &quot;Profile&quot; tab"/>
+                            </Frame>
+
+                            <Frame CornerRadius="10">
+                                <StackLayout>
+                                    <Image Source="ic_cloud_upload_black_48dp.png"/>
+                                    <Image Source="ic_cloud_download_black_48dp.png" />
+                                </StackLayout>
+                            </Frame>
+
+                            <Frame CornerRadius="10">
+                                <Label Text="From there, you can to click the upload button to sync it with the cloud. This allows you to obtain that quiz on other devices and allows other users of BizQuiz to find and download the level via the &quot;Explore&quot; tab." />
+                            </Frame>
+                        </StackLayout>
+
+                    </Frame>
+                </StackLayout>
+            </ScrollView>
+
             
             <Frame CornerRadius="0"
                 VerticalOptions="End"
@@ -51,10 +132,15 @@
                 BackgroundColor="LightGray"
                 BorderColor="Transparent">
                 <StackLayout Orientation="Horizontal">
-                    <Button x:Name="ButtonSkip" Text="Skip Tutorial" HorizontalOptions="StartAndExpand" Clicked="Skip_Clicked" BackgroundColor="Transparent" BorderColor="Transparent"/>
-                    <Button x:Name="ButtonPrevious" Text="Previous" HorizontalOptions="EndAndExpand" Clicked="Previous_Clicked" IsVisible="False" BackgroundColor="Accent" TextColor="White" CornerRadius="25"/>
-                    <Button x:Name="ButtonNext" Text="Next" Clicked="Next_Clicked" BackgroundColor="#004F96" TextColor="White" CornerRadius="25"/>
-                    <Button x:Name="ButtonDone" Text="Create Account" Clicked="Done_Clicked" IsVisible="False" BackgroundColor="#004F96" TextColor="White" CornerRadius="25"/>
+                    <Button x:Name="ButtonSkip" HorizontalOptions="StartAndExpand" 
+                            BackgroundColor="Transparent" BorderColor="Transparent"/>
+                    <Button x:Name="ButtonPrevious" Text="Previous" HorizontalOptions="EndAndExpand" 
+                            Clicked="Previous_Clicked" IsVisible="False" BackgroundColor="DarkGray" 
+                            TextColor="White" CornerRadius="25"/>
+                    <Button x:Name="ButtonNext" Text="Next" Clicked="Next_Clicked" BackgroundColor="DarkGray" 
+                            TextColor="White" CornerRadius="25"/>
+                    <Button x:Name="ButtonDone" BackgroundColor="DarkGreen"
+                            IsVisible="False" TextColor="White" CornerRadius="25"/>
                 </StackLayout>
             </Frame>
         </StackLayout>

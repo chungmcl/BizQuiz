@@ -75,7 +75,7 @@ namespace appFBLA2019
             this.Category = category;
 
             this.LastModifiedDate = DateTime.Now.ToString();
-            this.SyncStatus = 1;
+            this.SyncStatus = (int)SyncStatusEnum.NeedUpload;
             this.IsDeletedLocally = false;
             this.IsDeletedOnServer = false;
         }
@@ -100,3 +100,15 @@ namespace appFBLA2019
         }
     }
 }
+
+/// <summary>
+/// Enumerator detailing sync status
+///  0 = Need Download, 1 = Need Upload, 2 = Synced, 3 = Offline, 4 = Not downloaded + Need download
+/// </summary>
+public enum SyncStatusEnum { NeedDownload, NeedUpload, Synced, Offline, NotDownloadedAndNeedDownload }
+
+
+/// <summary>
+/// The UI representation of sync status of a quiz
+/// </summary>
+public enum UISyncStatus { Offline = 1, Upload, Download, NoChange, Syncing };
