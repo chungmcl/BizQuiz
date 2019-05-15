@@ -327,14 +327,14 @@ namespace appFBLA2019
             string newCategory = info.Category;
             string newLastModfiedDate = info.LastModifiedDate;
 
-            string quizPath = App.UserPath + $"/{newCategory}/{info.DBId}/";
+            string quizPath = info.RelativePath;
             string realmFilePath = quizPath + "/" + info.DBId + realmFileExtension;
             Directory.CreateDirectory(quizPath);
 
             string[] imageFilePaths = Directory.GetFiles(tempPath, "*.jpg");
             string[] realmFilePaths = Directory.GetFiles(tempPath, "*.realm");
             foreach (string path in realmFilePaths)
-                File.Copy(path, quizPath + "/" + newQuizName + realmFileExtension, true);
+                File.Copy(path, quizPath + "/" + info.DBId + realmFileExtension, true);
 
             foreach (string path in imageFilePaths)
             {
