@@ -25,11 +25,11 @@ namespace appFBLA2019
         {
             get
             {
-                string text = $"I got {this.percentScore.ToString("#.##")}% correct studying {this.quizName} on BizQuiz! " +
+                string text = $"I got {this.percentScore.ToString("0.##")}% correct studying {this.quizName} on BizQuiz! " +
                     $"Study with me and let's achieve great things in FBLA together! ";
 
                 if (CredentialManager.IsLoggedIn)
-                    text = text + $" Find on me BizQuiz @{CredentialManager.Username}";
+                    text = text + $"Find me on BizQuiz @{CredentialManager.Username}";
 
                 return text;
             }
@@ -91,6 +91,12 @@ namespace appFBLA2019
 
             await this.LabelFeedback.ScaleTo(1, 250, Easing.BounceIn);
             await this.LabelScore.ScaleTo(1, 1000, Easing.BounceIn);
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            OnFinished();
+            return base.OnBackButtonPressed();
         }
 
         /// <summary>
