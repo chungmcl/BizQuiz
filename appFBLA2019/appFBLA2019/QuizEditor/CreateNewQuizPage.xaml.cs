@@ -377,8 +377,8 @@ namespace appFBLA2019
                 }
 
                 Quiz database;
-                // If editing
-                if (this.originalQuizInfo != null)
+                // If editing their own quiz
+                if (this.originalQuizInfo != null && this.originalAuthor == CredentialManager.Username)
                 {
                     database = new Quiz(this.originalQuizInfo.DBId);
 
