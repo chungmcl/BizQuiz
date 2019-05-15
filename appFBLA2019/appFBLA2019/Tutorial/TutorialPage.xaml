@@ -34,7 +34,7 @@
                                 <Image Source="TutQuizSelect" HeightRequest="400"/>
                             </Frame>
                             <Frame CornerRadius="10">
-                                <Label Text="The &quot;Play&quot; tab displays all of the quizzes you have subscribed to. Simply choose a quiz from any of the five categories: Tech Events, Finance Events, Business Events, FBLA General, or Officers"
+                                <Label Text="The &quot;Play&quot; tab displays all of the quizzes you have subscribed to. Simply choose a quiz from any of the five categories: Tech Events, Finance Events, Business Events, FBLA General, or Officers."
                                VerticalOptions="StartAndExpand"/>
                             </Frame>
                         </StackLayout>
@@ -45,7 +45,7 @@
                             <Label Text="The Quiz Game" FontSize="Large"
                             HorizontalOptions="CenterAndExpand" />
                             <Frame CornerRadius="10">
-                                <Label Text="Tapping a quiz will bring it up to play"/>
+                                <Label Text="Tapping a quiz will bring it up to play."/>
                             </Frame>
 
                             <Frame CornerRadius="10">
@@ -94,7 +94,7 @@
                             </Frame>
 
                             <Frame CornerRadius="10">
-                                <Label Text="When logged in, go to the &quot;Profile&quot; Tab or Play Tab, and tap &quot;Create New Quiz&quot;. From this tab, you can set a title, category, and questions. You can add more questions wtih the &quot;Plus&quot; button at the bottom or delete a specific question with the &quot;X&quot;. You can set question type, either multiple choice, or text answer, with the button at the top of a question card. When you are done writing your quiz, press the check at the top to save and exit." />
+                                <Label Text="When logged in, go to the &quot;Profile&quot; Tab or Play Tab, and tap &quot;Create New Quiz.&quot; From this tab, you can set a title, category, and questions. You can add more questions wtih the &quot;Plus&quot; button at the bottom or delete a specific question with the &quot;X&quot;. You can set question type, either multiple choice, or text answer, with the button at the top of a question card. When you are done writing your quiz, press the check at the top to save and exit." />
                             </Frame>
 
                         </StackLayout>
@@ -106,7 +106,7 @@
                             HorizontalOptions="CenterAndExpand"/>
 
                             <Frame CornerRadius="10">
-                                <Label Text="After you create a quiz, you can find it on the &quot;Play&quot;, or &quot;Profile&quot; tab"/>
+                                <Label Text="After you create a quiz, you can find it on the &quot;Play,&quot; or &quot;Profile&quot; tab."/>
                             </Frame>
 
                             <Frame CornerRadius="10">
